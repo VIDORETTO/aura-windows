@@ -1,0 +1,6 @@
+# link.exe prints "Creating library X.lib and object X.exp" for every executable
+# that exports symbols (aws-lc-sys' jitterentropy does), and rustc surfaces it as a
+# `linker_messages` warning (unfiltered when link.exe is localized). Our binaries
+# never need an import library. Keep in sync with RUSTFLAGS in the Windows CI jobs.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "link-arg=/NOIMPLIB", "-C", "link-arg=/NOEXP"]

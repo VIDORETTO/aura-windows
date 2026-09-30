@@ -58,6 +58,9 @@ jobs:
   windows:
     name: Windows (full app)
     runs-on: windows-latest
+    env:
+      # RUSTFLAGS replaces .cargo/config.toml rustflags: repeat the MSVC link args.
+      RUSTFLAGS: -D warnings -C link-arg=/NOIMPLIB -C link-arg=/NOEXP
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
@@ -90,6 +93,9 @@ jobs:
     name: E2E (Windows, demo build)
     runs-on: windows-latest
     needs: windows
+    env:
+      # RUSTFLAGS replaces .cargo/config.toml rustflags: repeat the MSVC link args.
+      RUSTFLAGS: -D warnings -C link-arg=/NOIMPLIB -C link-arg=/NOEXP
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
