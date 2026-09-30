@@ -6,7 +6,7 @@ mod commands;
 mod overlay;
 #[cfg(windows)]
 mod shortcuts;
-#[cfg(windows)]
+#[cfg(all(windows, not(feature = "demo")))]
 mod win_platform;
 
 use aura_app::events::HostEvent;
