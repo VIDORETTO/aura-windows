@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-005",
+  "input_fingerprints": {
+    "crates/aura-audio": "536e96d656c65163ab53d9712400189570687a66d32dfbebf7f3cb5c4cf68f16",
+    "crates/aura-win/src/audio.rs": "9bf7ec830930afe1e65d7e7a279ea64461a39d737764eb85e139732cca883e8b",
+    "specs/005-captura-de-audio/plan.md": "9107ea9f8ffaf177e04ab63bb4676193e02a6db728859415c0df04c662964ac1",
+    "specs/005-captura-de-audio/spec.md": "7be2f30a6bfde2bfe6a1f97020c467f72571b73ca337bff2f9eb1fa4d8bfea82"
+  },
+  "input_paths": [
+    "crates/aura-audio",
+    "crates/aura-win/src/audio.rs",
+    "specs/005-captura-de-audio/spec.md",
+    "specs/005-captura-de-audio/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-audio; cargo clippy -p aura-win --target x86_64-pc-windows-msvc",
+  "result": "partial",
+  "tested_revision": "local:d7b4510b5884bdb79009b04f5bbeb112bd646b29f4459f32e82b5c3f06ca2387",
+  "ticket": "TK-001",
+  "timestamp": "2026-09-30T03:13:12+00:00"
+}

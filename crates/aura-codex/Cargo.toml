@@ -1,0 +1,34 @@
+[package]
+name = "aura-codex"
+description = "Codex app-server integration: supervisor, JSON-RPC session, event mapping, modes and approvals."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "aura-fake-codex"
+path = "src/bin/aura-fake-codex.rs"
+
+[dependencies]
+aura-core.workspace = true
+aura-store.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+toml.workspace = true
+sha2.workspace = true
+hex.workspace = true
+reqwest.workspace = true
+futures.workspace = true
+zstd = "0.13"
+tar = "0.4"
+
+[dev-dependencies]
+tempfile.workspace = true
+axum.workspace = true
+tokio = { workspace = true, features = ["test-util"] }

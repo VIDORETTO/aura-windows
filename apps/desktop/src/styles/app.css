@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* Design tokens (docs/design/ui-ux.md). Light first, dark via media query or
+   [data-theme="dark"]; the Overlay alpha is scaled by --overlay-opacity. */
+:root {
+  --overlay-opacity: 0.92;
+  --surface-rgb: 249 249 251;
+  --surface-alpha: 0.72;
+  --surface: rgb(var(--surface-rgb) / calc(var(--surface-alpha) * var(--overlay-opacity) / 0.72));
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --border: rgba(0, 0, 0, 0.08);
+  --text: #1b1b1f;
+  --text-muted: #5d5d66;
+  --accent: #5b5bf7;
+  --accent-contrast: #ffffff;
+  --danger: #c42b1c;
+  --warning: #9d5d00;
+  --success: #0f7b0f;
+  --radius-lg: 14px;
+  --radius-md: 8px;
+  --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.18);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --font-ui: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "Cascadia Code", "Cascadia Mono", Consolas, ui-monospace, monospace;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-rgb: 28 28 32;
+    --surface-alpha: 0.68;
+    --surface-strong: rgba(38, 38, 44, 0.9);
+    --surface-hover: rgba(255, 255, 255, 0.06);
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #f2f2f5;
+    --text-muted: #a0a0aa;
+    --danger: #ff99a4;
+    --warning: #fce100;
+    --success: #6ccb5f;
+    --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --surface-rgb: 28 28 32;
+  --surface-alpha: 0.68;
+  --surface-strong: rgba(38, 38, 44, 0.9);
+  --surface-hover: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #f2f2f5;
+  --text-muted: #a0a0aa;
+  --danger: #ff99a4;
+  --warning: #fce100;
+  --success: #6ccb5f;
+  --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Windows high contrast: no transparency, system colors. */
+@media (forced-colors: active) {
+  :root {
+    --surface: Canvas;
+    --surface-strong: Canvas;
+    --border: CanvasText;
+    --text: CanvasText;
+    --text-muted: CanvasText;
+    --accent: Highlight;
+  }
+}
+
+@theme {
+  --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
+  --color-hover: var(--surface-hover);
+  --color-line: var(--border);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --radius-lg: var(--radius-lg);
+  --radius-md: var(--radius-md);
+  --font-sans: var(--font-ui);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+body.settings {
+  background: var(--surface-strong);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+textarea,
+input,
+.selectable {
+  user-select: text;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.overlay-shell {
+  background: var(--surface);
+  backdrop-filter: blur(28px) saturate(1.4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-overlay);
+}
+
+.fade-in {
+  animation: fade-in 160ms var(--ease);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.caret::after {
+  content: "▍";
+  margin-left: 1px;
+  animation: blink 1s steps(2, start) infinite;
+  color: var(--accent);
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Markdown answers. */
+.md {
+  user-select: text;
+  overflow-wrap: anywhere;
+}
+.md p {
+  margin: 0.4em 0;
+}
+.md h1,
+.md h2,
+.md h3 {
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  line-height: 1.3;
+}
+.md h1 {
+  font-size: 1.25em;
+}
+.md h2 {
+  font-size: 1.12em;
+}
+.md h3 {
+  font-size: 1em;
+}
+.md ul,
+.md ol {
+  padding-left: 1.4em;
+  margin: 0.4em 0;
+}
+.md ul {
+  list-style: disc;
+}
+.md ol {
+  list-style: decimal;
+}
+.md a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.md code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--surface-hover);
+  border-radius: 4px;
+  padding: 0.1em 0.3em;
+}
+.md pre {
+  position: relative;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.7em 0.9em;
+  overflow-x: auto;
+  margin: 0.6em 0;
+}
+:root[data-theme="dark"] .md pre {
+  background: rgba(0, 0, 0, 0.35);
+}
+.md pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.86em;
+}
+.md table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 0.6em 0;
+}
+.md th,
+.md td {
+  border: 1px solid var(--border);
+  padding: 0.3em 0.6em;
+  text-align: left;
+}
+.md blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 0.8em;
+  color: var(--text-muted);
+  margin: 0.5em 0;
+}
+
+/* highlight.js — minimal theme on tokens. */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal {
+  color: #8250df;
+}
+.hljs-string,
+.hljs-attr {
+  color: #0a7f4f;
+}
+.hljs-number {
+  color: #b35900;
+}
+.hljs-comment {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.hljs-title,
+.hljs-function {
+  color: #0550ae;
+}
+:root[data-theme="dark"] .hljs-keyword {
+  color: #c792ea;
+}
+:root[data-theme="dark"] .hljs-string {
+  color: #a5e075;
+}
+:root[data-theme="dark"] .hljs-title {
+  color: #82aaff;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}

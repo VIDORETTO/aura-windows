@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/RegionSelector.tsx": "63c755f6b199edf55ecd577a3d5e5790262db023a286bd998e391a8cb688f975",
+    "crates/aura-app/src/host.rs": "ef5cfb128a3dac7fcd5d44ab3714856832e0b04d0b68ecf60ce5b8dc09565417",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/src/overlay/RegionSelector.tsx",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-app region_selection_crops_the_frozen_screen; vitest RegionSelector.test.ts",
+  "result": "partial",
+  "tested_revision": "local:b3f376764925568fdd7a4fdac0737aa1ddde9184b2a4da7c1e47e8ae75c77791",
+  "ticket": "TK-002",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

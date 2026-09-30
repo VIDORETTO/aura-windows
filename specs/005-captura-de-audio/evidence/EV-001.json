@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-audio": "d12f9d7774c6e06af64fa616eb741f79b0dc414d332a7e62c2caec1b98a1c339",
+    "crates/aura-win/src/audio.rs": "9bf7ec830930afe1e65d7e7a279ea64461a39d737764eb85e139732cca883e8b",
+    "specs/005-captura-de-audio/plan.md": "9107ea9f8ffaf177e04ab63bb4676193e02a6db728859415c0df04c662964ac1",
+    "specs/005-captura-de-audio/spec.md": "7be2f30a6bfde2bfe6a1f97020c467f72571b73ca337bff2f9eb1fa4d8bfea82"
+  },
+  "input_paths": [
+    "crates/aura-audio",
+    "crates/aura-win/src/audio.rs",
+    "specs/005-captura-de-audio/spec.md",
+    "specs/005-captura-de-audio/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-audio (hub/gravação com áudio sintético); cargo check -p aura-win --target x86_64-pc-windows-msvc (WASAPI)",
+  "result": "partial",
+  "tested_revision": "local:db39c2e79eec796f27bda8749db463aaaf22984829a105f4a4417fc57ad27ce1",
+  "ticket": "TK-001",
+  "timestamp": "2026-09-30T02:11:44+00:00"
+}

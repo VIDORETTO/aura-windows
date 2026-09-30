@@ -1,0 +1,31 @@
+[package]
+name = "aura-auth"
+description = "Sign in with ChatGPT (ChatGPT plan usage): PKCE, dynamic registration, token refresh and revocation."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+aura-core.workspace = true
+aura-store.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+reqwest.workspace = true
+url.workspace = true
+uuid.workspace = true
+sha2.workspace = true
+base64.workspace = true
+getrandom.workspace = true
+axum = { workspace = true, features = ["query", "form"] }
+rusqlite.workspace = true
+jsonwebtoken = { version = "11", default-features = false, features = ["rust_crypto", "use_pem"] }
+
+[dev-dependencies]
+base64.workspace = true
+sha2.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["test-util"] }

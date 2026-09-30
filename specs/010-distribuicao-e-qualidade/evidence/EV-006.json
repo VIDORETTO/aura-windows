@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "apps/desktop/src/lib/updates.ts": "80096fb087d296e6e5a8b30e614e6879980c42447d75f68020758af9151746f2",
+    "specs/010-distribuicao-e-qualidade/plan.md": "10f99e5c9f82b954e0dd0bdecc7bf4c0345f33eefe7f8b8917c3ec54720cb2ac",
+    "specs/010-distribuicao-e-qualidade/spec.md": "ee868473e39433418ef757df328ca52d86f7eb3339e1ef5eabdd4ca72fcd55dd"
+  },
+  "input_paths": [
+    "apps/desktop/src/lib/updates.ts",
+    "specs/010-distribuicao-e-qualidade/spec.md",
+    "specs/010-distribuicao-e-qualidade/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "vite build + tsc (lib/updates.ts); tauri.conf updater (não executado)",
+  "result": "partial",
+  "tested_revision": "local:da0546cf01507a81e5972ab0d94c94a7aa18c22ed8d046d16e281174b08dda47",
+  "ticket": "TK-002",
+  "timestamp": "2026-09-30T03:13:14+00:00"
+}

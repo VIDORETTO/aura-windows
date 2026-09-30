@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "6a852b59bf7dceccb396035b13b5de6d23e96bf4bf11fa8ccbf737214f90d2cc"
+  },
+  "blockers": [],
+  "effort_id": "003-byok-gateway",
+  "inputs": {
+    "contract": {
+      "fingerprint": "ecc503597872d2ad7abf46f42f9e360fc42672ec3d21500cf89a6d97d041899c",
+      "path": "specs/003-byok-gateway/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "66980f75e12438b4e23bbfb7889563161d5ba442c6ee16b611bf9ce2ea603034",
+      "path": "specs/003-byok-gateway/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Validar com provedores reais e gravar fixtures SSE reais (docs/HANDOFF.md §4.3)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:33+00:00"
+}

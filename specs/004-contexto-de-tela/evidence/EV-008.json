@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-010",
+    "AC-011"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "crates/aura-app/tests/real_app_server.rs": "acd045a876cf44a5371545bfb14f937f3c65350e37e65185b70d53c98e38589b",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "real_app_server: Codex real lista e chama aura.active_window_info via /mcp com token",
+  "result": "partial",
+  "tested_revision": "local:80eba4a142d1b258c167e5fea765d588112b1162780fde4f9dd855402f1f71af",
+  "ticket": "TK-004",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

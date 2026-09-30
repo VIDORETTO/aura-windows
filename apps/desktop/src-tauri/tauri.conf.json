@@ -1,0 +1,92 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Aura",
+  "version": "0.1.0",
+  "identifier": "app.aura.desktop",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "label": "overlay",
+        "title": "Aura",
+        "url": "index.html#/overlay",
+        "width": 640,
+        "height": 64,
+        "minWidth": 480,
+        "minHeight": 64,
+        "resizable": true,
+        "decorations": false,
+        "transparent": true,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "visible": false,
+        "focus": false,
+        "center": true,
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src ipc: http://ipc.localhost; frame-src 'none'; object-src 'none'",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$LOCALDATA/Aura/cache/**",
+          "$LOCALDATA/Aura/workspaces/**"
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis",
+      "msi"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "publisher": "Aura contributors",
+    "shortDescription": "Assistente de IA flutuante para Windows",
+    "longDescription": "Aura \u00e9 um assistente de IA sempre \u00e0 m\u00e3o: atalho global, v\u00ea a tela quando voc\u00ea permite, ouve, l\u00ea anexos e age com ferramentas.",
+    "category": "Productivity",
+    "copyright": "MIT OR Apache-2.0",
+    "externalBin": [
+      "binaries/aura-worker"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      },
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": [
+          "PortugueseBR",
+          "English"
+        ],
+        "displayLanguageSelector": false
+      }
+    },
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "REPLACE_WITH_THE_PUBLIC_KEY_FROM_`pnpm tauri signer generate`",
+      "endpoints": [
+        "https://github.com/VIDORETTO/aura-windows/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

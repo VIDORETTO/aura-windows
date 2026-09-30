@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "b2f4f538ba1ed1e5160b596d971412a87780c61d6db65327f1bb3e633ca22ee1"
+  },
+  "blockers": [],
+  "effort_id": "004-contexto-de-tela",
+  "inputs": {
+    "contract": {
+      "fingerprint": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e",
+      "path": "specs/004-contexto-de-tela/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+      "path": "specs/004-contexto-de-tela/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Validar captura GDI/exclusão no Windows; ligar gravador em segundo plano e RecentMedia (TK-005..007); seleção de região (TK-002)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:33+00:00"
+}

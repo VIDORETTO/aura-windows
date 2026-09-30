@@ -1,0 +1,129 @@
+# Aura speech model catalog (006 TK-001).
+# Files are downloaded from their original publishers; `sha256` values come
+# from the Hugging Face LFS metadata (`/api/models/<repo>/tree/main`) or were
+# computed from the file (small, non-LFS files). Verified 2026-09-29.
+# Only entries whose on-disk layout the worker engine supports are listed.
+
+[[model]]
+id = "parakeet-tdt-0.6b-v3"
+name = "Parakeet V3"
+family = "parakeet"
+engine = "onnx-parakeet"
+description = "Rápido em CPU, 25 idiomas europeus incluindo português."
+languages = ["bg","hr","cs","da","nl","en","et","fi","fr","de","el","hu","it","lv","lt","mt","pl","pt","ro","sk","sl","es","sv","ru","uk"]
+speed = 0.85
+accuracy = 0.85
+streaming = false
+min_ram_mb = 2048
+gpu_recommended = false
+license = "CC-BY-4.0"
+source_url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx"
+files = [
+  { path = "encoder-model.int8.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/resolve/main/encoder-model.int8.onnx", size = 652183999, sha256 = "6139d2fa7e1b086097b277c7149725edbab89cc7c7ae64b23c741be4055aff09" },
+  { path = "decoder_joint-model.int8.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/resolve/main/decoder_joint-model.int8.onnx", size = 18202004, sha256 = "eea7483ee3d1a30375daedc8ed83e3960c91b098812127a0d99d1c8977667a70" },
+  { path = "nemo128.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/resolve/main/nemo128.onnx", size = 139764, sha256 = "a9fde1486ebfcc08f328d75ad4610c67835fea58c73ba57e3209a6f6cf019e9f" },
+  { path = "vocab.txt", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/resolve/main/vocab.txt", size = 93939, sha256 = "d58544679ea4bc6ac563d1f545eb7d474bd6cfa467f0a6e2c1dc1c7d37e3c35d" },
+  { path = "config.json", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v3-onnx/resolve/main/config.json", size = 97, sha256 = "666903c76b9798caf2c210afd4f6cd60b08a8dbf9800ec8d7a3bc0d2148ac466" },
+]
+
+[[model]]
+id = "parakeet-tdt-0.6b-v2"
+name = "Parakeet V2 (inglês)"
+family = "parakeet"
+engine = "onnx-parakeet"
+description = "Muito preciso para inglês, rápido em CPU."
+languages = ["en"]
+speed = 0.85
+accuracy = 0.88
+streaming = false
+min_ram_mb = 2048
+gpu_recommended = false
+license = "CC-BY-4.0"
+source_url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx"
+files = [
+  { path = "encoder-model.int8.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx/resolve/main/encoder-model.int8.onnx", size = 652184014, sha256 = "3e0581fda6ab843888b51e56d7ee78b6d5bc3237ec113af1f732d1d5286aa155" },
+  { path = "decoder_joint-model.int8.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx/resolve/main/decoder_joint-model.int8.onnx", size = 8998286, sha256 = "a449f49acd68979d418651dd2dcb737cc0f1bf0225e009e29ee326354edbf7d3" },
+  { path = "nemo128.onnx", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx/resolve/main/nemo128.onnx", size = 139764, sha256 = "a9fde1486ebfcc08f328d75ad4610c67835fea58c73ba57e3209a6f6cf019e9f" },
+  { path = "vocab.txt", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx/resolve/main/vocab.txt", size = 9384, sha256 = "ec182b70dd42113aff6c5372c75cac58c952443eb22322f57bbd7f53977d497d" },
+  { path = "config.json", url = "https://huggingface.co/istupakov/parakeet-tdt-0.6b-v2-onnx/resolve/main/config.json", size = 97, sha256 = "666903c76b9798caf2c210afd4f6cd60b08a8dbf9800ec8d7a3bc0d2148ac466" },
+]
+
+[[model]]
+id = "whisper-base"
+name = "Whisper Base"
+family = "whisper"
+engine = "ggml-whisper"
+description = "Leve e rápido; 99 idiomas; precisão modesta."
+languages = ["*"]
+speed = 0.95
+accuracy = 0.5
+streaming = false
+min_ram_mb = 1024
+gpu_recommended = false
+license = "MIT"
+source_url = "https://huggingface.co/ggerganov/whisper.cpp"
+files = [{ path = "ggml-base.bin", url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin", size = 147951465, sha256 = "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe" }]
+
+[[model]]
+id = "whisper-small"
+name = "Whisper Small"
+family = "whisper"
+engine = "ggml-whisper"
+description = "Equilíbrio para máquinas modestas; 99 idiomas."
+languages = ["*"]
+speed = 0.8
+accuracy = 0.6
+streaming = false
+min_ram_mb = 2048
+gpu_recommended = false
+license = "MIT"
+source_url = "https://huggingface.co/ggerganov/whisper.cpp"
+files = [{ path = "ggml-small.bin", url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.bin", size = 487601967, sha256 = "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b" }]
+
+[[model]]
+id = "whisper-medium-q5"
+name = "Whisper Medium (q5)"
+family = "whisper"
+engine = "ggml-whisper"
+description = "Boa precisão; mais lento em CPU."
+languages = ["*"]
+speed = 0.55
+accuracy = 0.75
+streaming = false
+min_ram_mb = 3072
+gpu_recommended = true
+license = "MIT"
+source_url = "https://huggingface.co/ggerganov/whisper.cpp"
+files = [{ path = "ggml-medium-q5_0.bin", url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-medium-q5_0.bin", size = 539212467, sha256 = "19fea4b380c3a618ec4723c3eef2eb785ffba0d0538cf43f8f235e7b3b34220f" }]
+
+[[model]]
+id = "whisper-turbo-q5"
+name = "Whisper Turbo (q5)"
+family = "whisper"
+engine = "ggml-whisper"
+description = "Alta precisão com GPU; versão quantizada menor."
+languages = ["*"]
+speed = 0.5
+accuracy = 0.8
+streaming = false
+min_ram_mb = 3072
+gpu_recommended = true
+license = "MIT"
+source_url = "https://huggingface.co/ggerganov/whisper.cpp"
+files = [{ path = "ggml-large-v3-turbo-q5_0.bin", url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo-q5_0.bin", size = 574041195, sha256 = "394221709cd5ad1f40c46e6031ca61bce88931e6e088c188294c6d5a55ffa7e2" }]
+
+[[model]]
+id = "whisper-turbo"
+name = "Whisper Turbo"
+family = "whisper"
+engine = "ggml-whisper"
+description = "Máxima precisão com GPU dedicada; 99 idiomas."
+languages = ["*"]
+speed = 0.4
+accuracy = 0.82
+streaming = false
+min_ram_mb = 4096
+gpu_recommended = true
+license = "MIT"
+source_url = "https://huggingface.co/ggerganov/whisper.cpp"
+files = [{ path = "ggml-large-v3-turbo.bin", url = "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin", size = 1624555275, sha256 = "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69" }]

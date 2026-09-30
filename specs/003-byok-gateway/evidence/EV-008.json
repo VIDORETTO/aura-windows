@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "crates/aura-gateway/src/translate/emitter.rs": "e2f01f8bf7bd20a908aef9c22ccf96e1d698a9160102b8b8fe30be1fb168b819",
+    "crates/aura-gateway/src/translate/request.rs": "3c2d39ef0500e6460130e4f119c5519f68780de25a20da1551d8d041dcaa3e29",
+    "specs/003-byok-gateway/plan.md": "66980f75e12438b4e23bbfb7889563161d5ba442c6ee16b611bf9ce2ea603034",
+    "specs/003-byok-gateway/spec.md": "ecc503597872d2ad7abf46f42f9e360fc42672ec3d21500cf89a6d97d041899c"
+  },
+  "input_paths": [
+    "crates/aura-gateway/src/translate/request.rs",
+    "crates/aura-gateway/src/translate/emitter.rs",
+    "specs/003-byok-gateway/spec.md",
+    "specs/003-byok-gateway/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "real_app_server: tool call Chat Completions → namespace mcp__aura → Codex executa; cargo test -p aura-gateway (namespace_tests, emitter)",
+  "result": "partial",
+  "tested_revision": "local:be679aed009d4f5a86e421ec10da4efd8ea8a3044b2961bb5ac37960a12efa12",
+  "ticket": "TK-004",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

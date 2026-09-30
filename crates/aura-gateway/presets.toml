@@ -1,0 +1,121 @@
+# BYOK presets (003 TK-001). `wire`: responses | chat | anthropic.
+# `auth`: bearer | api-key | x-api-key | none.
+# Endpoints follow each provider's public documentation; re-check when adding.
+
+[[preset]]
+id = "openai"
+name = "OpenAI API"
+wire = "responses"
+base_url = "https://api.openai.com/v1"
+auth = "bearer"
+credential_required = true
+transcription_models = ["gpt-4o-transcribe", "whisper-1"]
+tts = true
+
+[[preset]]
+id = "azure-openai"
+name = "Azure OpenAI"
+wire = "responses"
+base_url = "https://SEU-RECURSO.openai.azure.com/openai/v1"
+auth = "api-key"
+credential_required = true
+
+[[preset]]
+id = "openrouter"
+name = "OpenRouter"
+wire = "responses"
+base_url = "https://openrouter.ai/api/v1"
+auth = "bearer"
+credential_required = true
+headers = { "HTTP-Referer" = "https://github.com/aura-desktop/aura", "X-Title" = "Aura" }
+
+[[preset]]
+id = "anthropic"
+name = "Anthropic"
+wire = "anthropic"
+base_url = "https://api.anthropic.com/v1"
+auth = "x-api-key"
+credential_required = true
+
+[[preset]]
+id = "gemini"
+name = "Google Gemini"
+wire = "chat"
+base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+auth = "bearer"
+credential_required = true
+quirks = { reasoning_effort = true }
+
+[[preset]]
+id = "groq"
+name = "Groq"
+wire = "chat"
+base_url = "https://api.groq.com/openai/v1"
+auth = "bearer"
+credential_required = true
+transcription_models = ["whisper-large-v3-turbo", "whisper-large-v3"]
+
+[[preset]]
+id = "deepseek"
+name = "DeepSeek"
+wire = "chat"
+base_url = "https://api.deepseek.com/v1"
+auth = "bearer"
+credential_required = true
+quirks = { no_parallel_tool_calls = true }
+
+[[preset]]
+id = "mistral"
+name = "Mistral"
+wire = "chat"
+base_url = "https://api.mistral.ai/v1"
+auth = "bearer"
+credential_required = true
+
+[[preset]]
+id = "xai"
+name = "xAI"
+wire = "chat"
+base_url = "https://api.x.ai/v1"
+auth = "bearer"
+credential_required = true
+
+[[preset]]
+id = "together"
+name = "Together AI"
+wire = "chat"
+base_url = "https://api.together.xyz/v1"
+auth = "bearer"
+credential_required = true
+
+[[preset]]
+id = "ollama"
+name = "Ollama (local)"
+wire = "responses"
+base_url = "http://127.0.0.1:11434/v1"
+auth = "none"
+credential_required = false
+
+[[preset]]
+id = "lmstudio"
+name = "LM Studio (local)"
+wire = "responses"
+base_url = "http://127.0.0.1:1234/v1"
+auth = "none"
+credential_required = false
+
+[[preset]]
+id = "vllm"
+name = "vLLM"
+wire = "responses"
+base_url = "http://127.0.0.1:8000/v1"
+auth = "bearer"
+credential_required = false
+
+[[preset]]
+id = "custom"
+name = "Personalizado"
+wire = "chat"
+base_url = ""
+auth = "bearer"
+credential_required = false

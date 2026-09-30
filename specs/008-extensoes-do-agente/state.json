@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "c29c8a51cb9974679219f32299d1c6c7ed8161f3b8dd8bf42a890da0be00efde"
+  },
+  "blockers": [],
+  "effort_id": "008-extensoes-do-agente",
+  "inputs": {
+    "contract": {
+      "fingerprint": "5b434d1c71fff3d53d54dc838d454acdcb1a32d2e7a4bb2495d3bba4a3cbd520",
+      "path": "specs/008-extensoes-do-agente/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "4d03286a91b648ee88c68f9a1a8e1071c7b63bf8dd52499ae29bae5dae97895e",
+      "path": "specs/008-extensoes-do-agente/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Status/OAuth de servidores MCP (TK-002); painéis Alterações/Arquivos (TK-005); Memórias (TK-006)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:34+00:00"
+}

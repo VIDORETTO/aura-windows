@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "f7470b72f910c5172b8cd2a27ee9d4b9b3e10911fa0a34d936c2ab5a5d7c38c0"
+  },
+  "blockers": [],
+  "effort_id": "010-distribuicao-e-qualidade",
+  "inputs": {
+    "contract": {
+      "fingerprint": "ee868473e39433418ef757df328ca52d86f7eb3339e1ef5eabdd4ca72fcd55dd",
+      "path": "specs/010-distribuicao-e-qualidade/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "10f99e5c9f82b954e0dd0bdecc7bf4c0345f33eefe7f8b8917c3ec54720cb2ac",
+      "path": "specs/010-distribuicao-e-qualidade/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Instalador NSIS assinado, updater, exportação de diagnóstico, auditoria de acessibilidade; aura-bench na máquina de referência",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:34+00:00"
+}

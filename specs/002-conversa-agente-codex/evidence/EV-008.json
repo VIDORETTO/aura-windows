@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-022",
+    "AC-023"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay": "b5f0715771c27ba7c0e7b6242bd9aa19006a78b094d983fa38f743e60ee7ea41",
+    "crates/aura-app": "c88aabad42e38a3e05b1e3d4771a59a215ea0bc4074ee1d9314d7e08bf04e444",
+    "crates/aura-auth": "1e0d3a0af65970e50f52f084d5f328306e208495fb9e1ac4f062d047b9d7eba8",
+    "crates/aura-codex": "bf76d77693b9d095eb19b7cc2d57e3555f42e6266195dfb0653133dec069a1c1",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "crates/aura-codex",
+    "crates/aura-auth",
+    "crates/aura-app",
+    "apps/desktop/src/overlay",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-codex -p aura-auth -p aura-app (app-server falso, IdP simulado); pnpm -C apps/desktop test (Overlay)",
+  "result": "partial",
+  "tested_revision": "local:189bfcae0e22d39cdf44715bc7626b800ca8c93810bec988e9cee1f410d882a1",
+  "ticket": "TK-008",
+  "timestamp": "2026-09-30T02:11:37+00:00"
+}

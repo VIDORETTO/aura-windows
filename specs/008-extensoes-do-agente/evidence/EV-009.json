@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-015",
+    "AC-016"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-core/src/settings.rs": "10e74928862ebf232557f89defbaf47a92a77c57666c138696cf2a577fd699c9",
+    "specs/008-extensoes-do-agente/plan.md": "4d03286a91b648ee88c68f9a1a8e1071c7b63bf8dd52499ae29bae5dae97895e",
+    "specs/008-extensoes-do-agente/spec.md": "5b434d1c71fff3d53d54dc838d454acdcb1a32d2e7a4bb2495d3bba4a3cbd520"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "specs/008-extensoes-do-agente/spec.md",
+    "specs/008-extensoes-do-agente/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-core; vitest (toggle Memórias)",
+  "result": "partial",
+  "tested_revision": "local:1baebc62e69f2f6ec4edf130e54358046cda90b5a503d133c15e288dc73589e8",
+  "ticket": "TK-006",
+  "timestamp": "2026-09-30T03:13:13+00:00"
+}

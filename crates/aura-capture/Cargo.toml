@@ -1,0 +1,29 @@
+[package]
+name = "aura-capture"
+description = "Screen capture pipeline: frames, privacy redaction, segments, retention and clips (OS adapters live in aura-win)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["store"]
+# Encrypted segment storage (SQLite index + vault). Off for `aura-win`.
+store = ["dep:aura-store", "dep:rusqlite"]
+
+[dependencies]
+aura-core.workspace = true
+aura-policy.workspace = true
+aura-store = { workspace = true, optional = true }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+rusqlite = { workspace = true, optional = true }
+png = "0.18"
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { workspace = true, features = ["test-util"] }

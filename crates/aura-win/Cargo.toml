@@ -1,0 +1,57 @@
+[package]
+name = "aura-win"
+description = "Windows adapters: capture, window inventory, UIA/OCR, WASAPI audio, Credential Manager, hotkeys, input, Media Foundation encoder."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# Only pure-Rust dependencies here so `cargo check --target x86_64-pc-windows-msvc
+# -p aura-win` works from Linux CI (no C toolchain needed).
+[dependencies]
+aura-core.workspace = true
+aura-policy.workspace = true
+aura-capture.workspace = true
+aura-audio.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+serde.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+cpal = "0.16"
+windows-future = "0.3"
+windows = { version = "0.62", features = [
+  "Foundation",
+  "Globalization",
+  "Graphics_Imaging",
+  "Media_Ocr",
+  "Media_SpeechSynthesis",
+  "Media_Core",
+  "Security_Cryptography",
+  "Storage_Streams",
+  "Win32_Foundation",
+  "Win32_Graphics_Dwm",
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
+  "Win32_Graphics_Gdi",
+  "Win32_Media_MediaFoundation",
+  "Win32_Security",
+  "Win32_Security_Credentials",
+  "Win32_Storage_FileSystem",
+  "Win32_Storage_Xps",
+  "Win32_System_Com",
+  "Win32_System_Com_StructuredStorage",
+  "Win32_System_DataExchange",
+  "Win32_System_JobObjects",
+  "Win32_System_LibraryLoader",
+  "Win32_System_Memory",
+  "Win32_System_Ole",
+  "Win32_System_SystemInformation",
+  "Win32_System_Threading",
+  "Win32_System_Variant",
+  "Win32_UI_Accessibility",
+  "Win32_UI_HiDpi",
+  "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+] }

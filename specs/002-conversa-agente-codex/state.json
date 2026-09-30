@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "46e5f9af939345e023fcc33aef9a28b5ac409cbc6d5ac91db40bb582dbb9703f"
+  },
+  "blockers": [],
+  "effort_id": "002-conversa-agente-codex",
+  "inputs": {
+    "contract": {
+      "fingerprint": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87",
+      "path": "specs/002-conversa-agente-codex/spec.md",
+      "revision": 2
+    },
+    "plan": {
+      "fingerprint": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+      "path": "specs/002-conversa-agente-codex/plan.md",
+      "revision": 2
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Spike com o app-server real (TK-001); UI de perguntas do agente (TK-007), uso de contexto (TK-008), pastas concedidas (TK-009)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:33+00:00"
+}

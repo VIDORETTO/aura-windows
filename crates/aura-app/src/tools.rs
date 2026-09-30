@@ -1,0 +1,433 @@
+//! The host side of Aura's MCP tools (ADR 0006): every call goes through the
+//! privacy policy (allow / ask the user / deny), is logged, and returns a
+//! structured error the agent can explain (OT-004).
+
+use crate::attachments::{AttachmentService, blocks_to_text};
+use crate::consent::{CONSENT_TIMEOUT, ConsentAnswer, ConsentBroker};
+use crate::events::{ConsentRequest, HostEvent};
+use crate::platform::Platform;
+use crate::privacy::PrivacyRepo;
+use aura_capture::source::{CaptureError, Target as CapTarget, read_screen_text};
+use aura_capture::{CaptureOutcome, capture_with_policy};
+use aura_mcp::tools::{
+    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT,
+};
+use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
+use aura_policy::{
+    AccessRequest, Decision, DenyReason, Grants, Policy, Requester, Source, Target, decide,
+};
+use serde_json::{Value, json};
+use std::sync::{Arc, RwLock};
+use tokio::sync::broadcast;
+
+/// Longest image side sent to the model (keeps a screenshot ≈ 1–2k tokens).
+pub const MAX_IMAGE_SIDE: u32 = 1568;
+
+/// Labelled PNG frames (`t−01:20`, bytes), oldest first.
+pub type LabelledFrames = Vec<(String, Vec<u8>)>;
+
+/// Recent screen/audio buffers. Decoding segments is OS-specific (Media
+/// Foundation for H.264); the default reports the feature as unavailable.
+pub trait RecentMedia: Send + Sync {
+    fn screen_frames<'a>(
+        &'a self,
+        minutes: f64,
+        max_frames: usize,
+    ) -> BoxFut<'a, Result<LabelledFrames, String>>;
+    fn audio_transcript<'a>(
+        &'a self,
+        minutes: f64,
+        source: &'a str,
+    ) -> BoxFut<'a, Result<String, String>>;
+}
+
+pub struct NoRecentMedia;
+
+impl RecentMedia for NoRecentMedia {
+    fn screen_frames<'a>(
+        &'a self,
+        _m: f64,
+        _n: usize,
+    ) -> BoxFut<'a, Result<LabelledFrames, String>> {
+        Box::pin(async {
+            Err("o buffer de tela recente ainda não está disponível nesta versão".into())
+        })
+    }
+    fn audio_transcript<'a>(&'a self, _m: f64, _s: &'a str) -> BoxFut<'a, Result<String, String>> {
+        Box::pin(async {
+            Err("o buffer de áudio recente ainda não está disponível nesta versão".into())
+        })
+    }
+}
+
+pub struct HostTools {
+    pub platform: Platform,
+    pub policy: Arc<RwLock<Policy>>,
+    pub grants: Arc<RwLock<Grants>>,
+    pub privacy: PrivacyRepo,
+    pub consent: Arc<ConsentBroker>,
+    pub events: broadcast::Sender<HostEvent>,
+    pub attachments: Arc<AttachmentService>,
+    pub recent: Arc<dyn RecentMedia>,
+    pub ocr_language: String,
+}
+
+fn deny_output(reason: &DenyReason) -> ToolOutput {
+    let msg = match reason {
+        DenyReason::Paused => "A privacidade está pausada pelo usuário.".to_string(),
+        DenyReason::SourceOff => {
+            "O usuário desligou esta fonte nas configurações de privacidade.".to_string()
+        }
+        DenyReason::Excluded { app } => {
+            format!("A janela ativa ({app}) está excluída pelo usuário.")
+        }
+        DenyReason::AgentNever => "O usuário não permite que o agente use esta fonte.".to_string(),
+        DenyReason::NotRecording => "Esta fonte não está gravando em segundo plano.".to_string(),
+    };
+    ToolOutput::error(reason.code(), &msg)
+}
+
+fn source_key(s: Source) -> &'static str {
+    match s {
+        Source::Screen | Source::Selection => "screen",
+        Source::Mic => "mic",
+        Source::SystemAudio => "systemAudio",
+    }
+}
+
+enum Gate {
+    Go(Grants),
+    Stop(ToolOutput),
+}
+
+impl HostTools {
+    fn snapshot(&self) -> (Policy, Grants) {
+        (
+            self.policy.read().unwrap().clone(),
+            self.grants.read().unwrap().clone(),
+        )
+    }
+
+    /// Decides, asks the user when needed, logs. On `Go` the returned grants
+    /// include a one-off grant so `capture_with_policy` allows the capture.
+    async fn gate(
+        &self,
+        tool: &str,
+        ctx: &CallContext,
+        source: Source,
+        target: Target,
+        reason: &str,
+    ) -> Gate {
+        let (policy, grants) = self.snapshot();
+        let visible = match &target {
+            Target::Monitor { area } => self.platform.inventory.visible_windows(*area),
+            Target::Window { window } => vec![window.clone()],
+            Target::Range => vec![],
+        };
+        let app = match &target {
+            Target::Window { window } => Some(window.process.clone()),
+            _ => self.platform.foreground.current().map(|a| a.process_name),
+        };
+        let req = AccessRequest {
+            source,
+            requester: Requester::Agent {
+                tool: tool.into(),
+                conversation: ctx.conversation.clone(),
+            },
+            target,
+            visible_windows: visible,
+            background: false,
+        };
+        let decision = decide(&policy, &grants, &req);
+        let _ = self.privacy.log(&req, &decision);
+        match decision {
+            Decision::Deny { reason } => Gate::Stop(deny_output(&reason)),
+            Decision::Allow | Decision::AllowRedacted { .. } => Gate::Go(grants),
+            Decision::Ask => {
+                let id = uuid::Uuid::new_v4().to_string();
+                let rx = self.consent.register(&id);
+                let _ = self.events.send(HostEvent::Consent(ConsentRequest {
+                    id: id.clone(),
+                    conversation: ctx.conversation.clone(),
+                    tool: tool.into(),
+                    source: source_key(source).into(),
+                    reason: reason.into(),
+                    app,
+                }));
+                let answer = tokio::time::timeout(CONSENT_TIMEOUT, rx).await;
+                self.consent.forget(&id);
+                let _ = self.events.send(HostEvent::ConsentResolved { id });
+                match answer {
+                    Ok(Ok(ConsentAnswer::Once)) => {
+                        let mut g = grants;
+                        g.grant(&ctx.conversation, source);
+                        Gate::Go(g)
+                    }
+                    Ok(Ok(ConsentAnswer::Conversation)) => {
+                        let _ = self.privacy.grant(&ctx.conversation, source);
+                        self.grants
+                            .write()
+                            .unwrap()
+                            .grant(&ctx.conversation, source);
+                        Gate::Go(self.grants.read().unwrap().clone())
+                    }
+                    Ok(Ok(ConsentAnswer::Deny)) | Ok(Err(_)) => {
+                        Gate::Stop(ToolOutput::error("denied", "O usuário negou o acesso."))
+                    }
+                    Err(_) => Gate::Stop(ToolOutput::error(
+                        "timeout",
+                        "O usuário não respondeu ao pedido de permissão.",
+                    )),
+                }
+            }
+        }
+    }
+
+    async fn screen_capture(&self, args: Value, ctx: CallContext) -> ToolOutput {
+        let reason = args["reason"].as_str().unwrap_or("").to_string();
+        let want_window = args["target"].as_str() == Some("window");
+        let Some(app) = self.platform.foreground.current() else {
+            return ToolOutput::error("unavailable", "Não há janela ativa para capturar.");
+        };
+        let (cap_target, pol_target) = if want_window {
+            let Some(info) = self.platform.inventory.window(app.window) else {
+                return ToolOutput::error("unavailable", "A janela ativa não existe mais.");
+            };
+            (
+                CapTarget::Window { window: app.window },
+                Target::Window { window: info },
+            )
+        } else {
+            let Some(area) = self.platform.foreground.monitor_area(&app.monitor_id) else {
+                return ToolOutput::error("unavailable", "Monitor não encontrado.");
+            };
+            (
+                CapTarget::Monitor {
+                    id: app.monitor_id.clone(),
+                    area,
+                },
+                Target::Monitor { area },
+            )
+        };
+        let grants = match self
+            .gate(SCREEN_CAPTURE, &ctx, Source::Screen, pol_target, &reason)
+            .await
+        {
+            Gate::Go(g) => g,
+            Gate::Stop(out) => return out,
+        };
+        let policy = self.policy.read().unwrap().clone();
+        let requester = Requester::Agent {
+            tool: SCREEN_CAPTURE.into(),
+            conversation: ctx.conversation.clone(),
+        };
+        let platform = self.platform.clone();
+        let res = tokio::task::spawn_blocking(move || {
+            capture_with_policy(
+                &policy,
+                &grants,
+                requester,
+                &cap_target,
+                platform.frames.as_ref(),
+                platform.inventory.as_ref(),
+            )
+        })
+        .await;
+        match res {
+            Ok(Ok(CaptureOutcome::Captured { frame, redacted })) => {
+                let frame = frame.downscale(MAX_IMAGE_SIDE);
+                let png = frame.to_png();
+                let mut note = format!(
+                    "Captura de {} ({}×{}).",
+                    app.process_name, frame.width, frame.height
+                );
+                if redacted {
+                    note.push_str(" Algumas áreas foram cobertas por privacidade.");
+                }
+                ToolOutput {
+                    content: vec![
+                        Content::Text(note),
+                        Content::Image {
+                            png_or_jpeg: png,
+                            mime: "image/png".into(),
+                        },
+                    ],
+                    is_error: false,
+                }
+            }
+            Ok(Ok(CaptureOutcome::Denied { reason })) => deny_output(&reason),
+            Ok(Ok(CaptureOutcome::NeedsPermission)) => {
+                ToolOutput::error("denied", "Permissão necessária.")
+            }
+            Ok(Err(CaptureError::WindowMinimized)) => {
+                ToolOutput::error("unavailable", "A janela está minimizada.")
+            }
+            Ok(Err(e)) => ToolOutput::error("unavailable", &e.to_string()),
+            Err(e) => ToolOutput::error("unavailable", &e.to_string()),
+        }
+    }
+
+    fn active_window_info(&self) -> ToolOutput {
+        let policy = self.policy.read().unwrap().clone();
+        if policy.paused {
+            return deny_output(&DenyReason::Paused);
+        }
+        let Some(app) = self.platform.foreground.current() else {
+            return ToolOutput::error("unavailable", "Não há janela ativa.");
+        };
+        if let Some(info) = self.platform.inventory.window(app.window)
+            && policy
+                .exclusions
+                .iter()
+                .any(|r| r.enabled && r.matches(&info))
+        {
+            return deny_output(&DenyReason::Excluded { app: info.process });
+        }
+        let url = self.platform.foreground.url_of(app.window);
+        ToolOutput::text(
+            json!({"app": app.process_name, "title": app.title, "url": url}).to_string(),
+        )
+    }
+
+    async fn screen_text(&self, args: Value, ctx: CallContext) -> ToolOutput {
+        let mode = args["source"].as_str().unwrap_or("auto").to_string();
+        let max = args["max_chars"]
+            .as_u64()
+            .unwrap_or(8000)
+            .clamp(100, 20_000) as usize;
+        let Some(app) = self.platform.foreground.current() else {
+            return ToolOutput::error("unavailable", "Não há janela ativa.");
+        };
+        let Some(info) = self.platform.inventory.window(app.window) else {
+            return ToolOutput::error("unavailable", "A janela ativa não existe mais.");
+        };
+        if let Gate::Stop(out) = self
+            .gate(
+                SCREEN_TEXT,
+                &ctx,
+                Source::Screen,
+                Target::Window { window: info },
+                "ler o texto da janela",
+            )
+            .await
+        {
+            return out;
+        }
+        let platform = self.platform.clone();
+        let lang = self.ocr_language.clone();
+        let res = tokio::task::spawn_blocking(move || {
+            read_screen_text(
+                platform.screen_text.as_ref(),
+                platform.frames.as_ref(),
+                app.window,
+                &mode,
+                max,
+                &lang,
+            )
+        })
+        .await;
+        match res {
+            Ok(Ok(r)) if r.text.trim().is_empty() => {
+                ToolOutput::error("unavailable", "Nenhum texto encontrado na janela.")
+            }
+            Ok(Ok(r)) => ToolOutput::text(format!("[{}] {}\n\n{}", r.origin, app.title, r.text)),
+            Ok(Err(e)) => ToolOutput::error("unavailable", &e.to_string()),
+            Err(e) => ToolOutput::error("unavailable", &e.to_string()),
+        }
+    }
+
+    async fn screen_recent(&self, args: Value, ctx: CallContext) -> ToolOutput {
+        let minutes = args["minutes"].as_f64().unwrap_or(1.0).clamp(0.25, 30.0);
+        let max = args["max_frames"].as_u64().unwrap_or(6).clamp(1, 8) as usize;
+        let reason = args["reason"].as_str().unwrap_or("").to_string();
+        if let Gate::Stop(out) = self
+            .gate(SCREEN_RECENT, &ctx, Source::Screen, Target::Range, &reason)
+            .await
+        {
+            return out;
+        }
+        match self.recent.screen_frames(minutes, max).await {
+            Ok(frames) if frames.is_empty() => {
+                ToolOutput::error("unavailable", "Nada gravado nesse período.")
+            }
+            Ok(frames) => {
+                let mut content = Vec::new();
+                for (label, png) in frames {
+                    content.push(Content::Text(label));
+                    content.push(Content::Image {
+                        png_or_jpeg: png,
+                        mime: "image/png".into(),
+                    });
+                }
+                ToolOutput {
+                    content,
+                    is_error: false,
+                }
+            }
+            Err(e) => ToolOutput::error("unavailable", &e),
+        }
+    }
+
+    async fn audio_recent(&self, args: Value, ctx: CallContext) -> ToolOutput {
+        let minutes = args["minutes"].as_f64().unwrap_or(1.0).clamp(0.25, 30.0);
+        let which = args["source"].as_str().unwrap_or("both").to_string();
+        let reason = args["reason"].as_str().unwrap_or("").to_string();
+        let sources: &[Source] = match which.as_str() {
+            "mic" => &[Source::Mic],
+            "system" => &[Source::SystemAudio],
+            _ => &[Source::Mic, Source::SystemAudio],
+        };
+        for s in sources {
+            if let Gate::Stop(out) = self
+                .gate(AUDIO_RECENT, &ctx, *s, Target::Range, &reason)
+                .await
+            {
+                return out;
+            }
+        }
+        match self.recent.audio_transcript(minutes, &which).await {
+            Ok(t) if t.trim().is_empty() => {
+                ToolOutput::error("unavailable", "Nenhuma fala nesse período.")
+            }
+            Ok(t) => ToolOutput::text(t),
+            Err(e) => ToolOutput::error("unavailable", &e),
+        }
+    }
+
+    async fn attachment_read(&self, args: Value, ctx: CallContext) -> ToolOutput {
+        let Some(id) = args["attachment_id"].as_str().map(str::to_string) else {
+            return ToolOutput::error("invalid", "attachment_id é obrigatório");
+        };
+        let selector: aura_ingest::Selector =
+            serde_json::from_value(args["selector"].clone()).unwrap_or_default();
+        let atts = self.attachments.clone();
+        let conv = ctx.conversation.clone();
+        match tokio::task::spawn_blocking(move || atts.read(&conv, &id, &selector)).await {
+            Ok(Ok(blocks)) if blocks.is_empty() => {
+                ToolOutput::error("unavailable", "A seleção não tem conteúdo.")
+            }
+            Ok(Ok(blocks)) => ToolOutput::text(blocks_to_text(&blocks)),
+            Ok(Err(aura_ingest::IngestError::NotFound(m))) => ToolOutput::error("not_found", &m),
+            Ok(Err(e)) => ToolOutput::error("unavailable", &e.to_string()),
+            Err(e) => ToolOutput::error("unavailable", &e.to_string()),
+        }
+    }
+}
+
+impl ToolHandler for HostTools {
+    fn call<'a>(&'a self, tool: &'a str, args: Value, ctx: CallContext) -> BoxFut<'a, ToolOutput> {
+        Box::pin(async move {
+            match tool {
+                SCREEN_CAPTURE => self.screen_capture(args, ctx).await,
+                ACTIVE_WINDOW_INFO => self.active_window_info(),
+                SCREEN_TEXT => self.screen_text(args, ctx).await,
+                SCREEN_RECENT => self.screen_recent(args, ctx).await,
+                AUDIO_RECENT => self.audio_recent(args, ctx).await,
+                ATTACHMENT_READ => self.attachment_read(args, ctx).await,
+                other => {
+                    ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
+                }
+            }
+        })
+    }
+}

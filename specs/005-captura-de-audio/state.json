@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "37773bd43cf8eecc46161f6309d1e0b542b66a901fe639195fd922ddd39be3e8"
+  },
+  "blockers": [],
+  "effort_id": "005-captura-de-audio",
+  "inputs": {
+    "contract": {
+      "fingerprint": "7be2f30a6bfde2bfe6a1f97020c467f72571b73ca337bff2f9eb1fa4d8bfea82",
+      "path": "specs/005-captura-de-audio/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "9107ea9f8ffaf177e04ab63bb4676193e02a6db728859415c0df04c662964ac1",
+      "path": "specs/005-captura-de-audio/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Validar WASAPI/loopback; medidor e indicadores; ligar AudioSegmentWriter e audio_recent",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:33+00:00"
+}

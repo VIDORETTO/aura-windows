@@ -1,0 +1,10 @@
+{
+  "version": "0.1.0",
+  "machine": "PLACEHOLDER — equal to the budgets; replace with a release run on the reference machine (Windows 11, 4 cores, 8 GB, SSD)",
+  "metrics": {
+    "first_delta.p95_ms": 50.0,
+    "idle.cpu_avg_pct": 0.5,
+    "idle.private_ws_mb": 150.0,
+    "open.p95_ms": 100.0
+  }
+}

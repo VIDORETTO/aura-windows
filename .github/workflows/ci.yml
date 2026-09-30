@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  rust-linux:
+    name: Rust (Linux, OS-independent crates)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.98.1"
+          components: rustfmt, clippy
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test
+      - uses: taiki-e/install-action@cargo-deny
+      - run: cargo deny check licenses sources
+      # Windows-only adapters type-check from Linux (no C toolchain needed).
+      - run: cargo check -p aura-win --target x86_64-pc-windows-msvc
+      - run: cargo check -p aura-bench --no-default-features --target x86_64-pc-windows-msvc
+
+  frontend:
+    name: UI (typecheck, tests, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/desktop/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  windows:
+    name: Windows (full app)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.98.1"
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/desktop/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+        working-directory: apps/desktop
+      - name: Rust tests (Windows)
+        run: cargo test --workspace --exclude aura-desktop
+      - name: Clippy (whole workspace incl. Tauri shell and aura-win)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Sidecars
+        shell: pwsh
+        run: ./scripts/prepare-sidecars.ps1
+      - name: Build app (no bundle)
+        run: pnpm tauri build --no-bundle
+        working-directory: apps/desktop
+
+  e2e:
+    name: E2E (Windows, demo build)
+    runs-on: windows-latest
+    needs: windows
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.98.1"
+      - uses: Swatinem/rust-cache@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+        working-directory: apps/desktop
+      - shell: pwsh
+        run: ./scripts/prepare-sidecars.ps1
+      - run: pnpm tauri build --no-bundle --features demo
+        working-directory: apps/desktop
+      - run: cargo install tauri-driver --locked
+      - uses: browser-actions/setup-edge@v1
+      - name: E2E
+        run: pnpm install && pnpm test
+        working-directory: apps/desktop/e2e

@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-022",
+    "AC-023"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-012",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Header.tsx": "b58f7fa90ab878d0c0cf3f0d97532ffb80708862aaab91e75060e53624597f07",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "pnpm -C apps/desktop test (medidor de contexto, compactar); cargo test -p aura-app",
+  "result": "partial",
+  "tested_revision": "local:7ab55bdde6db46f9c9fff7d1fc7754b1fda56a7fe47c0e297c44ff275f9fcacb",
+  "ticket": "TK-008",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app": "c88aabad42e38a3e05b1e3d4771a59a215ea0bc4074ee1d9314d7e08bf04e444",
+    "crates/aura-win/src/input.rs": "ef1873c391ae5301a41feb7e6cf2ea6f4a43ba04d6088d38b133a535673004a8",
+    "specs/009-produtividade/plan.md": "64e4a4c48241b8220a61017ba5d34b96b48f7e8ac7f640907a3fc017291ca134",
+    "specs/009-produtividade/spec.md": "7d7f4ab7d89aca55acc4f8c1f251922d21d86ddaaf556ce0f13c1ed2a7b4d9e2"
+  },
+  "input_paths": [
+    "crates/aura-app",
+    "crates/aura-win/src/input.rs",
+    "specs/009-produtividade/spec.md",
+    "specs/009-produtividade/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-app (seleção, inserir no app com plataforma falsa); cargo check -p aura-win --target x86_64-pc-windows-msvc (UIA, clipboard)",
+  "result": "partial",
+  "tested_revision": "local:47e321d46aa7394250dc4bb715478541c2c05ada135eb9ea87816791feafcd57",
+  "ticket": "TK-001",
+  "timestamp": "2026-09-30T02:11:49+00:00"
+}

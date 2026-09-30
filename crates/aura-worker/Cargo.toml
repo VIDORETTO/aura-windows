@@ -1,0 +1,28 @@
+[package]
+name = "aura-worker"
+description = "On-demand worker process for heavy native work: speech recognition (and, on Windows, PDF/video decoding)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = []
+# Real ASR engines (ONNX Runtime + whisper.cpp). Built on Windows; see HANDOFF.md.
+engines = ["dep:transcribe-rs"]
+directml = ["engines", "transcribe-rs/ort-directml"]
+vulkan = ["engines", "transcribe-rs/whisper-vulkan"]
+
+[dependencies]
+aura-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+base64.workspace = true
+transcribe-rs = { version = "0.3", features = ["onnx", "whisper-cpp"], optional = true }
+
+[dev-dependencies]
+aura-asr.workspace = true
+tokio = { workspace = true, features = ["test-util"] }
+tempfile.workspace = true

@@ -1,0 +1,40 @@
+name: Performance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 1"
+
+jobs:
+  bench:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.98.1"
+      - uses: Swatinem/rust-cache@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+        working-directory: apps/desktop
+      - shell: pwsh
+        run: ./scripts/prepare-sidecars.ps1
+      - run: pnpm tauri build --no-bundle --features demo
+        working-directory: apps/desktop
+      - name: Measure (shared runner: repeat 3x, keep the median in review)
+        shell: pwsh
+        run: |
+          $p = Start-Process -PassThru "target\release\aura.exe" -ArgumentList "--background"
+          Start-Sleep -Seconds 10
+          cargo run -p aura-bench --release -- all --pid $p.Id --idle-secs 120 --opens 20 --out bench/latest.json --baseline bench/baseline.json
+          $code = $LASTEXITCODE
+          Stop-Process -Id $p.Id -Force
+          exit $code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench
+          path: bench/latest.*

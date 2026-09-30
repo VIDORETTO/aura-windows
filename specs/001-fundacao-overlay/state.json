@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "154a92917d10ee82c86263b24b21d1d82578d2aa6a30d8b199252327e7ceb350"
+  },
+  "blockers": [],
+  "effort_id": "001-fundacao-overlay",
+  "inputs": {
+    "contract": {
+      "fingerprint": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705",
+      "path": "specs/001-fundacao-overlay/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+      "path": "specs/001-fundacao-overlay/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "No Windows: compilar o shell Tauri e validar TK-001..006 (docs/HANDOFF.md §2, §4.1, §6 Marco 1)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:33+00:00"
+}

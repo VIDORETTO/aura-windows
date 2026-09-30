@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-010"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "crates/aura-app/tests/real_app_server.rs": "acd045a876cf44a5371545bfb14f937f3c65350e37e65185b70d53c98e38589b",
+    "crates/aura-codex/src/launcher.rs": "4f209f63cdd4b0bd083dd867141d6c5312e18003c35732ac7fe397399c4fa3c4",
+    "crates/aura-codex/src/modes.rs": "b2415fe73c7900dcffd494dbebf793536a496af875e7d79e004a9c7e031b8359",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex/src/launcher.rs",
+    "crates/aura-codex/src/modes.rs",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "AURA_CODEX_BIN=<codex-app-server v0.159.0 linux> cargo test -p aura-app --test real_app_server -- --ignored (initialize, thread/start, turno real)",
+  "result": "partial",
+  "tested_revision": "local:48afc0991985d11bd80ff6b6640a44f96d9e3bd4b70a57058149376f4f23bcb3",
+  "ticket": "TK-001",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

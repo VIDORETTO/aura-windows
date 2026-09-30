@@ -1,0 +1,63 @@
+//! Everything the host pushes to the UI, on one typed stream
+//! (`aura://event` in the Tauri shell).
+
+use aura_auth::LoginProgress;
+use aura_codex::events::ConversationEvent;
+use serde::Serialize;
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(
+    tag = "channel",
+    content = "event",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase"
+)]
+pub enum HostEvent {
+    Conversation(ConversationEvent),
+    Login(LoginProgress),
+    /// The agent asked for a source with permission "Ask" (004 AC-008).
+    Consent(ConsentRequest),
+    ConsentResolved {
+        id: String,
+    },
+    Privacy(PrivacyState),
+    /// Background download (app-server, ASR model) progress.
+    Download {
+        id: String,
+        bytes: u64,
+        total: Option<u64>,
+        done: bool,
+        error: Option<String>,
+    },
+    /// Push-to-talk state (listening, transcribing, done…).
+    Voice(aura_asr::ptt::PttState),
+    /// Overlay-facing notice (toast): `info`, `warning`, `error`.
+    Notice {
+        level: String,
+        message: String,
+    },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConsentRequest {
+    pub id: String,
+    pub conversation: String,
+    pub tool: String,
+    /// `screen`, `mic`, `systemAudio`.
+    pub source: String,
+    pub reason: String,
+    pub app: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PrivacyState {
+    pub paused: bool,
+    /// `off`, `onDemand`, `recentBuffer`, `manual`, `continuous` per source.
+    pub screen: String,
+    pub mic: String,
+    pub system_audio: String,
+    /// Sources recording right now (`screen`, `mic`, `system`).
+    pub recording: Vec<String>,
+}

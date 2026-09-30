@@ -1,0 +1,12 @@
+[package]
+name = "aura-policy"
+description = "Pure privacy policy engine: capture modes, agent permissions, excluded windows, pause."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+aura-core.workspace = true
+serde.workspace = true
+thiserror.workspace = true

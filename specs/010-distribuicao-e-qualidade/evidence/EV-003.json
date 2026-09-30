@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-008"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n": "2983f635629dc0b3261368a00f7f8a019cc4b1a3108413b5682cbfffa739e897",
+    "specs/010-distribuicao-e-qualidade/plan.md": "10f99e5c9f82b954e0dd0bdecc7bf4c0345f33eefe7f8b8917c3ec54720cb2ac",
+    "specs/010-distribuicao-e-qualidade/spec.md": "ee868473e39433418ef757df328ca52d86f7eb3339e1ef5eabdd4ca72fcd55dd",
+    "tools/aura-bench": "8c017815cdddc086329c5f0c64eaa096638c85246697c79d35f63c5d62789a76"
+  },
+  "input_paths": [
+    "tools/aura-bench",
+    "apps/desktop/src/i18n",
+    "specs/010-distribuicao-e-qualidade/spec.md",
+    "specs/010-distribuicao-e-qualidade/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-bench; cargo run -p aura-bench -- all (cenários portáveis); pnpm -C apps/desktop test (i18n)",
+  "result": "partial",
+  "tested_revision": "local:b9a2ff29140820c7ba19e0588ae7a12b3d0fe88d7340d815cb9031eb6c2fb50e",
+  "ticket": "TK-004",
+  "timestamp": "2026-09-30T02:11:50+00:00"
+}

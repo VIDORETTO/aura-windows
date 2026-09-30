@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-015",
+    "AC-016"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "apps/desktop/src/settings/Recordings.tsx": "306c972c443034065fa8b20f9055c18a2cc7a230724a18c67da63d39878a4fe1",
+    "crates/aura-app/src/recorder.rs": "fd5f239ff5a00cee2baeab1cc336fb0766f342fa43fccad9667d00ee9a4778e6",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/recorder.rs",
+    "apps/desktop/src/settings/Recordings.tsx",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-app manual_recording_lifecycle; vitest Settings (gravação manual)",
+  "result": "partial",
+  "tested_revision": "local:738c567b6668323bc96edc651faa1254d382da02bfbc6d4699830b592f1ec31c",
+  "ticket": "TK-006",
+  "timestamp": "2026-09-30T03:13:12+00:00"
+}

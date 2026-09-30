@@ -1,0 +1,32 @@
+# Rust
+/target/
+**/target/
+# Node
+node_modules/
+apps/desktop/dist/
+apps/desktop/coverage/
+*.tsbuildinfo
+# Tauri generated
+apps/desktop/src-tauri/gen/
+# Sidecars built by scripts/prepare-sidecars.ps1
+apps/desktop/src-tauri/binaries/
+# Local data / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+# Test-only key pair used by the SIWC tests (never a real credential)
+!crates/aura-auth/tests/fixtures/test-signing-key.pem
+# Hybrid runtime artifacts that are machine-specific
+.hybrid/packets/
+# Benchmarks outputs (baseline is versioned)
+bench/latest.json
+bench/report.md
+bench/latest.md
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json

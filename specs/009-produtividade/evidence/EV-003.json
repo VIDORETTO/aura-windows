@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Minibar.tsx": "45f21720ed779e0d93408a2c705f67906df86cb73d4cff2723c4a30b23df336d",
+    "specs/009-produtividade/plan.md": "64e4a4c48241b8220a61017ba5d34b96b48f7e8ac7f640907a3fc017291ca134",
+    "specs/009-produtividade/spec.md": "7d7f4ab7d89aca55acc4f8c1f251922d21d86ddaaf556ce0f13c1ed2a7b4d9e2"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Minibar.tsx",
+    "specs/009-produtividade/spec.md",
+    "specs/009-produtividade/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "vitest Minibar.test.tsx (blurAction, expandir)",
+  "result": "partial",
+  "tested_revision": "local:2093398f6f5db189949ea6d0cfe2ec46dc5cafd9b811303f817ed46238bbc4a4",
+  "ticket": "TK-002",
+  "timestamp": "2026-09-30T03:13:14+00:00"
+}

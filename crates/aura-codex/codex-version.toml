@@ -1,0 +1,12 @@
+# Pinned Codex app-server for this Aura release (ADR 0001).
+# Updating it is a dedicated change: download, regenerate schema
+# (`codex app-server generate-json-schema --out crates/aura-codex/schema/<version>`),
+# re-record transcripts and run the contract suite. Digests come from the
+# GitHub release API (`gh api repos/openai/codex/releases/tags/<tag>`).
+version = "rust-v0.159.0"
+asset = "codex-app-server-package-x86_64-pc-windows-msvc.tar.zst"
+url = "https://github.com/openai/codex/releases/download/rust-v0.159.0/codex-app-server-package-x86_64-pc-windows-msvc.tar.zst"
+sha256 = "2b563acd95fd3cfc4660c6686fdf963687b0c9bd488d6f4af4a75918ddc5458c"
+size = 91519982
+# File name searched inside the extracted package (glob, first match wins).
+executable_glob = "codex-app-server*.exe"

@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-024",
+    "AC-025"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/session.ts": "5f3e235b52d20cb7fc1fbfa601c4cf617388a0adb61a5c16fd32e730fd96cb56",
+    "crates/aura-codex/src/modes.rs": "b2415fe73c7900dcffd494dbebf793536a496af875e7d79e004a9c7e031b8359",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "crates/aura-codex/src/modes.rs",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "pnpm -C apps/desktop test; cargo test -p aura-codex (modos com pastas concedidas)",
+  "result": "partial",
+  "tested_revision": "local:370e4f34969be57e2c792c5bda08def639564e37faeb20f21ada9091c40954ca",
+  "ticket": "TK-009",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

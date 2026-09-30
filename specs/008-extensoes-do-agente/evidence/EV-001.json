@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-extensions": "34db4935e95d2a155fed533d8d7d7ae678342f473e5d0f030d060f73ea75fd45",
+    "specs/008-extensoes-do-agente/plan.md": "4d03286a91b648ee88c68f9a1a8e1071c7b63bf8dd52499ae29bae5dae97895e",
+    "specs/008-extensoes-do-agente/spec.md": "5b434d1c71fff3d53d54dc838d454acdcb1a32d2e7a4bb2495d3bba4a3cbd520"
+  },
+  "input_paths": [
+    "crates/aura-extensions",
+    "specs/008-extensoes-do-agente/spec.md",
+    "specs/008-extensoes-do-agente/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-extensions -p aura-app (skills_and_mcp_servers)",
+  "result": "partial",
+  "tested_revision": "local:e27c3538f1b00abc9e91e99998c8dc718f1abd6580780abc8fb80762701f6f26",
+  "ticket": "TK-001",
+  "timestamp": "2026-09-30T02:11:48+00:00"
+}

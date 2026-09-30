@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-018",
+    "AC-019",
+    "AC-020",
+    "AC-021"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-011",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/UserInputCard.tsx": "ff5d6bfb0bc741c57ffb17b3b8b693e20f31d8cb16a8f70b446c8c972e7a1ea1",
+    "apps/desktop/src/overlay/userInput.ts": "e0663e449f67944d60f820462f2e6e0407ba294321aa9f98f9eb00fdd1351209",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/userInput.ts",
+    "apps/desktop/src/overlay/UserInputCard.tsx",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "pnpm -C apps/desktop test (userInput.test.ts, OverlayApp: pergunta do agente respondida por formulário)",
+  "result": "partial",
+  "tested_revision": "local:5b0356174fd966f20c750db75f72f422aba30936053d97bab254105dfb6b6941",
+  "ticket": "TK-007",
+  "timestamp": "2026-09-30T03:13:11+00:00"
+}

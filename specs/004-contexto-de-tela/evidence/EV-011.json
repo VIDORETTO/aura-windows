@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-011",
+  "input_fingerprints": {
+    "crates/aura-app/src/recorder.rs": "fd5f239ff5a00cee2baeab1cc336fb0766f342fa43fccad9667d00ee9a4778e6",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/recorder.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-app recent_buffers_feed_the_agent_tools (screen_frames rotulados)",
+  "result": "partial",
+  "tested_revision": "local:689adc1a0853c795b3383ac6d92985a6ce695e7f15ca728c520d1f98812a8223",
+  "ticket": "TK-007",
+  "timestamp": "2026-09-30T03:13:12+00:00"
+}

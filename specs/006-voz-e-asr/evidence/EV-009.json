@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-012"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-asr/src/ptt.rs": "b55abe1e6e33ec780f0be9008eb7050bc4b4ae82d0e5469872c648d6fc096d3e",
+    "specs/006-voz-e-asr/plan.md": "27662d3a07b45376567440676aee4486c4ca631b0256c0f2ce047eb15ee9f9ee",
+    "specs/006-voz-e-asr/spec.md": "55fbb1b372194f63c9c4bab0cfaa7fca748161d722736c35798ba5bc95d9ced3"
+  },
+  "input_paths": [
+    "crates/aura-asr/src/ptt.rs",
+    "specs/006-voz-e-asr/spec.md",
+    "specs/006-voz-e-asr/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-asr partials_are_emitted_while_listening",
+  "result": "partial",
+  "tested_revision": "local:2e56b5b3b18163ea25167a3110bf0ce3658b51614b473164bfe1aef6acde0f64",
+  "ticket": "TK-007",
+  "timestamp": "2026-09-30T03:13:13+00:00"
+}

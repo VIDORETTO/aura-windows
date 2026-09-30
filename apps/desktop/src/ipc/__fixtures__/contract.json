@@ -1,0 +1,471 @@
+{
+  "captureModes": [
+    {
+      "type": "off"
+    },
+    {
+      "type": "onDemand"
+    },
+    {
+      "minutes": 10,
+      "type": "recentBuffer"
+    },
+    {
+      "type": "manual"
+    },
+    {
+      "type": "continuous"
+    }
+  ],
+  "chip": {
+    "blockedReason": null,
+    "id": "chip_1",
+    "kind": "screen",
+    "label": "Tela · Chrome",
+    "payload": {
+      "path": "C:/tmp/a.png",
+      "type": "image"
+    },
+    "previewPath": "C:/tmp/a.png",
+    "tokenEstimate": 765
+  },
+  "decisions": [
+    {
+      "type": "accept"
+    },
+    {
+      "type": "acceptForSession"
+    },
+    {
+      "type": "decline"
+    },
+    {
+      "type": "cancel"
+    },
+    {
+      "content": {
+        "a": 1
+      },
+      "type": "answer"
+    }
+  ],
+  "events": [
+    {
+      "channel": "conversation",
+      "event": {
+        "threadId": "thr_1",
+        "turnId": "turn_1",
+        "type": "turnStarted"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "delta": "Olá",
+        "itemId": "msg_1",
+        "threadId": "thr_1",
+        "type": "messageDelta"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "delta": ", mundo",
+        "itemId": "msg_1",
+        "threadId": "thr_1",
+        "type": "messageDelta"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "delta": "pensando",
+        "itemId": "rs_1",
+        "threadId": "thr_1",
+        "type": "reasoningDelta"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "detail": null,
+        "itemId": "tool_1",
+        "kind": "mcp",
+        "status": "inProgress",
+        "threadId": "thr_1",
+        "title": "aura.screen_text",
+        "type": "toolCall"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "detail": "120 ms",
+        "itemId": "tool_1",
+        "kind": "mcp",
+        "status": "completed",
+        "threadId": "thr_1",
+        "title": "aura.screen_text",
+        "type": "toolCall"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "changes": [],
+        "command": "pip install x",
+        "cwd": "C:/Users/ana",
+        "kind": "command",
+        "options": [
+          "accept",
+          "acceptForSession",
+          "decline"
+        ],
+        "reason": "instalar dependência",
+        "requestId": "req_1",
+        "threadId": "thr_1",
+        "type": "approvalRequested"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "requestId": "req_1",
+        "type": "requestResolved"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "explanation": null,
+        "steps": [
+          {
+            "status": "completed",
+            "step": "Ler o arquivo"
+          },
+          {
+            "status": "inProgress",
+            "step": "Responder"
+          }
+        ],
+        "threadId": "thr_1",
+        "turnId": "turn_1",
+        "type": "planUpdated"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "changes": [
+          {
+            "added": 3,
+            "diff": "@@ -1 +1,3 @@",
+            "path": "notas.md",
+            "removed": 1
+          }
+        ],
+        "itemId": "fc_1",
+        "status": "completed",
+        "threadId": "thr_1",
+        "type": "fileChanges"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "threadId": "thr_1",
+        "type": "tokenUsage",
+        "used": 1234,
+        "window": 200000
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "itemId": "msg_1",
+        "text": "Olá, mundo",
+        "threadId": "thr_1",
+        "type": "messageCompleted"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "error": null,
+        "status": "completed",
+        "threadId": "thr_1",
+        "turnId": "turn_1",
+        "type": "turnCompleted"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "error": {
+          "kind": "usageLimit",
+          "retryAfterSecs": 60
+        },
+        "status": "failed",
+        "threadId": "thr_1",
+        "turnId": "turn_2",
+        "type": "turnCompleted"
+      }
+    },
+    {
+      "channel": "conversation",
+      "event": {
+        "state": {
+          "state": "ready",
+          "version": "0.159.0"
+        },
+        "type": "appServerState"
+      }
+    },
+    {
+      "channel": "login",
+      "event": {
+        "authorizeUrl": "https://auth.openai.com/oauth/authorize?x=1",
+        "state": "waitingBrowser"
+      }
+    },
+    {
+      "channel": "login",
+      "event": {
+        "account": {
+          "active": true,
+          "clientId": "app_123",
+          "email": "ana@example.com",
+          "expiresAt": 1900000000,
+          "planUsageEnabled": true,
+          "scopes": [
+            "openid",
+            "chatgpt.tokens.use.direct"
+          ],
+          "signedIn": true,
+          "subject": "user-1",
+          "welcomed": false
+        },
+        "firstTime": true,
+        "state": "completed"
+      }
+    },
+    {
+      "channel": "consent",
+      "event": {
+        "app": "Code.exe",
+        "conversation": "uuid-1",
+        "id": "c1",
+        "reason": "ver o erro",
+        "source": "screen",
+        "tool": "screen_capture"
+      }
+    },
+    {
+      "channel": "consentResolved",
+      "event": {
+        "id": "c1"
+      }
+    },
+    {
+      "channel": "privacy",
+      "event": {
+        "mic": "onDemand",
+        "paused": true,
+        "recording": [
+          "screen"
+        ],
+        "screen": "onDemand",
+        "systemAudio": "off"
+      }
+    },
+    {
+      "channel": "download",
+      "event": {
+        "bytes": 10,
+        "done": false,
+        "error": null,
+        "id": "codex",
+        "total": 100
+      }
+    },
+    {
+      "channel": "voice",
+      "event": {
+        "state": "listening"
+      }
+    },
+    {
+      "channel": "voice",
+      "event": {
+        "state": "partial",
+        "text": "tex"
+      }
+    },
+    {
+      "channel": "voice",
+      "event": {
+        "state": "done",
+        "text": "texto"
+      }
+    },
+    {
+      "channel": "notice",
+      "event": {
+        "level": "warning",
+        "message": "atalho em uso"
+      }
+    }
+  ],
+  "mcpServers": [
+    {
+      "approvalMode": "askForWrites",
+      "disabledTools": [],
+      "enabled": true,
+      "name": "github",
+      "startupTimeoutSec": null,
+      "toolTimeoutSec": null,
+      "transport": {
+        "args": [
+          "-y"
+        ],
+        "command": "npx",
+        "cwd": null,
+        "env": {
+          "GITHUB_TOKEN": {
+            "kind": "secret"
+          },
+          "LOG": {
+            "kind": "plain",
+            "value": "1"
+          }
+        },
+        "type": "stdio"
+      }
+    },
+    {
+      "approvalMode": "askForWrites",
+      "disabledTools": [],
+      "enabled": true,
+      "name": "docs",
+      "startupTimeoutSec": null,
+      "toolTimeoutSec": null,
+      "transport": {
+        "bearerSecret": true,
+        "headers": {},
+        "type": "http",
+        "url": "https://example.com/mcp"
+      }
+    }
+  ],
+  "modes": [
+    {
+      "mode": "chat"
+    },
+    {
+      "granted": [
+        "C:/proj"
+      ],
+      "mode": "task",
+      "network": false
+    },
+    {
+      "mode": "plan"
+    }
+  ],
+  "preset": {
+    "auth": "bearer",
+    "baseUrl": "https://api.groq.com/openai/v1",
+    "credentialRequired": true,
+    "headers": {},
+    "id": "groq",
+    "name": "Groq",
+    "quirks": {
+      "noParallelToolCalls": false,
+      "noStreamOptions": false,
+      "reasoningEffort": false
+    },
+    "transcriptionModels": [
+      "whisper-large-v3-turbo",
+      "whisper-large-v3"
+    ],
+    "tts": false,
+    "wire": "chat"
+  },
+  "privacy": {
+    "exclusions": [
+      {
+        "builtin": true,
+        "class": null,
+        "enabled": true,
+        "id": "keepass",
+        "process": "KeePass.exe",
+        "titleGlob": null
+      },
+      {
+        "builtin": true,
+        "class": null,
+        "enabled": true,
+        "id": "keepassxc",
+        "process": "KeePassXC.exe",
+        "titleGlob": null
+      }
+    ],
+    "mic": {
+      "agent": "ask",
+      "mode": {
+        "type": "onDemand"
+      }
+    },
+    "paused": false,
+    "screen": {
+      "agent": "ask",
+      "mode": {
+        "type": "onDemand"
+      }
+    },
+    "systemAudio": {
+      "agent": "ask",
+      "mode": {
+        "type": "off"
+      }
+    }
+  },
+  "settings": {
+    "appServerIdleMinutes": 15,
+    "asrLanguage": null,
+    "asrVocabulary": [],
+    "attachScreenOnOpen": false,
+    "cloudAsrProvider": null,
+    "defaultEffort": null,
+    "defaultModel": null,
+    "doubleTapCtrl": false,
+    "focusLoss": "hide",
+    "globalVoiceShortcut": "Ctrl+Alt+Space",
+    "invokeShortcut": "Ctrl+Shift+Space",
+    "language": "ptBr",
+    "memories": false,
+    "onboarded": false,
+    "opacity": 0.92,
+    "personalInstructions": "",
+    "privacyPauseShortcut": "Ctrl+Shift+Alt+P",
+    "pushToTalkShortcut": "Ctrl+Space",
+    "sendAfterDictation": false,
+    "startWithWindows": false,
+    "theme": "system",
+    "workerIdleMinutes": 2
+  },
+  "turnErrors": [
+    {
+      "kind": "planUsageLimit"
+    },
+    {
+      "kind": "unsupportedCapability",
+      "param": "tools"
+    },
+    {
+      "code": "x",
+      "kind": "other",
+      "message": "y"
+    }
+  ]
+}

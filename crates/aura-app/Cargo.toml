@@ -1,0 +1,37 @@
+[package]
+name = "aura-app"
+description = "Aura host core: composition root, UI commands and events, agent tools, privacy persistence. OS-independent; the Tauri shell and aura-win plug in."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+aura-core.workspace = true
+aura-store.workspace = true
+aura-policy.workspace = true
+aura-codex.workspace = true
+aura-auth.workspace = true
+aura-gateway.workspace = true
+aura-mcp.workspace = true
+aura-capture = { workspace = true, features = ["store"] }
+aura-audio = { workspace = true, features = ["store"] }
+aura-asr.workspace = true
+aura-ingest.workspace = true
+aura-extensions.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+rusqlite.workspace = true
+reqwest.workspace = true
+axum.workspace = true
+getrandom.workspace = true
+base64.workspace = true
+hound = "3.5.1"
+zip = { version = "8", default-features = false, features = ["deflate"] }
+
+[dev-dependencies]
+tempfile.workspace = true

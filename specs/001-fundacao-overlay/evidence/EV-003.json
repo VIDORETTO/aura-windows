@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src": "e8c658c536f2e9308f91d1036e85f313a3ba9b2993540468581b17cca361d969",
+    "crates/aura-core": "5f26a3157d6520b201294ded2144fb9ea01db5beae7e0c543b4ce38875316e2e",
+    "crates/aura-store": "98713eac09df4c03c5971207ad4ec83ee7ebad4a94a322a2b2139629b7875b5a",
+    "crates/aura-win": "39d1a7e2953fc8058fbeefed4df96c872c383773dda1bcabfb7a72d993a3bda4",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "crates/aura-core",
+    "crates/aura-store",
+    "crates/aura-win",
+    "apps/desktop/src",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-core -p aura-store; cargo check/clippy -p aura-win --target x86_64-pc-windows-msvc; pnpm -C apps/desktop test (Settings)",
+  "result": "partial",
+  "tested_revision": "local:b5c0eec6ec0672b58a13066a45b9efaa2a44afe05ac1ed96bcdffc498ba05c66",
+  "ticket": "TK-002",
+  "timestamp": "2026-09-30T02:11:32+00:00"
+}

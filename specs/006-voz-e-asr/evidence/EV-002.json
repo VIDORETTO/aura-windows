@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-003",
+    "AC-004",
+    "AC-005"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/src/voice.rs": "e690433f058cc01763bbdeee2b342548181124f5ad4522aeda0041fcde35c58b",
+    "crates/aura-asr": "739a8612aa6b8082bb91ba1861a02f7b12089d2d55bb65f65d028a85d375485a",
+    "crates/aura-worker": "1d7b6d00e9c9bb673f5d23637fe3674ce2a3ab04e71616db22b46a877dd03694",
+    "specs/006-voz-e-asr/plan.md": "27662d3a07b45376567440676aee4486c4ca631b0256c0f2ce047eb15ee9f9ee",
+    "specs/006-voz-e-asr/spec.md": "55fbb1b372194f63c9c4bab0cfaa7fca748161d722736c35798ba5bc95d9ced3"
+  },
+  "input_paths": [
+    "crates/aura-asr",
+    "crates/aura-worker",
+    "crates/aura-app/src/voice.rs",
+    "specs/006-voz-e-asr/spec.md",
+    "specs/006-voz-e-asr/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-asr -p aura-worker -p aura-app (push_to_talk_dictation)",
+  "result": "partial",
+  "tested_revision": "local:70a671f4099dbfceb4ad4706c00bd2d5f18882ca0287254084ce0de8137b6924",
+  "ticket": "TK-002",
+  "timestamp": "2026-09-30T02:11:45+00:00"
+}

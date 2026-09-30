@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-011",
+    "AC-012",
+    "AC-013"
+  ],
+  "environment": "Linux",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-core": "5f26a3157d6520b201294ded2144fb9ea01db5beae7e0c543b4ce38875316e2e",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "crates/aura-core",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "sem Windows",
+  "observations": "ok",
+  "procedure": "cargo test -p aura-core",
+  "result": "partial",
+  "tested_revision": "local:9195977538d39bfdda66254d00625c6b474fa18f1d89036518e2da75aa42b046",
+  "ticket": "TK-005",
+  "timestamp": "2026-09-29T23:48:46+00:00"
+}

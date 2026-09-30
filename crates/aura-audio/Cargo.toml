@@ -1,0 +1,29 @@
+[package]
+name = "aura-audio"
+description = "Audio pipeline: resampling, levels, fan-out hub, encrypted segments and transcript clips (WASAPI adapters live in aura-win)."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[features]
+default = ["store"]
+# Encrypted audio segments (zstd PCM + SQLite index). Off for `aura-win`.
+store = ["aura-capture/store", "dep:zstd"]
+
+[dependencies]
+aura-core.workspace = true
+aura-capture = { workspace = true, default-features = false }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+uuid.workspace = true
+zstd = { version = "0.13", optional = true }
+
+[dev-dependencies]
+tempfile.workspace = true
+aura-store.workspace = true
+aura-policy.workspace = true
+tokio = { workspace = true, features = ["test-util"] }

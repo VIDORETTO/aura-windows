@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Header.tsx": "b58f7fa90ab878d0c0cf3f0d97532ffb80708862aaab91e75060e53624597f07",
+    "specs/005-captura-de-audio/plan.md": "9107ea9f8ffaf177e04ab63bb4676193e02a6db728859415c0df04c662964ac1",
+    "specs/005-captura-de-audio/spec.md": "7be2f30a6bfde2bfe6a1f97020c467f72571b73ca337bff2f9eb1fa4d8bfea82"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "specs/005-captura-de-audio/spec.md",
+    "specs/005-captura-de-audio/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "vitest (indicador REC no cabeçalho, estado recording); cargo test -p aura-app (pausa para gravadores)",
+  "result": "partial",
+  "tested_revision": "local:e8ee0b0f315f34572f856d3ecd66286f9ce30e4df01cac76a5749d1a88a4bc2d",
+  "ticket": "TK-003",
+  "timestamp": "2026-09-30T03:13:12+00:00"
+}

@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-010"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "crates/aura-app/tests/host.rs": "96ac463cb7a09c0a7f79c7f3b5cc0d0d727dd1860a2afc5b6ed6271990700c52",
+    "crates/aura-gateway": "fd045a8b2f33a31094c06ceffeac05024ad058b2ee0d3de599a772b23ac27ce0",
+    "specs/003-byok-gateway/plan.md": "66980f75e12438b4e23bbfb7889563161d5ba442c6ee16b611bf9ce2ea603034",
+    "specs/003-byok-gateway/spec.md": "ecc503597872d2ad7abf46f42f9e360fc42672ec3d21500cf89a6d97d041899c"
+  },
+  "input_paths": [
+    "crates/aura-gateway",
+    "crates/aura-app/tests/host.rs",
+    "specs/003-byok-gateway/spec.md",
+    "specs/003-byok-gateway/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-gateway (fixtures SSE escritas à mão) -p aura-app (providers_privacy_and_diagnostics)",
+  "result": "partial",
+  "tested_revision": "local:042b322d522a04bf5a993707702ff9098871ab28fab096ba9fb7e60921355481",
+  "ticket": "TK-006",
+  "timestamp": "2026-09-30T02:11:40+00:00"
+}

@@ -1,0 +1,10 @@
+data: {"choices":[{"index":0,"delta":{"role":"assistant","reasoning_content":"Vou "},"finish_reason":null}]}
+
+data: {"choices":[{"index":0,"delta":{"reasoning_content":"somar."},"finish_reason":null}]}
+
+data: {"choices":[{"index":0,"delta":{"content":"4"},"finish_reason":null}]}
+
+data: {"choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"usage":{"prompt_tokens":10,"completion_tokens":8,"completion_tokens_details":{"reasoning_tokens":6}}}
+
+data: [DONE]
+

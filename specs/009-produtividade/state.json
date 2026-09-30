@@ -1,0 +1,31 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "inventory",
+    "ref": "59585f82d16b5191af7c6b6685ed93c24768c13f4728c95f3c764576c7686be0"
+  },
+  "blockers": [],
+  "effort_id": "009-produtividade",
+  "inputs": {
+    "contract": {
+      "fingerprint": "7d7f4ab7d89aca55acc4f8c1f251922d21d86ddaaf556ce0f13c1ed2a7b4d9e2",
+      "path": "specs/009-produtividade/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "64e4a4c48241b8220a61017ba5d34b96b48f7e8ac7f640907a3fc017291ca134",
+      "path": "specs/009-produtividade/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Validar seleção UIA e inserir no app; Minibar (TK-002), TTS (TK-003), Perfis (TK-004)",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-09-30T02:14:34+00:00"
+}

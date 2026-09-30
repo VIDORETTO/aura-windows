@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-011"
+  ],
+  "environment": "VPS Linux x86_64, Rust 1.98.1, Node 22; Codex app-server real rust-v0.159.0 (build Linux)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-app/src/diagnostics.rs": "3bda6bafe097094c7997a624ff9255739a158da1cfbb8a205e0d330b9fa0575e",
+    "specs/010-distribuicao-e-qualidade/plan.md": "10f99e5c9f82b954e0dd0bdecc7bf4c0345f33eefe7f8b8917c3ec54720cb2ac",
+    "specs/010-distribuicao-e-qualidade/spec.md": "ee868473e39433418ef757df328ca52d86f7eb3339e1ef5eabdd4ca72fcd55dd"
+  },
+  "input_paths": [
+    "crates/aura-app/src/diagnostics.rs",
+    "specs/010-distribuicao-e-qualidade/spec.md",
+    "specs/010-distribuicao-e-qualidade/plan.md"
+  ],
+  "limitations": "Sem Windows/WebView2; adaptadores Windows só verificados por tipo.",
+  "observations": "Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).",
+  "procedure": "cargo test -p aura-app diagnostics_package_is_redacted",
+  "result": "partial",
+  "tested_revision": "local:60217b7929f86f3122a34a07690ba3c27fa2966d3813b2133b0f4a91a5572218",
+  "ticket": "TK-006",
+  "timestamp": "2026-09-30T03:13:15+00:00"
+}

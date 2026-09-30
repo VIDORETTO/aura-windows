@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-010",
+    "AC-011"
+  ],
+  "environment": "Linux VPS x86_64 (AlmaLinux/Ubuntu kernel 5.15), Rust 1.98.1, Node 22, sem Windows",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-app/src/tools.rs": "d8ae269c8e821e73eee1014e354e3af959dbd815f3dc1bc1b2028438f2757673",
+    "crates/aura-capture": "84b9f3c74e08dedd2b7ca2d582129be43084e66d7fb3ac3c07c189dad835865e",
+    "crates/aura-mcp": "31f42c7e204999c8ed723f71f126c01379592d15c1120c58b90d318c9cf8be97",
+    "crates/aura-policy": "6f1f25b1b7893d289032ed3bcf07ae499ce946f016bf56d2394656e9e76d65f2",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-policy",
+    "crates/aura-capture",
+    "crates/aura-mcp",
+    "crates/aura-app/src/tools.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
+  "procedure": "cargo test -p aura-policy -p aura-capture -p aura-mcp -p aura-app (consentimento, exclusões, pausa); cargo check -p aura-win --target x86_64-pc-windows-msvc",
+  "result": "partial",
+  "tested_revision": "local:23266c8d30310bb8a7d9c0db2e66b0e24bb851554f5c1298ab8d8fbc9d564de5",
+  "ticket": "TK-004",
+  "timestamp": "2026-09-30T02:11:42+00:00"
+}

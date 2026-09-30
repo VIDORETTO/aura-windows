@@ -1,0 +1,97 @@
+[workspace]
+resolver = "3"
+members = [
+  "crates/aura-core",
+  "crates/aura-store",
+  "crates/aura-policy",
+  "crates/aura-codex",
+  "crates/aura-auth",
+  "crates/aura-gateway",
+  "crates/aura-mcp",
+  "crates/aura-capture",
+  "crates/aura-audio",
+  "crates/aura-asr",
+  "crates/aura-ingest",
+  "crates/aura-extensions",
+  "crates/aura-app",
+  "crates/aura-worker",
+  "crates/aura-win",
+  "tools/aura-bench",
+  "apps/desktop/src-tauri",
+]
+# The Tauri app needs WebView toolkits (WebView2 on Windows, WebKitGTK on Linux);
+# it is built on Windows. Everything else builds and tests on any OS.
+default-members = [
+  "crates/aura-core",
+  "crates/aura-store",
+  "crates/aura-policy",
+  "crates/aura-codex",
+  "crates/aura-auth",
+  "crates/aura-gateway",
+  "crates/aura-mcp",
+  "crates/aura-capture",
+  "crates/aura-audio",
+  "crates/aura-asr",
+  "crates/aura-ingest",
+  "crates/aura-extensions",
+  "crates/aura-app",
+  "crates/aura-worker",
+  "crates/aura-win",
+  "tools/aura-bench",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.98"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/aura-desktop/aura"
+authors = ["Aura contributors"]
+
+[workspace.dependencies]
+aura-core = { path = "crates/aura-core" }
+aura-store = { path = "crates/aura-store" }
+aura-policy = { path = "crates/aura-policy" }
+aura-codex = { path = "crates/aura-codex" }
+aura-auth = { path = "crates/aura-auth" }
+aura-gateway = { path = "crates/aura-gateway" }
+aura-mcp = { path = "crates/aura-mcp" }
+aura-capture = { path = "crates/aura-capture", default-features = false }
+aura-audio = { path = "crates/aura-audio", default-features = false }
+aura-asr = { path = "crates/aura-asr" }
+aura-ingest = { path = "crates/aura-ingest" }
+aura-extensions = { path = "crates/aura-extensions" }
+aura-win = { path = "crates/aura-win" }
+aura-app = { path = "crates/aura-app" }
+
+anyhow = "1"
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "process", "io-util", "io-std", "net", "fs"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+futures = "0.3"
+getrandom = "0.4"
+sha2 = "0.11"
+hex = "0.4"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4", "serde"] }
+url = "2"
+toml = "1"
+regex = "1"
+globset = "0.4"
+tempfile = "3"
+rusqlite = { version = "0.40", features = ["bundled"] }
+axum = "0.8"
+reqwest = { version = "0.13", default-features = false, features = ["json", "stream", "rustls", "form", "query", "multipart"] }
+bytes = "1"
+
+[profile.dev]
+debug = 1
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "symbols"
+panic = "unwind"
