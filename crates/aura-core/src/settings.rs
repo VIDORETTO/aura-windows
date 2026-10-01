@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 /// Minimum and maximum Overlay opacity accepted by the UI (AC-010).
-pub const MIN_OPACITY: f64 = 0.70;
+pub const MIN_OPACITY: f64 = 0.50;
 pub const MAX_OPACITY: f64 = 1.00;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -14,15 +14,6 @@ pub enum Theme {
     System,
     Light,
     Dark,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
-#[serde(rename_all = "camelCase")]
-pub enum FocusLossBehavior {
-    /// Hide the Overlay when it loses focus and no response is running (default).
-    #[default]
-    Hide,
-    KeepOpen,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -45,7 +36,10 @@ pub struct Settings {
     pub invoke_shortcut: String,
     pub double_tap_ctrl: bool,
     pub start_with_windows: bool,
-    pub focus_loss: FocusLossBehavior,
+    /// Hide the Overlay when another window takes focus (off: it stays until
+    /// the shortcut or "Minimizar para a bandeja"). Replaces the old
+    /// `focusLoss`, whose stored `"hide"` default is deliberately ignored.
+    pub hide_on_blur: bool,
     pub privacy_pause_shortcut: String,
     pub push_to_talk_shortcut: String,
     pub global_voice_shortcut: String,
@@ -77,7 +71,7 @@ impl Default for Settings {
             invoke_shortcut: "Ctrl+Shift+Space".into(),
             double_tap_ctrl: false,
             start_with_windows: false,
-            focus_loss: FocusLossBehavior::Hide,
+            hide_on_blur: false,
             privacy_pause_shortcut: "Ctrl+Shift+Alt+P".into(),
             push_to_talk_shortcut: "Ctrl+Space".into(),
             global_voice_shortcut: "Ctrl+Alt+Space".into(),
@@ -107,7 +101,7 @@ pub struct SettingsPatch {
     pub invoke_shortcut: Option<String>,
     pub double_tap_ctrl: Option<bool>,
     pub start_with_windows: Option<bool>,
-    pub focus_loss: Option<FocusLossBehavior>,
+    pub hide_on_blur: Option<bool>,
     pub privacy_pause_shortcut: Option<String>,
     pub push_to_talk_shortcut: Option<String>,
     pub global_voice_shortcut: Option<String>,
@@ -179,8 +173,8 @@ impl Settings {
         if let Some(v) = patch.start_with_windows {
             next.start_with_windows = v;
         }
-        if let Some(v) = patch.focus_loss {
-            next.focus_loss = v;
+        if let Some(v) = patch.hide_on_blur {
+            next.hide_on_blur = v;
         }
         if let Some(v) = patch.attach_screen_on_open {
             next.attach_screen_on_open = v;
@@ -436,11 +430,28 @@ mod tests {
     }
 
     #[test]
+    fn half_opacity_is_the_minimum() {
+        let s = Settings::default();
+        let next = s
+            .apply(&SettingsPatch {
+                opacity: Some(0.5),
+                ..Default::default()
+            })
+            .unwrap();
+        assert_eq!(next.opacity, 0.5);
+    }
+
+    #[test]
+    fn overlay_stays_open_on_blur_by_default() {
+        assert!(!Settings::default().hide_on_blur);
+    }
+
+    #[test]
     fn opacity_below_minimum_is_rejected_and_previous_value_kept() {
         let s = Settings::default();
         let err = s
             .apply(&SettingsPatch {
-                opacity: Some(0.5),
+                opacity: Some(0.49),
                 ..Default::default()
             })
             .unwrap_err();

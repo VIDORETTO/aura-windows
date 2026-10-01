@@ -18,10 +18,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "Segunda execução saiu; 1 processo (mesmo PID); Overlay da instância original passou a vis=True (tauri-plugin-single-instance → overlay::show).",
   "procedure": "Com a instância --background rodando, Start-Process aura.exe; após 2 s Get-Process aura e EnumWindows",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:f357a3fb077b7f01d78cfaed1f7be56f37c1654844ffd21a3963d996ed435341",
   "ticket": "TK-001",
   "timestamp": "2026-10-01T00:06:34+00:00"

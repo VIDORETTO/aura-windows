@@ -5,16 +5,17 @@ id: TK-003
 effort: 001-fundacao-overlay
 type: delivery
 status: implemented
-ticket_revision: 3
+ticket_revision: 5
 requires: ["TK-002"]
 requirement_refs: ["FR-002", "FR-007"]
 acceptance_refs: ["AC-004", "AC-005", "AC-006", "AC-007"]
-spec_revision: 1
+spec_revision: 2
 plan_revision: 1
 owned_areas: ["apps/desktop/src-tauri/src/overlay", "crates/aura-core/src/gesture.rs", "tools/aura-bench"]
-verification_status: partial
-last_update: Lógica implementada e testada no Linux; validação no Windows pendente (docs/HANDOFF.md §4 e §6).
+verification_status: stale
+last_update: Evidence invalidated after an input changed.
 ---
+
 
 
 
@@ -22,7 +23,7 @@ last_update: Lógica implementada e testada no Linux; validação no Windows pen
 
 ## Objetivo e limites
 
-Entrega o Atalho de invocação global (padrão `Ctrl+Shift+Space`), o gesto opcional de duplo toque em Ctrl, o rastreio do Aplicativo anterior com devolução de foco ao esconder, o `Esc` para esconder e o `aura-bench open-latency`/`idle-memory` com primeira medição.
+Entrega o Atalho de invocação global (padrão `Ctrl+Shift+Space`), o gesto opcional de duplo toque em Ctrl, o rastreio do Aplicativo anterior com devolução de foco ao esconder, o botão "Minimizar para a bandeja" para esconder (o `Esc` só fecha menus — spec revisão 2) e o `aura-bench open-latency`/`idle-memory` com primeira medição.
 
 Não inclui: UI de configuração do atalho (TK-004 expõe o campo; aqui o valor vem de constante/arquivo de teste), posicionamento por monitor (TK-005; aqui o Overlay aparece no centro do monitor do Aplicativo anterior).
 
@@ -53,7 +54,7 @@ Não inclui: UI de configuração do atalho (TK-004 expõe o campo; aqui o valor
 
 ## Contrato técnico
 
-- Entradas: pressionamento do atalho; sequência de teclas Ctrl; `Esc` no Overlay com entrada vazia e sem menu aberto.
+- Entradas: pressionamento do atalho; sequência de teclas Ctrl; botão "Minimizar para a bandeja"; `Esc` fecha menus/histórico/gravação e nunca esconde.
 - Saídas: `overlay_toggle`; evento `previous_app_changed(PreviousApp)` publicado (OT-005).
 - Invariantes: toggles não reentram (debounce de 150 ms para o atalho); o Aplicativo anterior nunca é o próprio Aura.
 - Erros: `ShortcutError::InUse`, `ShortcutError::Invalid(accelerator)`; falha em restaurar foco (janela elevada/fechada) → apenas esconder.
@@ -63,7 +64,7 @@ Não inclui: UI de configuração do atalho (TK-004 expõe o campo; aqui o valor
 ## Exemplos de aceite
 
 - **AC-004**: app ocioso ≥ 1 min, Bloco de Notas em foco + `aura-bench open-latency --runs 50` → relatório com p95 ≤ 100 ms; efeito proibido: criação de nova janela WebView (contagem de processos `msedgewebview2` estável).
-- **AC-005**: Bloco de Notas em foco → atalho → digitar "x" no Overlay → apagar → `Esc` → `GetForegroundWindow` é o Bloco de Notas e digitar "y" insere no Bloco de Notas.
+- **AC-005**: Bloco de Notas em foco → atalho → digitar "x" no Overlay → apagar → atalho (ou "Minimizar para a bandeja") → `GetForegroundWindow` é o Bloco de Notas e digitar "y" insere no Bloco de Notas; `Esc` com o Overlay focado → continua visível.
 - **AC-006** (unit): `[Ctrl↓@0, Ctrl↑@60, Ctrl↓@200, Ctrl↑@260] → Toggle`; `[Ctrl↓@0, C↓@50, C↑@90, Ctrl↑@120, Ctrl↓@250, Ctrl↑@300] → nenhum`; `[Ctrl↓@0, Ctrl↑@50, Ctrl↓@500, Ctrl↑@560] → nenhum`; `Toggle@260` seguido de `[Ctrl↓@400, Ctrl↑@450, Ctrl↓@600, Ctrl↑@650] → nenhum` (cooldown até 860). Oráculo: números da spec.
 - **AC-007**: processo auxiliar de teste registra `Ctrl+Alt+K` → `HotkeyService::register("Ctrl+Alt+K")` retorna `InUse` e o atalho anterior continua disparando.
 

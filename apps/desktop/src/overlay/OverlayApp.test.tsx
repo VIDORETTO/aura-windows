@@ -155,3 +155,59 @@ describe("input helpers", () => {
     expect(filterMenu(items, "tra").map((i) => i.id)).toEqual(["1"]);
   });
 });
+
+describe("window behaviour (001 revision 2)", () => {
+  function spyCalls(bridge: Awaited<ReturnType<typeof freshApp>>) {
+    const calls: string[] = [];
+    const invoke = bridge.invoke;
+    bridge.invoke = ((cmd: string, args?: Record<string, unknown>) => {
+      calls.push(cmd);
+      return invoke(cmd, args);
+    }) as typeof bridge.invoke;
+    return calls;
+  }
+
+  it("Esc never hides the Overlay; Minimize to tray does", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const calls = spyCalls(bridge);
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    (await screen.findByRole("textbox")).focus();
+    await user.keyboard("{Escape}");
+    expect(calls).not.toContain("overlay_hide");
+    await user.click(screen.getByRole("button", { name: "Minimizar para a bandeja" }));
+    expect(calls).toContain("overlay_hide");
+  });
+
+  it("compact Overlay has window controls", async () => {
+    await freshApp({ signedIn: true });
+    render(<OverlayApp />);
+    await screen.findByRole("textbox");
+    expect(screen.getByRole("button", { name: "Expandir" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Aparência" })).toBeInTheDocument();
+  });
+
+  it("opacity is adjusted from the Overlay itself", async () => {
+    await freshApp({ signedIn: true });
+    const { useApp } = await import("../state/app");
+    const { fireEvent } = await import("@testing-library/react");
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Aparência" }));
+    const slider = within(screen.getByRole("dialog", { name: "Aparência" })).getByRole("slider", { name: "Opacidade do Overlay" });
+    fireEvent.change(slider, { target: { value: "60" } });
+    expect(document.documentElement.style.getPropertyValue("--overlay-opacity")).toBe("0.6");
+    await waitFor(() => expect(useApp.getState().settings?.opacity).toBe(0.6), { timeout: 2000 });
+  });
+
+  it("model picker switches the mode", async () => {
+    await freshApp({ signedIn: true });
+    const { useSession } = await import("./session");
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Expandir" }));
+    await user.click(await screen.findByRole("button", { name: /modo Chat/ }));
+    await user.click(within(screen.getByRole("dialog", { name: "Modelo e modo" })).getByRole("menuitemradio", { name: /Tarefa/ }));
+    expect(useSession.getState().mode).toBe("task");
+  });
+});

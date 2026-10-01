@@ -7,7 +7,6 @@
 
 export type Theme = "system" | "light" | "dark";
 export type Language = "ptBr" | "en";
-export type FocusLoss = "hide" | "keepOpen";
 
 export interface Settings {
   theme: Theme;
@@ -16,7 +15,8 @@ export interface Settings {
   invokeShortcut: string;
   doubleTapCtrl: boolean;
   startWithWindows: boolean;
-  focusLoss: FocusLoss;
+  /** Hide when another window takes focus (default off: stays open). */
+  hideOnBlur: boolean;
   privacyPauseShortcut: string;
   pushToTalkShortcut: string;
   globalVoiceShortcut: string;

@@ -18,10 +18,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec.",
+  "limitations": "Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec. Evidence invalidated because an input changed.",
   "observations": "1 processo; janela overlay vis=False; nenhuma janela visível. Sem --background o Overlay aparece de propósito (main.rs: saudação/onboarding da primeira execução, docs/qa/instalacao.md passo 3) — conflita com o texto do AC-001.",
   "procedure": "Start-Process aura.exe --background; após 4 s EnumWindows/IsWindowVisible no PID",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:7fa4e62a8c03224013eebd6f2921d413ccdb2f7ad00dd47467679f6f4d0b594d",
   "ticket": "TK-001",
   "timestamp": "2026-10-01T00:06:34+00:00"

@@ -5,7 +5,8 @@
 import { spawn, type ChildProcess } from "node:child_process";
 import path from "node:path";
 
-const app = path.resolve(import.meta.dirname, "../../../target/release/aura.exe");
+// AURA_E2E_APP: another build (e.g. while target/release/aura.exe is in use).
+const app = process.env.AURA_E2E_APP ?? path.resolve(import.meta.dirname, "../../../target/release/aura.exe");
 let driver: ChildProcess | undefined;
 
 export const config: WebdriverIO.Config = {

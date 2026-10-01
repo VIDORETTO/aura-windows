@@ -1,13 +1,15 @@
 @import "tailwindcss";
 
 /* Design tokens (docs/design/ui-ux.md). Light first, dark via media query or
-   [data-theme="dark"]; the Overlay alpha is scaled by --overlay-opacity. */
+   [data-theme="dark"]. --overlay-opacity (50–100%) scales every surface:
+   the window background fully, cards partly, menus stay legible. */
 :root {
   --overlay-opacity: 0.92;
   --surface-rgb: 249 249 251;
-  --surface-alpha: 0.72;
-  --surface: rgb(var(--surface-rgb) / calc(var(--surface-alpha) * var(--overlay-opacity) / 0.72));
-  --surface-strong: rgba(255, 255, 255, 0.92);
+  --strong-rgb: 255 255 255;
+  --surface: rgb(var(--surface-rgb) / var(--overlay-opacity));
+  --surface-strong: rgb(var(--strong-rgb) / calc(0.5 + 0.45 * var(--overlay-opacity)));
+  --surface-menu: rgb(var(--strong-rgb) / max(0.96, var(--overlay-opacity)));
   --surface-hover: rgba(0, 0, 0, 0.04);
   --border: rgba(0, 0, 0, 0.08);
   --text: #1b1b1f;
@@ -17,7 +19,7 @@
   --danger: #c42b1c;
   --warning: #9d5d00;
   --success: #0f7b0f;
-  --radius-lg: 14px;
+  --radius-lg: 8px;
   --radius-md: 8px;
   --shadow-overlay: 0 16px 48px rgba(0, 0, 0, 0.18);
   --ease: cubic-bezier(0.2, 0, 0, 1);
@@ -29,8 +31,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --surface-rgb: 28 28 32;
-    --surface-alpha: 0.68;
-    --surface-strong: rgba(38, 38, 44, 0.9);
+    --strong-rgb: 40 40 46;
     --surface-hover: rgba(255, 255, 255, 0.06);
     --border: rgba(255, 255, 255, 0.08);
     --text: #f2f2f5;
@@ -45,8 +46,7 @@
 
 :root[data-theme="dark"] {
   --surface-rgb: 28 28 32;
-  --surface-alpha: 0.68;
-  --surface-strong: rgba(38, 38, 44, 0.9);
+  --strong-rgb: 40 40 46;
   --surface-hover: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.08);
   --text: #f2f2f5;
@@ -63,6 +63,7 @@
   :root {
     --surface: Canvas;
     --surface-strong: Canvas;
+    --surface-menu: Canvas;
     --border: CanvasText;
     --text: CanvasText;
     --text-muted: CanvasText;
@@ -105,12 +106,15 @@ body {
 }
 
 body.settings {
-  background: var(--surface-strong);
+  background: rgb(var(--strong-rgb));
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+/* In a layer so utilities (e.g. the borderless composer) can opt out. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }
 
 textarea,
@@ -128,12 +132,16 @@ input,
   }
 }
 
+/* The window itself is rounded (DWM) and shadowed (`shadow: true`); the shell
+   fills it edge to edge, so no CSS shadow (it would be clipped). */
 .overlay-shell {
   background: var(--surface);
-  backdrop-filter: blur(28px) saturate(1.4);
-  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-overlay);
+}
+
+.menu-surface {
+  background: var(--surface-menu);
+  backdrop-filter: blur(24px);
 }
 
 .fade-in {

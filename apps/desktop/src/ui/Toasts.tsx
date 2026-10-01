@@ -2,12 +2,13 @@ import { X } from "lucide-react";
 import { useApp } from "../state/app";
 import { cx } from "./primitives";
 
-export function Toasts() {
+/** `inline`: in the document flow (compact Overlay grows to show them). */
+export function Toasts({ inline = false }: { inline?: boolean }) {
   const notices = useApp((s) => s.notices);
   const dismiss = useApp((s) => s.dismiss);
   if (notices.length === 0) return null;
   return (
-    <div className="pointer-events-none fixed bottom-3 right-3 z-50 flex max-w-sm flex-col gap-2" aria-live="polite">
+    <div className={inline ? "flex flex-col gap-1.5 px-3 pb-2.5" : "pointer-events-none fixed bottom-16 right-3 z-50 flex max-w-sm flex-col gap-2"} aria-live="polite">
       {notices.map((n) => (
         <div
           key={n.id}

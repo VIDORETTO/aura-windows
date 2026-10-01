@@ -9,9 +9,9 @@
   "effort_id": "001-fundacao-overlay",
   "inputs": {
     "contract": {
-      "fingerprint": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705",
+      "fingerprint": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84",
       "path": "specs/001-fundacao-overlay/spec.md",
-      "revision": 1
+      "revision": 2
     },
     "plan": {
       "fingerprint": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
@@ -20,12 +20,35 @@
     }
   },
   "last_evidence": null,
+  "last_invalidation": {
+    "evidence": [
+      "EV-001",
+      "EV-002",
+      "EV-003",
+      "EV-004",
+      "EV-005",
+      "EV-006",
+      "EV-007",
+      "EV-008",
+      "EV-009",
+      "EV-010",
+      "EV-011"
+    ],
+    "inputs": {
+      "contract": {
+        "current": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84",
+        "path": "specs/001-fundacao-overlay/spec.md",
+        "recorded": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+      }
+    },
+    "timestamp": "2026-10-01T02:02:21+00:00"
+  },
   "mode": "standard",
   "next_action": "No Windows: compilar o shell Tauri e validar TK-001..006 (docs/HANDOFF.md §2, §4.1, §6 Marco 1)",
   "pending_questions": [],
   "phase": "implementation",
-  "revision": 2,
+  "revision": 3,
   "schema_version": "1.0",
   "status": "active",
-  "updated_at": "2026-09-30T02:14:33+00:00"
+  "updated_at": "2026-10-01T02:02:21+00:00"
 }

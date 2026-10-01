@@ -21,26 +21,59 @@ import { LoginCard, WelcomeModal } from "./Onboarding";
 import { FirstRun } from "./FirstRun";
 import { blurAction, useSession } from "./session";
 import { Minibar } from "./Minibar";
+import { ResizeHandles } from "./ResizeHandles";
+import { StatusBar } from "./StatusBar";
+import { floatBottom, useFloatLayout } from "../ui/floating";
 
-const COMPACT_WIDTH = 640;
 const NO_BLOCKS: never[] = [];
 
-/** In compact mode the window follows the content height. */
+/**
+ * In compact mode the window follows the content height — plus room for any
+ * open menu or preview, so nothing is clipped. The width is the user's.
+ */
 function useAutoHeight(ref: React.RefObject<HTMLDivElement | null>, compact: boolean) {
+  const extra = useFloatLayout(floatBottom);
+  const last = useRef(0);
   useLayoutEffect(() => {
     if (!compact || !inTauri() || !ref.current) return;
     const el = ref.current;
-    let last = 0;
-    const obs = new ResizeObserver(async () => {
-      const h = Math.ceil(el.getBoundingClientRect().height) + 2;
-      if (Math.abs(h - last) < 2) return;
-      last = h;
+    const fit = async () => {
+      const h = Math.max(Math.ceil(el.getBoundingClientRect().height), Math.ceil(extra));
+      if (Math.abs(h - last.current) < 2) return;
+      last.current = h;
       const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
-      await getCurrentWindow().setSize(new LogicalSize(COMPACT_WIDTH, h));
-    });
+      await getCurrentWindow().setSize(new LogicalSize(window.innerWidth, h));
+    };
+    void fit();
+    const obs = new ResizeObserver(() => void fit());
     obs.observe(el);
     return () => obs.disconnect();
-  }, [ref, compact]);
+  }, [ref, compact, extra]);
+  useEffect(() => {
+    last.current = 0;
+  }, [compact]);
+}
+
+/** Moves and resizes are remembered per monitor (001 AC-012). */
+function usePersistPlacement() {
+  useEffect(() => {
+    if (!inTauri()) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const offs: (() => void)[] = [];
+    const save = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => void api.overlayMoved().catch(() => undefined), 400);
+    };
+    void (async () => {
+      const { getCurrentWindow } = await import("@tauri-apps/api/window");
+      const w = getCurrentWindow();
+      offs.push(await w.onMoved(save), await w.onResized(save));
+    })();
+    return () => {
+      clearTimeout(timer);
+      offs.forEach((off) => off());
+    };
+  }, []);
 }
 
 export function OverlayApp() {
@@ -63,6 +96,7 @@ export function OverlayApp() {
   const running = thread?.running ?? false;
   const signedIn = !!auth?.active?.signedIn || session.providers.length > 0;
   useAutoHeight(shell, !expanded);
+  usePersistPlacement();
 
   useEffect(() => {
     void session.loadCatalog();
@@ -115,7 +149,8 @@ export function OverlayApp() {
     wasRunning.current = running;
   }, [running, thread, session.minibar, t]);
 
-  // Hide on blur unless configured to stay or an answer is streaming.
+  // Stays open on blur (default); "hide on blur" hides it, or keeps a Minibar
+  // while an answer is streaming.
   useEffect(() => {
     if (!inTauri()) return;
     let off: (() => void) | undefined;
@@ -128,7 +163,7 @@ export function OverlayApp() {
           return;
         }
         const action = blurAction({
-          keepOpen: useApp.getState().settings?.focusLoss === "keepOpen",
+          keepOpen: !(useApp.getState().settings?.hideOnBlur ?? false),
           busy: Object.values(useConversation.getState().threads).some((th) => th.running),
           pendingConsent: useApp.getState().consents.length > 0,
         });
@@ -157,9 +192,10 @@ export function OverlayApp() {
       const s = useSession.getState();
       const k = e.key.toLowerCase();
       if (e.key === "Escape") {
+        // Esc never hides the Overlay (001 AC-005, revision 2): the shortcut
+        // and "minimize to tray" do.
         if (useApp.getState().voice.state === "listening") void api.pttCancel();
         else if (s.historyOpen) s.toggleHistory(false);
-        else void api.overlayHide();
         e.preventDefault();
       } else if (e.ctrlKey && e.shiftKey && k === "s") {
         e.preventDefault();
@@ -203,14 +239,15 @@ export function OverlayApp() {
             : null;
 
   return (
-    <div className="flex h-full w-full items-start justify-center p-px" onKeyDown={onKeyDown}>
+    <div className="flex h-full w-full items-start justify-center" onKeyDown={onKeyDown}>
+      <ResizeHandles compact={!expanded} />
       <div
         ref={shell}
         className={cx("overlay-shell fade-in flex w-full flex-col overflow-hidden", expanded ? "h-full" : "h-auto")}
         style={{ fontSize: 14 }}
       >
         {session.minibar ? <Minibar thread={thread} /> : null}
-        {!session.minibar && expanded && <Header />}
+        {!session.minibar && <Header compact={!expanded} subtitle={previous ? `${previous.processName} · ${previous.title}` : null} />}
         {session.minibar ? null : !ready ? null : !signedIn ? (
           <LoginCard />
         ) : (
@@ -262,17 +299,14 @@ export function OverlayApp() {
               </div>
             )}
             <div className={cx(expanded && "border-t border-line")}>
-              <InputBar running={running} autoFocusKey={focusKey} />
+              <InputBar running={running} autoFocusKey={focusKey} compact={!expanded} />
             </div>
-            {!expanded && previous && settings && (
-              <div data-tauri-drag-region className="-mt-1 truncate px-4 pb-1.5 text-[11px] text-muted">
-                {previous.processName} · {previous.title}
-              </div>
-            )}
+            {expanded && <StatusBar />}
+            {!expanded && <Toasts inline />}
           </>
         )}
       </div>
-      <Toasts />
+      {(expanded || session.minibar || !ready || !signedIn) && <Toasts />}
     </div>
   );
 }

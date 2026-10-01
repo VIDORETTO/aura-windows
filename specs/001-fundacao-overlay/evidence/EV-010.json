@@ -18,10 +18,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados.",
+  "limitations": "Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados. Evidence invalidated because an input changed.",
   "observations": "affinity=0x11 (WDA_EXCLUDEFROMCAPTURE) com o Overlay visível; o recorte mostra só a janela de baixo — Overlay ausente da captura.",
   "procedure": "Overlay visível e focado → GetWindowDisplayAffinity + captura GDI (Graphics.CopyFromScreen, mesmo caminho BitBlt do Print Screen) recortada no retângulo do Overlay",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:d7ef327e6e4d972563fd47ff2bd8ed3e9420384cd570256cce080c7bee296d36",
   "ticket": "TK-002",
   "timestamp": "2026-10-01T00:06:57+00:00"

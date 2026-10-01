@@ -34,7 +34,7 @@ export function GeneralSection() {
         <Row label={t("general.opacity")} hint={`${Math.round(s.opacity * 100)}%`}>
           <input
             type="range"
-            min={70}
+            min={50}
             max={100}
             step={1}
             aria-label={t("general.opacity")}
@@ -52,11 +52,8 @@ export function GeneralSection() {
         <Row label={t("general.startWithWindows")}>
           <Switch label={t("general.startWithWindows")} checked={s.startWithWindows} onChange={(v) => void updateSettings({ startWithWindows: v })} />
         </Row>
-        <Row label={t("general.focusLoss")}>
-          <Select aria-label={t("general.focusLoss")} value={s.focusLoss} onChange={(e) => void updateSettings({ focusLoss: e.target.value as never })}>
-            <option value="hide">{t("general.focusLoss.hide")}</option>
-            <option value="keepOpen">{t("general.focusLoss.keepOpen")}</option>
-          </Select>
+        <Row label={t("general.hideOnBlur")} hint={t("general.hideOnBlur.hint")}>
+          <Switch label={t("general.hideOnBlur")} checked={s.hideOnBlur} onChange={(v) => void updateSettings({ hideOnBlur: v })} />
         </Row>
         <Row label={t("general.attachScreen")}>
           <Switch label={t("general.attachScreen")} checked={s.attachScreenOnOpen} onChange={(v) => void updateSettings({ attachScreenOnOpen: v })} />

@@ -5,16 +5,17 @@ id: TK-001
 effort: 001-fundacao-overlay
 type: delivery
 status: implemented
-ticket_revision: 4
+ticket_revision: 5
 requires: []
 requirement_refs: ["FR-001"]
 acceptance_refs: ["AC-001", "AC-002", "AC-003"]
-spec_revision: 1
+spec_revision: 2
 plan_revision: 1
 owned_areas: ["Cargo.toml", "rust-toolchain.toml", ".github/workflows", "apps/desktop", "crates/aura-core"]
-verification_status: partial
-last_update: check
+verification_status: stale
+last_update: Evidence invalidated after an input changed.
 ---
+
 
 
 

@@ -22,10 +22,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "Item Sair da bandeja não clicado (encerramento forçado é o caso mais forte do Job Object); filho de teste ping/debug_spawn_child não existe — usado o app-server real; worker ASR não exercitado.",
+  "limitations": "Item Sair da bandeja não clicado (encerramento forçado é o caso mais forte do Job Object); filho de teste ping/debug_spawn_child não existe — usado o app-server real; worker ASR não exercitado. Evidence invalidated because an input changed.",
   "observations": "Primeira execução baixou e verificou o app-server fixado (bin/codex/rust-v0.159.0); diagnostics: appServer ready, 1 launch; model/list respondeu em 105–565 ms. Após o kill forçado o filho sumiu em < 3 s; nenhum codex-app-server órfão. Encerramento normal (fim da sessão WebDriver) também não deixou órfãos.",
   "procedure": "Modo real via WebDriver: models_list sobe codex-app-server.exe (filho adotado pelo Job Object) → taskkill /F /IM aura.exe → após 3 s Get-Process pelo PID do filho",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:9c3fa42c3720d25e533d1494e2411f0b903c7bbf95142c738713982702bc2650",
   "ticket": "TK-001",
   "timestamp": "2026-10-01T00:15:36+00:00"

@@ -25,10 +25,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.",
+  "limitations": "Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.",
   "observations": "Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).",
   "procedure": "cargo test -p aura-core -p aura-store; cargo check/clippy -p aura-win --target x86_64-pc-windows-msvc; pnpm -C apps/desktop test (Settings)",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:b5c0eec6ec0672b58a13066a45b9efaa2a44afe05ac1ed96bcdffc498ba05c66",
   "ticket": "TK-003",
   "timestamp": "2026-09-30T02:11:33+00:00"

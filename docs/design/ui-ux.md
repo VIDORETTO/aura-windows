@@ -20,10 +20,10 @@ Objetivo: parecer parte do Windows 11, desaparecer quando não é necessário e 
 | `--text` / `--text-muted` | `#1b1b1f` / `#5d5d66` | `#f2f2f5` / `#a0a0aa` | Texto |
 | `--accent` | cor de destaque do Windows (lida do sistema) | idem | Foco, ações primárias |
 | `--danger` / `--warning` / `--success` | `#c42b1c` / `#9d5d00` / `#0f7b0f` | `#ff99a4` / `#fce100` / `#6ccb5f` | Estados |
-| `--radius-lg` / `--radius-md` | 14 px / 8 px | idem | Overlay / controles |
+| `--radius-lg` / `--radius-md` | 8 px / 8 px | idem | Overlay (igual ao canto do Windows 11) / controles |
 | `--shadow-overlay` | `0 16px 48px rgba(0,0,0,.18)` | `0 16px 48px rgba(0,0,0,.45)` | Elevação |
 
-A opacidade do Overlay é ajustável (70–100%) multiplicando o alfa de `--surface`. Com "alto contraste" do Windows ativo, transparência é desligada e as cores do sistema são usadas.
+A opacidade do Overlay é ajustável (50–100%) no próprio Overlay (botão Aparência) e em Configurações: escala `--surface` inteira, os cartões em parte e os menus nunca abaixo de 96%. Com os "Efeitos de transparência" do Windows ligados há acrylic do sistema atrás; desligados, nenhum fundo de sistema (senão o DWM pinta um sólido que anula a opacidade). Com "alto contraste" do Windows ativo, transparência é desligada e as cores do sistema são usadas.
 
 ## Overlay
 
@@ -49,16 +49,18 @@ Expandido (ao enviar ou Ctrl+↓, 640 × até 70% da altura do monitor)
 
 - Aparece centralizado no terço superior do monitor do Aplicativo anterior; lembra posição e tamanho por monitor se o usuário mover/redimensionar.
 - Sempre no topo, fora da taskbar e do Alt+Tab, invisível em capturas.
-- Arrastável pela área vazia do cabeçalho; redimensionável pelas bordas no estado expandido.
-- Ao perder foco sem resposta em andamento: esconde (configurável: "manter aberto").
-- Ao perder foco com resposta em andamento: vira Minibar.
+- Cabeçalho em todos os estados (no compacto, uma faixa fina): arrastar, histórico, aparência, configurações, expandir/compactar e **Minimizar para a bandeja** (`—`).
+- Redimensionável pelas bordas e cantos; no compacto só a largura (a altura segue o conteúdo). Posição e tamanho lembrados por monitor e modo.
+- Menus (`/`, `@`, modelo, aparência) e prévias nunca são cortados: no compacto abrem para baixo e a janela cresce; no expandido abrem para o lado com espaço.
+- **Fica aberto ao perder o foco** (padrão). Só esconde pelo atalho ou por Minimizar. Opção "Esconder ao clicar fora": esconde, ou vira Minibar com resposta em andamento.
+- Status (plano/provedor, contexto, perfil) numa linha abaixo da entrada; indicadores de captura (REC, pausa) também no compacto.
 
 ## Mapa de teclado
 
 | Tecla | Ação |
 | --- | --- |
 | Atalho de invocação | Mostrar/esconder |
-| `Esc` | Fecha menu aberto → cancela gravação → esconde Overlay |
+| `Esc` | Fecha menu aberto → cancela gravação → fecha histórico (nunca esconde o Overlay) |
 | `Enter` / `Shift+Enter` | Enviar / nova linha |
 | `Ctrl+Enter` durante resposta | Enviar como direcionamento (steer) |
 | `Ctrl+.` | Interromper resposta |

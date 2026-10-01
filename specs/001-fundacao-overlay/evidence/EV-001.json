@@ -18,10 +18,10 @@
     "specs/001-fundacao-overlay/spec.md",
     "specs/001-fundacao-overlay/plan.md"
   ],
-  "limitations": "sem Windows",
+  "limitations": "sem Windows Evidence invalidated because an input changed.",
   "observations": "ok",
   "procedure": "cargo test -p aura-core",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:9195977538d39bfdda66254d00625c6b474fa18f1d89036518e2da75aa42b046",
   "ticket": "TK-005",
   "timestamp": "2026-09-29T23:48:46+00:00"

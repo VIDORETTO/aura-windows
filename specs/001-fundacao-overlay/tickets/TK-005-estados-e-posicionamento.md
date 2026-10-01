@@ -5,16 +5,17 @@ id: TK-005
 effort: 001-fundacao-overlay
 type: delivery
 status: implemented
-ticket_revision: 3
+ticket_revision: 5
 requires: ["TK-003", "TK-004"]
 requirement_refs: ["FR-004"]
 acceptance_refs: ["AC-011", "AC-012", "AC-013"]
-spec_revision: 1
+spec_revision: 2
 plan_revision: 1
 owned_areas: ["crates/aura-core/src/placement.rs", "apps/desktop/src/overlay", "apps/desktop/src-tauri/src/overlay/placement.rs", "crates/aura-store/src/placement_repo.rs"]
-verification_status: partial
-last_update: Lógica implementada e testada no Linux; validação no Windows pendente (docs/HANDOFF.md §4 e §6).
+verification_status: stale
+last_update: Evidence invalidated after an input changed.
 ---
+
 
 
 
@@ -62,7 +63,7 @@ Não inclui: Minibar durante resposta (009), conteúdo da conversa (002).
 
 - **AC-011**: Vitest: estado `compact` + `Ctrl+↓` → `expanded`; `Ctrl+↑` → `compact`; com `matchMedia('(prefers-reduced-motion: reduce)')` → classe `motion-none`. Manual: gravação de tela mostra transição ≤ 200 ms.
 - **AC-012** (unit): monitores `[A{work 0,0,1920,1040, dpi 96}, B{1920,0,2560,1400, dpi 144}]`, alvo B, salvo `{B, x:2100,y:100,w:700,h:500}` → `Rect(2100,100,700,500)`; alvo A sem salvo, compacto 640×64 → `Rect(640, 315, 640, 64)` (x=(1920−640)/2, y=round(1040/3−32)=round(314,67)=315); salvo em `C` inexistente → padrão do alvo; salvo parcialmente fora (`x:1800,w:400` em A) → recortado para `x:1520`.
-- **AC-013**: E2E: Overlay visível → clicar no Bloco de Notas → Overlay invisível; com `keep_open_on_blur=true` → continua visível.
+- **AC-013**: E2E: Overlay visível → clicar no Bloco de Notas → Overlay continua visível (padrão); com `hide_on_blur=true` → invisível. Valor antigo `focusLoss: "hide"` gravado não é migrado (spec revisão 2).
 
 ## Dependências e sequência de execução
 

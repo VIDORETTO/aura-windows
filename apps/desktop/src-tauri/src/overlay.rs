@@ -99,6 +99,11 @@ pub fn show(app: &AppHandle) {
     if let Some(r) = place_overlay(&monitors(app), &monitor, saved.as_ref(), mode) {
         apply_rect(&w, r);
     }
+    // Re-applied on every show: follows the Windows transparency setting.
+    #[cfg(windows)]
+    if let Ok(hwnd) = w.hwnd() {
+        aura_win::windows_info::apply_overlay_chrome(hwnd.0 as usize as u64);
+    }
     let _ = w.show();
     let _ = w.set_focus();
     #[cfg(windows)]
@@ -159,7 +164,9 @@ pub fn set_mode(app: &AppHandle, mode: OverlayMode) {
 /// Called by the UI after the user moved/resized the Overlay.
 pub fn remember_placement(app: &AppHandle, h: &Host) {
     let Some(w) = window(app) else { return };
-    let (Ok(pos), Ok(size)) = (w.outer_position(), w.outer_size()) else {
+    // Inner size: `apply_rect` restores it with `set_size` (inner). The outer
+    // size includes the invisible resize borders and would grow every reopen.
+    let (Ok(pos), Ok(size)) = (w.outer_position(), w.inner_size()) else {
         return;
     };
     let monitor = target_monitor(app, h.previous_app().as_ref());
@@ -185,7 +192,9 @@ pub fn decorate(app: &AppHandle) {
         && let Ok(hwnd) = w.hwnd()
     {
         let id = hwnd.0 as usize as u64;
-        if !aura_win::windows_info::exclude_from_capture(id, true) {
+        // Visual QA screenshots of the demo build only (never in a shipped build).
+        let capturable = cfg!(feature = "demo") && std::env::var_os("AURA_QA_CAPTURABLE").is_some();
+        if !capturable && !aura_win::windows_info::exclude_from_capture(id, true) {
             tracing::warn!("SetWindowDisplayAffinity failed: overlay may appear in captures");
         }
         aura_win::windows_info::apply_overlay_chrome(id);

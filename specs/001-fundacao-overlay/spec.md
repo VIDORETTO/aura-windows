@@ -2,7 +2,7 @@
 schema: hybrid/spec
 schema_version: "1.0"
 effort_id: 001-fundacao-overlay
-revision: 1
+revision: 2
 status: accepted
 profile: standard
 ---
@@ -59,7 +59,7 @@ Independent demonstration: com o Bloco de Notas em foco, pressionar o atalho, di
 #### Acceptance scenarios
 
 - **AC-004** — Dado o Aura ocioso há pelo menos 1 minuto e outro aplicativo em primeiro plano, quando o usuário pressiona o Atalho de invocação (padrão `Ctrl+Shift+Space`), então o Overlay fica visível no monitor do Aplicativo anterior com o cursor na barra de entrada, em até 100 ms no p95 de 50 invocações medidas.
-- **AC-005** — Dado o Overlay visível com a barra de entrada vazia e nenhum menu aberto, quando o usuário pressiona `Esc` ou o Atalho de invocação, então o Overlay some e o Aplicativo anterior volta a ter o foco do teclado.
+- **AC-005** — Dado o Overlay visível, quando o usuário pressiona o Atalho de invocação ou o botão "Minimizar para a bandeja", então o Overlay some e o Aplicativo anterior volta a ter o foco do teclado; `Esc` só fecha menus, histórico ou gravação de voz e nunca esconde o Overlay (revisão 2).
 - **AC-006** — Dado o gesto de duplo toque ativado, quando o usuário pressiona e solta `Ctrl` duas vezes em até 400 ms sem outra tecla entre elas, então o Overlay alterna; dado um único `Ctrl`, `Ctrl+C`, ou dois toques separados por mais de 400 ms, então nada acontece; após uma ativação, toques nos 600 ms seguintes são ignorados.
 - **AC-007** — Dado que o usuário escolhe um atalho já registrado por outro aplicativo, quando tenta salvar, então a configuração mostra "Atalho em uso por outro aplicativo" e o atalho anterior continua funcionando.
 
@@ -73,7 +73,7 @@ Independent demonstration: abrir o Overlay sobre um wallpaper colorido, ajustar 
 
 - **AC-008** — Dado o Windows 11, quando o Overlay aparece, então usa fundo Acrylic translúcido com cantos arredondados e sombra, fica acima de janelas normais e de apps em tela cheia sem bordas, e não aparece na taskbar nem no Alt+Tab; dado o Windows 10, então usa fundo desfocado ou sólido translúcido com os mesmos comportamentos.
 - **AC-009** — Dado o Overlay visível, quando qualquer ferramenta captura a tela (Windows.Graphics.Capture, Ferramenta de Captura, compartilhamento do Teams/Zoom, OBS), então o Overlay não aparece no resultado capturado.
-- **AC-010** — Dado a janela de Configurações, quando o usuário ajusta a opacidade entre 70% e 100% ou escolhe tema Sistema/Claro/Escuro, então o Overlay aplica a mudança imediatamente e após reiniciar o app.
+- **AC-010** — Dado o controle de aparência do próprio Overlay ou a janela de Configurações, quando o usuário ajusta a opacidade entre 50% e 100% ou escolhe tema Sistema/Claro/Escuro, então o Overlay inteiro (fundo, cartões e menus) aplica a mudança imediatamente e após reiniciar o app.
 
 ### US-004 — Overlay que se adapta ao meu jeito (Priority: P1)
 
@@ -85,7 +85,7 @@ Independent demonstration: expandir, arrastar para outro canto, fechar, reabrir,
 
 - **AC-011** — Dado o Overlay compacto, quando o usuário pressiona `Ctrl+↓` (ou envia uma mensagem), então ele expande com animação de no máximo 200 ms; `Ctrl+↑` volta ao compacto; com "reduzir movimento" do Windows ativo, a transição é instantânea.
 - **AC-012** — Dado que o usuário moveu/redimensionou o Overlay em um monitor, quando o reabre nesse monitor, então ele aparece na mesma posição e tamanho; dado que o monitor salvo não existe mais, então aparece na posição padrão (centro do terço superior) do monitor do Aplicativo anterior, inteiramente visível.
-- **AC-013** — Dado o Overlay visível sem resposta em andamento, quando o foco passa para outra janela, então ele se esconde; dado "Manter aberto ao perder foco" ativado, então ele permanece visível.
+- **AC-013** — Dado o Overlay visível, quando o foco passa para outra janela, então ele permanece visível (padrão); dado "Esconder ao clicar fora" ativado, então ele se esconde sem resposta em andamento e vira Minibar com resposta em andamento (revisão 2).
 
 ### US-005 — Configurações que persistem (Priority: P1)
 
@@ -110,8 +110,8 @@ Como usuário, quero que dados sensíveis guardados pelo Aura fiquem ilegíveis 
 - **FR-001** — O sistema MUST rodar como processo residente de instância única com ícone e menu na bandeja e encerrar todos os seus processos ao sair.
 - **FR-002** — O sistema MUST mostrar/esconder o Overlay por um Atalho de invocação configurável e, opcionalmente, pelo gesto de duplo toque em Ctrl, devolvendo o foco ao Aplicativo anterior ao esconder.
 - **FR-003** — O Overlay MUST ser translúcido, sempre no topo, fora da taskbar e do Alt+Tab e excluído de capturas de tela.
-- **FR-004** — O Overlay MUST ter estados compacto e expandido, ser movível e redimensionável, lembrar posição/tamanho por monitor e seguir a regra configurada ao perder foco.
-- **FR-005** — O sistema MUST persistir configurações (tema, opacidade, atalho, duplo toque, iniciar com Windows, manter aberto ao perder foco) e aplicá-las sem reinício.
+- **FR-004** — O Overlay MUST ter estados compacto e expandido, ser movível pelo cabeçalho e redimensionável pelas bordas (no compacto só a largura; a altura segue o conteúdo e cresce para caber menus), lembrar posição/tamanho por monitor e seguir a regra configurada ao perder foco.
+- **FR-005** — O sistema MUST persistir configurações (tema, opacidade, atalho, duplo toque, iniciar com Windows, esconder ao clicar fora) e aplicá-las sem reinício.
 - **FR-006** — O sistema MUST cifrar valores sensíveis em repouso com chave atrelada ao usuário do Windows e MUST redigir valores sensíveis nos logs.
 - **FR-007** — O sistema MUST abrir o Overlay em até 100 ms p95 a quente e SHOULD manter host + WebView2 ociosos em até 150 MB de working set privado.
 

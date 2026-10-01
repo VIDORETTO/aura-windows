@@ -5,16 +5,17 @@ id: TK-004
 effort: 001-fundacao-overlay
 type: delivery
 status: implemented
-ticket_revision: 3
+ticket_revision: 5
 requires: ["TK-002"]
 requirement_refs: ["FR-005"]
 acceptance_refs: ["AC-010", "AC-014", "AC-015"]
-spec_revision: 1
+spec_revision: 2
 plan_revision: 1
 owned_areas: ["crates/aura-core/src/settings.rs", "crates/aura-store", "apps/desktop/src/settings", "apps/desktop/src-tauri/src/settings.rs"]
-verification_status: partial
-last_update: Lógica implementada e testada no Linux; validação no Windows pendente (docs/HANDOFF.md §4 e §6).
+verification_status: stale
+last_update: Evidence invalidated after an input changed.
 ---
+
 
 
 
@@ -61,8 +62,8 @@ Não inclui: cofre de segredos (TK-006), seções de provedores/captura/voz (esf
 
 ## Exemplos de aceite
 
-- **AC-010**: `settings_update({opacity: 0.8})` → Overlay com `--overlay-alpha: 0.8` imediatamente (Vitest com mockIPC verifica a CSS var); reiniciar app → continua 0.8. `settings_update({opacity: 0.5})` → erro `OutOfRange{opacity}` e valor anterior mantido. Tema Escuro → classe `theme-dark` no root.
-- **AC-014**: salvar `{keep_open_on_blur: true, theme: Dark}` → `Store::open` novamente no mesmo arquivo → `SettingsRepo::load` retorna esses valores (teste de integração com SQLite real em tempdir); E2E: abrir Configurações por `Ctrl+,` e pela bandeja.
+- **AC-010**: `settings_update({opacity: 0.8})` → Overlay com `--overlay-alpha: 0.8` imediatamente (Vitest com mockIPC verifica a CSS var); reiniciar app → continua 0.8. `settings_update({opacity: 0.49})` → erro `OutOfRange{opacity}` e valor anterior mantido. Tema Escuro → classe `theme-dark` no root.
+- **AC-014**: salvar `{hide_on_blur: true, theme: Dark}` → `Store::open` novamente no mesmo arquivo → `SettingsRepo::load` retorna esses valores (teste de integração com SQLite real em tempdir); E2E: abrir Configurações por `Ctrl+,` e pela bandeja.
 - **AC-015**: `settings_update({start_with_windows: true})` → chave Run `Aura` com `"<exe>" --background`; `false` → chave ausente (teste Windows); roteiro manual: logoff/logon mostra só a bandeja.
 
 ## Dependências e sequência de execução

@@ -6,6 +6,7 @@ import type { QuickCommand, SkillReview } from "../ipc/types";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { IconButton, cx } from "../ui/primitives";
+import { Floating } from "../ui/floating";
 import { ChipList } from "./ChipList";
 import { useSession } from "./session";
 
@@ -34,7 +35,8 @@ export function filterMenu(items: MenuItem[], query: string): MenuItem[] {
   return items.filter((i) => i.label.toLowerCase().includes(q)).slice(0, 8);
 }
 
-export function InputBar({ running, autoFocusKey }: { running: boolean; autoFocusKey: number }) {
+/** `compact`: the window follows the content, so menus open below and it grows. */
+export function InputBar({ running, autoFocusKey, compact = false }: { running: boolean; autoFocusKey: number; compact?: boolean }) {
   const t = useT();
   const chips = useSession((s) => s.chips);
   const removeChip = useSession((s) => s.removeChip);
@@ -54,6 +56,7 @@ export function InputBar({ running, autoFocusKey }: { running: boolean; autoFocu
   const [menuIndex, setMenuIndex] = useState(0);
   const [atOpen, setAtOpen] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const bar = useRef<HTMLDivElement>(null);
   const lastVoice = useRef<string | null>(null);
 
   useEffect(() => {
@@ -182,9 +185,10 @@ export function InputBar({ running, autoFocusKey }: { running: boolean; autoFocu
   const transcribing = voice.state === "transcribing";
 
   return (
-    <div className="relative flex flex-col gap-1.5 px-3 py-2.5">
+    <div ref={bar} className="relative flex flex-col gap-1.5 px-3 py-2">
       {menu.length > 0 && (
-        <ul role="listbox" aria-label="Sugestões" className="fade-in absolute bottom-full left-3 right-3 mb-1 max-h-72 overflow-y-auto rounded-md border border-line bg-surface-strong py-1 shadow-lg">
+        <Floating anchor={bar} placement={compact ? "below" : "above"} grow={compact} matchWidth className="px-3">
+        <ul role="listbox" aria-label="Sugestões" className="menu-surface rounded-md border border-line py-1 shadow-lg">
           {menu.map((m, i) => (
             <li
               key={m.id}
@@ -201,8 +205,9 @@ export function InputBar({ running, autoFocusKey }: { running: boolean; autoFocu
             </li>
           ))}
         </ul>
+        </Floating>
       )}
-      <ChipList chips={chips} onRemove={(id) => void removeChip(id)} />
+      <ChipList chips={chips} onRemove={(id) => void removeChip(id)} grow={compact} />
       <div className="flex items-end gap-1.5">
         <div className="mb-1.5 flex h-5 w-5 shrink-0 items-center justify-center" aria-hidden>
           <span className={cx("h-2.5 w-2.5 rounded-full", running ? "animate-pulse bg-accent" : "bg-accent/70")} />
@@ -215,7 +220,7 @@ export function InputBar({ running, autoFocusKey }: { running: boolean; autoFocu
           placeholder={voice.state === "partial" ? `🎙 ${voice.text}` : listening ? t("voice.listening") : transcribing ? t("voice.transcribing") : hasThread ? t("input.reply") : t("input.placeholder")}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
-          className="max-h-[180px] min-h-[28px] flex-1 resize-none bg-transparent py-1 text-[15px] leading-[21px] outline-none placeholder:text-muted"
+          className="max-h-[180px] min-h-[28px] flex-1 resize-none bg-transparent py-1 text-[15px] leading-[21px] outline-none placeholder:text-muted focus-visible:outline-none"
         />
         <IconButton
           label={t("input.mic")}

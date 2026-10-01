@@ -88,7 +88,7 @@ impl<'a> SettingsRepo<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use aura_core::settings::{FocusLossBehavior, SettingsPatch, Theme};
+    use aura_core::settings::{SettingsPatch, Theme};
 
     #[test]
     fn saved_settings_survive_reopening_the_database() {
@@ -99,7 +99,7 @@ mod tests {
             let s = Settings::default()
                 .apply(&SettingsPatch {
                     theme: Some(Theme::Dark),
-                    focus_loss: Some(FocusLossBehavior::KeepOpen),
+                    hide_on_blur: Some(true),
                     opacity: Some(0.8),
                     ..Default::default()
                 })
@@ -109,8 +109,24 @@ mod tests {
         let store = Store::open(&path).unwrap();
         let loaded = SettingsRepo::new(&store).load().unwrap();
         assert_eq!(loaded.theme, Theme::Dark);
-        assert_eq!(loaded.focus_loss, FocusLossBehavior::KeepOpen);
+        assert!(loaded.hide_on_blur);
         assert_eq!(loaded.opacity, 0.8);
+    }
+
+    #[test]
+    fn legacy_hide_on_focus_loss_no_longer_hides() {
+        // Revision 2 of 001: the old `focusLoss: "hide"` default must not carry over.
+        let store = Store::open_in_memory().unwrap();
+        store
+            .with_conn(|c| {
+                c.execute(
+                    "INSERT INTO settings(key, value_json, updated_at) VALUES ('focusLoss', '\"hide\"', 0)",
+                    [],
+                )?;
+                Ok(())
+            })
+            .unwrap();
+        assert!(!SettingsRepo::new(&store).load().unwrap().hide_on_blur);
     }
 
     #[test]

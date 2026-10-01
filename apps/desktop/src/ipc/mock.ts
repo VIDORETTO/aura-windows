@@ -15,7 +15,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   invokeShortcut: "Ctrl+Shift+Space",
   doubleTapCtrl: false,
   startWithWindows: false,
-  focusLoss: "hide",
+  hideOnBlur: false,
   privacyPauseShortcut: "Ctrl+Shift+Alt+P",
   pushToTalkShortcut: "Ctrl+Space",
   globalVoiceShortcut: "Ctrl+Alt+Space",
@@ -146,7 +146,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
   const handlers: Record<string, (a: Record<string, any>) => unknown> = {
     settings_get: () => state.settings,
     settings_update: ({ patch }) => {
-      if (patch.opacity !== undefined && (patch.opacity < 0.7 || patch.opacity > 1)) throw { code: "settings", message: "opacidade fora do intervalo" };
+      if (patch.opacity !== undefined && (patch.opacity < 0.5 || patch.opacity > 1)) throw { code: "settings", message: "opacidade fora do intervalo" };
       state.settings = { ...state.settings, ...patch };
       host({ channel: "settings", event: state.settings });
       return state.settings;

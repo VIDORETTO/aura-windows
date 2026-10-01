@@ -5,16 +5,17 @@ id: TK-002
 effort: 001-fundacao-overlay
 type: delivery
 status: implemented
-ticket_revision: 3
+ticket_revision: 4
 requires: ["TK-001"]
 requirement_refs: ["FR-003"]
 acceptance_refs: ["AC-008", "AC-009"]
-spec_revision: 1
+spec_revision: 2
 plan_revision: 1
 owned_areas: ["apps/desktop/src-tauri/src/overlay", "apps/desktop/src/overlay", "apps/desktop/src/design"]
-verification_status: partial
-last_update: Lógica implementada e testada no Linux; validação no Windows pendente (docs/HANDOFF.md §4 e §6).
+verification_status: stale
+last_update: Evidence invalidated after an input changed.
 ---
+
 
 
 

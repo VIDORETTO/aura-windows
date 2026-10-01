@@ -3,7 +3,7 @@ schema: hybrid/plan
 schema_version: "1.0"
 effort_id: 001-fundacao-overlay
 revision: 1
-spec_revision: 1
+spec_revision: 2
 status: ready
 ---
 
