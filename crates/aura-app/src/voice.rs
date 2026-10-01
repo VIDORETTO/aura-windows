@@ -57,6 +57,8 @@ pub struct Voice {
     cloud: RwLock<Option<Arc<dyn Transcriber>>>,
     audio: Arc<dyn AudioSource>,
     events: broadcast::Sender<HostEvent>,
+    /// Runtime captured in `new`: `install`/`ptt` may run off the runtime.
+    rt: tokio::runtime::Handle,
 }
 
 impl Voice {
@@ -92,6 +94,7 @@ impl Voice {
             cloud: RwLock::new(None),
             audio,
             events,
+            rt: tokio::runtime::Handle::current(),
         }
     }
 
@@ -138,7 +141,7 @@ impl Voice {
             d.insert(id.to_string(), token.clone());
         }
         let me = self.clone();
-        tokio::spawn(async move {
+        self.rt.spawn(async move {
             let events = me.events.clone();
             let id = entry.id.clone();
             let progress = move |p: aura_asr::download::Progress| {
@@ -247,7 +250,7 @@ impl Voice {
         );
         let mut states = p.states();
         let events = self.events.clone();
-        tokio::spawn(async move {
+        self.rt.spawn(async move {
             while let Ok(s) = states.recv().await {
                 let _ = events.send(HostEvent::Voice(s));
             }

@@ -109,6 +109,55 @@ async fn paused_privacy_blocks_user_capture() {
     assert!(!e.host.privacy().paused);
 }
 
+// Tauri runs sync commands (and tray/hotkey handlers) on threads without a Tokio
+// context; the host must not rely on the caller's runtime there.
+#[tokio::test]
+async fn privacy_commands_work_outside_the_runtime() {
+    let e = env().await;
+    let mut rx = e.host.subscribe();
+    let host = e.host.clone();
+    std::thread::spawn(move || host.set_paused(true).map(|v| v.paused))
+        .join()
+        .expect("set_paused must not panic off the runtime")
+        .unwrap();
+    until(
+        &mut rx,
+        |ev| matches!(ev, HostEvent::Privacy(s) if s.paused),
+    )
+    .await;
+}
+
+struct NoSpace;
+impl aura_asr::download::DiskSpace for NoSpace {
+    fn free_bytes(&self, _: &std::path::Path) -> Option<u64> {
+        Some(0)
+    }
+}
+
+#[tokio::test]
+async fn voice_install_works_outside_the_runtime() {
+    let dir = tempfile::tempdir().unwrap();
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    // No free space: the download ends with an error before any network access.
+    cfg.disk = Arc::new(NoSpace);
+    let host = Host::start(cfg).await.unwrap();
+    let mut rx = host.subscribe();
+    let id = host.voice_models()[0].entry.id.clone();
+    let h = host.clone();
+    let model = id.clone();
+    std::thread::spawn(move || h.install_voice_model(&model))
+        .join()
+        .expect("install must not panic off the runtime")
+        .unwrap();
+    until(
+        &mut rx,
+        |ev| matches!(ev, HostEvent::Download { id: got, error: Some(_), .. } if *got == id),
+    )
+    .await;
+}
+
 fn tools_of(
     e: &Env,
     host_events: tokio::sync::broadcast::Sender<HostEvent>,

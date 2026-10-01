@@ -200,6 +200,9 @@ pub struct Host {
     profiles: crate::profiles::ProfilesRepo,
     /// Frozen screens waiting for a region selection (token → frame).
     frozen: Mutex<HashMap<String, aura_capture::frame::Frame>>,
+    /// Runtime captured at start: sync methods are called from threads without
+    /// a Tokio context (Tauri sync commands, tray, hotkeys).
+    rt: tokio::runtime::Handle,
 }
 
 /// One MCP server as the running app-server sees it.
@@ -435,6 +438,7 @@ impl Host {
             capture,
             frozen: Mutex::new(HashMap::new()),
             profiles: crate::profiles::ProfilesRepo::new(store_for_profiles),
+            rt: tokio::runtime::Handle::current(),
         });
         host.apply_runtime_settings(&host.settings());
         host.spawn_forwarders();
@@ -536,7 +540,7 @@ impl Host {
         let capture = self.capture.clone();
         let events = self.events.clone();
         let p = self.policy.read().unwrap().clone();
-        tokio::spawn(async move {
+        self.rt.spawn(async move {
             let recording = capture.apply(&p).await;
             let mut state = Self::privacy_state(&p);
             state.recording = recording;
