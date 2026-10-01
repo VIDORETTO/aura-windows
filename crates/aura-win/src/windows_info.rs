@@ -9,9 +9,9 @@ use aura_policy::WindowInfo;
 use std::ffi::c_void;
 use windows::Win32::Foundation::{CloseHandle, HWND, LPARAM, POINT, RECT};
 use windows::Win32::Graphics::Dwm::{
-    DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE, DWMSBT_TRANSIENTWINDOW, DWMWA_CLOAKED,
-    DWMWA_EXTENDED_FRAME_BOUNDS, DWMWA_SYSTEMBACKDROP_TYPE, DWMWA_WINDOW_CORNER_PREFERENCE,
-    DWMWCP_ROUND, DwmGetWindowAttribute, DwmSetWindowAttribute,
+    DWM_SYSTEMBACKDROP_TYPE, DWM_WINDOW_CORNER_PREFERENCE, DWMSBT_NONE, DWMSBT_TRANSIENTWINDOW,
+    DWMWA_CLOAKED, DWMWA_EXTENDED_FRAME_BOUNDS, DWMWA_SYSTEMBACKDROP_TYPE,
+    DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND, DwmGetWindowAttribute, DwmSetWindowAttribute,
 };
 use windows::Win32::Graphics::Gdi::{
     EnumDisplayMonitors, GetMonitorInfoW, HDC, HMONITOR, MONITOR_DEFAULTTONEAREST, MONITORINFO,
@@ -330,7 +330,28 @@ pub fn exclude_from_capture(window: u64, exclude: bool) -> bool {
     }
 }
 
+/// Windows "Transparency effects" (Personalization › Colors); missing = on.
+pub fn transparency_effects_enabled() -> bool {
+    use windows::Win32::System::Registry::{HKEY_CURRENT_USER, RRF_RT_REG_DWORD, RegGetValueW};
+    let mut value: u32 = 1;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    let r = unsafe {
+        RegGetValueW(
+            HKEY_CURRENT_USER,
+            windows::core::w!(r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"),
+            windows::core::w!("EnableTransparency"),
+            RRF_RT_REG_DWORD,
+            None,
+            Some(&mut value as *mut u32 as *mut c_void),
+            Some(&mut size),
+        )
+    };
+    !r.is_ok() || value != 0
+}
+
 /// Rounded corners + acrylic-like transient backdrop (Windows 11; no-op on 10).
+/// With transparency effects off DWM paints that backdrop as a solid fill,
+/// which hides the Overlay's own opacity: then no system backdrop at all.
 pub fn apply_overlay_chrome(window: u64) {
     let h = hwnd(window);
     unsafe {
@@ -341,7 +362,11 @@ pub fn apply_overlay_chrome(window: u64) {
             &corner as *const _ as *const c_void,
             4,
         );
-        let backdrop: DWM_SYSTEMBACKDROP_TYPE = DWMSBT_TRANSIENTWINDOW;
+        let backdrop: DWM_SYSTEMBACKDROP_TYPE = if transparency_effects_enabled() {
+            DWMSBT_TRANSIENTWINDOW
+        } else {
+            DWMSBT_NONE
+        };
         let _ = DwmSetWindowAttribute(
             h,
             DWMWA_SYSTEMBACKDROP_TYPE,
