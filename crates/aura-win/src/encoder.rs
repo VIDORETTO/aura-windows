@@ -1,6 +1,8 @@
 //! H.264 video segments with Media Foundation (ADR 0004): each segment is a
-//! self-contained fragmented MP4 written to memory (`IStream` on HGLOBAL),
-//! never to disk in plaintext; the recorder seals it before writing.
+//! self-contained fragmented MP4 written to memory (`SHCreateMemStream`),
+//! never to disk in plaintext; the recorder seals it before writing. (An
+//! HGLOBAL stream is reported read-only by its byte stream and the MP4 sink
+//! then fails `BeginWriting` with E_INVALIDARG.)
 //!
 //! Hardware encoders are preferred (`MF_READWRITE_ENABLE_HARDWARE_TRANSFORMS`);
 //! the sink writer inserts the RGB32→NV12 converter itself.
@@ -9,13 +11,11 @@ use aura_capture::encoder::{SegmentError, VideoEncoder};
 use aura_capture::frame::Frame;
 use aura_core::placement::Rect;
 use std::sync::OnceLock;
-use windows::Win32::Foundation::HGLOBAL;
 use windows::Win32::Media::MediaFoundation::*;
-use windows::Win32::System::Com::StructuredStorage::{CreateStreamOnHGlobal, GetHGlobalFromStream};
 use windows::Win32::System::Com::{
-    COINIT_MULTITHREADED, CoInitializeEx, IStream, STATFLAG_NONAME, STATSTG,
+    COINIT_MULTITHREADED, CoInitializeEx, IStream, STATFLAG_NONAME, STATSTG, STREAM_SEEK_SET,
 };
-use windows::Win32::System::Memory::{GlobalLock, GlobalUnlock};
+use windows::Win32::UI::Shell::SHCreateMemStream;
 use windows::core::PCWSTR;
 
 pub(crate) fn enc(e: windows::core::Error) -> SegmentError {
@@ -77,7 +77,8 @@ impl MfH264Encoder {
 
     fn open(&mut self, width: u32, height: u32) -> Result<Segment, SegmentError> {
         unsafe {
-            let stream: IStream = CreateStreamOnHGlobal(HGLOBAL::default(), true).map_err(enc)?;
+            let stream: IStream = SHCreateMemStream(None)
+                .ok_or_else(|| SegmentError::Encoder("SHCreateMemStream failed".into()))?;
             let bytestream = MFCreateMFByteStreamOnStream(&stream).map_err(enc)?;
             let mut attrs: Option<IMFAttributes> = None;
             MFCreateAttributes(&mut attrs, 3).map_err(enc)?;
@@ -173,14 +174,18 @@ impl MfH264Encoder {
             seg.writer.Finalize().map_err(enc)?;
             let mut stat = STATSTG::default();
             seg.stream.Stat(&mut stat, STATFLAG_NONAME).map_err(enc)?;
-            let size = stat.cbSize as usize;
-            let hg = GetHGlobalFromStream(&seg.stream).map_err(enc)?;
-            let ptr = GlobalLock(hg) as *const u8;
-            if ptr.is_null() {
-                return Err(SegmentError::Encoder("GlobalLock failed".into()));
-            }
-            let bytes = std::slice::from_raw_parts(ptr, size).to_vec();
-            let _ = GlobalUnlock(hg);
+            let mut bytes = vec![0u8; stat.cbSize as usize];
+            seg.stream.Seek(0, STREAM_SEEK_SET, None).map_err(enc)?;
+            let mut read = 0u32;
+            seg.stream
+                .Read(
+                    bytes.as_mut_ptr().cast(),
+                    bytes.len() as u32,
+                    Some(&mut read),
+                )
+                .ok()
+                .map_err(enc)?;
+            bytes.truncate(read as usize);
             Ok(bytes)
         }
     }
@@ -345,5 +350,31 @@ impl aura_capture::encoder::VideoCodec for MfCodec {
     }
     fn keyframes(&self, segment: &[u8], max: usize) -> Result<Vec<(i64, Frame)>, String> {
         decode_frames(segment, max).map_err(|e| e.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn segment_round_trips_through_media_foundation() {
+        assert!(MfH264Encoder::available());
+        let mut enc = MfH264Encoder::new(5, 10, 1_000_000).unwrap();
+        let mut segment = None;
+        for i in 0..10u8 {
+            let f = Frame::solid(320, 180, [i * 20, 100, 200, 255]);
+            if let Some(b) = enc.push(&f).unwrap() {
+                segment = Some(b);
+            }
+        }
+        let segment = segment.expect("a full segment closes after 10 frames");
+        let frames = decode_frames(&segment, 4).unwrap();
+        assert!(!frames.is_empty());
+        assert!(
+            frames
+                .iter()
+                .all(|(_, f)| f.width == 320 && f.height == 180)
+        );
     }
 }
