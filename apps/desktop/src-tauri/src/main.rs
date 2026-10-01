@@ -231,6 +231,13 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let handle = app.handle().clone();
     let cfg = host_config();
     let _ = aura_core::logging::init_logging(&cfg.paths.logs());
+    // tauri.conf.json scopes %LOCALAPPDATA%\Aura; AURA_HOME moves the data root.
+    let scope = app.asset_protocol_scope();
+    for dir in [cfg.paths.captures_tmp(), cfg.paths.workspaces()] {
+        if let Err(e) = scope.allow_directory(&dir, true) {
+            tracing::warn!("asset scope {}: {e}", dir.display());
+        }
+    }
     let host: Arc<Host> = tauri::async_runtime::block_on(Host::start(cfg))?;
     app.manage(AppState { host: host.clone() });
 

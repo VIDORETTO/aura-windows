@@ -14,7 +14,11 @@ describe("Overlay", () => {
     const input = await $("textarea");
     await input.click();
     await browser.keys(["Control", "Shift", "s"]);
-    await $("li*=Tela").waitForDisplayed({ timeout: 10_000 });
+    const chip = await $("li*=Tela");
+    await chip.waitForDisplayed({ timeout: 10_000 });
+    // The thumbnail is served by the asset protocol (scope follows AURA_HOME).
+    const thumb = await chip.$("img");
+    await browser.waitUntil(async () => (await thumb.getProperty("naturalWidth")) > 0, { timeout: 5_000 });
   });
 
   it("closes with Esc", async () => {
