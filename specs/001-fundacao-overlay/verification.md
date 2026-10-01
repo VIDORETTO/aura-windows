@@ -79,3 +79,55 @@
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
 - Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+
+## EV-007 — partial
+
+- Ticket: `TK-001`
+- Acceptance: `AC-001`
+- Procedure: `Start-Process aura.exe --background; após 4 s EnumWindows/IsWindowVisible no PID`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:7fa4e62a8c03224013eebd6f2921d413ccdb2f7ad00dd47467679f6f4d0b594d`
+- Timestamp: `2026-10-01T00:06:34+00:00`
+- Observations: 1 processo; janela overlay vis=False; nenhuma janela visível. Sem --background o Overlay aparece de propósito (main.rs: saudação/onboarding da primeira execução, docs/qa/instalacao.md passo 3) — conflita com o texto do AC-001.
+- Evidence refs: none
+- Limitations: Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec.
+
+## EV-008 — passed
+
+- Ticket: `TK-001`
+- Acceptance: `AC-002`
+- Procedure: `Com a instância --background rodando, Start-Process aura.exe; após 2 s Get-Process aura e EnumWindows`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:f357a3fb077b7f01d78cfaed1f7be56f37c1654844ffd21a3963d996ed435341`
+- Timestamp: `2026-10-01T00:06:34+00:00`
+- Observations: Segunda execução saiu; 1 processo (mesmo PID); Overlay da instância original passou a vis=True (tauri-plugin-single-instance → overlay::show).
+- Evidence refs: none
+- Limitations: none recorded
+
+## EV-009 — partial
+
+- Ticket: `TK-002`
+- Acceptance: `AC-008`
+- Procedure: `Atalho Ctrl+Shift+Space (SendInput) → EnumWindows; Alt+Tab mantido e capturado; captura da WebView via WebDriver`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:cca9fcf091c4e8ba81b213adfa22d1b7bc77cdb169ca7581e56535b7e35ac1e3`
+- Timestamp: `2026-10-01T00:06:57+00:00`
+- Observations: Overlay visível, em primeiro plano, WS_EX_TOPMOST. Alt+Tab não lista 'Aura' (lista outras 5 janelas). WebView renderiza cartão translúcido de cantos arredondados.
+- Evidence refs: none
+- Limitations: Acrylic/sombra e ausência na taskbar não conferidos a olho; Win10 e vídeo em tela cheia não testados.
+
+## EV-010 — partial
+
+- Ticket: `TK-002`
+- Acceptance: `AC-009`
+- Procedure: `Overlay visível e focado → GetWindowDisplayAffinity + captura GDI (Graphics.CopyFromScreen, mesmo caminho BitBlt do Print Screen) recortada no retângulo do Overlay`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:d7ef327e6e4d972563fd47ff2bd8ed3e9420384cd570256cce080c7bee296d36`
+- Timestamp: `2026-10-01T00:06:57+00:00`
+- Observations: affinity=0x11 (WDA_EXCLUDEFROMCAPTURE) com o Overlay visível; o recorte mostra só a janela de baixo — Overlay ausente da captura.
+- Evidence refs: none
+- Limitations: Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados.

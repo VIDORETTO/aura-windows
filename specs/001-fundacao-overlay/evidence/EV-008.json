@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/main.rs": "83e7e386f8fe95a1283ac451921095d8375bd318b802acaf64e7d8b5cd0bab77",
+    "apps/desktop/src-tauri/src/overlay.rs": "57da2f597806de6c283548c91cfa33385f269972c5bfba382d48f4708b943dd5",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "",
+  "observations": "Segunda execução saiu; 1 processo (mesmo PID); Overlay da instância original passou a vis=True (tauri-plugin-single-instance → overlay::show).",
+  "procedure": "Com a instância --background rodando, Start-Process aura.exe; após 2 s Get-Process aura e EnumWindows",
+  "result": "passed",
+  "tested_revision": "local:f357a3fb077b7f01d78cfaed1f7be56f37c1654844ffd21a3963d996ed435341",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-01T00:06:34+00:00"
+}

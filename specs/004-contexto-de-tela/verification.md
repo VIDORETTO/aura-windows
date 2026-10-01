@@ -144,3 +144,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-012 — partial
+
+- Ticket: `TK-003`
+- Acceptance: `AC-006`
+- Procedure: `pnpm -C apps/desktop/e2e test (settings.e2e.ts): settings_open → janela Configurações → switch 'Pausar toda captura'; cargo test -p aura-app --test host privacy_commands_work_outside_the_runtime`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:b9cd0e160e72de7e261dca01ec41f3fdf5eaeca152017d969aa9680ae7e36142`
+- Timestamp: `2026-10-01T00:06:58+00:00`
+- Observations: Antes da correção c7d3890 pausar fechava o aura.exe (tokio::spawn fora do runtime); depois o switch fica aria-checked=true e o processo segue vivo. Teste novo cobre a chamada fora do runtime (caminho da bandeja/atalho).
+- Evidence refs: none
+- Limitations: Troca do ícone da bandeja e atalho Ctrl+Shift+Alt+P não conferidos a olho.

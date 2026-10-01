@@ -170,3 +170,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-014 — partial
+
+- Ticket: `TK-003`
+- Acceptance: `AC-005`
+- Procedure: `pnpm -C apps/desktop/e2e test (overlay.e2e.ts): enviar 'explique este erro' no Overlay`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado
+- Tested revision: `local:99d3dc8d18ad1221462d1874829c990d415cb1d9b84e4ac3495f37b71f157404`
+- Timestamp: `2026-10-01T00:06:58+00:00`
+- Observations: Resposta do agente falso chega em streaming e renderiza em div.md (>20 caracteres) no WebView2 real.
+- Evidence refs: none
+- Limitations: App-server falso; sem transcript real gravado nem snapshot de eventos.

@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/main.rs": "83e7e386f8fe95a1283ac451921095d8375bd318b802acaf64e7d8b5cd0bab77",
+    "apps/desktop/src-tauri/tauri.conf.json": "539033af6e90680a462c0a1727886ac488694898a1aae49f2b02e3f9e011052b",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec.",
+  "observations": "1 processo; janela overlay vis=False; nenhuma janela visível. Sem --background o Overlay aparece de propósito (main.rs: saudação/onboarding da primeira execução, docs/qa/instalacao.md passo 3) — conflita com o texto do AC-001.",
+  "procedure": "Start-Process aura.exe --background; após 4 s EnumWindows/IsWindowVisible no PID",
+  "result": "partial",
+  "tested_revision": "local:7fa4e62a8c03224013eebd6f2921d413ccdb2f7ad00dd47467679f6f4d0b594d",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-01T00:06:34+00:00"
+}

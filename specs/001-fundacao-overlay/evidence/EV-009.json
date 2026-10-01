@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/overlay.rs": "57da2f597806de6c283548c91cfa33385f269972c5bfba382d48f4708b943dd5",
+    "apps/desktop/src-tauri/tauri.conf.json": "539033af6e90680a462c0a1727886ac488694898a1aae49f2b02e3f9e011052b",
+    "crates/aura-win/src/windows_info.rs": "a5b44334ed91fce41a135ff583fdbd05586cc3a834b257c04c8faa2a5993a91d",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-win/src/windows_info.rs",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Acrylic/sombra e ausência na taskbar não conferidos a olho; Win10 e vídeo em tela cheia não testados.",
+  "observations": "Overlay visível, em primeiro plano, WS_EX_TOPMOST. Alt+Tab não lista 'Aura' (lista outras 5 janelas). WebView renderiza cartão translúcido de cantos arredondados.",
+  "procedure": "Atalho Ctrl+Shift+Space (SendInput) → EnumWindows; Alt+Tab mantido e capturado; captura da WebView via WebDriver",
+  "result": "partial",
+  "tested_revision": "local:cca9fcf091c4e8ba81b213adfa22d1b7bc77cdb169ca7581e56535b7e35ac1e3",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-01T00:06:57+00:00"
+}

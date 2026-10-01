@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-006"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-012",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/settings.e2e.ts": "2b289b093742952f516d996752ddeddc45822470386ce9ab03218a526cd8d689",
+    "apps/desktop/src-tauri/src/commands.rs": "e415c01d64b7fe5310d791955b90272cce79bd155f5567ce7229bc393a425ca0",
+    "crates/aura-app/src/host.rs": "9c15c3fcb5cfc7433187617811ec542d3f8a552084e34878d9fde908178f6305",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/e2e/specs/settings.e2e.ts",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Troca do ícone da bandeja e atalho Ctrl+Shift+Alt+P não conferidos a olho.",
+  "observations": "Antes da correção c7d3890 pausar fechava o aura.exe (tokio::spawn fora do runtime); depois o switch fica aria-checked=true e o processo segue vivo. Teste novo cobre a chamada fora do runtime (caminho da bandeja/atalho).",
+  "procedure": "pnpm -C apps/desktop/e2e test (settings.e2e.ts): settings_open → janela Configurações → switch 'Pausar toda captura'; cargo test -p aura-app --test host privacy_commands_work_outside_the_runtime",
+  "result": "partial",
+  "tested_revision": "local:b9cd0e160e72de7e261dca01ec41f3fdf5eaeca152017d969aa9680ae7e36142",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-01T00:06:58+00:00"
+}

@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/overlay.rs": "57da2f597806de6c283548c91cfa33385f269972c5bfba382d48f4708b943dd5",
+    "crates/aura-win/src/windows_info.rs": "a5b44334ed91fce41a135ff583fdbd05586cc3a834b257c04c8faa2a5993a91d",
+    "specs/001-fundacao-overlay/plan.md": "ad1915a0e9b641a560a23c89b34f599ea3df2a8f3c55b0af633b3d71f160240a",
+    "specs/001-fundacao-overlay/spec.md": "736d528a28c3bce926527767d57b10a2a6d0a95ca4aa51344d17eaa2112fa705"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-win/src/windows_info.rs",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados.",
+  "observations": "affinity=0x11 (WDA_EXCLUDEFROMCAPTURE) com o Overlay visível; o recorte mostra só a janela de baixo — Overlay ausente da captura.",
+  "procedure": "Overlay visível e focado → GetWindowDisplayAffinity + captura GDI (Graphics.CopyFromScreen, mesmo caminho BitBlt do Print Screen) recortada no retângulo do Overlay",
+  "result": "partial",
+  "tested_revision": "local:d7ef327e6e4d972563fd47ff2bd8ed3e9420384cd570256cce080c7bee296d36",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-01T00:06:57+00:00"
+}

@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 100% + 1366x768); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release --features demo; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/overlay.e2e.ts": "980f2f092945095639323a45886a8f4bc18815b27490e3d5b2fffb157795a974",
+    "apps/desktop/src/overlay": "8e6ac29dcd334e210cb8a13678ca88f036d0a88255d1fb79775b43ec721ab8a4",
+    "specs/002-conversa-agente-codex/plan.md": "484fa3fdac9b9e11089914d344e2ed562f8bd919943c1893ceaf97ebc83c9f77",
+    "specs/002-conversa-agente-codex/spec.md": "e60bac3cdefac91a8afcd012f216361783604275e94ed1da05c222caac1eca87"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/overlay.e2e.ts",
+    "apps/desktop/src/overlay",
+    "specs/002-conversa-agente-codex/spec.md",
+    "specs/002-conversa-agente-codex/plan.md"
+  ],
+  "limitations": "App-server falso; sem transcript real gravado nem snapshot de eventos.",
+  "observations": "Resposta do agente falso chega em streaming e renderiza em div.md (>20 caracteres) no WebView2 real.",
+  "procedure": "pnpm -C apps/desktop/e2e test (overlay.e2e.ts): enviar 'explique este erro' no Overlay",
+  "result": "partial",
+  "tested_revision": "local:99d3dc8d18ad1221462d1874829c990d415cb1d9b84e4ac3495f37b71f157404",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-01T00:06:58+00:00"
+}
