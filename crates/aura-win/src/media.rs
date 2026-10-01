@@ -80,6 +80,9 @@ pub fn decode_audio_16k(path: &Path) -> Result<Vec<f32>, SegmentError> {
     }
 }
 
+/// Frames decoded at most per requested position (~20 s of 30 fps video).
+const MAX_FRAMES_PER_SEEK: usize = 600;
+
 pub fn decode_video_frames(path: &Path, max: usize) -> Result<Vec<(i64, Frame)>, SegmentError> {
     let r = reader(path, true)?;
     unsafe {
@@ -104,26 +107,34 @@ pub fn decode_video_frames(path: &Path, max: usize) -> Result<Vec<(i64, Frame)>,
             .unwrap_or(0);
         let max = max.max(1);
         let mut frames = Vec::new();
-        for i in 0..max {
+        'positions: for i in 0..max {
+            // Evenly spread, skipping the very first (often black) frame.
+            let target = (duration * (2 * i as u64 + 1)) / (2 * max as u64);
             if duration > 0 {
-                // Evenly spread, skipping the very first (often black) frame.
-                let pos = (duration * (2 * i as u64 + 1)) / (2 * max as u64);
-                let _ = r.SetCurrentPosition(&GUID::zeroed(), &PROPVARIANT::from(pos as i64));
+                let _ = r.SetCurrentPosition(&GUID::zeroed(), &PROPVARIANT::from(target as i64));
             }
-            let mut flags = 0u32;
+            // The seek lands on the keyframe before `target`: decode forward
+            // to it (bounded, for very sparse keyframes).
             let mut ts = 0i64;
             let mut sample: Option<IMFSample> = None;
-            r.ReadSample(
-                video,
-                0,
-                None,
-                Some(&mut flags),
-                Some(&mut ts),
-                Some(&mut sample),
-            )
-            .map_err(enc)?;
-            if flags & MF_SOURCE_READERF_ENDOFSTREAM.0 as u32 != 0 {
-                break;
+            for _ in 0..MAX_FRAMES_PER_SEEK {
+                let mut flags = 0u32;
+                sample = None;
+                r.ReadSample(
+                    video,
+                    0,
+                    None,
+                    Some(&mut flags),
+                    Some(&mut ts),
+                    Some(&mut sample),
+                )
+                .map_err(enc)?;
+                if flags & MF_SOURCE_READERF_ENDOFSTREAM.0 as u32 != 0 {
+                    break 'positions;
+                }
+                if sample.is_some() && (duration == 0 || ts as u64 >= target) {
+                    break;
+                }
             }
             let Some(sample) = sample else { continue };
             let buffer = sample.ConvertToContiguousBuffer().map_err(enc)?;
@@ -176,5 +187,40 @@ impl MediaFileDecoder for MfMediaDecoder {
     }
     fn video_frames(&self, path: &Path, max: usize) -> Result<Vec<(i64, Frame)>, String> {
         decode_video_frames(path, max).map_err(|e| e.to_string())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::encoder::MfH264Encoder;
+    use aura_capture::encoder::VideoEncoder;
+
+    /// 5 s at 10 fps, one solid color per second.
+    fn five_second_clip() -> std::path::PathBuf {
+        let mut enc = MfH264Encoder::new(10, 50, 1_000_000).unwrap();
+        let mut bytes = None;
+        for i in 0..50u8 {
+            let f = Frame::solid(320, 180, [i / 10 * 50, 100, 200, 255]);
+            if let Some(b) = enc.push(&f).unwrap() {
+                bytes = Some(b);
+            }
+        }
+        let bytes = bytes.or_else(|| enc.flush().unwrap()).unwrap();
+        let path = std::env::temp_dir().join(format!("aura-media-{}.mp4", std::process::id()));
+        std::fs::write(&path, bytes).unwrap();
+        path
+    }
+
+    #[test]
+    fn video_frames_are_spread_over_the_clip() {
+        let path = five_second_clip();
+        let frames = decode_video_frames(&path, 8).unwrap();
+        let _ = std::fs::remove_file(&path);
+        let ts: Vec<i64> = frames.iter().map(|(t, _)| *t).collect();
+        // Positions at 1/16, 3/16 … 15/16 of 5 s: 312 ms … 4687 ms (±1 frame).
+        assert_eq!(ts.len(), 8, "{ts:?}");
+        assert!(ts.windows(2).all(|w| w[0] < w[1]), "{ts:?}");
+        assert!(ts[0] >= 200 && ts[7] >= 4500, "{ts:?}");
     }
 }
