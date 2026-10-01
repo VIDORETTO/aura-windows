@@ -131,3 +131,16 @@
 - Observations: affinity=0x11 (WDA_EXCLUDEFROMCAPTURE) com o Overlay visível; o recorte mostra só a janela de baixo — Overlay ausente da captura.
 - Evidence refs: none
 - Limitations: Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados.
+
+## EV-011 — partial
+
+- Ticket: `TK-001`
+- Acceptance: `AC-003`
+- Procedure: `Modo real via WebDriver: models_list sobe codex-app-server.exe (filho adotado pelo Job Object) → taskkill /F /IM aura.exe → após 3 s Get-Process pelo PID do filho`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release (modo real, sem demo); codex-app-server rust-v0.159.0 baixado pelo app; AURA_HOME isolado; sem conta ChatGPT
+- Tested revision: `local:9c3fa42c3720d25e533d1494e2411f0b903c7bbf95142c738713982702bc2650`
+- Timestamp: `2026-10-01T00:15:36+00:00`
+- Observations: Primeira execução baixou e verificou o app-server fixado (bin/codex/rust-v0.159.0); diagnostics: appServer ready, 1 launch; model/list respondeu em 105–565 ms. Após o kill forçado o filho sumiu em < 3 s; nenhum codex-app-server órfão. Encerramento normal (fim da sessão WebDriver) também não deixou órfãos.
+- Evidence refs: none
+- Limitations: Item Sair da bandeja não clicado (encerramento forçado é o caso mais forte do Job Object); filho de teste ping/debug_spawn_child não existe — usado o app-server real; worker ASR não exercitado.
