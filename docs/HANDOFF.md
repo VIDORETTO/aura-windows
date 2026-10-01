@@ -28,15 +28,50 @@ evidências. Leia inteiro antes de mudar código.
 | Anexos: texto, código, HTML, planilhas, DOCX/PPTX/ODF, RTF, **PDF (camada de texto)**, **WAV**; **MP3/M4A/vídeo** via Media Foundation | `aura-ingest`, `aura-app/src/media.rs`, `aura-win/src/media.rs` | ✅ / 🟡 MF | PDF/WAV testados; decodificação MF só por tipo |
 | Extensões: Skills, comandos rápidos, MCP (+ status/OAuth), importadores | `aura-extensions`, `aura-app` | ✅ | Testes |
 | Perfis de aplicativo, TTS (ouvir resposta), Minibar + notificação, diagnóstico redigido, onboarding, updater | `aura-app`, UI, shell | ✅ lógica / 🟡 shell | Testes (TTS fake, zip redigido sem segredos) |
-| Adaptadores Windows (GDI, UIA, OCR, WASAPI, Cred. Manager, atalhos, entrada, DXGI, MF H.264 enc/dec, TTS, Job Object) | `crates/aura-win` | 🟡 só tipos | `check` + `clippy -D warnings` no alvo MSVC |
-| Shell Tauri | `apps/desktop/src-tauri` | 🟡 nunca compilado | — |
+| Adaptadores Windows (GDI, UIA, OCR, WASAPI, Cred. Manager, atalhos, entrada, DXGI, MF H.264 enc/dec, TTS, Job Object) | `crates/aura-win` | ✅ parcial (§1.1) | Executados no Windows 11: captura, janela anterior, MF enc/dec, TTS, áudio, Cred. Manager, Job Object; faltam UIA/OCR, atalhos/PTT, entrada |
+| Shell Tauri | `apps/desktop/src-tauri` | ✅ compila e roda | `tauri build --no-bundle` (normal e `--features demo`), E2E 4/4 |
 | UI React | `apps/desktop/src` | ✅ | `tsc`, **53 testes** Vitest (inclui auditoria axe em todas as páginas), `vite build` |
 | Contrato IPC Rust↔TS | `aura-app/tests/ipc_contract.rs` + `src/ipc/contract.test.ts` | ✅ | Arquivo dourado compartilhado (ADR 0009) |
-| CI, perf, release, E2E Windows, licenças (`deny.toml`) | `.github/`, `apps/desktop/e2e`, `deny.toml` | 🟡 escritos | Não executados |
+| CI, perf, release, E2E Windows, licenças (`deny.toml`) | `.github/`, `apps/desktop/e2e`, `deny.toml` | 🟡 E2E ✅ local | E2E verde no Windows 11 (demo); CI, perf e release não executados |
 
 Números: **246 testes Rust** + 2 ignorados (app-server real, sob demanda),
 **53 testes de UI**, `clippy -D warnings` e `rustfmt --check` limpos (inclusive
 `aura-win`/`aura-bench` no alvo MSVC).
+
+### 1.1 Primeira sessão no Windows (2026-09-30)
+
+Windows 11 Pro 26200, MSVC 17.14, WebView2 154, GPU AMD, 2 monitores. Os passos 1–4
+do §2.2 rodaram: testes (251 Rust), shell Tauri, modo demo + E2E (4/4) e modo real
+(app-server v0.159.0 baixado, verificado e `ready`; `model/list` real). Evidências no
+Hybrid (001, 002, 003, 004, 005, 007, 009). Bugs encontrados e corrigidos:
+
+1. **Pausar a privacidade e baixar modelo de voz fechavam o `aura.exe`**: `tokio::spawn`
+   em métodos síncronos do Host chamados de comandos síncronos/bandeja/atalhos (sem
+   runtime). Host e Voice guardam o `Handle` (teste `*_outside_the_runtime`).
+2. **`settings_open` nunca respondia**: comando síncrono criando janela no WebView2 → `async`.
+   Regra: comando que cria janela é `async`.
+3. **Codificador MF H.264 nunca funcionou** (`available()=false`): o byte stream sobre
+   HGLOBAL se anuncia só leitura; trocado por `SHCreateMemStream`. Buffer de tela e
+   exportação MP4 dependiam disso.
+4. **Quadros de vídeo presos no keyframe anterior** (vídeos de GOP longo davam o mesmo
+   quadro N vezes): decodifica adiante até a posição; o host descarta timestamps repetidos.
+5. Escopo do protocolo `asset` não seguia `AURA_HOME` (miniaturas quebradas).
+6. Build: feature `protocol-asset`, `win_platform` só fora do demo, `plugin-opener` 2.7,
+   lockfile da pnpm 12, `/NOIMPLIB /NOEXP` (aviso `linker_messages` com aws-lc-sys).
+
+Validado e **ok sem mudança**: Overlay fora do Alt+Tab e excluído de captura
+(`WDA_EXCLUDEFROMCAPTURE`, ausente na captura GDI), instância única, Job Object (kill
+forçado do `aura.exe` derruba o app-server em < 3 s), captura GDI (49 ms, conteúdo do
+Firefox), Cred. Manager fragmentando chave de 3 KB em 3 credenciais e removendo todas,
+nenhuma chave em texto no `AURA_HOME`, TTS offline, enumeração e loopback WASAPI.
+
+**Ainda precisa de uma pessoa**: login ChatGPT real; push-to-talk/ditado global e
+atalhos com o teclado; "Inserir no app"; Overlay em 150% DPI e sobre vídeo em tela cheia;
+Acrylic/sombra a olho; Narrador; UIA/OCR (`screen_text`, via agente); modelos ASR
+(`--features engines`, sem LLVM/Clang nesta máquina). **Decidir na spec**: AC-001 de
+001 pede nenhuma janela na inicialização, mas o app abre o Overlay (onboarding) quando
+não recebe `--background`. Para o E2E local: `tauri-driver` (`cargo install`) e o
+`msedgedriver` da mesma versão do WebView2 no `PATH`; use `AURA_HOME` isolado.
 
 ### Bugs reais encontrados rodando o app-server de verdade (já corrigidos)
 
