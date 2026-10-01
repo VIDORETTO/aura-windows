@@ -2,7 +2,7 @@
 
 <!-- GENERATED from evidence/*.json. Evidence records are canonical. -->
 
-## EV-001 — partial
+## EV-001 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-011`, `AC-012`, `AC-013`
@@ -13,9 +13,9 @@
 - Timestamp: `2026-09-29T23:48:46+00:00`
 - Observations: ok
 - Evidence refs: none
-- Limitations: sem Windows
+- Limitations: sem Windows Evidence invalidated because an input changed.
 
-## EV-002 — partial
+## EV-002 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-001`, `AC-002`, `AC-003`
@@ -26,9 +26,9 @@
 - Timestamp: `2026-09-30T02:11:31+00:00`
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
-- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.
 
-## EV-003 — partial
+## EV-003 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-008`, `AC-009`
@@ -39,9 +39,9 @@
 - Timestamp: `2026-09-30T02:11:32+00:00`
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
-- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.
 
-## EV-004 — partial
+## EV-004 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-004`, `AC-005`, `AC-006`, `AC-007`
@@ -52,9 +52,9 @@
 - Timestamp: `2026-09-30T02:11:33+00:00`
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
-- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.
 
-## EV-005 — partial
+## EV-005 — stale
 
 - Ticket: `TK-004`
 - Acceptance: `AC-010`, `AC-014`, `AC-015`
@@ -65,9 +65,9 @@
 - Timestamp: `2026-09-30T02:11:33+00:00`
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
-- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.
 
-## EV-006 — partial
+## EV-006 — stale
 
 - Ticket: `TK-006`
 - Acceptance: `AC-016`, `AC-017`
@@ -78,9 +78,9 @@
 - Timestamp: `2026-09-30T02:11:34+00:00`
 - Observations: Testes automatizados da camada independente de SO passaram (224 Rust, 28 UI).
 - Evidence refs: none
-- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais.
+- Limitations: Adaptadores Windows só verificados por tipo; shell Tauri não compilado; sem conta ChatGPT/provedores reais. Evidence invalidated because an input changed.
 
-## EV-007 — partial
+## EV-007 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-001`
@@ -91,9 +91,9 @@
 - Timestamp: `2026-10-01T00:06:34+00:00`
 - Observations: 1 processo; janela overlay vis=False; nenhuma janela visível. Sem --background o Overlay aparece de propósito (main.rs: saudação/onboarding da primeira execução, docs/qa/instalacao.md passo 3) — conflita com o texto do AC-001.
 - Evidence refs: none
-- Limitations: Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec.
+- Limitations: Ícone da bandeja não conferido visualmente; conflito AC-001 x onboarding 010 a decidir na spec. Evidence invalidated because an input changed.
 
-## EV-008 — passed
+## EV-008 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-002`
@@ -104,9 +104,9 @@
 - Timestamp: `2026-10-01T00:06:34+00:00`
 - Observations: Segunda execução saiu; 1 processo (mesmo PID); Overlay da instância original passou a vis=True (tauri-plugin-single-instance → overlay::show).
 - Evidence refs: none
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-009 — partial
+## EV-009 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-008`
@@ -117,9 +117,9 @@
 - Timestamp: `2026-10-01T00:06:57+00:00`
 - Observations: Overlay visível, em primeiro plano, WS_EX_TOPMOST. Alt+Tab não lista 'Aura' (lista outras 5 janelas). WebView renderiza cartão translúcido de cantos arredondados.
 - Evidence refs: none
-- Limitations: Acrylic/sombra e ausência na taskbar não conferidos a olho; Win10 e vídeo em tela cheia não testados.
+- Limitations: Acrylic/sombra e ausência na taskbar não conferidos a olho; Win10 e vídeo em tela cheia não testados. Evidence invalidated because an input changed.
 
-## EV-010 — partial
+## EV-010 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-009`
@@ -130,9 +130,9 @@
 - Timestamp: `2026-10-01T00:06:57+00:00`
 - Observations: affinity=0x11 (WDA_EXCLUDEFROMCAPTURE) com o Overlay visível; o recorte mostra só a janela de baixo — Overlay ausente da captura.
 - Evidence refs: none
-- Limitations: Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados.
+- Limitations: Sem o modo de cor de teste #FF00FF nem captura WGC; Ferramenta de Captura/Teams não testados. Evidence invalidated because an input changed.
 
-## EV-011 — partial
+## EV-011 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-003`
@@ -143,4 +143,56 @@
 - Timestamp: `2026-10-01T00:15:36+00:00`
 - Observations: Primeira execução baixou e verificou o app-server fixado (bin/codex/rust-v0.159.0); diagnostics: appServer ready, 1 launch; model/list respondeu em 105–565 ms. Após o kill forçado o filho sumiu em < 3 s; nenhum codex-app-server órfão. Encerramento normal (fim da sessão WebDriver) também não deixou órfãos.
 - Evidence refs: none
-- Limitations: Item Sair da bandeja não clicado (encerramento forçado é o caso mais forte do Job Object); filho de teste ping/debug_spawn_child não existe — usado o app-server real; worker ASR não exercitado.
+- Limitations: Item Sair da bandeja não clicado (encerramento forçado é o caso mais forte do Job Object); filho de teste ping/debug_spawn_child não existe — usado o app-server real; worker ASR não exercitado. Evidence invalidated because an input changed.
+
+## EV-012 — passed
+
+- Ticket: `TK-005`
+- Acceptance: `AC-012`
+- Procedure: `Mouse real (SendInput): arrastar borda leste do compacto +160 px; Ctrl+↓; arrastar canto SE (-200,-150); fechar e reabrir o app`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado
+- Tested revision: `local:ae0923f7d14d60bcb15212311059bc0ac9e01da7f38e83d3f5344a3ff1a5952e`
+- Timestamp: `2026-10-01T02:03:35+00:00`
+- Observations: Compacto 640x80 → 800x80 (altura segue o conteúdo); expandido 620x707 → 464x557 (para no mínimo 480 externo); ao reabrir, largura do compacto lembrada. Alternar compacto/expandido não muda mais a largura (antes +16 px por ciclo).
+- Evidence refs: none
+- Limitations: none recorded
+
+## EV-013 — partial
+
+- Ticket: `TK-003`
+- Acceptance: `AC-005`
+- Procedure: `pnpm -C apps/desktop/e2e test (AURA_E2E_APP=build QA): Esc → is_visible; botão 'Minimizar para a bandeja' → is_visible; Vitest 'Esc never hides…'`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado
+- Tested revision: `local:33cad0575b53f343e5fa779c2e42170b792ccf4e2cd18bc8c757c7c1c9901208`
+- Timestamp: `2026-10-01T02:03:36+00:00`
+- Observations: Esc com o Overlay focado: continua visível; Minimizar: some. E2E 4/4 e Vitest 58/58.
+- Evidence refs: none
+- Limitations: Devolução de foco ao Bloco de Notas não medida nesta rodada.
+
+## EV-014 — passed
+
+- Ticket: `TK-004`
+- Acceptance: `AC-010`
+- Procedure: `Popover Aparência no Overlay: opacidade 60% sobre fundo listrado colorido; amostragem de pixels da captura real; Vitest 'opacity is adjusted from the Overlay itself'; cargo test half_opacity_is_the_minimum`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado
+- Tested revision: `local:f740b9e3a7f935e41f00000f9ee35067aa251bc048ce019d7ffc6f30948b418b`
+- Timestamp: `2026-10-01T02:03:36+00:00`
+- Observations: Antes de dee5e25 os pixels eram iguais sobre todas as faixas (opacidade sem efeito). Depois variam com a faixa (ex.: (41,50,51) e (60,61,67) a 60%); a 92% sobre branco (46,46,49) = teórico. Tema claro/escuro aplicados ao vivo.
+- Evidence refs: none
+- Limitations: none recorded
+
+## EV-015 — partial
+
+- Ticket: `TK-005`
+- Acceptance: `AC-013`
+- Procedure: `cargo test overlay_stays_open_on_blur_by_default e legacy_hide_on_focus_loss_no_longer_hides; durante o roteiro de prints o foco foi para outras janelas`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado
+- Tested revision: `local:008e3717e7687731314a1ad3641c13cad016757494ba657f5f9716b5db96702e`
+- Timestamp: `2026-10-01T02:03:36+00:00`
+- Observations: Padrão hideOnBlur=false; configuração antiga focusLoss='hide' carrega como não esconder. O Overlay permaneceu visível com o foco em outras janelas.
+- Evidence refs: none
+- Limitations: Caminho hideOnBlur=true (esconder/Minibar) não exercitado no Windows.

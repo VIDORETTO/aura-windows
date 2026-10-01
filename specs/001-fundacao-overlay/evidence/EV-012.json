@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-012"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-012",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/overlay.rs": "3ed558cd8f84e803cf626549b01a2950de54ec87802a7478fd47a062f9000966",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "b0401a6ad8bf9b016041f9dec0810b1819f4c2594575eb4abb6a257a25ebd906",
+    "apps/desktop/src/overlay/ResizeHandles.tsx": "e2edf338e1ec87dcab5a54421ea410f2f57eeabc816703f24b23c378e2eaa070",
+    "specs/001-fundacao-overlay/plan.md": "17d14f204cfec6c5cbf27014f10aa2f93ea4b69ae0043b9915a98b4c5206a87a",
+    "specs/001-fundacao-overlay/spec.md": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/ResizeHandles.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "",
+  "observations": "Compacto 640x80 → 800x80 (altura segue o conteúdo); expandido 620x707 → 464x557 (para no mínimo 480 externo); ao reabrir, largura do compacto lembrada. Alternar compacto/expandido não muda mais a largura (antes +16 px por ciclo).",
+  "procedure": "Mouse real (SendInput): arrastar borda leste do compacto +160 px; Ctrl+↓; arrastar canto SE (-200,-150); fechar e reabrir o app",
+  "result": "passed",
+  "tested_revision": "local:ae0923f7d14d60bcb15212311059bc0ac9e01da7f38e83d3f5344a3ff1a5952e",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-01T02:03:35+00:00"
+}

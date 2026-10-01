@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-010"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Appearance.tsx": "2ed7ac1a36ca9ea94769b15353994b2098c0ad0a5c59e2f970afff9d633d7836",
+    "apps/desktop/src/styles/app.css": "93b88d434e5e4711659a17164852796bd6a2a399d1ae44b64898689f6534a410",
+    "crates/aura-core/src/settings.rs": "c029fb4e191b4acfa3b633b4237cdb346169b9ba7ef94b7f0a111b42ceaaaf94",
+    "crates/aura-win/src/windows_info.rs": "bc987998a42de6a607c54260c45717a979fafc7b06baac7be5d4ee0959814dcb",
+    "specs/001-fundacao-overlay/plan.md": "17d14f204cfec6c5cbf27014f10aa2f93ea4b69ae0043b9915a98b4c5206a87a",
+    "specs/001-fundacao-overlay/spec.md": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Appearance.tsx",
+    "apps/desktop/src/styles/app.css",
+    "crates/aura-win/src/windows_info.rs",
+    "crates/aura-core/src/settings.rs",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "",
+  "observations": "Antes de dee5e25 os pixels eram iguais sobre todas as faixas (opacidade sem efeito). Depois variam com a faixa (ex.: (41,50,51) e (60,61,67) a 60%); a 92% sobre branco (46,46,49) = teórico. Tema claro/escuro aplicados ao vivo.",
+  "procedure": "Popover Aparência no Overlay: opacidade 60% sobre fundo listrado colorido; amostragem de pixels da captura real; Vitest 'opacity is adjusted from the Overlay itself'; cargo test half_opacity_is_the_minimum",
+  "result": "passed",
+  "tested_revision": "local:f740b9e3a7f935e41f00000f9ee35067aa251bc048ce019d7ffc6f30948b418b",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-01T02:03:36+00:00"
+}

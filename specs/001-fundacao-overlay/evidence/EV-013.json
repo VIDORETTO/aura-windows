@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/overlay.e2e.ts": "f2bba3b23faad1537713fdb692f9268c8475657d33172f9cbaed68268dd72f8a",
+    "apps/desktop/src/overlay/Header.tsx": "7f9130b44e90c982bd915b6231c409c73af70f05fc8771a053dbbb4c34b8c96f",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "b0401a6ad8bf9b016041f9dec0810b1819f4c2594575eb4abb6a257a25ebd906",
+    "specs/001-fundacao-overlay/plan.md": "17d14f204cfec6c5cbf27014f10aa2f93ea4b69ae0043b9915a98b4c5206a87a",
+    "specs/001-fundacao-overlay/spec.md": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/e2e/specs/overlay.e2e.ts",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Devolução de foco ao Bloco de Notas não medida nesta rodada.",
+  "observations": "Esc com o Overlay focado: continua visível; Minimizar: some. E2E 4/4 e Vitest 58/58.",
+  "procedure": "pnpm -C apps/desktop/e2e test (AURA_E2E_APP=build QA): Esc → is_visible; botão 'Minimizar para a bandeja' → is_visible; Vitest 'Esc never hides…'",
+  "result": "partial",
+  "tested_revision": "local:33cad0575b53f343e5fa779c2e42170b792ccf4e2cd18bc8c757c7c1c9901208",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-01T02:03:36+00:00"
+}

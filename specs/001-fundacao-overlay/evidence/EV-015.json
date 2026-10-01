@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-013"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; transparência do Windows desligada; 2 monitores; WebView2 154; build demo de QA (identificador app.aura.desktop.qa); AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-015",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/OverlayApp.tsx": "b0401a6ad8bf9b016041f9dec0810b1819f4c2594575eb4abb6a257a25ebd906",
+    "crates/aura-core/src/settings.rs": "c029fb4e191b4acfa3b633b4237cdb346169b9ba7ef94b7f0a111b42ceaaaf94",
+    "crates/aura-store/src/settings_repo.rs": "a9aa27c2917ac5148cd2949474c9493dd046b4bff7692aa75cbd0d9c5096274c",
+    "specs/001-fundacao-overlay/plan.md": "17d14f204cfec6c5cbf27014f10aa2f93ea4b69ae0043b9915a98b4c5206a87a",
+    "specs/001-fundacao-overlay/spec.md": "89c2ae3bc462fae8dc6e810afd3322dd1c16779da36748df1ab5ef28d56bea84"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "crates/aura-store/src/settings_repo.rs",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "specs/001-fundacao-overlay/spec.md",
+    "specs/001-fundacao-overlay/plan.md"
+  ],
+  "limitations": "Caminho hideOnBlur=true (esconder/Minibar) não exercitado no Windows.",
+  "observations": "Padrão hideOnBlur=false; configuração antiga focusLoss='hide' carrega como não esconder. O Overlay permaneceu visível com o foco em outras janelas.",
+  "procedure": "cargo test overlay_stays_open_on_blur_by_default e legacy_hide_on_focus_loss_no_longer_hides; durante o roteiro de prints o foco foi para outras janelas",
+  "result": "partial",
+  "tested_revision": "local:008e3717e7687731314a1ad3641c13cad016757494ba657f5f9716b5db96702e",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-01T02:03:36+00:00"
+}
