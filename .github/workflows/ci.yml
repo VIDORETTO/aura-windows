@@ -80,11 +80,12 @@ jobs:
         working-directory: apps/desktop
       - name: Rust tests (Windows)
         run: cargo test --workspace --exclude aura-desktop
-      - name: Clippy (whole workspace incl. Tauri shell and aura-win)
-        run: cargo clippy --workspace --all-targets -- -D warnings
+      # tauri-build checks bundle.externalBin: the sidecar must exist first.
       - name: Sidecars
         shell: pwsh
         run: ./scripts/prepare-sidecars.ps1
+      - name: Clippy (whole workspace incl. Tauri shell and aura-win)
+        run: cargo clippy --workspace --all-targets -- -D warnings
       - name: Build app (no bundle)
         run: pnpm tauri build --no-bundle
         working-directory: apps/desktop
