@@ -801,6 +801,53 @@ async fn speak_returns_playable_audio() {
 }
 
 #[tokio::test]
+async fn repeated_video_frames_count_once() {
+    // Media Foundation seeks to the previous keyframe: a short clip with one
+    // keyframe yields the same timestamp for every requested position.
+    struct OneKeyframe;
+    impl aura_capture::encoder::MediaFileDecoder for OneKeyframe {
+        fn audio_16k(&self, _: &std::path::Path) -> Result<Vec<f32>, String> {
+            Ok(vec![])
+        }
+        fn video_frames(
+            &self,
+            _: &std::path::Path,
+            max: usize,
+        ) -> Result<Vec<(i64, aura_capture::frame::Frame)>, String> {
+            let f = aura_capture::frame::Frame::solid(64, 36, [10, 20, 30, 255]);
+            let mut v = vec![(80, f.clone()); max - 1];
+            v.push((1080, f));
+            Ok(v)
+        }
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let (mut platform, _fg) = Platform::fake();
+    platform.media = Arc::new(OneKeyframe);
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    let host = Host::start(cfg).await.unwrap();
+    let conv = host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+    let mp4 = dir.path().join("curto.mp4");
+    std::fs::write(&mp4, b"\x00\x00\x00\x18ftypmp42\x00\x00\x00\x00mp42isom").unwrap();
+    let (info, chip) = host
+        .attach(&conv.thread_id, Some(&conv.thread_id), &mp4)
+        .await
+        .unwrap();
+    assert!(info.summary.contains("2 quadros"), "{}", info.summary);
+    let ChipPayload::Mixed { parts } = &chip.payload else {
+        panic!("mixed payload")
+    };
+    let images = parts
+        .iter()
+        .filter(|p| matches!(p, ChipPayload::Image { .. }))
+        .count();
+    assert_eq!(images, 2);
+}
+
+#[tokio::test]
 async fn video_and_compressed_audio_attachments() {
     let e = env().await;
     let conv = e

@@ -165,10 +165,13 @@ impl MediaIngestor {
     }
 
     fn ingest_video(&self, path: &Path) -> Result<IngestedDoc, IngestError> {
-        let frames = self
+        let mut frames = self
             .media
             .video_frames(path, VIDEO_FRAMES)
             .map_err(IngestError::Worker)?;
+        // Seeks may land on the same keyframe; one image per timestamp.
+        frames.sort_by_key(|(at, _)| *at);
+        frames.dedup_by_key(|(at, _)| *at);
         let dir = path.with_extension("frames");
         std::fs::create_dir_all(&dir)?;
         let mut blocks = Vec::new();
