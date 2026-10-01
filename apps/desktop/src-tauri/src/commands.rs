@@ -635,8 +635,10 @@ pub fn overlay_moved(app: AppHandle, s: State<'_, AppState>) {
     overlay::remember_placement(&app, &s.host);
 }
 
+// Async: sync commands run on the main thread, and building a window there
+// never answers the IPC call on Windows (WebView2).
 #[tauri::command]
-pub fn settings_open(app: AppHandle, section: Option<String>) {
+pub async fn settings_open(app: AppHandle, section: Option<String>) {
     crate::open_settings(&app, section.as_deref());
 }
 

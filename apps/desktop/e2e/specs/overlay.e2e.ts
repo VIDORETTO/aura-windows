@@ -19,6 +19,9 @@ describe("Overlay", () => {
 
   it("closes with Esc", async () => {
     await browser.keys("Escape");
-    await browser.waitUntil(async () => !(await $("textarea").isDisplayed()), { timeout: 5_000 });
+    // Hiding the native window leaves the DOM "displayed": ask the window itself.
+    const visible = () =>
+      browser.execute(() => (window as any).__TAURI_INTERNALS__.invoke("plugin:window|is_visible", { label: "overlay" }));
+    await browser.waitUntil(async () => (await visible()) === false, { timeout: 5_000 });
   });
 });

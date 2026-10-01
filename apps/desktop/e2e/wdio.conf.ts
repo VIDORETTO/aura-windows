@@ -21,5 +21,20 @@ export const config: WebdriverIO.Config = {
   beforeSession: () => {
     driver = spawn("tauri-driver", [], { stdio: [null, process.stdout, process.stderr] });
   },
+  // A fresh profile opens on the login card, and demo mode has no fake ChatGPT
+  // sign-in. Through the app's own IPC: a keyless provider (so nothing goes to the
+  // Credential Manager) counts as signed in; `onboarded` skips the first-run guide.
+  before: async () => {
+    await browser.waitUntil(() => browser.execute(() => "__TAURI_INTERNALS__" in window), { timeout: 20_000 });
+    await browser.execute(async () => {
+      const invoke = (window as any).__TAURI_INTERNALS__.invoke;
+      const existing: unknown[] = await invoke("providers_list");
+      if (existing.length === 0) {
+        await invoke("providers_save", { draft: { name: "Ollama (E2E)", preset: "ollama" }, credential: null });
+      }
+      await invoke("settings_update", { patch: { onboarded: true } });
+    });
+    await browser.refresh();
+  },
   afterSession: () => driver?.kill(),
 };
