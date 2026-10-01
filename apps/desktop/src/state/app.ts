@@ -75,6 +75,8 @@ export const useApp = create<AppStore>((set, get) => ({
   setPrivacy: (privacy) => set({ privacy }),
   refreshAuth: async () => set({ auth: await api.authStatus() }),
   notify: (level, message) => {
+    // The same message twice (e.g. a shortcut conflict) shows once.
+    if (get().notices.some((n) => n.message === message)) return;
     const id = ++noticeSeq;
     set((s) => ({ notices: [...s.notices.slice(-3), { id, level, message }] }));
     setTimeout(() => get().dismiss(id), level === "error" ? 8000 : 4500);

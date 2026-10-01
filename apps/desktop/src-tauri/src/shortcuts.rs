@@ -16,6 +16,9 @@ const GLOBAL_VOICE: u32 = 3;
 
 static SERVICE: Mutex<Option<HotkeyService>> = Mutex::new(None);
 static GLOBAL_DICTATION: AtomicBool = AtomicBool::new(false);
+/// Last applied bindings: other settings changes must not re-register (and
+/// re-report conflicts for) the same shortcuts.
+static APPLIED: Mutex<Option<HotkeyConfig>> = Mutex::new(None);
 
 fn config(s: &Settings) -> HotkeyConfig {
     let mut bindings = Vec::new();
@@ -58,6 +61,7 @@ pub fn start(app: &AppHandle, s: &Settings) {
         }
     };
     report(app, errors);
+    *APPLIED.lock().unwrap() = Some(config(s));
     *SERVICE.lock().unwrap() = Some(service);
     let app = app.clone();
     std::thread::Builder::new()
@@ -71,8 +75,13 @@ pub fn start(app: &AppHandle, s: &Settings) {
 }
 
 pub fn apply(app: &AppHandle, s: &Settings) {
+    let next = config(s);
+    if APPLIED.lock().unwrap().as_ref() == Some(&next) {
+        return;
+    }
     if let Some(svc) = SERVICE.lock().unwrap().as_ref() {
-        report(app, svc.update(config(s)));
+        report(app, svc.update(next.clone()));
+        *APPLIED.lock().unwrap() = Some(next);
     }
 }
 
