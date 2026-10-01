@@ -105,3 +105,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-009 — partial
+
+- Ticket: `TK-001`
+- Acceptance: `AC-001`
+- Procedure: `IPC audio_devices(system=false/true) no app real`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:30c77b46c1f8de5b127dc258cd096ef0bff74dee2288fdd32ce30b41bfa86fd4`
+- Timestamp: `2026-10-01T00:31:40+00:00`
+- Observations: cpal/WASAPI listou 2 entradas (fifine, VB-CABLE) e 5 saídas com padrão correto; loopback da saída padrão gravou 7 s em system.wav (ver evidência 004 TK-006).
+- Evidence refs: none
+- Limitations: Medidores de nível não observados; fala no microfone não testada (microfone deixado desligado de propósito).

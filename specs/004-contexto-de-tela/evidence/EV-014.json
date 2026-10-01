@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 + 1366x768); WebView2 154.0.4258.37; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "crates/aura-win/src/capture.rs": "57d7333c57573fd0db650d1cd67dd7dc8a9a9bc2e50ca09a2ba88739f4ec7474",
+    "crates/aura-win/src/windows_info.rs": "a5b44334ed91fce41a135ff583fdbd05586cc3a834b257c04c8faa2a5993a91d",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-win/src/capture.rs",
+    "crates/aura-win/src/windows_info.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Sem modo magenta nem 20 execuções para p95; janela parcialmente coberta (AC-002) não testada.",
+  "observations": "Tela inteira em 49 ms, janela em 39 ms; capturou só o monitor do Aplicativo anterior (DISPLAY1); conteúdo do Firefox renderizado (não preto); Chip 'Tela · <título>'. previous_app correto (firefox.exe, título, monitor).",
+  "procedure": "IPC capture_screen(windowOnly=false/true) no app real com Firefox em primeiro plano; PNG inspecionado",
+  "result": "partial",
+  "tested_revision": "local:e32976096daba5fbeabcbc2732c4fd8420261ba5a9c567db0440217e79bf8f2d",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-01T00:31:52+00:00"
+}

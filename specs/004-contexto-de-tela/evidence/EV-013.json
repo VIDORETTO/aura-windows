@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-015"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "crates/aura-app/src/recorder.rs": "fd5f239ff5a00cee2baeab1cc336fb0766f342fa43fccad9667d00ee9a4778e6",
+    "crates/aura-win/src/audio.rs": "9bf7ec830930afe1e65d7e7a279ea64461a39d737764eb85e139732cca883e8b",
+    "crates/aura-win/src/encoder.rs": "0ac9ec28e2a0e87c136cd884bc4fc619f3cd242ff64967e206fda55b924c25bf",
+    "specs/004-contexto-de-tela/plan.md": "6218871440385d23c6d459f6f569950a1b5a4314ba64b27e67851a8aed29456f",
+    "specs/004-contexto-de-tela/spec.md": "6c108a1d07f16bdbb10fc577f63efc473a4eb5b99c7f027b3b9a15e903488a0e"
+  },
+  "input_paths": [
+    "crates/aura-win/src/encoder.rs",
+    "crates/aura-app/src/recorder.rs",
+    "crates/aura-win/src/audio.rs",
+    "specs/004-contexto-de-tela/spec.md",
+    "specs/004-contexto-de-tela/plan.md"
+  ],
+  "limitations": "Gravação de 7 s (não 30 s/3 segmentos); exclusão e player não exercitados.",
+  "observations": "Antes de 480aa73 o codificador MF falhava (BeginWriting E_INVALIDARG; available()=false). Depois: gravação 'screen,system' 545 KB; export screen-0001.mp4 H.264 1920x1080 8 s decodifica sem erro, quadro correto (stride RGB32 ok); system.wav PCM 16 kHz mono 7 s.",
+  "procedure": "IPC no app real: tela e Áudio do sistema em Manual → recording_start, 7 s, recording_stop, recordings_list, recording_export; ffprobe/ffmpeg nos arquivos",
+  "result": "partial",
+  "tested_revision": "local:0d75aa7324969a4754c9bb9f545748adec843c7c1c90da412e67b10f0111d561",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-01T00:31:39+00:00"
+}

@@ -92,3 +92,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-008 — partial
+
+- Ticket: `TK-005`
+- Acceptance: `AC-008`
+- Procedure: `attach_file no app real com MP4 de 5 s do x264 (1 keyframe) e com GOP de 1 s; listar quadros extraídos`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:36ce5ced16a88e4fa312cc07d41f67b8075b453e6a81e99c96caed69cc36eb80`
+- Timestamp: `2026-10-01T00:31:39+00:00`
+- Observations: Antes de de216be/dae0a7b: 1 keyframe → 8 pedidos no mesmo instante, resumo '~00:00 · 8 quadros' e 1 PNG. Depois: 8 quadros distintos 0,32–4,72 s nos dois clipes, resumo '~00:04'. Teste aura-win video_frames_are_spread_over_the_clip cobre.
+- Evidence refs: none
+- Limitations: Sem o vídeo numerado de 60 s/12 quadros do AC; legenda de tempo não conferida; transcrição do áudio do vídeo exige modelo ASR (não instalado).

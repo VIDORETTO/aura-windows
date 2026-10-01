@@ -105,3 +105,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-009 — partial
+
+- Ticket: `TK-001`
+- Acceptance: `AC-004`, `AC-005`
+- Procedure: `providers_save (preset openai) com chave de 3006 bytes → cmdkey /list → providers_remove → cmdkey /list; Select-String da chave em todo o AURA_HOME`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:545bfd22459a8f835499d26f0deb3a8acf641a54ca8d558d00959d78f21eaa38`
+- Timestamp: `2026-10-01T00:31:39+00:00`
+- Observations: Credential Manager: chave fragmentada em 3 credenciais (Aura/provider/<id>, ~0, ~1); remover apaga as 3. Varredura de 95 arquivos do AURA_HOME (db, wal, logs, codex-home): 0 ocorrências da chave.
+- Evidence refs: none
+- Limitations: Leitura de volta da chave pelo gateway não exercitada (exigiria rede com chave falsa); varredura feita com AURA_HOME isolado, não em %LOCALAPPDATA%\Aura.

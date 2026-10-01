@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-gateway/src": "3c7f85e5faab6b6e1703b40c7bdf5d2b63936f0b223ca961e0289f658eee0361",
+    "crates/aura-win/src/chunks.rs": "676b434b4a7ab0085f80c3478d3f37622928405fa898b6b1550eea57d87a9fd1",
+    "crates/aura-win/src/credman.rs": "36286704f207aa602453a87d07457c7c68ceb4100cdebf45182cb2d63a351fab",
+    "specs/003-byok-gateway/plan.md": "66980f75e12438b4e23bbfb7889563161d5ba442c6ee16b611bf9ce2ea603034",
+    "specs/003-byok-gateway/spec.md": "ecc503597872d2ad7abf46f42f9e360fc42672ec3d21500cf89a6d97d041899c"
+  },
+  "input_paths": [
+    "crates/aura-win/src/credman.rs",
+    "crates/aura-win/src/chunks.rs",
+    "crates/aura-gateway/src",
+    "specs/003-byok-gateway/spec.md",
+    "specs/003-byok-gateway/plan.md"
+  ],
+  "limitations": "Leitura de volta da chave pelo gateway não exercitada (exigiria rede com chave falsa); varredura feita com AURA_HOME isolado, não em %LOCALAPPDATA%\\Aura.",
+  "observations": "Credential Manager: chave fragmentada em 3 credenciais (Aura/provider/<id>, ~0, ~1); remover apaga as 3. Varredura de 95 arquivos do AURA_HOME (db, wal, logs, codex-home): 0 ocorrências da chave.",
+  "procedure": "providers_save (preset openai) com chave de 3006 bytes → cmdkey /list → providers_remove → cmdkey /list; Select-String da chave em todo o AURA_HOME",
+  "result": "partial",
+  "tested_revision": "local:545bfd22459a8f835499d26f0deb3a8acf641a54ca8d558d00959d78f21eaa38",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-01T00:31:39+00:00"
+}

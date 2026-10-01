@@ -157,3 +157,29 @@
 - Observations: Antes da correção c7d3890 pausar fechava o aura.exe (tokio::spawn fora do runtime); depois o switch fica aria-checked=true e o processo segue vivo. Teste novo cobre a chamada fora do runtime (caminho da bandeja/atalho).
 - Evidence refs: none
 - Limitations: Troca do ícone da bandeja e atalho Ctrl+Shift+Alt+P não conferidos a olho.
+
+## EV-013 — partial
+
+- Ticket: `TK-006`
+- Acceptance: `AC-015`
+- Procedure: `IPC no app real: tela e Áudio do sistema em Manual → recording_start, 7 s, recording_stop, recordings_list, recording_export; ffprobe/ffmpeg nos arquivos`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:0d75aa7324969a4754c9bb9f545748adec843c7c1c90da412e67b10f0111d561`
+- Timestamp: `2026-10-01T00:31:39+00:00`
+- Observations: Antes de 480aa73 o codificador MF falhava (BeginWriting E_INVALIDARG; available()=false). Depois: gravação 'screen,system' 545 KB; export screen-0001.mp4 H.264 1920x1080 8 s decodifica sem erro, quadro correto (stride RGB32 ok); system.wav PCM 16 kHz mono 7 s.
+- Evidence refs: none
+- Limitations: Gravação de 7 s (não 30 s/3 segmentos); exclusão e player não exercitados.
+
+## EV-014 — partial
+
+- Ticket: `TK-001`
+- Acceptance: `AC-001`
+- Procedure: `IPC capture_screen(windowOnly=false/true) no app real com Firefox em primeiro plano; PNG inspecionado`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; 2 monitores (1920x1080 + 1366x768); WebView2 154.0.4258.37; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:e32976096daba5fbeabcbc2732c4fd8420261ba5a9c567db0440217e79bf8f2d`
+- Timestamp: `2026-10-01T00:31:52+00:00`
+- Observations: Tela inteira em 49 ms, janela em 39 ms; capturou só o monitor do Aplicativo anterior (DISPLAY1); conteúdo do Firefox renderizado (não preto); Chip 'Tela · <título>'. previous_app correto (firefox.exe, título, monitor).
+- Evidence refs: none
+- Limitations: Sem modo magenta nem 20 execuções para p95; janela parcialmente coberta (AC-002) não testada.

@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "crates/aura-app/src/media.rs": "7e06e58341ea72dfe64299a535a54583528e8cf37c5c7dfe235a99d216ccbfb5",
+    "crates/aura-win/src/media.rs": "c7300e412903fdb89223d0e1b019d56526d2cd6f690e423d142a18219c83a1f0",
+    "specs/007-anexos-multimodais/plan.md": "66b02111035d40627e71131b3d009b91fb0e7df782789d7954c703ff72b1f5ff",
+    "specs/007-anexos-multimodais/spec.md": "fc6a6add39c5a0664a4a9f8a4154c2e65add788aca7925d3ab461acbf4e11b53"
+  },
+  "input_paths": [
+    "crates/aura-win/src/media.rs",
+    "crates/aura-app/src/media.rs",
+    "specs/007-anexos-multimodais/spec.md",
+    "specs/007-anexos-multimodais/plan.md"
+  ],
+  "limitations": "Sem o vídeo numerado de 60 s/12 quadros do AC; legenda de tempo não conferida; transcrição do áudio do vídeo exige modelo ASR (não instalado).",
+  "observations": "Antes de de216be/dae0a7b: 1 keyframe → 8 pedidos no mesmo instante, resumo '~00:00 · 8 quadros' e 1 PNG. Depois: 8 quadros distintos 0,32–4,72 s nos dois clipes, resumo '~00:04'. Teste aura-win video_frames_are_spread_over_the_clip cobre.",
+  "procedure": "attach_file no app real com MP4 de 5 s do x264 (1 keyframe) e com GOP de 1 s; listar quadros extraídos",
+  "result": "partial",
+  "tested_revision": "local:36ce5ced16a88e4fa312cc07d41f67b8075b453e6a81e99c96caed69cc36eb80",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-01T00:31:39+00:00"
+}

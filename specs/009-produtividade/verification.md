@@ -66,3 +66,16 @@
 - Observations: Testes automatizados passaram (246 Rust + 53 UI; e2e com app-server real).
 - Evidence refs: none
 - Limitations: Sem Windows/WebView2; adaptadores Windows só verificados por tipo.
+
+## EV-006 — partial
+
+- Ticket: `TK-003`
+- Acceptance: `AC-005`
+- Procedure: `IPC speak('Olá, eu sou o Aura.') no app real`
+- Execution: `executed`
+- Environment: Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado
+- Tested revision: `local:8da62afc0e557a14161d54ee36a3bfe1457591335ae753762183094485971bf5`
+- Timestamp: `2026-10-01T00:31:40+00:00`
+- Observations: Windows.Media.SpeechSynthesis devolveu WAV RIFF (offline).
+- Evidence refs: none
+- Limitations: Áudio não reproduzido nem ouvido; latência ≤ 300 ms e voz pt-BR não medidas.

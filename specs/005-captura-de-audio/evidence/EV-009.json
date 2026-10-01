@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-win/src/audio.rs": "9bf7ec830930afe1e65d7e7a279ea64461a39d737764eb85e139732cca883e8b",
+    "specs/005-captura-de-audio/plan.md": "9107ea9f8ffaf177e04ab63bb4676193e02a6db728859415c0df04c662964ac1",
+    "specs/005-captura-de-audio/spec.md": "7be2f30a6bfde2bfe6a1f97020c467f72571b73ca337bff2f9eb1fa4d8bfea82"
+  },
+  "input_paths": [
+    "crates/aura-win/src/audio.rs",
+    "specs/005-captura-de-audio/spec.md",
+    "specs/005-captura-de-audio/plan.md"
+  ],
+  "limitations": "Medidores de nível não observados; fala no microfone não testada (microfone deixado desligado de propósito).",
+  "observations": "cpal/WASAPI listou 2 entradas (fifine, VB-CABLE) e 5 saídas com padrão correto; loopback da saída padrão gravou 7 s em system.wav (ver evidência 004 TK-006).",
+  "procedure": "IPC audio_devices(system=false/true) no app real",
+  "result": "partial",
+  "tested_revision": "local:30c77b46c1f8de5b127dc258cd096ef0bff74dee2288fdd32ce30b41bfa86fd4",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-01T00:31:40+00:00"
+}

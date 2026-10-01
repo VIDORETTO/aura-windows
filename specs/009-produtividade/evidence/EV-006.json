@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 10.0.26200; AMD GPU (MFTs AMDh264Encoder, Microsoft AVC DX12, H264 Encoder MFT); WebView2 154.0.4258.37; MSVC 17.14; Rust 1.98.1; aura.exe release modo real; AURA_HOME isolado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "crates/aura-win/src/speech.rs": "63f0aeb8e498af90b8c474f8b75b1d20d6b631491f076f3cae633b9c1f405052",
+    "specs/009-produtividade/plan.md": "64e4a4c48241b8220a61017ba5d34b96b48f7e8ac7f640907a3fc017291ca134",
+    "specs/009-produtividade/spec.md": "7d7f4ab7d89aca55acc4f8c1f251922d21d86ddaaf556ce0f13c1ed2a7b4d9e2"
+  },
+  "input_paths": [
+    "crates/aura-win/src/speech.rs",
+    "specs/009-produtividade/spec.md",
+    "specs/009-produtividade/plan.md"
+  ],
+  "limitations": "Áudio não reproduzido nem ouvido; latência ≤ 300 ms e voz pt-BR não medidas.",
+  "observations": "Windows.Media.SpeechSynthesis devolveu WAV RIFF (offline).",
+  "procedure": "IPC speak('Olá, eu sou o Aura.') no app real",
+  "result": "partial",
+  "tested_revision": "local:8da62afc0e557a14161d54ee36a3bfe1457591335ae753762183094485971bf5",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-01T00:31:40+00:00"
+}
