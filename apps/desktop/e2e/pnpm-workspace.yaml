@@ -1,0 +1,7 @@
+# pnpm 12 fails on unreviewed build scripts. esbuild (used by tsx) may build;
+# the WebDriver binaries' download scripts are not needed (tauri-driver +
+# the system msedgedriver drive the app).
+allowBuilds:
+  esbuild: true
+  edgedriver: false
+  geckodriver: false
