@@ -101,6 +101,7 @@ não recebe `--background`. Para o E2E local: `tauri-driver` (`cargo install`) e
 ### 2.3 Comandos
 
 ```powershell
+.\iniciar-aura.bat [-Demo] [-Rebuild] [-Pull] [-NoStart]   # abre a versão mais recente (recompila só se o código mudou)
 cargo test --workspace --exclude aura-desktop
 cargo clippy --workspace --all-targets -- -D warnings
 pnpm -C apps/desktop test ; pnpm -C apps/desktop typecheck
