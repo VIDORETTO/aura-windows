@@ -1,10 +1,14 @@
 import { spawn } from "node:child_process";
+import path from "node:path";
+
+// Same default as wdio.conf.ts.
+const app = process.env.AURA_E2E_APP ?? path.resolve(import.meta.dirname, "../../../../target/release/aura.exe");
 
 // Journeys of 001/002 in demo mode (fake agent, synthetic OS).
 describe("Overlay", () => {
   // Aura starts in the tray (001 AC-001); launching it again opens it.
   before(async () => {
-    spawn(process.env.AURA_E2E_APP!, [], { stdio: "ignore", detached: true }).unref();
+    spawn(app, [], { stdio: "ignore", detached: true }).unref();
     await browser.pause(2000);
   });
 
