@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 191860544E94A3AB7B22280323DAE7F9F42AC01A28AB59F58998459C66EF73DA",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/accent-color.e2e.ts": "2a4a9dea637686c24ef54d4a3674a286b2f3776e16082a668a06fd2f09af8c27",
+    "apps/desktop/src/settings/General.tsx": "035d5ee79c0fe237b3b79fd5ce883bdbe79e774c57730e3e267bb5174bbeab5e",
+    "apps/desktop/src/state/app.ts": "8b1ae4aa99f8605e245af76c2d175e232924b07fbaebfd3aad29ab2b636ea747",
+    "apps/desktop/src/styles/app.css": "8640a682dfb5dd1140462f97382ecf58297e4e23e7ee3f82424cfe821dc05a22",
+    "apps/desktop/src/ui/AuraLogo.tsx": "99bd517d02fb9d5767d289ad3ed09ad1f9ab01892c0e23ae88aa0ae21bd65bed",
+    "crates/aura-core/src/settings.rs": "6c8ac3d714dfa89e9821d4d331d9e43c48a7cb3118b6529816dca663591df97e",
+    "specs/012-selecao-e-cor-de-destaque/change.md": "38af10a258f40be7a33663a6da70dfcc173834c21aeb60e86b163f02e94fbd54"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/settings/General.tsx",
+    "apps/desktop/src/styles/app.css",
+    "apps/desktop/src/ui/AuraLogo.tsx",
+    "apps/desktop/e2e/specs/accent-color.e2e.ts",
+    "specs/012-selecao-e-cor-de-destaque/change.md"
+  ],
+  "limitations": "Tray/executable icons are fixed images and keep the default colors.",
+  "observations": "bg-accent rgb(228, 87, 46) in Settings and Overlay and after restart; Default back to rgb(91, 91, 247); screenshots 012-accent-settings.png / 012-accent-overlay.png.",
+  "procedure": "aura-core red/green for accentColor validation; React red/green (presets, invalid hex, custom hex, Default) and WCAG contrast unit; native red on the previous release and green choosing #e4572e in Settings, checking computed bg-accent in Settings and Overlay, after restart, and Default.",
+  "result": "passed",
+  "tested_revision": "local:35a2c693156ba3b87941b703a6e7e4553ba2741f4b8b4c3c91e7487a1c2d6970",
+  "ticket": null,
+  "timestamp": "2026-10-04T19:04:00+00:00"
+}

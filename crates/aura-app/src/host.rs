@@ -7,6 +7,7 @@ use crate::consent::{ConsentAnswer, ConsentBroker};
 use crate::error::{HostError, HostResult};
 use crate::events::{HostEvent, PrivacyState};
 use crate::launcher::{AuraLauncher, LaunchState, SpawnHook};
+pub use crate::memories::MemoryView;
 use crate::paths::AppPaths;
 use crate::platform::Platform;
 use crate::privacy::{AccessLogEntry, PrivacyRepo};
@@ -18,9 +19,9 @@ use aura_asr::download::DiskSpace;
 use aura_asr::ptt::PttState;
 use aura_asr::transcriber::AsrOptions;
 use aura_audio::DeviceSel;
+use aura_auth::AuthService;
 use aura_auth::ChatGptAccount;
 use aura_auth::SiwcConfig;
-use aura_auth::{AuthService, LoginProgress};
 use aura_capture::source::Target as CapTarget;
 use aura_capture::{CaptureOutcome, capture_with_policy};
 use aura_codex::approvals::Decision as ApprovalDecision;
@@ -40,7 +41,7 @@ use aura_core::settings::{Settings, SettingsPatch};
 use aura_extensions::import::{DetectedServer, Roots};
 use aura_extensions::mcp_config::{McpServerSpec, McpServersRepo};
 use aura_extensions::quick::{Expansion, QuickCommand, QuickCommandsRepo, QuickContext};
-use aura_extensions::skills::{self, SkillReview, SkillSource};
+use aura_extensions::skills::{self, SkillOrigin, SkillReview, SkillSource};
 use aura_gateway::registry::{
     Preset, Provider, ProviderDraft, ProviderRegistry, ProviderStatus, presets,
 };
@@ -119,6 +120,7 @@ pub struct PrivacyView {
     pub system_audio: SourcePolicy,
     pub paused: bool,
     pub exclusions: Vec<ExclusionRule>,
+    pub retention: aura_policy::Retention,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -140,6 +142,57 @@ pub struct Diagnostics {
     pub providers: usize,
     pub mcp_servers: usize,
     pub pending_consents: usize,
+    pub gateway: GatewayDiag,
+    /// MCP servers as the running app-server sees them (empty when stopped).
+    pub mcp: Vec<McpDiag>,
+    pub worker: crate::voice::WorkerDiag,
+    pub capture: CaptureDiag,
+    /// Active ChatGPT account, e-mail masked, never tokens.
+    pub account: Option<AccountDiag>,
+    pub disk: DiskDiag,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GatewayDiag {
+    pub port: u16,
+    /// Accepts connections on 127.0.0.1.
+    pub reachable: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct McpDiag {
+    pub name: String,
+    pub tools: usize,
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CaptureDiag {
+    pub paused: bool,
+    /// Sources recording now (`screen`, `mic`, `system`).
+    pub active: Vec<String>,
+    /// Manual recording in progress.
+    pub recording: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountDiag {
+    pub email: Option<String>,
+    pub signed_in: bool,
+    pub plan_usage_enabled: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DiskDiag {
+    /// Free space on the drive of the data folder (unknown off Windows).
+    pub free_bytes: Option<u64>,
+    /// Space used by Aura's data folder.
+    pub aura_bytes: u64,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -176,7 +229,7 @@ pub struct Host {
     pub paths: AppPaths,
     platform: Platform,
     store: Store,
-    _vault: Arc<Vault>,
+    vault: Arc<Vault>,
     settings: RwLock<Settings>,
     policy: Arc<RwLock<Policy>>,
     grants: Arc<RwLock<Grants>>,
@@ -197,12 +250,112 @@ pub struct Host {
     voice: Arc<Voice>,
     codex_program: Arc<RwLock<Option<PathBuf>>>,
     capture: Arc<crate::recorder::CaptureService>,
+    /// Free space of the data drive (diagnostics, model downloads).
+    disk: Arc<dyn DiskSpace>,
+    /// Device tests in Settings (005 AC-001): one live hub per source.
+    audio_tests: Mutex<HashMap<aura_audio::AudioSourceKind, AudioTest>>,
     profiles: crate::profiles::ProfilesRepo,
+    /// Text of the last selection chip (012): a chip removed by the user is
+    /// not re-added automatically while the selection stays the same.
+    last_selection: Mutex<Option<String>>,
     /// Frozen screens waiting for a region selection (token → frame).
     frozen: Mutex<HashMap<String, aura_capture::frame::Frame>>,
     /// Runtime captured at start: sync methods are called from threads without
     /// a Tokio context (Tauri sync commands, tray, hotkeys).
     rt: tokio::runtime::Handle,
+}
+
+/// Unique, sortable name part for pasted files (milliseconds + sequence).
+fn chrono_like_stamp() -> String {
+    static SEQ: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+    let ms = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis())
+        .unwrap_or(0);
+    let n = SEQ.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+    format!("{ms}-{n}")
+}
+
+/// A playable file of a recording (decrypted copy in the session cache).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PlaybackMedia {
+    /// `audio` or `video`.
+    pub kind: String,
+    /// `mic`, `system` or `screen`.
+    pub source: String,
+    pub mime: String,
+    pub path: PathBuf,
+}
+
+impl PlaybackMedia {
+    fn of(path: PathBuf) -> Option<Self> {
+        let name = path.file_name()?.to_string_lossy().into_owned();
+        let (kind, source, mime) = if let Some(src) = name.strip_suffix(".wav") {
+            ("audio", src.to_string(), "audio/wav")
+        } else if name.starts_with("screen-") && name.ends_with(".mp4") {
+            ("video", "screen".to_string(), "video/mp4")
+        } else {
+            return None;
+        };
+        Some(Self {
+            kind: kind.into(),
+            source,
+            mime: mime.into(),
+            path,
+        })
+    }
+}
+
+/// Voices offered in Settings › Voice (009 AC-005/006).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpeechOptions {
+    pub voices: Vec<crate::speech::SpeechVoice>,
+    pub cloud: Vec<SpeechProvider>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpeechProvider {
+    pub id: String,
+    pub name: String,
+}
+
+/// User request to attach the recent buffer (004 AC-014, 005 AC-007/009).
+#[derive(Debug, Clone, PartialEq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecentClip {
+    /// Last N minutes (0 < N <= 30).
+    pub minutes: f64,
+    /// Keyframes of the screen buffer.
+    pub screen: bool,
+    /// Audio transcript: `mic`, `system` or `both`.
+    pub audio: Option<String>,
+}
+
+/// Result of attaching a recording: chips added and files that failed.
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct RecordingAttach {
+    pub chips: Vec<ContextChip>,
+    pub failed: Vec<String>,
+}
+
+/// A skill in Settings: origin and whether new conversations get it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SkillEntry {
+    pub name: String,
+    pub description: String,
+    pub path: PathBuf,
+    pub origin: SkillOrigin,
+    pub enabled: bool,
+}
+
+struct AudioTest {
+    hub: aura_audio::hub::AudioHub,
+    task: tokio::task::JoinHandle<()>,
 }
 
 /// One MCP server as the running app-server sees it.
@@ -213,6 +366,8 @@ pub struct McpStatus {
     pub tools: Vec<String>,
     /// `unsupported`, `notLoggedIn`, `bearerToken`, `oAuth`…
     pub auth: Option<String>,
+    /// Why the server did not start (`toolsError`); `None` when connected.
+    pub error: Option<String>,
 }
 
 /// Parses `mcpServerStatus/list` leniently (tools as map or list).
@@ -235,9 +390,29 @@ pub fn parse_mcp_status(v: &serde_json::Value) -> Vec<McpStatus> {
                 name: s["name"].as_str().unwrap_or_default().to_string(),
                 tools,
                 auth: s["authStatus"].as_str().map(str::to_string),
+                error: s["toolsError"]
+                    .as_str()
+                    .filter(|e| !e.is_empty())
+                    .map(str::to_string),
             }
         })
         .collect()
+}
+
+/// Text preview of a PDF in the Files panel.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PdfPreview {
+    pub total_pages: u32,
+    /// Pages with a text layer among the first ones, in order.
+    pub pages: Vec<PdfPage>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PdfPage {
+    pub number: u32,
+    pub text: String,
 }
 
 /// A file the agent produced in the conversation workspace.
@@ -269,6 +444,8 @@ const ASR_MODEL_KEY: &str = "asr.model";
 impl Host {
     pub async fn start(cfg: HostConfig) -> HostResult<Arc<Host>> {
         cfg.paths.ensure()?;
+        // Decrypted playback copies never outlive a session.
+        let _ = std::fs::remove_dir_all(cfg.paths.captures_tmp().join("playback"));
         let store = if cfg.in_memory_store {
             Store::open_in_memory()?
         } else {
@@ -340,6 +517,7 @@ impl Host {
             cfg.capture_interval,
         );
         let tools = Arc::new(HostTools {
+            vault: vault.clone(),
             platform: cfg.platform.clone(),
             policy: policy.clone(),
             grants: grants.clone(),
@@ -405,6 +583,7 @@ impl Host {
         let (tx, rx) = mpsc::unbounded_channel();
         let supervisor = AppServerSupervisor::new(launcher, sup_cfg, tx);
         let codex = CodexService::new(supervisor, rx, store.clone(), cfg.paths.workspaces());
+        codex.set_skill_roots(vec![cfg.paths.skills()]);
         if let Err(e) = codex.cleanup_on_start() {
             tracing::warn!("workspace cleanup failed: {e}");
         }
@@ -415,7 +594,7 @@ impl Host {
             paths: cfg.paths,
             platform: cfg.platform,
             store,
-            _vault: vault,
+            vault,
             settings: RwLock::new(settings),
             policy,
             grants,
@@ -436,6 +615,9 @@ impl Host {
             voice,
             codex_program,
             capture,
+            disk: cfg.disk.clone(),
+            audio_tests: Mutex::new(HashMap::new()),
+            last_selection: Mutex::new(None),
             frozen: Mutex::new(HashMap::new()),
             profiles: crate::profiles::ProfilesRepo::new(store_for_profiles),
             rt: tokio::runtime::Handle::current(),
@@ -497,9 +679,25 @@ impl Host {
         Ok(next)
     }
 
+    /// Persists settings changed by a dedicated command (not a patch).
+    fn replace_settings(&self, next: Settings) -> HostResult<Settings> {
+        SettingsRepo::new(&self.store).save(&next)?;
+        *self.settings.write().unwrap() = next.clone();
+        self.apply_runtime_settings(&next);
+        Ok(next)
+    }
+
     /// Settings that configure running services (memories, cloud ASR).
     fn apply_runtime_settings(&self, s: &Settings) {
-        self.launch_state.write().unwrap().base.memories = s.memories;
+        self.capture.set_devices(
+            s.microphone_device_id.clone(),
+            s.system_audio_device_id.clone(),
+        );
+        {
+            let mut launch = self.launch_state.write().unwrap();
+            launch.base.memories = s.memories;
+            launch.base.disabled_skills = s.disabled_skills.iter().map(PathBuf::from).collect();
+        }
         let cloud = s.cloud_asr_provider.as_deref().and_then(|id| {
             let reg = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref());
             let provider = reg.get(id).ok()??;
@@ -531,6 +729,7 @@ impl Host {
             system_audio: p.system_audio,
             paused: p.paused,
             exclusions: p.exclusions,
+            retention: p.retention,
         }
     }
 
@@ -581,6 +780,15 @@ impl Host {
         mode: CaptureMode,
         agent: AgentPermission,
     ) -> HostResult<PrivacyView> {
+        // Recent buffer: 1 to 30 minutes (004 AC-013).
+        if let CaptureMode::RecentBuffer { minutes } = mode
+            && !(1..=30).contains(&minutes)
+        {
+            return Err(HostError::new(
+                "out_of_range",
+                "o buffer recente vai de 1 a 30 minutos",
+            ));
+        }
         let mut p = self.policy.read().unwrap().clone();
         let sp = SourcePolicy { mode, agent };
         match source {
@@ -588,6 +796,28 @@ impl Host {
             Source::Mic => p.mic = sp,
             Source::SystemAudio => p.system_audio = sp,
         }
+        self.save_policy(p)
+    }
+
+    /// Retention limits (004 AC-016): 1–365 days, 1–1000 GB.
+    pub fn set_retention(
+        &self,
+        days: u32,
+        max_gb: u32,
+        apply_to_manual: bool,
+    ) -> HostResult<PrivacyView> {
+        if !(1..=365).contains(&days) || !(1..=1000).contains(&max_gb) {
+            return Err(HostError::new(
+                "out_of_range",
+                "retenção: de 1 a 365 dias e de 1 a 1000 GB",
+            ));
+        }
+        let mut p = self.policy.read().unwrap().clone();
+        p.retention = aura_policy::Retention {
+            days,
+            max_gb,
+            apply_to_manual,
+        };
         self.save_policy(p)
     }
 
@@ -633,8 +863,44 @@ impl Host {
         self.save_policy(p)
     }
 
+    /// Access log, newest first, with the thread of each agent conversation
+    /// so Settings can link to it (QA-031).
     pub fn access_log(&self, limit: u32) -> HostResult<Vec<AccessLogEntry>> {
-        Ok(self.privacy.access_log(limit.clamp(1, 1000))?)
+        let mut log = self.privacy.access_log(limit.clamp(1, 1000))?;
+        let repo = aura_store::conversations::ConversationsRepo::new(&self.store);
+        for e in &mut log {
+            if let Some(uuid) = e.conversation.as_deref().filter(|c| !c.is_empty()) {
+                e.thread_id = repo.get_by_uuid(uuid).ok().flatten().map(|m| m.thread_id);
+            }
+        }
+        Ok(log)
+    }
+
+    /// Thumbnail of what the agent received, as a `data:image/png` URL.
+    pub fn access_thumbnail(&self, id: i64) -> HostResult<Option<String>> {
+        use base64::Engine as _;
+        let Some(sealed) = self.privacy.thumbnail(id)? else {
+            return Ok(None);
+        };
+        let png = self
+            .vault
+            .open_bytes("access-thumb", &sealed)
+            .map_err(|e| HostError::new("vault", e.to_string()))?;
+        Ok(Some(format!(
+            "data:image/png;base64,{}",
+            base64::engine::general_purpose::STANDARD.encode(png)
+        )))
+    }
+
+    /// Asks the Overlay to show a conversation of the access log.
+    pub fn reveal_conversation(&self, thread_id: &str) -> HostResult<()> {
+        aura_store::conversations::ConversationsRepo::new(&self.store)
+            .get(thread_id)?
+            .ok_or_else(|| HostError::new("not_found", "conversa não encontrada"))?;
+        let _ = self.events.send(HostEvent::OpenConversation {
+            thread_id: thread_id.to_string(),
+        });
+        Ok(())
     }
 
     pub fn clear_access_log(&self) -> HostResult<()> {
@@ -665,24 +931,10 @@ impl Host {
         reauthorize: Option<String>,
         force_consent: bool,
     ) -> HostResult<String> {
-        let (attempt, done) = self.auth.begin_login(reauthorize, force_consent).await?;
-        let host = self.clone();
-        tokio::spawn(async move {
-            match done.await {
-                Ok(Ok(outcome)) => {
-                    let _ = host.events.send(HostEvent::Login(LoginProgress::Completed {
-                        account: outcome.account,
-                        first_time: outcome.show_welcome,
-                    }));
-                }
-                Ok(Err(e)) => {
-                    let _ = host.events.send(HostEvent::Login(LoginProgress::Failed {
-                        reason: e.to_string(),
-                    }));
-                }
-                Err(_) => {}
-            }
-        });
+        // AuthService owns the task and emits every terminal outcome. Its
+        // progress is already forwarded by forward_events; emitting again here
+        // duplicates completion and incorrectly turns cancellation into failure.
+        let (attempt, _done) = self.auth.begin_login(reauthorize, force_consent).await?;
         Ok(attempt.authorize_url)
     }
 
@@ -741,12 +993,48 @@ impl Host {
         let p =
             ProviderRegistry::new(&self.store, self.platform.credentials.as_ref()).upsert(draft)?;
         self.refresh_provider_routes()?;
+        let _ = self.events.send(HostEvent::ProvidersChanged {});
         Ok(p)
     }
 
     pub fn remove_provider(&self, id: &str) -> HostResult<()> {
         ProviderRegistry::new(&self.store, self.platform.credentials.as_ref()).remove(id)?;
-        self.refresh_provider_routes()
+        self.refresh_provider_routes()?;
+        // Settings must not keep pointing at (or consenting to) it.
+        let mut s = self.settings();
+        let before = s.clone();
+        s.tts_cloud_consent.retain(|c| c != id);
+        for field in [&mut s.tts_provider, &mut s.cloud_asr_provider] {
+            if field.as_deref() == Some(id) {
+                *field = None;
+            }
+        }
+        if s != before {
+            self.replace_settings(s)?;
+        }
+        let _ = self.events.send(HostEvent::ProvidersChanged {});
+        Ok(())
+    }
+
+    /// Adds or corrects a model by hand (003 AC-013); discovery keeps it.
+    pub fn save_provider_model(
+        &self,
+        id: &str,
+        spec: aura_gateway::registry::ModelSpec,
+    ) -> HostResult<Provider> {
+        let p = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref())
+            .save_model(id, spec)?;
+        self.refresh_provider_routes()?;
+        let _ = self.events.send(HostEvent::ProvidersChanged {});
+        Ok(p)
+    }
+
+    pub fn remove_provider_model(&self, id: &str, model_id: &str) -> HostResult<Provider> {
+        let p = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref())
+            .remove_model(id, model_id)?;
+        self.refresh_provider_routes()?;
+        let _ = self.events.send(HostEvent::ProvidersChanged {});
+        Ok(p)
     }
 
     /// Tests the connection, stores status and discovered models.
@@ -766,10 +1054,17 @@ impl Host {
             if !result.models.is_empty() {
                 reg.set_models(id, result.models)?;
             }
+        } else if result.category == aura_gateway::discovery::ConnectionCategory::NotFound
+            && provider.models.iter().any(|m| m.manual)
+        {
+            // No model listing, but the user entered models (003 AC-013):
+            // reachable endpoint, nothing to report as an error.
+            reg.set_status(id, ProviderStatus::Unverified, None)?;
         } else {
             reg.set_status(id, ProviderStatus::Error, Some(result.detail))?;
         }
         self.refresh_provider_routes()?;
+        let _ = self.events.send(HostEvent::ProvidersChanged {});
         reg.get(id)?
             .ok_or_else(|| HostError::new("not_found", "provedor não encontrado"))
     }
@@ -808,12 +1103,18 @@ impl Host {
             .provider
             .strip_prefix("aura-")
             .filter(|id| *id != CHATGPT_PLAN_ROUTE)
-            && let Some(model) = &opts.model
             && let Ok(Some(p)) =
                 ProviderRegistry::new(&self.store, self.platform.credentials.as_ref()).get(id)
         {
             opts.config_overrides
-                .extend(aura_gateway::codex_config::thread_overrides(&p, model));
+                .extend(aura_gateway::codex_config::provider_override(
+                    &p,
+                    self.gateway.port,
+                ));
+            if let Some(model) = &opts.model {
+                opts.config_overrides
+                    .extend(aura_gateway::codex_config::thread_overrides(&p, model));
+            }
         }
         let started = self.codex.start(opts).await?;
         self.workspaces.lock().unwrap().insert(
@@ -841,6 +1142,7 @@ impl Host {
 
     /// Sends text + the chips of `tray`. Returns the turn id.
     pub async fn send(&self, req: SendRequest) -> HostResult<String> {
+        self.adopt_chip_files(&req.tray, &req.thread_id);
         let inputs = self.drain_tray(&req.tray, &req.text, req.accepts_images)?;
         let mut opts = req.options;
         if opts.effort.is_none() {
@@ -920,6 +1222,50 @@ impl Host {
     }
 
     // ----------------------------------------------------------------- context
+
+    /// Moves files kept with chips (Clips attached before the conversation
+    /// existed) into `<workspace>/clips` and points the chips at them.
+    fn adopt_chip_files(&self, tray: &str, thread_id: &str) {
+        let Some((_, ws)) = self.conversation_of(thread_id) else {
+            return;
+        };
+        let target_root = ws.join("clips");
+        let mut trays = self.trays.lock().unwrap();
+        let Some(t) = trays.get_mut(tray) else { return };
+        for mut chip in t.list().to_vec() {
+            let Some(dir) = chip.files_dir.clone() else {
+                continue;
+            };
+            if dir.starts_with(&ws) || !dir.exists() {
+                continue;
+            }
+            let Some(name) = dir.file_name() else {
+                continue;
+            };
+            let dest = target_root.join(name);
+            if std::fs::create_dir_all(&target_root).is_err() {
+                continue;
+            }
+            if std::fs::rename(&dir, &dest).is_err() {
+                if copy_dir(&dir, &dest).is_err() {
+                    continue;
+                }
+                let _ = std::fs::remove_dir_all(&dir);
+            }
+            let moved = |p: &PathBuf| match p.strip_prefix(&dir) {
+                Ok(rest) => dest.join(rest),
+                Err(_) => p.clone(),
+            };
+            if let ChipPayload::Images { paths, .. } = &mut chip.payload {
+                for p in paths.iter_mut() {
+                    *p = moved(p);
+                }
+            }
+            chip.preview_path = chip.preview_path.as_ref().map(moved);
+            chip.files_dir = Some(dest);
+            let _ = t.replace(chip);
+        }
+    }
 
     fn drain_tray(
         &self,
@@ -1035,6 +1381,154 @@ impl Host {
         self.add_chip(tray, chip)
     }
 
+    /// Attaches the last minutes of the recent buffer as a Clip chip: up to 8
+    /// keyframes and/or the transcript of the same interval; frames and audio
+    /// are kept in the conversation workspace (draft cache before the
+    /// conversation exists).
+    pub async fn attach_recent(
+        &self,
+        tray: &str,
+        thread_id: Option<&str>,
+        req: RecentClip,
+    ) -> HostResult<ContextChip> {
+        let audio = req.audio.as_deref();
+        if !(req.minutes > 0.0 && req.minutes <= 30.0)
+            || (!req.screen && audio.is_none())
+            || audio.is_some_and(|a| !matches!(a, "mic" | "system" | "both"))
+        {
+            return Err(HostError::new(
+                "invalid",
+                "escolha de 1 a 30 minutos e ao menos uma fonte",
+            ));
+        }
+        let policy = self.policy.read().unwrap().clone();
+        if policy.paused {
+            return Err(HostError::new("paused", "a privacidade está pausada"));
+        }
+        let buffered = |m: CaptureMode| {
+            matches!(
+                m,
+                CaptureMode::RecentBuffer { .. } | CaptureMode::Continuous
+            )
+        };
+        let audio_sources: Vec<Source> = match audio {
+            Some("mic") => vec![Source::Mic],
+            Some("system") => vec![Source::SystemAudio],
+            Some(_) => vec![Source::Mic, Source::SystemAudio],
+            None => vec![],
+        };
+        let mode = |s: Source| match s {
+            Source::Screen | Source::Selection => policy.screen.mode,
+            Source::Mic => policy.mic.mode,
+            Source::SystemAudio => policy.system_audio.mode,
+        };
+        // "Both" needs at least one audio buffer; a single source needs its own.
+        let audio_ok = audio_sources.is_empty() || audio_sources.iter().any(|s| buffered(mode(*s)));
+        if (req.screen && !buffered(policy.screen.mode)) || !audio_ok {
+            return Err(HostError::new(
+                "not_recording",
+                "a fonte escolhida não está com o buffer recente ligado",
+            ));
+        }
+        let mut sources = audio_sources;
+        if req.screen {
+            sources.insert(0, Source::Screen);
+        }
+        for s in sources.into_iter().filter(|s| buffered(mode(*s))) {
+            let access = aura_policy::AccessRequest {
+                source: s,
+                requester: Requester::User,
+                target: aura_policy::Target::Range,
+                visible_windows: vec![],
+                background: false,
+            };
+            let _ = self.privacy.log(&access, &aura_policy::Decision::Allow);
+        }
+
+        let root = match thread_id.and_then(|t| self.conversation_of(t)) {
+            Some((_, ws)) => ws,
+            None => self.paths.captures_tmp().join("draft"),
+        };
+        let dir = root.join("clips").join(chrono_like_stamp());
+        std::fs::create_dir_all(&dir).map_err(|e| HostError::new("clip", e.to_string()))?;
+        let mut frames = Vec::new();
+        let mut labels = Vec::new();
+        if req.screen {
+            let shots = self
+                .capture
+                .screen_frames(req.minutes, 8)
+                .await
+                .map_err(|e| HostError::new("not_recording", e))?;
+            for (i, (label, png)) in shots.into_iter().enumerate() {
+                let path = dir.join(format!("frame-{:02}.png", i + 1));
+                std::fs::write(&path, png).map_err(|e| HostError::new("clip", e.to_string()))?;
+                labels.push(format!("Quadro {} ({label})", i + 1));
+                frames.push(path);
+            }
+        }
+        let transcript = match audio {
+            Some(which) => {
+                let text = self
+                    .capture
+                    .audio_transcript(req.minutes, which)
+                    .await
+                    .map_err(|e| HostError::new("not_recording", e))?;
+                let capture = self.capture.clone();
+                let (minutes, which, d) = (req.minutes, which.to_string(), dir.clone());
+                let _ = tokio::task::spawn_blocking(move || {
+                    capture.export_recent_audio(minutes, &which, &d)
+                })
+                .await;
+                let _ = std::fs::write(dir.join("transcript.txt"), &text);
+                Some(text)
+            }
+            None => None,
+        };
+        let span = if req.minutes.fract() == 0.0 {
+            format!("{} min", req.minutes as u32)
+        } else {
+            format!("{} s", (req.minutes * 60.0).round() as u32)
+        };
+        let what = match (req.screen, audio) {
+            (true, Some(a)) => format!("tela + {}", audio_label(a)),
+            (true, None) => "tela".to_string(),
+            (false, Some(a)) => audio_label(a).to_string(),
+            (false, None) => String::new(),
+        };
+        let label = format!("Últimos {span} · {what}");
+        let mut chip = if req.screen {
+            let mut caption = format!(
+                "Recorte dos últimos {span} ({what}).\n{}",
+                labels.join("\n")
+            );
+            if let Some(t) = &transcript {
+                caption.push_str("\n\n");
+                caption.push_str(t);
+            }
+            let preview = frames.first().cloned();
+            let mut chip = ContextChip::new(
+                ChipKind::Clip,
+                label,
+                ChipPayload::Images {
+                    paths: frames,
+                    caption: Some(caption),
+                },
+            );
+            chip.preview_path = preview;
+            chip
+        } else {
+            ContextChip::new(
+                ChipKind::Audio,
+                label,
+                ChipPayload::Text {
+                    text: transcript.unwrap_or_default(),
+                },
+            )
+        };
+        chip.files_dir = Some(dir);
+        self.add_chip(tray, chip)
+    }
+
     /// Freezes the monitor of the previous app for region selection (004
     /// TK-002). The frame is policy-checked and redacted like any capture.
     pub async fn region_begin(&self) -> HostResult<FrozenScreen> {
@@ -1145,7 +1639,11 @@ impl Host {
     }
 
     /// Selected text of the previous app into a chip (respects exclusions).
-    pub fn capture_selection(&self, tray: &str) -> HostResult<Option<ContextChip>> {
+    /// Selection of the previous app as the tray's single selection chip
+    /// (012 AC-001). A new text replaces the chip; the same text is not
+    /// duplicated; a chip the user removed only comes back when `explicit`
+    /// (`@seleção`) or after the selection changes.
+    pub fn capture_selection(&self, tray: &str, explicit: bool) -> HostResult<Option<ContextChip>> {
         let policy = self.policy.read().unwrap().clone();
         if policy.paused {
             return Ok(None);
@@ -1167,13 +1665,36 @@ impl Host {
         let Some(text) = self.platform.foreground.selection(50_000) else {
             return Ok(None);
         };
+        let mut trays = self.trays.lock().unwrap();
+        let t = trays.entry(tray.to_string()).or_default();
+        let current: Vec<ContextChip> = t
+            .list()
+            .iter()
+            .filter(|c| c.kind == ChipKind::Selection)
+            .cloned()
+            .collect();
+        if let Some(same) = current
+            .iter()
+            .find(|c| matches!(&c.payload, ChipPayload::Text { text: t } if *t == text))
+        {
+            return Ok(Some(same.clone()));
+        }
+        let mut last = self.last_selection.lock().unwrap();
+        if !explicit && current.is_empty() && last.as_deref() == Some(text.as_str()) {
+            // Removed by the user and still the same selection.
+            return Ok(None);
+        }
+        for c in &current {
+            let _ = t.remove(&c.id);
+        }
+        *last = Some(text.clone());
         let preview: String = text.chars().take(40).collect();
         let chip = ContextChip::new(
             ChipKind::Selection,
             format!("❝ {preview}"),
             ChipPayload::Text { text },
         );
-        Ok(Some(self.add_chip(tray, chip)?))
+        Ok(Some(t.add(chip)?.clone()))
     }
 
     /// Attaches a file (drag-and-drop, file picker, paste).
@@ -1194,6 +1715,42 @@ impl Host {
             .map_err(|e| HostError::new("attachment", e.to_string()))??;
         let chip = self.add_chip(tray, chip)?;
         Ok((info, chip))
+    }
+
+    /// Attaches an image pasted from the clipboard (Ctrl+V; 002 AC-013,
+    /// 007 AC-001): the bytes are stored as a file and follow `attach`.
+    pub async fn attach_clipboard_image(
+        &self,
+        tray: &str,
+        thread_id: Option<&str>,
+        mime: &str,
+        bytes: &[u8],
+    ) -> HostResult<(AttachmentInfo, ContextChip)> {
+        const MAX_BYTES: usize = 20 * 1024 * 1024;
+        let ext = match mime {
+            "image/png" => "png",
+            "image/jpeg" => "jpg",
+            "image/webp" => "webp",
+            "image/gif" => "gif",
+            _ => {
+                return Err(HostError::new(
+                    "unsupported",
+                    format!("tipo de imagem não suportado: {mime}"),
+                ));
+            }
+        };
+        if bytes.len() > MAX_BYTES {
+            return Err(HostError::new(
+                "too_large",
+                "a imagem colada passa de 20 MB",
+            ));
+        }
+        let dir = self.paths.captures_tmp().join("pasted");
+        std::fs::create_dir_all(&dir).map_err(|e| HostError::new("attachment", e.to_string()))?;
+        let stamp = chrono_like_stamp();
+        let path = dir.join(format!("clipboard-{stamp}.{ext}"));
+        std::fs::write(&path, bytes).map_err(|e| HostError::new("attachment", e.to_string()))?;
+        self.attach(tray, thread_id, &path).await
     }
 
     /// Selective read of an attachment (same path as the `attachment_read` tool).
@@ -1265,7 +1822,8 @@ impl Host {
 
     /// Text of a workspace file for preview (≤ 512 KB); refuses paths
     /// outside the workspace.
-    pub fn read_workspace_file(&self, thread_id: &str, rel: &str) -> HostResult<String> {
+    /// A file inside the conversation workspace (never outside it).
+    fn workspace_path(&self, thread_id: &str, rel: &str) -> HostResult<PathBuf> {
         let (_, ws) = self
             .conversation_of(thread_id)
             .ok_or_else(|| HostError::new("not_found", "conversa não encontrada"))?;
@@ -1274,6 +1832,35 @@ impl Host {
         if !path.starts_with(&root) {
             return Err(HostError::new("invalid", "caminho fora do workspace"));
         }
+        Ok(path)
+    }
+
+    /// Text of the first pages of a workspace PDF, for the Files preview
+    /// (008 AC-014). Scanned PDFs have no text layer: `pages` is empty.
+    pub fn workspace_pdf_preview(&self, thread_id: &str, rel: &str) -> HostResult<PdfPreview> {
+        const PAGES: u32 = 5;
+        let path = self.workspace_path(thread_id, rel)?;
+        if std::fs::metadata(&path)?.len() > 50 * 1024 * 1024 {
+            return Err(HostError::new(
+                "too_large",
+                "arquivo grande demais para prévia",
+            ));
+        }
+        let text = aura_ingest::pdf::extract(&std::fs::read(&path)?, Some((1, PAGES)))
+            .map_err(|e| HostError::new("pdf", e.to_string()))?;
+        Ok(PdfPreview {
+            total_pages: text.total_pages,
+            pages: text
+                .pages
+                .into_iter()
+                .filter(|(_, t)| !t.trim().is_empty())
+                .map(|(number, text)| PdfPage { number, text })
+                .collect(),
+        })
+    }
+
+    pub fn read_workspace_file(&self, thread_id: &str, rel: &str) -> HostResult<String> {
+        let path = self.workspace_path(thread_id, rel)?;
         let meta = std::fs::metadata(&path)?;
         if meta.len() > 512 * 1024 {
             return Err(HostError::new(
@@ -1301,7 +1888,21 @@ impl Host {
     // ---------------------------------------------------------- quick commands
 
     pub fn quick_commands(&self) -> HostResult<Vec<QuickCommand>> {
-        Ok(self.quick.list()?)
+        let mut commands = self.quick.list()?;
+        let language = self.settings().language;
+        for command in commands.iter_mut().filter(|c| c.builtin) {
+            let key = match command.name.as_str() {
+                "tldr" => "quick.template.tldr",
+                "traduzir" => "quick.template.translate",
+                "reescrever" => "quick.template.rewrite",
+                "explicar" => "quick.template.explain",
+                "corrigir" => "quick.template.correct",
+                "resumir-tela" => "quick.template.screen",
+                _ => continue,
+            };
+            command.template = crate::localization::text(language, key).into();
+        }
+        Ok(commands)
     }
 
     pub fn save_quick_command(
@@ -1344,12 +1945,21 @@ impl Host {
             typed: typed.to_string(),
             has_chips: chips.iter().any(|c| c.kind != ChipKind::Selection),
         };
-        let exp = self.quick.run(input, &ctx)?;
+        let (name, tail) = aura_extensions::quick::parse_invocation(input)
+            .ok_or_else(|| aura_extensions::quick::QuickError::Unknown(input.into()))?;
+        let command = self
+            .quick_commands()?
+            .into_iter()
+            .find(|c| c.name == name)
+            .ok_or_else(|| aura_extensions::quick::QuickError::Unknown(name.into()))?;
+        let exp = aura_extensions::quick::expand(&command, tail, &ctx)?;
         if exp.needs_screen && !chips.iter().any(|c| c.kind == ChipKind::Screen) {
             self.capture_screen(tray, false).await?;
         }
-        // The selection is inlined in the prompt; don't send it twice.
+        // The selection is inlined in the prompt; don't send it twice. It may
+        // come back on the next return to the Overlay.
         if ctx.selection.is_some() {
+            *self.last_selection.lock().unwrap() = None;
             let mut trays = self.trays.lock().unwrap();
             if let Some(t) = trays.get_mut(tray) {
                 let ids: Vec<String> = t
@@ -1443,6 +2053,54 @@ impl Host {
         Ok(parse_mcp_status(&self.codex.mcp_status().await?))
     }
 
+    /// Starts a stdio server the way the app-server would and returns whether
+    /// it answered `initialize` plus its last stderr lines (008 AC-005).
+    pub async fn mcp_diagnose(&self, name: &str) -> HostResult<crate::mcp_diag::McpDiagnosis> {
+        let spec = self
+            .mcp_servers()?
+            .into_iter()
+            .find(|s| s.name == name)
+            .ok_or_else(|| HostError::new("not_found", "servidor MCP não encontrado"))?;
+        let aura_extensions::mcp_config::Transport::Stdio {
+            command,
+            args,
+            env,
+            cwd,
+        } = &spec.transport
+        else {
+            return Err(HostError::new(
+                "unsupported",
+                "diagnóstico de log disponível para servidores stdio",
+            ));
+        };
+        let mut vars: Vec<(String, String)> = env
+            .iter()
+            .filter_map(|(k, v)| match v {
+                aura_extensions::mcp_config::EnvValue::Plain { value } => {
+                    Some((k.clone(), value.clone()))
+                }
+                aura_extensions::mcp_config::EnvValue::Secret => None,
+            })
+            .collect();
+        if let Ok(secrets) = aura_extensions::mcp_config::secret_env(
+            std::slice::from_ref(&spec),
+            self.platform.credentials.as_ref(),
+        ) {
+            vars.extend(secrets.into_iter().map(|(k, v)| (k, v.expose().clone())));
+        }
+        crate::mcp_diag::diagnose(
+            crate::mcp_diag::StdioLaunch {
+                command: command.clone(),
+                args: args.clone(),
+                env: vars,
+                cwd: cwd.as_ref().map(PathBuf::from),
+            },
+            std::time::Duration::from_secs(10),
+        )
+        .await
+        .map_err(|e| HostError::new("mcp", format!("{command}: {e}")))
+    }
+
     /// OAuth for an HTTP MCP server: returns the URL to open in the browser.
     pub async fn mcp_login(&self, name: &str) -> HostResult<Option<String>> {
         Ok(self.codex.mcp_oauth_login(name).await?)
@@ -1455,6 +2113,32 @@ impl Host {
         }
         self.codex.supervisor().stop().await;
         true
+    }
+
+    // ---------------------------------------------------------------- memories
+
+    pub fn memories(&self) -> HostResult<MemoryView> {
+        Ok(crate::memories::read(
+            &self.paths.codex_home().join("memories"),
+        )?)
+    }
+
+    pub fn forget_memory_fact(&self, fact: &str) -> HostResult<MemoryView> {
+        let dir = self.paths.codex_home().join("memories");
+        crate::memories::forget_fact(&dir, fact)?;
+        Ok(crate::memories::read(&dir)?)
+    }
+
+    pub fn save_memories(&self, summary: &str, registry: &str) -> HostResult<MemoryView> {
+        let dir = self.paths.codex_home().join("memories");
+        crate::memories::save(&dir, summary, registry)?;
+        Ok(crate::memories::read(&dir)?)
+    }
+
+    pub fn forget_all_memories(&self) -> HostResult<()> {
+        Ok(crate::memories::forget_all(
+            &self.paths.codex_home().join("memories"),
+        )?)
     }
 
     // ------------------------------------------------------------------ skills
@@ -1503,6 +2187,65 @@ impl Host {
             .collect();
         out.sort_by(|a, b| a.manifest.name.cmp(&b.manifest.name));
         out
+    }
+
+    /// Every skill new conversations can use, with origin and on/off state
+    /// (008 AC-001); Codex owns the enabled flag.
+    pub async fn skills_catalog(&self) -> HostResult<Vec<SkillEntry>> {
+        let aura_root = self.paths.skills();
+        let _ = std::fs::create_dir_all(&aura_root);
+        Ok(self
+            .codex
+            .skills()
+            .await?
+            .into_iter()
+            .map(|s| {
+                let origin = if s.path.starts_with(&aura_root) {
+                    SkillOrigin::Aura
+                } else if s.scope == "user" {
+                    SkillOrigin::User
+                } else {
+                    SkillOrigin::System
+                };
+                SkillEntry {
+                    name: s.name,
+                    description: s.description,
+                    path: s.path,
+                    origin,
+                    enabled: s.enabled,
+                }
+            })
+            .collect())
+    }
+
+    pub async fn set_skill_enabled(&self, path: &Path, enabled: bool) -> HostResult<()> {
+        self.codex.set_skill_enabled(path, enabled).await?;
+        // Codex wrote its config.toml, which Aura regenerates on every start:
+        // keep the choice in Aura's settings too.
+        let key = path.to_string_lossy().into_owned();
+        let mut next = self.settings();
+        next.disabled_skills.retain(|p| *p != key);
+        if !enabled {
+            next.disabled_skills.push(key);
+        }
+        SettingsRepo::new(&self.store).save(&next)?;
+        *self.settings.write().unwrap() = next.clone();
+        self.apply_runtime_settings(&next);
+        Ok(())
+    }
+
+    /// Description and instructions of an Aura skill, for the editor.
+    pub fn skill_source(&self, name: &str) -> HostResult<(String, String)> {
+        Ok(skills::read_editable(&self.paths.skills(), name)?)
+    }
+
+    pub fn update_skill(&self, name: &str, description: &str, body: &str) -> HostResult<()> {
+        Ok(skills::update(
+            &self.paths.skills(),
+            name,
+            description,
+            body,
+        )?)
     }
 
     pub fn delete_skill(&self, name: &str) -> HostResult<()> {
@@ -1566,11 +2309,24 @@ impl Host {
                 "o microfone está desligado nas configurações de privacidade",
             ));
         }
-        let sel = device.map(DeviceSel::Id).unwrap_or(DeviceSel::Default);
-        self.voice
-            .press(sel)
-            .await
-            .map_err(|e| HostError::new("asr", e))
+        let sel = device
+            .or_else(|| self.settings().microphone_device_id)
+            .map(DeviceSel::Id)
+            .unwrap_or(DeviceSel::Default);
+        let fallback = self.voice.press(sel).await.map_err(|e| {
+            if e == "model_missing" || e == "worker_missing" {
+                let _ = self
+                    .events
+                    .send(HostEvent::Voice(PttState::Failed { error: e.clone() }));
+            }
+            HostError::new("asr", e)
+        })?;
+        if let Some(wanted) = fallback {
+            let message = crate::localization::text(self.settings().language, "audio.fallback")
+                .replace("{name}", &wanted);
+            self.notice("warning", message);
+        }
+        Ok(())
     }
 
     /// Settings (language, vocabulary) apply when the caller passes none.
@@ -1592,6 +2348,80 @@ impl Host {
 
     pub async fn ptt_cancel(&self) -> PttState {
         self.voice.cancel().await
+    }
+
+    /// Starts a live level meter for source (005 AC-001): AudioLevel
+    /// events at about 30 Hz with the peak of each window, until stopped.
+    /// Nothing is recorded. A missing chosen device falls back to the OS
+    /// default with a warning (005 AC-002).
+    pub async fn audio_test_start(
+        &self,
+        source: aura_audio::AudioSourceKind,
+        device: Option<String>,
+    ) -> HostResult<()> {
+        if self.policy.read().unwrap().paused {
+            return Err(HostError::new("paused", "a privacidade está pausada"));
+        }
+        self.audio_test_stop(source).await;
+        let settings = self.settings();
+        let saved = match source {
+            aura_audio::AudioSourceKind::Mic => settings.microphone_device_id,
+            aura_audio::AudioSourceKind::SystemAudio => settings.system_audio_device_id,
+        };
+        let sel = device
+            .or(saved)
+            .map(DeviceSel::Id)
+            .unwrap_or(DeviceSel::Default);
+        let audio = self.platform.audio.clone();
+        let hub = tokio::task::spawn_blocking(move || {
+            aura_audio::hub::AudioHub::start(audio, source, sel)
+        })
+        .await
+        .map_err(|e| HostError::new("audio", e.to_string()))?
+        .map_err(|e| HostError::new("audio", e.to_string()))?;
+        if let Some(wanted) = hub.fallback_from() {
+            let message = crate::localization::text(settings.language, "audio.fallback")
+                .replace("{name}", wanted);
+            self.notice("warning", message);
+        }
+        let mut rx = hub.subscribe();
+        let events = self.events.clone();
+        let task = tokio::spawn(async move {
+            const WINDOW: std::time::Duration = std::time::Duration::from_millis(30);
+            let mut peak = f32::NEG_INFINITY;
+            let mut since = tokio::time::Instant::now();
+            loop {
+                // A silent loopback device delivers no chunks: the window
+                // still closes, reporting silence instead of freezing.
+                match tokio::time::timeout(WINDOW, rx.recv()).await {
+                    Ok(Ok(chunk)) => peak = peak.max(chunk.level_dbfs),
+                    Ok(Err(broadcast::error::RecvError::Lagged(_))) | Err(_) => {}
+                    Ok(Err(broadcast::error::RecvError::Closed)) => break,
+                }
+                if since.elapsed() >= WINDOW {
+                    let _ = events.send(HostEvent::AudioLevel {
+                        source,
+                        dbfs: peak.max(-100.0),
+                    });
+                    peak = f32::NEG_INFINITY;
+                    since = tokio::time::Instant::now();
+                }
+            }
+        });
+        self.audio_tests
+            .lock()
+            .unwrap()
+            .insert(source, AudioTest { hub, task });
+        Ok(())
+    }
+
+    pub async fn audio_test_stop(&self, source: aura_audio::AudioSourceKind) {
+        let test = self.audio_tests.lock().unwrap().remove(&source);
+        if let Some(AudioTest { hub, task }) = test {
+            task.abort();
+            // Stopping joins the device thread.
+            let _ = tokio::task::spawn_blocking(move || drop(hub)).await;
+        }
     }
 
     pub fn audio_devices(&self, system: bool) -> Vec<AudioDevice> {
@@ -1686,7 +2516,75 @@ impl Host {
     pub fn recording_delete(&self, id: &str) -> HostResult<()> {
         self.capture
             .delete_recording(id)
-            .map_err(|e| HostError::new("recording", e))
+            .map_err(|e| HostError::new("recording", e))?;
+        let _ = std::fs::remove_dir_all(self.playback_dir(id));
+        Ok(())
+    }
+
+    fn playback_dir(&self, id: &str) -> PathBuf {
+        // Recording ids are UUIDs; anything else must not reach the path.
+        let safe: String = id
+            .chars()
+            .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
+            .collect();
+        self.paths.captures_tmp().join("playback").join(safe)
+    }
+
+    /// Decrypted copies of a finished recording for the Aura player (and for
+    /// attaching), in the session cache: audio WAV per source, screen MP4
+    /// segments (QA-032).
+    pub fn recording_playback(&self, id: &str) -> HostResult<Vec<PlaybackMedia>> {
+        let rec = self
+            .capture
+            .recordings()
+            .into_iter()
+            .find(|r| r.id == id)
+            .ok_or_else(|| HostError::new("not_found", "gravação não encontrada"))?;
+        if rec.ended_at.is_none() {
+            return Err(HostError::new(
+                "recording",
+                "a gravação ainda está em andamento",
+            ));
+        }
+        let dir = self.playback_dir(id);
+        let mut files: Vec<PathBuf> = std::fs::read_dir(&dir)
+            .map(|d| d.filter_map(|e| e.ok().map(|e| e.path())).collect())
+            .unwrap_or_default();
+        if files.is_empty() {
+            files = self
+                .capture
+                .export_recording(id, &dir)
+                .map_err(|e| HostError::new("recording", e))?;
+        }
+        files.sort();
+        Ok(files.into_iter().filter_map(PlaybackMedia::of).collect())
+    }
+
+    /// Attaches a finished recording to a conversation tray like any file.
+    pub async fn recording_attach(
+        &self,
+        id: &str,
+        tray: &str,
+        thread_id: Option<&str>,
+    ) -> HostResult<RecordingAttach> {
+        let mut out = RecordingAttach::default();
+        for m in self.recording_playback(id)? {
+            let name = m
+                .path
+                .file_name()
+                .map(|n| n.to_string_lossy().into_owned())
+                .unwrap_or_default();
+            match self.attach(tray, thread_id, &m.path).await {
+                Ok((_, chip)) => out.chips.push(chip),
+                Err(e) => out.failed.push(format!("{name}: {}", e.message)),
+            }
+        }
+        if out.chips.is_empty()
+            && let Some(first) = out.failed.first()
+        {
+            return Err(HostError::new("attachment", first.clone()));
+        }
+        Ok(out)
     }
 
     /// Decrypts a recording into `dir` (defaults to Documents/Aura).
@@ -1741,29 +2639,197 @@ impl Host {
 
     // ----------------------------------------------------------------- speech
 
+    /// Voices for reading answers: offline Windows voices and the BYOK
+    /// providers that can speak (OpenAI preset or a custom compatible API).
+    pub fn speech_options(&self) -> HostResult<SpeechOptions> {
+        let reg = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref());
+        let tts_presets: Vec<String> = presets()
+            .into_iter()
+            .filter(|p| p.tts)
+            .map(|p| p.id)
+            .collect();
+        let cloud = reg
+            .list()?
+            .into_iter()
+            .filter(|p| p.preset == "custom" || tts_presets.contains(&p.preset))
+            .map(|p| SpeechProvider {
+                id: p.id,
+                name: p.name,
+            })
+            .collect();
+        Ok(SpeechOptions {
+            voices: self.platform.speech.voices(),
+            cloud,
+        })
+    }
+
+    /// The user agreed to send answers to the chosen cloud voice provider.
+    pub fn speech_consent(&self) -> HostResult<Settings> {
+        let mut s = self.settings();
+        let Some(id) = s.tts_provider.clone() else {
+            return Err(HostError::new("invalid", "nenhuma voz na nuvem escolhida"));
+        };
+        if !s.tts_cloud_consent.contains(&id) {
+            s.tts_cloud_consent.push(id);
+        }
+        // Drop consents of providers that no longer exist.
+        let reg = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref());
+        s.tts_cloud_consent
+            .retain(|c| reg.get(c).ok().flatten().is_some());
+        self.replace_settings(s)
+    }
+
     /// Speaks an answer: returns `(base64 audio, mime)` for the UI to play.
+    /// Offline Windows voice by default; a cloud voice only after consent.
     pub async fn speak(&self, markdown: &str) -> HostResult<(String, String)> {
         use base64::Engine;
         let text = crate::speech::speakable(markdown);
-        let lang = match self.settings().language {
+        let settings = self.settings();
+        let lang = match settings.language {
             aura_core::settings::Language::PtBr => "pt-BR",
             aura_core::settings::Language::En => "en-US",
         };
-        let speech = self.platform.speech.clone();
-        let (bytes, mime) = tokio::task::spawn_blocking(move || speech.synthesize(&text, lang))
-            .await
-            .map_err(|e| HostError::new("speech", e.to_string()))?
-            .map_err(|e| HostError::new("speech", e))?;
+        let (bytes, mime) = match settings.tts_provider.clone() {
+            Some(id) => self.speak_cloud(&id, &settings, &text).await?,
+            None => {
+                let speech = self.platform.speech.clone();
+                let voice = settings.tts_voice.clone();
+                tokio::task::spawn_blocking(move || {
+                    speech.synthesize(&text, lang, voice.as_deref())
+                })
+                .await
+                .map_err(|e| HostError::new("speech", e.to_string()))?
+                .map_err(|e| HostError::new("speech", e))?
+            }
+        };
         Ok((
             base64::engine::general_purpose::STANDARD.encode(bytes),
             mime,
         ))
     }
 
+    async fn speak_cloud(
+        &self,
+        id: &str,
+        settings: &Settings,
+        text: &str,
+    ) -> HostResult<(Vec<u8>, String)> {
+        if text.trim().is_empty() {
+            return Err(HostError::new("speech", "nada para ler"));
+        }
+        let reg = ProviderRegistry::new(&self.store, self.platform.credentials.as_ref());
+        let provider = reg
+            .get(id)?
+            .ok_or_else(|| HostError::new("speech", "provedor de voz não encontrado"))?;
+        if !settings.tts_cloud_consent.iter().any(|c| c == id) {
+            return Err(HostError::new("consent_required", provider.name.clone()));
+        }
+        let target = reg.target(&provider)?;
+        let model = if provider.preset == "openai" {
+            "gpt-4o-mini-tts"
+        } else {
+            "tts-1"
+        };
+        let mut req = self
+            .http
+            .post(format!(
+                "{}/audio/speech",
+                target.base_url.trim_end_matches('/')
+            ))
+            .json(&serde_json::json!({
+                "model": model,
+                "voice": settings.tts_cloud_voice,
+                "input": text,
+                "response_format": "wav",
+            }));
+        for (k, v) in &target.headers {
+            req = req.header(k, v);
+        }
+        if let Some(key) = &target.credential {
+            req = req.bearer_auth(key.expose());
+        }
+        let resp = req
+            .send()
+            .await
+            .map_err(|e| HostError::new("speech", e.to_string()))?;
+        if !resp.status().is_success() {
+            return Err(HostError::new(
+                "speech",
+                format!("{} respondeu {}", provider.name, resp.status()),
+            ));
+        }
+        let mime = resp
+            .headers()
+            .get("content-type")
+            .and_then(|v| v.to_str().ok())
+            .filter(|m| m.starts_with("audio/"))
+            .unwrap_or("audio/wav")
+            .to_string();
+        let bytes = resp
+            .bytes()
+            .await
+            .map_err(|e| HostError::new("speech", e.to_string()))?;
+        Ok((bytes.to_vec(), mime))
+    }
+
     // ------------------------------------------------------------- diagnostics
 
     pub async fn diagnostics(&self) -> Diagnostics {
+        let port = self.gateway.port;
+        let reachable = tokio::time::timeout(
+            std::time::Duration::from_secs(1),
+            tokio::net::TcpStream::connect(("127.0.0.1", port)),
+        )
+        .await
+        .is_ok_and(|r| r.is_ok());
+        let ready = matches!(
+            self.codex.supervisor().status().await,
+            AppServerState::Ready { .. }
+        );
+        let mcp = if ready {
+            tokio::time::timeout(std::time::Duration::from_secs(3), self.mcp_status())
+                .await
+                .ok()
+                .and_then(Result::ok)
+                .unwrap_or_default()
+                .into_iter()
+                .map(|m| McpDiag {
+                    name: m.name,
+                    tools: m.tools.len(),
+                    error: m.error,
+                })
+                .collect()
+        } else {
+            Vec::new()
+        };
+        let account = self.auth.active().ok().flatten().map(|a| AccountDiag {
+            email: a.email.as_deref().map(crate::diagnostics::mask_email),
+            signed_in: a.signed_in,
+            plan_usage_enabled: a.plan_usage_enabled,
+        });
+        let paused = self.policy.read().unwrap().paused;
+        let root = self.paths.root.clone();
+        let disk_space = self.disk.clone();
+        let disk = tokio::task::spawn_blocking(move || DiskDiag {
+            free_bytes: disk_space.free_bytes(&root),
+            aura_bytes: crate::diagnostics::dir_size(&root),
+        })
+        .await
+        .unwrap_or(DiskDiag {
+            free_bytes: None,
+            aura_bytes: 0,
+        });
         Diagnostics {
+            gateway: GatewayDiag { port, reachable },
+            mcp,
+            worker: self.voice.worker_diag().await,
+            capture: CaptureDiag {
+                paused,
+                active: self.capture.active().await,
+                recording: self.capture.manual_active().is_some(),
+            },
+            account,
+            disk,
             version: env!("CARGO_PKG_VERSION").into(),
             os: self.platform.os.clone(),
             data_dir: self.paths.root.clone(),
@@ -1863,4 +2929,26 @@ impl Host {
     pub fn conversation_events(&self) -> broadcast::Receiver<ConversationEvent> {
         self.codex.events()
     }
+}
+
+fn audio_label(which: &str) -> &'static str {
+    match which {
+        "mic" => "microfone",
+        "system" => "áudio do sistema",
+        _ => "microfone + sistema",
+    }
+}
+
+fn copy_dir(from: &Path, to: &Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(to)?;
+    for e in std::fs::read_dir(from)? {
+        let e = e?;
+        let dest = to.join(e.file_name());
+        if e.file_type()?.is_dir() {
+            copy_dir(&e.path(), &dest)?;
+        } else {
+            std::fs::copy(e.path(), dest)?;
+        }
+    }
+    Ok(())
 }

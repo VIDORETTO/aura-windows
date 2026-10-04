@@ -4,6 +4,7 @@ import { useEffect, useState, type ComponentType } from "react";
 import { inTauri } from "../ipc/bridge";
 import { useT, type MessageKey } from "../i18n";
 import { Toasts } from "../ui/Toasts";
+import { SpeechConsentDialog } from "../ui/SpeechConsentDialog";
 import { cx } from "../ui/primitives";
 import { AboutSection, DiagnosticsSection } from "./Diagnostics";
 import { AccountSection } from "./Account";
@@ -83,6 +84,7 @@ export function SettingsApp() {
         </div>
       </main>
       <Toasts />
+      <SpeechConsentDialog />
     </div>
   );
 }

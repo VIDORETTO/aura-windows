@@ -12,3 +12,10 @@
 Antes da primeira release: gerar o par de chaves com `pnpm tauri signer generate`,
 pôr a pública em `tauri.conf.json` (`plugins.updater.pubkey`), a privada nos
 secrets do repositório, e conferir o endpoint (`VIDORETTO/aura-windows`) do updater.
+
+Enquanto a chave pública for o texto `REPLACE_WITH_…`, o app instalado mostra
+"Atualizações automáticas não estão configuradas nesta compilação" ao verificar
+atualizações, e o workflow `release.yml` falha em `scripts/check-updater-key.mjs`
+(também falha sem o secret `TAURI_SIGNING_PRIVATE_KEY`). Depois de configurar a
+chave, falta o teste de atualização assinada de ponta a ponta (010 AC-004):
+publicar uma versão N, instalar, publicar N+1 e atualizar pelo botão.

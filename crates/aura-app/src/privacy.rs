@@ -19,18 +19,27 @@ struct StoredPolicy {
     mic: SourcePolicy,
     system_audio: SourcePolicy,
     paused: bool,
+    #[serde(default)]
+    retention: aura_policy::Retention,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AccessLogEntry {
+    pub id: i64,
     pub at: i64,
     pub source: String,
     pub requester: String,
     pub tool: Option<String>,
     pub conversation: Option<String>,
     pub decision: String,
+    /// Stable code: `covered:N`, `consent`, a deny reason code…
     pub reason: Option<String>,
+    /// A sealed thumbnail of what the agent received exists.
+    pub has_thumbnail: bool,
+    /// Conversation thread for the link in Settings (filled by the Host).
+    #[serde(default)]
+    pub thread_id: Option<String>,
 }
 
 #[derive(Clone)]
@@ -84,6 +93,7 @@ impl PrivacyRepo {
                 system_audio: s.system_audio,
                 exclusions,
                 paused: s.paused,
+                retention: s.retention,
             },
             None => Policy {
                 exclusions,
@@ -98,6 +108,7 @@ impl PrivacyRepo {
             mic: policy.mic,
             system_audio: policy.system_audio,
             paused: policy.paused,
+            retention: policy.retention,
         };
         SettingsRepo::new(&self.store)
             .set_raw(POLICY_KEY, &serde_json::to_value(stored).expect("json"))
@@ -180,7 +191,8 @@ impl PrivacyRepo {
         })
     }
 
-    pub fn log(&self, req: &AccessRequest, decision: &Decision) -> Result<(), StoreError> {
+    /// Records a decision; returns the entry id for [`Self::complete`].
+    pub fn log(&self, req: &AccessRequest, decision: &Decision) -> Result<i64, StoreError> {
         let (requester, tool, conversation) = match &req.requester {
             Requester::User => ("user".to_string(), None, None),
             Requester::Agent { tool, conversation } => (
@@ -191,10 +203,9 @@ impl PrivacyRepo {
         };
         let (decision, reason) = match decision {
             Decision::Allow => ("allow", None),
-            Decision::AllowRedacted { rects } => (
-                "allowRedacted",
-                Some(format!("{} área(s) cobertas", rects.len())),
-            ),
+            Decision::AllowRedacted { rects } => {
+                ("allowRedacted", Some(format!("covered:{}", rects.len())))
+            }
             Decision::Ask => ("ask", None),
             Decision::Deny { reason } => ("deny", Some(reason.code().to_string())),
         };
@@ -203,27 +214,64 @@ impl PrivacyRepo {
                 "INSERT INTO access_log(at, source, requester, tool, conversation, decision, reason) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
                 params![now_secs(), source_key(req.source), requester, tool, conversation, decision, reason],
             )?;
+            let id = c.last_insert_rowid();
             // Keep the log bounded (last 5000 entries).
             c.execute("DELETE FROM access_log WHERE id <= (SELECT MAX(id) - 5000 FROM access_log)", [])?;
+            Ok(id)
+        })
+    }
+
+    /// Final outcome of an entry (after consent) and a sealed thumbnail of
+    /// what was delivered. `None` keeps the current value.
+    pub fn complete(
+        &self,
+        id: i64,
+        decision: Option<&str>,
+        reason: Option<&str>,
+        sealed_thumb: Option<&[u8]>,
+    ) -> Result<(), StoreError> {
+        self.store.with_conn(|c| {
+            c.execute(
+                "UPDATE access_log SET decision = COALESCE(?2, decision), reason = COALESCE(?3, reason), thumb = COALESCE(?4, thumb) WHERE id = ?1",
+                params![id, decision, reason, sealed_thumb],
+            )?;
             Ok(())
+        })
+    }
+
+    /// Sealed thumbnail bytes of an entry.
+    pub fn thumbnail(&self, id: i64) -> Result<Option<Vec<u8>>, StoreError> {
+        self.store.with_conn(|c| {
+            let v: Option<Vec<u8>> = c
+                .query_row(
+                    "SELECT thumb FROM access_log WHERE id = ?1",
+                    params![id],
+                    |r| r.get(0),
+                )
+                .ok()
+                .flatten();
+            Ok(v)
         })
     }
 
     pub fn access_log(&self, limit: u32) -> Result<Vec<AccessLogEntry>, StoreError> {
         self.store.with_conn(|c| {
             let mut st = c.prepare(
-                "SELECT at, source, requester, tool, conversation, decision, reason FROM access_log ORDER BY id DESC LIMIT ?1",
+                "SELECT id, at, source, requester, tool, conversation, decision, reason, thumb IS NOT NULL FROM access_log ORDER BY id DESC LIMIT ?1",
             )?;
             let rows = st
                 .query_map(params![limit], |r| {
                     Ok(AccessLogEntry {
-                        at: r.get(0)?,
-                        source: r.get(1)?,
-                        requester: r.get(2)?,
-                        tool: r.get(3)?,
-                        conversation: r.get(4)?,
-                        decision: r.get(5)?,
-                        reason: r.get(6)?,
+                        id: r.get(0)?,
+                        at: r.get(1)?,
+                        source: r.get(2)?,
+                        requester: r.get(3)?,
+                        tool: r.get(4)?,
+                        conversation: r.get(5)?,
+                        decision: r.get(6)?,
+                        reason: r.get(7)?,
+                        has_thumbnail: r.get(8)?,
+                        thread_id: None,
                     })
                 })?
                 .collect::<Result<Vec<_>, _>>()?;
@@ -287,9 +335,31 @@ mod tests {
             visible_windows: vec![],
             background: false,
         };
-        repo.log(&req, &Decision::Ask).unwrap();
+        let id = repo.log(&req, &Decision::Ask).unwrap();
         let log = repo.access_log(10).unwrap();
         assert_eq!(log[0].decision, "ask");
         assert_eq!(log[0].tool.as_deref(), Some("screen_capture"));
+        assert!(!log[0].has_thumbnail);
+        // The user consented and the capture was delivered.
+        repo.complete(id, Some("allow"), Some("consent"), Some(b"sealed"))
+            .unwrap();
+        let log = repo.access_log(10).unwrap();
+        assert_eq!((log[0].id, log[0].decision.as_str()), (id, "allow"));
+        assert_eq!(log[0].reason.as_deref(), Some("consent"));
+        assert!(log[0].has_thumbnail);
+        assert_eq!(repo.thumbnail(id).unwrap().as_deref(), Some(&b"sealed"[..]));
+        // Redaction reason is a stable code the UI localizes.
+        let r = aura_core::placement::Rect {
+            x: 0,
+            y: 0,
+            w: 10,
+            h: 10,
+        };
+        repo.log(&req, &Decision::AllowRedacted { rects: vec![r, r] })
+            .unwrap();
+        assert_eq!(
+            repo.access_log(1).unwrap()[0].reason.as_deref(),
+            Some("covered:2")
+        );
     }
 }

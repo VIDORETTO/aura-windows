@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-018"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 A93227EE1CE9F85CBCF92B36C7B00BEE461DF44BBB25A67864FCDDE5418A1022; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-030",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/paste-image.e2e.ts": "2c5dd8d6055434a8ecd2ce352dfcaf2a8e5fb3eed6d30b08b2896d38c63bd518",
+    "apps/desktop/src-tauri/src/commands.rs": "5e98ed78e1b6187d5394269a1e7fdab4479136aba61f62ffcfb9c54ac20e955f",
+    "apps/desktop/src/ipc/commands.ts": "69e04541932210037dd69576bdb7590e82b56eba36e7152650647bc644a49edd",
+    "apps/desktop/src/overlay/InputBar.tsx": "358f0c35914b2470b4f5a99daf9634aaff75aab82f4fa4d5a0ea3414dc9b284f",
+    "crates/aura-app/src/host.rs": "546be5871e8778f1b1d20dd1eb363fae1221b054c29285d7d3de80aede28dd34",
+    "crates/aura-app/tests/host.rs": "73881fcf6079859c2ff2c6d23063bb9006fc44bb70ff62d4b92ffd401d71d5b6",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/ipc/commands.ts",
+    "apps/desktop/e2e/specs/paste-image.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Native clipboard exercised with PNG only (WebView2 exposes clipboard bitmaps as PNG); JPEG/WebP/GIF covered by Host type checks.",
+  "observations": "Chip clipboard-<stamp>.png created; model request contained input_image data:image/png;base64.",
+  "procedure": "Host red/green clipboard image; React red/green paste; native red on TK-017 release; native green with real Windows clipboard PNG, Ctrl+V, real app-server turn to loopback upstream.",
+  "result": "passed",
+  "tested_revision": "local:2c830d3331c0f8f578e2a4fd37848fb53fb709e66f66c87589a76bb415773c07",
+  "ticket": "TK-018",
+  "timestamp": "2026-10-03T23:29:56+00:00"
+}

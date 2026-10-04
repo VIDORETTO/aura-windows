@@ -91,6 +91,36 @@ mod tests {
     use aura_core::settings::{SettingsPatch, Theme};
 
     #[test]
+    fn microphone_preference_survives_database_reopen_and_can_return_to_default() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("microphone.db");
+        {
+            let store = Store::open(&path).unwrap();
+            let selected = Settings::default()
+                .apply(&SettingsPatch {
+                    microphone_device_id: Some(Some("Mic B (USB)".into())),
+                    ..Default::default()
+                })
+                .unwrap();
+            SettingsRepo::new(&store).save(&selected).unwrap();
+        }
+        let store = Store::open(&path).unwrap();
+        let repo = SettingsRepo::new(&store);
+        let loaded = repo.load().unwrap();
+        assert_eq!(loaded.microphone_device_id.as_deref(), Some("Mic B (USB)"));
+        repo.save(
+            &loaded
+                .apply(&SettingsPatch {
+                    microphone_device_id: Some(None),
+                    ..Default::default()
+                })
+                .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(repo.load().unwrap().microphone_device_id, None);
+    }
+
+    #[test]
     fn saved_settings_survive_reopening_the_database() {
         let dir = tempfile::tempdir().unwrap();
         let path = dir.path().join("aura.db");

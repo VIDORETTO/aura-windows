@@ -1,0 +1,48 @@
+{
+  "acceptance_refs": [
+    "AC-011"
+  ],
+  "environment": "Windows11 WebView2 154 production custom-protocol no demo/e2e SHA256 E593D5B07783B3D6087394F2986BCC1CC1EBFBCC5136385179F991803F91CA7F; aura-worker engines CPU-only SHA256 B2A273F8968324109C209CD56A4060A614AB7E71617AB09FA62EB40D99FAD68F; Ryzen 7 7800X3D; VB-Cable",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-023",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-install.e2e.ts": "6bfb90f4cafb8056c4e91034ebd8e1411d8eea4adb784ab9b5954f7847e0da15",
+    "apps/desktop/src-tauri/src/main.rs": "51e517d48cdb35a0926e1245de1a7e99a9b65ca49238bdfcedfb53c323600677",
+    "apps/desktop/src-tauri/src/win_platform.rs": "7794587c569258d60631d52f591e7d0ecb7b7bc46e98944502e0f0d8a3df5ab1",
+    "apps/desktop/src/overlay/InputBar.tsx": "d36fe614de4f1a36c1790fc4a9920429cb4fed67597d7dfb1ac2ecbf326284d1",
+    "apps/desktop/src/overlay/VoiceInstallCard.tsx": "5cce924117d2dff8180f0c9aeb8a9dcd90ac2bc9732683cd8e70025e4fcf7ea9",
+    "apps/desktop/src/state/app.ts": "9fb0d1c3fd2f1273d7a079062ac41e62e501fe98c22553a498e36fde59976e45",
+    "crates/aura-app/src/host.rs": "75e4d6d791ffa59c90188f750c7f12524ed9616fc7ba2fca68e0b1eb61681dc6",
+    "crates/aura-app/src/voice.rs": "bf84bb464cc153775a819f11d7646a363f36d026e1a4be3c0875dd203d598988",
+    "crates/aura-asr/src/catalog.rs": "1efe1f34486e5a0b863d9e12c3d963d8cd0a1e97e66a6a0fdd7911b04799ea66",
+    "crates/aura-asr/src/worker_client.rs": "afe8e828440829babdd3d5b485e8ae145f7914004fd86831926d6b3dcd32463b",
+    "crates/aura-worker/src/engine.rs": "0bf9703cc4dad2e3934003ac4eb5654a6faf8349ffc7d3103eabf3a6bc13186b",
+    "crates/aura-worker/src/main.rs": "80b060077e38d186bfe4fb7a9fd76ab70422781515971582edbcb97750ced266",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/VoiceInstallCard.tsx",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/state/app.ts",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/voice.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/src/win_platform.rs",
+    "crates/aura-asr/src/catalog.rs",
+    "crates/aura-asr/src/worker_client.rs",
+    "crates/aura-worker/src/main.rs",
+    "crates/aura-worker/src/engine.rs",
+    "apps/desktop/e2e/specs/model-install.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "GPU (vulkan) worker not built/tested; Whisper Turbo still selectable but slow on CPU-only worker. Worker built with GGML_NATIVE (AVX-512 here) - distribution risk outside this ticket. Synthetic speech only, no WER measurement. Harness-only failed attempts not counted.",
+  "observations": "Card Parakeet V3 640 MB; cancel shows neutral status; five SHA-256 match models.toml; selected and persisted after restart, microphone opens; real transcript 'The quick brown fox jumps over the lazy dog.' with partial states. Earlier run exposed Whisper Turbo CPU 100-160s and timeout; fixed via gpu_inference. Regressions toggle/repeat/microphone x2/language x2 1/1, resize 9/9.",
+  "procedure": "Host/config/UI red-green (model_missing Failed, no Fake in production, card offer/cancel/retry/complete/language); Rust red-green recommendation requires worker GPU inference; worker --capabilities test; native red on TK-010 then model-install E2E 3/3 on release with real Parakeet V3 download, hashes, restart and SAPI->VB-Cable speech transcribed through UI; voice/mic/language native regressions; resize 9/9; card fit; UI96/workspace/desktop/clippy/fmt/golden/typecheck/build.",
+  "result": "passed",
+  "tested_revision": "local:9d0942aa2059ec04a4ce14014b65f726a3d1d6f908e9111da8d443f1ae071bc1",
+  "ticket": "TK-011",
+  "timestamp": "2026-10-03T21:03:29+00:00"
+}

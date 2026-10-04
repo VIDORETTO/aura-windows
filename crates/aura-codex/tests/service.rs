@@ -9,7 +9,7 @@ use aura_codex::service::{CodexService, HistoryQuery, StartOptions, TurnOptions}
 use aura_codex::supervisor::{AppServerSupervisor, SupervisorConfig};
 use aura_core::context::TurnInput;
 use aura_store::Store;
-use serde_json::Value;
+use serde_json::{Value, json};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::sync::{broadcast, mpsc};
@@ -291,6 +291,75 @@ async fn history_rename_pin_delete_and_workspace_cleanup() {
     assert!(!a.workspace.exists());
     let all = h.svc.list(HistoryQuery::default()).await.unwrap();
     assert!(all.items.iter().all(|i| i.id != a.thread_id));
+}
+
+#[tokio::test]
+async fn history_lists_conversations_of_every_provider() {
+    let h = default_harness();
+    let mut rx = h.svc.events();
+    let byok = h
+        .svc
+        .start(StartOptions {
+            provider: "aura-qa-byok".into(),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    h.svc
+        .send(
+            &byok.thread_id,
+            &text("conversa BYOK"),
+            TurnOptions::default(),
+        )
+        .await
+        .unwrap();
+    until_turn_completed(&mut rx).await;
+    let all = h.svc.list(HistoryQuery::default()).await.unwrap();
+    assert_eq!(
+        all.items.iter().map(|i| i.id.as_str()).collect::<Vec<_>>(),
+        [byok.thread_id.as_str()]
+    );
+    assert_eq!(
+        sent(&h.record, "thread/list")[0]["modelProviders"],
+        json!([])
+    );
+}
+
+#[tokio::test]
+async fn skills_include_aura_roots_with_scope_and_can_be_disabled() {
+    let h = default_harness();
+    let root = tempfile::tempdir().unwrap();
+    std::fs::create_dir_all(root.path().join("revisar-contrato")).unwrap();
+    std::fs::write(
+        root.path().join("revisar-contrato/SKILL.md"),
+        "---\nname: revisar-contrato\ndescription: Revisa contratos\n---\nCorpo\n",
+    )
+    .unwrap();
+    h.svc.set_skill_roots(vec![root.path().to_path_buf()]);
+    let skills = h.svc.skills().await.unwrap();
+    let aura = skills
+        .iter()
+        .find(|s| s.name == "revisar-contrato")
+        .unwrap();
+    assert_eq!((aura.scope.as_str(), aura.enabled), ("user", true));
+    assert!(aura.path.starts_with(root.path()));
+    assert!(skills.iter().any(|s| s.scope == "system"));
+    assert_eq!(
+        sent(&h.record, "skills/extraRoots/set")[0]["extraRoots"],
+        json!([root.path()])
+    );
+    h.svc.set_skill_enabled(&aura.path, false).await.unwrap();
+    let after = h.svc.skills().await.unwrap();
+    assert!(
+        !after
+            .iter()
+            .find(|s| s.name == "revisar-contrato")
+            .unwrap()
+            .enabled
+    );
+    // New conversations load the Aura roots first.
+    h.svc.start(StartOptions::default()).await.unwrap();
+    assert_eq!(sent(&h.record, "skills/extraRoots/set").len(), 3);
 }
 
 #[tokio::test]

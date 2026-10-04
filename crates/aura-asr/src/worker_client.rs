@@ -16,6 +16,27 @@ use tokio::time::Instant;
 
 pub type SpawnHook = Arc<dyn Fn(u32) + Send + Sync>;
 
+/// Whether the worker at `program` runs models on a GPU (`--capabilities`).
+/// Any failure means CPU only, so a large model is never recommended for a
+/// worker that cannot accelerate it.
+pub fn gpu_inference(program: &std::path::Path) -> bool {
+    let mut cmd = std::process::Command::new(program);
+    cmd.arg("--capabilities")
+        .stdin(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null());
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt as _;
+        cmd.creation_flags(0x0800_0000);
+    }
+    cmd.output()
+        .ok()
+        .filter(|o| o.status.success())
+        .and_then(|o| serde_json::from_slice::<Value>(&o.stdout).ok())
+        .and_then(|v| v["gpu"].as_bool())
+        .unwrap_or(false)
+}
+
 struct Live {
     peer: Peer,
     _child: Child,

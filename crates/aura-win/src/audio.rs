@@ -10,7 +10,7 @@ use aura_audio::{
 };
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use cpal::{Device, SampleFormat};
-use std::sync::mpsc::{Receiver, SyncSender, TrySendError, sync_channel};
+use std::sync::mpsc::{Receiver, RecvTimeoutError, SyncSender, TrySendError, sync_channel};
 
 fn now_ms() -> i64 {
     std::time::SystemTime::now()
@@ -64,10 +64,10 @@ fn pick(kind: AudioSourceKind, sel: &DeviceSel) -> Result<Device, AudioError> {
         DeviceSel::Default => default().ok_or(AudioError::NoDevice),
         DeviceSel::Id(id) => {
             let (list, _) = devices_of(kind);
-            // Fall back to the default device if the chosen one is gone (005 AC).
+            // A missing chosen device is reported; AudioHub opens the
+            // default and the app warns the user (005 AC-002).
             list.into_iter()
                 .find(|d| d.name().ok().as_deref() == Some(id))
-                .or_else(default)
                 .ok_or(AudioError::NoDevice)
         }
     }
@@ -121,6 +121,7 @@ impl AudioSource for WasapiSource {
         Ok(Box::new(WasapiStream {
             rx: data_rx,
             _stop: stop_tx,
+            format: (2, 48_000),
         }))
     }
 }
@@ -198,10 +199,29 @@ fn build(
 struct WasapiStream {
     rx: Receiver<Result<RawChunk, AudioError>>,
     _stop: SyncSender<()>,
+    /// Format of the last chunk, for the empty chunks of a silent device.
+    format: (usize, u32),
 }
+
+/// Loopback capture delivers no packets while nothing plays. Waiting is
+/// bounded so the reader can notice a stop request (and not hang its join).
+const IDLE_WAIT: std::time::Duration = std::time::Duration::from_millis(100);
 
 impl AudioStream for WasapiStream {
     fn next_chunk(&mut self) -> Option<Result<RawChunk, AudioError>> {
-        self.rx.recv().ok()
+        match self.rx.recv_timeout(IDLE_WAIT) {
+            Ok(Ok(chunk)) => {
+                self.format = (chunk.channels, chunk.rate);
+                Some(Ok(chunk))
+            }
+            Ok(Err(e)) => Some(Err(e)),
+            Err(RecvTimeoutError::Timeout) => Some(Ok(RawChunk {
+                samples: Vec::new(),
+                channels: self.format.0,
+                rate: self.format.1,
+                at_ms: now_ms(),
+            })),
+            Err(RecvTimeoutError::Disconnected) => None,
+        }
     }
 }

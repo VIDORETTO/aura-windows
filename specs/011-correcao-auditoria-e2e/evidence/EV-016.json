@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows11 Vite8.3.1 IAB real preview; native production9886E59523207542E02E2363ADF88B0B9B0495B325853A3D5228E49E16C0D5E5 WebView2/driver154",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-016",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/localization.e2e.ts": "3b826daeb4003c48d272ded15aaa4168dbd77f3e2e8bcf22121847220ba2303e",
+    "apps/desktop/src/ipc/bridge.test.ts": "e589a9b781d34d056d90636241ee3349a8fd3c8f97e8661fd8786a82ae30a970",
+    "apps/desktop/src/ipc/bridge.ts": "f3335e05bf33da4242c3ee752e5c94ab160f5aa376275ebeb994445519a8a548",
+    "apps/desktop/src/ipc/mock.ts": "3365300130ce489a61dd0c4a47338a688f1f5e3e7b94683a3b14976a982dc694",
+    "apps/desktop/src/main.tsx": "acc61c70ef5fd0f80df8863a450359689637444cc17d3ac5f0ac6baaf357c177",
+    "apps/desktop/src/state/app.ts": "9beb2fe92b060e9da6d991e1f3d39495dfdb15ec860a3c8c6b30a4d58988ed10",
+    "specs/011-correcao-auditoria-e2e/plan.md": "5e5a2e63ba30dca6d668c65da1003b4214cd49acf7ab493f07b3270a3789da47",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/ipc/bridge.ts",
+    "apps/desktop/src/ipc/bridge.test.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/main.tsx",
+    "apps/desktop/e2e/specs/localization.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Previewloginissynthetic, noOAuthaccount authorization; adapterfailuretestedcontrolledexternalboundary. Evidence invalidated because an input changed.",
+  "observations": "Concurrent red lostallloginevents; sharedPromisegreen uniqueinstance, signedIn/events; injection/reset/retry pass.76UI/typecheck/build/diff pass. Realbrowserloginadvancedwelcome/inputedit/Enviarenabled; proof target/qa-tools/bridge-preview-green.jpg. Nativebridge smoke3/3; logs bridge-concurrent-red/green, bridge-ui-final/typecheck-final, bridge-native-smoke. Local Standards/Spec review no blocker.",
+  "procedure": "Vitest bridge.test public concurrent identity/login/reset/injection/retry; pnpm -C apps/desktop test76/typecheck/build; real Vite1420 browser coldreload/click/welcome/input; cargo release custom-protocol and WebDriver localization3/3",
+  "result": "stale",
+  "tested_revision": "local:3501f7d92df57adf80132ffdb7343f155d77592fac8aee91e33240b1065cca54",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-03T15:10:44+00:00"
+}

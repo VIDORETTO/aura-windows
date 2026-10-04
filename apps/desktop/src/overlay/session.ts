@@ -3,12 +3,14 @@
 
 import { create } from "zustand";
 import { api, errorCode, errorMessage } from "../ipc/commands";
-import type { ContextChip, ConversationMode, ModelInfo, OverlayMode, Provider, StartOptions } from "../ipc/types";
+import type { ContextChip, ConversationMode, ModelInfo, OverlayMode, Provider, StartOptions, RecentClip } from "../ipc/types";
+import { decodeProfileModel, PLAN_PROVIDER } from "../lib/profileModel";
 import { useApp } from "../state/app";
 import { useConversation } from "../state/conversation";
+import { translate } from "../i18n";
 
 export const DRAFT = "draft";
-export const CHATGPT_PLAN = "aura-chatgpt-plan";
+export const CHATGPT_PLAN = PLAN_PROVIDER;
 
 export type ModeKey = ConversationMode["mode"];
 
@@ -26,6 +28,8 @@ interface Session {
   granted: string[];
   provider: string;
   model: string | null;
+  /** Reasoning effort for the next turns; null = the model's default. */
+  effort: string | null;
   chips: ContextChip[];
   overlayMode: OverlayMode;
   historyOpen: boolean;
@@ -47,13 +51,15 @@ interface Session {
   compact: () => Promise<void>;
   setProvider: (provider: string, model: string | null) => void;
   setModel: (model: string | null) => void;
+  setEffort: (effort: string | null) => void;
   setOverlayMode: (m: OverlayMode) => void;
   toggleHistory: (open?: boolean) => void;
   toggleWork: (open?: boolean) => void;
   refreshChips: () => Promise<void>;
   removeChip: (id: string) => Promise<void>;
   captureScreen: (windowOnly?: boolean) => Promise<void>;
-  captureSelection: () => Promise<void>;
+  captureSelection: (explicit?: boolean) => Promise<void>;
+  attachRecent: (clip: RecentClip) => Promise<void>;
   attach: (paths: string[]) => Promise<void>;
   send: (text: string) => Promise<boolean>;
   steer: (text: string) => Promise<void>;
@@ -71,6 +77,8 @@ function report(e: unknown) {
   useApp.getState().notify("error", errorMessage(e));
 }
 
+let catalogRequest = 0;
+
 export const useSession = create<Session>((set, get) => ({
   threadId: null,
   ephemeral: false,
@@ -78,6 +86,7 @@ export const useSession = create<Session>((set, get) => ({
   granted: [],
   provider: CHATGPT_PLAN,
   model: null,
+  effort: null,
   chips: [],
   overlayMode: "compact",
   historyOpen: false,
@@ -113,8 +122,9 @@ export const useSession = create<Session>((set, get) => ({
     if (id) await api.conversationCompact(id).catch(report);
   },
 
-  setProvider: (provider, model) => set({ provider, model }),
-  setModel: (model) => set({ model }),
+  setProvider: (provider, model) => set((s) => ({ provider, model, effort: keepEffort({ ...s, provider, model }) })),
+  setModel: (model) => set((s) => ({ model, effort: keepEffort({ ...s, model }) })),
+  setEffort: (effort) => set({ effort }),
 
   setOverlayMode: (overlayMode) => {
     if (get().overlayMode === overlayMode) return;
@@ -124,7 +134,7 @@ export const useSession = create<Session>((set, get) => ({
 
   toggleHistory: (open) => {
     const next = open ?? !get().historyOpen;
-    set({ historyOpen: next });
+    set({ historyOpen: next, ...(next ? { workOpen: false } : {}) });
     if (next) get().setOverlayMode("expanded");
   },
 
@@ -133,7 +143,10 @@ export const useSession = create<Session>((set, get) => ({
     set({ profile });
     if (!profile || get().threadId) return;
     if (profile.defaultMode) set({ mode: profile.defaultMode });
-    if (profile.defaultModel) set({ model: profile.defaultModel });
+    if (profile.defaultModel) {
+      const { provider, model } = decodeProfileModel(profile.defaultModel);
+      get().setProvider(provider, model);
+    }
     if (profile.attachScreen && !get().chips.some((c) => c.kind === "screen")) await get().captureScreen(false);
   },
 
@@ -145,7 +158,7 @@ export const useSession = create<Session>((set, get) => ({
 
   toggleWork: (open) => {
     const next = open ?? !get().workOpen;
-    set({ workOpen: next });
+    set({ workOpen: next, ...(next ? { historyOpen: false } : {}) });
     if (next) get().setOverlayMode("expanded");
   },
 
@@ -168,10 +181,19 @@ export const useSession = create<Session>((set, get) => ({
     }
   },
 
-  captureSelection: async () => {
+  captureSelection: async (explicit = false) => {
     try {
-      const chip = await api.captureSelection(get().tray());
+      const chip = await api.captureSelection(get().tray(), explicit);
       if (chip) await get().refreshChips();
+    } catch (e) {
+      report(e);
+    }
+  },
+
+  attachRecent: async (clip) => {
+    try {
+      await api.contextAttachRecent(get().tray(), get().threadId, clip);
+      await get().refreshChips();
     } catch (e) {
       report(e);
     }
@@ -203,6 +225,15 @@ export const useSession = create<Session>((set, get) => ({
           await get().setMode("plan");
           text = rest.join(" ");
           if (!text) return true;
+        } else if (cmd === "compactar" || cmd === "compact") {
+          // Compaction is an app-server operation, never a prompt (002 AC-023).
+          if (!s.threadId) {
+            useApp.getState().notify("info", translate(useApp.getState().settings?.language ?? "ptBr", "command.compact.empty"));
+            return true;
+          }
+          await get().compact();
+          text = rest.join(" ");
+          if (!text) return true;
         } else if (cmd === "tela" || cmd === "screen") {
           await get().captureScreen(false);
           text = rest.join(" ");
@@ -227,7 +258,7 @@ export const useSession = create<Session>((set, get) => ({
       set({ chips: [] });
       get().setOverlayMode("expanded");
       const accepts = acceptsImages(get());
-      await api.conversationSend({ threadId, text, tray: threadId, acceptsImages: accepts, options: { model: s.model } });
+      await api.conversationSend({ threadId, text, tray: threadId, acceptsImages: accepts, options: { model: s.model, effort: s.effort } });
       return true;
     } catch (e) {
       if (errorCode(e) === "context") useApp.getState().notify("warning", errorMessage(e));
@@ -277,14 +308,69 @@ export const useSession = create<Session>((set, get) => ({
   },
 
   loadCatalog: async () => {
+    const request = ++catalogRequest;
     const [providers, models, quick] = await Promise.all([
       api.providersList().catch(() => [] as Provider[]),
       api.modelsList().catch(() => [] as ModelInfo[]),
       api.quickList().catch(() => []),
     ]);
+    if (request !== catalogRequest) return;
     set({ providers, models, quickNames: quick.filter((q) => q.enabled).map((q) => q.name) });
+    const s = get();
+    if (!s.threadId) {
+      const hasAccount = !!useApp.getState().auth?.active?.signedIn;
+      const current = providers.find((p) => `aura-${p.id}` === s.provider);
+      if ((!current && s.provider !== CHATGPT_PLAN) || (s.provider === CHATGPT_PLAN && !hasAccount && providers.length > 0)) {
+        set({ provider: hasAccount || providers.length === 0 ? CHATGPT_PLAN : `aura-${providers[0].id}`, model: null, effort: null });
+      } else if (current && s.model && !current.models.some((m) => m.id === s.model)) {
+        set({ model: null, effort: null });
+      }
+    }
   },
 }));
+
+export interface ModelCapabilities {
+  efforts: string[];
+  defaultEffort: string | null;
+  images: boolean;
+  tools: boolean;
+  reasoning: boolean;
+}
+
+const PROVIDER_EFFORTS = ["low", "medium", "high"];
+
+/** What a model can do (002 AC-011, 003 AC-012); id null = the default model. */
+export function modelCapabilities(s: Pick<Session, "provider" | "models" | "providers">, id: string | null): ModelCapabilities | null {
+  if (s.provider === CHATGPT_PLAN) {
+    const m = s.models.find((x) => x.id === id) ?? (id === null ? s.models.find((x) => x.isDefault) : undefined);
+    if (!m) return null;
+    return {
+      efforts: m.efforts,
+      defaultEffort: m.defaultEffort,
+      images: m.inputModalities.length === 0 || m.inputModalities.includes("image"),
+      tools: true,
+      reasoning: m.efforts.length > 0,
+    };
+  }
+  const provider = s.providers.find((x) => `aura-${x.id}` === s.provider);
+  const spec = provider?.models.find((m) => m.id === id);
+  if (!provider || !spec) return null;
+  // Chat Completions only carries `reasoning_effort` for providers that accept it.
+  const carriesEffort = provider.wire !== "chat" || provider.quirks.reasoningEffort;
+  return {
+    efforts: spec.supportsReasoning && carriesEffort ? PROVIDER_EFFORTS : [],
+    defaultEffort: null,
+    images: spec.supportsImages,
+    tools: spec.supportsTools,
+    reasoning: spec.supportsReasoning,
+  };
+}
+
+/** The chosen effort survives a model change only when the new model supports it. */
+function keepEffort(s: Pick<Session, "provider" | "model" | "models" | "providers" | "effort">): string | null {
+  if (!s.effort) return null;
+  return modelCapabilities(s, s.model)?.efforts.includes(s.effort) ? s.effort : null;
+}
 
 function acceptsImages(s: Session): boolean {
   if (s.provider === CHATGPT_PLAN) {

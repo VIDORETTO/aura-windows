@@ -5,9 +5,20 @@ import { ChevronDown } from "lucide-react";
 import { useT } from "../i18n";
 import { cx } from "../ui/primitives";
 import { MenuLabel, MenuOption, PopoverPanel, usePopover } from "../ui/Popover";
-import { CHATGPT_PLAN, useSession, type ModeKey } from "./session";
+import { CHATGPT_PLAN, modelCapabilities, useSession, type ModeKey, type ModelCapabilities } from "./session";
 
 const MODES: ModeKey[] = ["chat", "task", "plan"];
+const EFFORT_KEYS = ["none", "minimal", "low", "medium", "high", "xhigh"] as const;
+
+function effortLabel(t: ReturnType<typeof useT>, effort: string): string {
+  return (EFFORT_KEYS as readonly string[]).includes(effort) ? t(`picker.effort.${effort as (typeof EFFORT_KEYS)[number]}`) : effort;
+}
+
+function capabilityHint(t: ReturnType<typeof useT>, c: ModelCapabilities | null): string | undefined {
+  if (!c) return undefined;
+  const tags = [c.images && t("picker.cap.images"), c.tools && t("picker.cap.tools"), c.reasoning && t("picker.cap.reasoning")].filter(Boolean);
+  return tags.length ? tags.join(" · ") : t("picker.cap.textOnly");
+}
 
 export function ModelPicker() {
   const t = useT();
@@ -21,6 +32,7 @@ export function ModelPicker() {
   const providerName = s.provider === CHATGPT_PLAN ? "ChatGPT" : (provider?.name ?? s.provider);
   const modelName = models.find((m) => m.id === s.model)?.name ?? t("general.defaultModel");
   const locked = s.threadId !== null;
+  const caps = modelCapabilities(s, s.model);
 
   return (
     <>
@@ -44,10 +56,11 @@ export function ModelPicker() {
         <MenuLabel>{t("picker.provider")}</MenuLabel>
         {locked && <p className="px-2 pb-1 text-[11px] text-muted">{t("picker.providerLocked")}</p>}
         <div role="menu" aria-label={t("picker.provider")}>
-          {[{ id: CHATGPT_PLAN, name: "ChatGPT" }, ...s.providers.map((p) => ({ id: `aura-${p.id}`, name: p.name }))].map((p) =>
+          {[{ id: CHATGPT_PLAN, name: "ChatGPT", error: false }, ...s.providers.map((p) => ({ id: `aura-${p.id}`, name: p.name, error: p.status === "error" }))].map((p) =>
             locked && p.id !== s.provider ? null : (
               <MenuOption key={p.id} selected={p.id === s.provider} onSelect={() => !locked && s.setProvider(p.id, null)}>
                 {p.name}
+                {p.error && <span className="ml-2 text-danger">{t("providers.status.error")}</span>}
               </MenuOption>
             ),
           )}
@@ -58,11 +71,26 @@ export function ModelPicker() {
             {t("general.defaultModel")}
           </MenuOption>
           {models.map((m) => (
-            <MenuOption key={m.id} selected={m.id === s.model} onSelect={() => s.setModel(m.id)}>
+            <MenuOption key={m.id} selected={m.id === s.model} hint={capabilityHint(t, modelCapabilities(s, m.id))} onSelect={() => s.setModel(m.id)}>
               {m.name}
             </MenuOption>
           ))}
         </div>
+        <MenuLabel>{t("picker.effort")}</MenuLabel>
+        {caps && caps.efforts.length > 0 ? (
+          <div role="menu" aria-label={t("picker.effort")}>
+            <MenuOption selected={!s.effort} onSelect={() => s.setEffort(null)}>
+              {caps.defaultEffort ? t("picker.effort.default", { effort: effortLabel(t, caps.defaultEffort).toLowerCase() }) : t("picker.effort.modelDefault")}
+            </MenuOption>
+            {caps.efforts.map((e) => (
+              <MenuOption key={e} selected={s.effort === e} onSelect={() => s.setEffort(e)}>
+                {effortLabel(t, e)}
+              </MenuOption>
+            ))}
+          </div>
+        ) : (
+          <p className="px-2 pb-1 text-[11px] text-muted">{t(caps ? "picker.effort.unsupported" : "picker.effort.unknown")}</p>
+        )}
         <MenuLabel>{t("picker.mode")}</MenuLabel>
         <div role="menu" aria-label={t("picker.mode")}>
           {MODES.map((m) => (

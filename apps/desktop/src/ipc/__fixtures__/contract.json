@@ -1,4 +1,26 @@
 {
+  "attachmentChip": {
+    "attachmentLabel": {
+      "fileName": "1 linhas.txt",
+      "parts": [
+        {
+          "amount": 1,
+          "type": "count",
+          "unit": "line"
+        }
+      ]
+    },
+    "blockedReason": null,
+    "id": "file_1",
+    "kind": "file",
+    "label": "1 linhas.txt · 1 linhas",
+    "payload": {
+      "text": "literal",
+      "type": "text"
+    },
+    "previewPath": null,
+    "tokenEstimate": 2
+  },
   "captureModes": [
     {
       "type": "off"
@@ -295,6 +317,17 @@
       }
     },
     {
+      "channel": "providersChanged",
+      "event": {}
+    },
+    {
+      "channel": "audioLevel",
+      "event": {
+        "dbfs": -12.5,
+        "source": "mic"
+      }
+    },
+    {
       "channel": "voice",
       "event": {
         "state": "partial",
@@ -313,6 +346,12 @@
       "event": {
         "level": "warning",
         "message": "atalho em uso"
+      }
+    },
+    {
+      "channel": "openConversation",
+      "event": {
+        "threadId": "t1"
       }
     }
   ],
@@ -431,19 +470,23 @@
     }
   },
   "settings": {
+    "accentColor": null,
     "appServerIdleMinutes": 15,
     "asrLanguage": null,
     "asrVocabulary": [],
     "attachScreenOnOpen": false,
+    "autoRead": false,
     "cloudAsrProvider": null,
     "defaultEffort": null,
     "defaultModel": null,
+    "disabledSkills": [],
     "doubleTapCtrl": false,
     "globalVoiceShortcut": "Ctrl+Alt+Space",
     "hideOnBlur": false,
     "invokeShortcut": "Ctrl+Shift+Space",
     "language": "ptBr",
     "memories": false,
+    "microphoneDeviceId": null,
     "onboarded": false,
     "opacity": 0.92,
     "personalInstructions": "",
@@ -451,7 +494,12 @@
     "pushToTalkShortcut": "Ctrl+Space",
     "sendAfterDictation": false,
     "startWithWindows": false,
+    "systemAudioDeviceId": null,
     "theme": "system",
+    "ttsCloudConsent": [],
+    "ttsCloudVoice": "alloy",
+    "ttsProvider": null,
+    "ttsVoice": null,
     "workerIdleMinutes": 2
   },
   "turnErrors": [

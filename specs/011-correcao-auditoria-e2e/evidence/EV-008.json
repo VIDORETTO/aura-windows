@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows11, WebView2/driver154.0.4258.53, production7CEF37E8E8BD4B9629B3CCC84FF4D84F1E40562932B93EE550F4F81C24B25772,100percent isolated profile",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "apps/desktop/e2e/provider.ts": "daf70e4043021dde4fe74bcfa4670469e1a2900d1677e5e98d1437407cd51d10",
+    "apps/desktop/e2e/specs/panels.e2e.ts": "3bf276ee5a3852593b5f578de0a6fedae9d69c05ff52096c25cac3f54cac8256",
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "2889051f02a60c24daacd5d7c29a7f1b47de0c330f7455aae7ce831bd0ebec26",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "cf99a124a4140a24b453ecc6cfb9136fed1c0e1d2929eeae2324b4746cc5e80b",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "3960f734189df6b2b3b5ea467df25f64949b48b3eaa8d53d2e153a2a4aa0fc0d",
+    "apps/desktop/src/overlay/session.ts": "927517a093393ca90c292079fb8d1447b0fb13ca822df1b76adf8769eef0c9cb",
+    "specs/011-correcao-auditoria-e2e/plan.md": "812b561fb268e8b6b43a4c13d73c2ddf738496a45415d02562858ff38b1d78aa",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/e2e/specs/panels.e2e.ts",
+    "apps/desktop/e2e/provider.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Upstream model response controlled; layout real. No DPI125/150 claim. Evidence invalidated because an input changed.",
+  "observations": "Both-direction exclusion, widths480/640/704/768, draft/Escape passed native production1/1; resize9/9. Logs panels-production-runtime-green.log and resize-after-providers-production.log. Local review renewed.",
+  "procedure": "Production panels.e2e with AURA_E2E_REAL_PROVIDER=1 and resize regression9/9 after TK003",
+  "result": "stale",
+  "tested_revision": "local:619b5f71acfd6e6ab6eba66d69eec5b5e3035a3d858286d966e041ceb00a44d3",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-03T14:12:39+00:00"
+}

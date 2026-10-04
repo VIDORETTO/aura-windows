@@ -70,7 +70,12 @@ pub struct HostTools {
     pub attachments: Arc<AttachmentService>,
     pub recent: Arc<dyn RecentMedia>,
     pub ocr_language: String,
+    /// Seals the access-log thumbnail of what the agent received.
+    pub vault: Arc<aura_store::Vault>,
 }
+
+/// Longest side of the access-log thumbnail.
+const LOG_THUMB_SIDE: u32 = 240;
 
 fn deny_output(reason: &DenyReason) -> ToolOutput {
     let msg = match reason {
@@ -96,7 +101,8 @@ fn source_key(s: Source) -> &'static str {
 }
 
 enum Gate {
-    Go(Grants),
+    /// Allowed; carries the access-log entry id to complete after delivery.
+    Go(Grants, Option<i64>),
     Stop(ToolOutput),
 }
 
@@ -139,10 +145,15 @@ impl HostTools {
             background: false,
         };
         let decision = decide(&policy, &grants, &req);
-        let _ = self.privacy.log(&req, &decision);
+        let entry = self.privacy.log(&req, &decision).ok();
+        let complete = |decision: &str, why: &str| {
+            if let Some(id) = entry {
+                let _ = self.privacy.complete(id, Some(decision), Some(why), None);
+            }
+        };
         match decision {
             Decision::Deny { reason } => Gate::Stop(deny_output(&reason)),
-            Decision::Allow | Decision::AllowRedacted { .. } => Gate::Go(grants),
+            Decision::Allow | Decision::AllowRedacted { .. } => Gate::Go(grants, entry),
             Decision::Ask => {
                 let id = uuid::Uuid::new_v4().to_string();
                 let rx = self.consent.register(&id);
@@ -159,25 +170,31 @@ impl HostTools {
                 let _ = self.events.send(HostEvent::ConsentResolved { id });
                 match answer {
                     Ok(Ok(ConsentAnswer::Once)) => {
+                        complete("allow", "consent");
                         let mut g = grants;
                         g.grant(&ctx.conversation, source);
-                        Gate::Go(g)
+                        Gate::Go(g, entry)
                     }
                     Ok(Ok(ConsentAnswer::Conversation)) => {
+                        complete("allow", "consent");
                         let _ = self.privacy.grant(&ctx.conversation, source);
                         self.grants
                             .write()
                             .unwrap()
                             .grant(&ctx.conversation, source);
-                        Gate::Go(self.grants.read().unwrap().clone())
+                        Gate::Go(self.grants.read().unwrap().clone(), entry)
                     }
                     Ok(Ok(ConsentAnswer::Deny)) | Ok(Err(_)) => {
+                        complete("deny", "user");
                         Gate::Stop(ToolOutput::error("denied", "O usuário negou o acesso."))
                     }
-                    Err(_) => Gate::Stop(ToolOutput::error(
-                        "timeout",
-                        "O usuário não respondeu ao pedido de permissão.",
-                    )),
+                    Err(_) => {
+                        complete("deny", "timeout");
+                        Gate::Stop(ToolOutput::error(
+                            "timeout",
+                            "O usuário não respondeu ao pedido de permissão.",
+                        ))
+                    }
                 }
             }
         }
@@ -209,11 +226,11 @@ impl HostTools {
                 Target::Monitor { area },
             )
         };
-        let grants = match self
+        let (grants, entry) = match self
             .gate(SCREEN_CAPTURE, &ctx, Source::Screen, pol_target, &reason)
             .await
         {
-            Gate::Go(g) => g,
+            Gate::Go(g, entry) => (g, entry),
             Gate::Stop(out) => return out,
         };
         let policy = self.policy.read().unwrap().clone();
@@ -237,6 +254,13 @@ impl HostTools {
             Ok(Ok(CaptureOutcome::Captured { frame, redacted })) => {
                 let frame = frame.downscale(MAX_IMAGE_SIDE);
                 let png = frame.to_png();
+                if let Some(id) = entry
+                    && let Ok(sealed) = self
+                        .vault
+                        .seal_bytes("access-thumb", &frame.downscale(LOG_THUMB_SIDE).to_png())
+                {
+                    let _ = self.privacy.complete(id, None, None, Some(&sealed));
+                }
                 let mut note = format!(
                     "Captura de {} ({}×{}).",
                     app.process_name, frame.width, frame.height

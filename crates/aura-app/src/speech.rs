@@ -4,18 +4,62 @@
 /// Longest text spoken at once (the rest is cut at a sentence boundary).
 pub const MAX_SPEECH_CHARS: usize = 5000;
 
+/// An installed offline voice.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SpeechVoice {
+    pub id: String,
+    pub name: String,
+    /// BCP-47 tag, e.g. `pt-BR`.
+    pub language: String,
+}
+
 pub trait Speech: Send + Sync {
-    /// Returns audio bytes and their MIME type (e.g. `audio/wav`).
-    fn synthesize(&self, text: &str, language: &str) -> Result<(Vec<u8>, String), String>;
+    /// Installed voices (empty when the platform cannot list them).
+    fn voices(&self) -> Vec<SpeechVoice> {
+        Vec::new()
+    }
+    /// Returns audio bytes and their MIME type (e.g. `audio/wav`). `voice`
+    /// is a [`SpeechVoice::id`]; `None` picks one for `language`.
+    fn synthesize(
+        &self,
+        text: &str,
+        language: &str,
+        voice: Option<&str>,
+    ) -> Result<(Vec<u8>, String), String>;
 }
 
 /// Test/demo voice: 0.3 s of a quiet tone as WAV.
 pub struct FakeSpeech;
 
 impl Speech for FakeSpeech {
-    fn synthesize(&self, text: &str, _language: &str) -> Result<(Vec<u8>, String), String> {
+    fn voices(&self) -> Vec<SpeechVoice> {
+        [
+            ("fake-pt", "Fake Maria", "pt-BR"),
+            ("fake-en", "Fake Zira", "en-US"),
+        ]
+        .into_iter()
+        .map(|(id, name, language)| SpeechVoice {
+            id: id.into(),
+            name: name.into(),
+            language: language.into(),
+        })
+        .collect()
+    }
+
+    fn synthesize(
+        &self,
+        text: &str,
+        _language: &str,
+        voice: Option<&str>,
+    ) -> Result<(Vec<u8>, String), String> {
         if text.trim().is_empty() {
             return Err("nada para ler".into());
+        }
+        if let Some(v) = voice
+            && !self.voices().iter().any(|x| x.id == v)
+        {
+            return Err(format!("voz não encontrada: {v}"));
         }
         let pcm = aura_audio::dsp::sine(440.0, 16_000, 0.3, 0.1);
         Ok((aura_audio::dsp::wav_bytes(&pcm, 16_000), "audio/wav".into()))

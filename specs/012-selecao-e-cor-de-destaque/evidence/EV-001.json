@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 191860544E94A3AB7B22280323DAE7F9F42AC01A28AB59F58998459C66EF73DA",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/selection-refocus.e2e.ts": "3c411ce7893551c1ec80cab46be54e1b80fbd717a95846a72d1303440d963f0c",
+    "apps/desktop/src-tauri/src/overlay.rs": "5652c5016264076fb19568b64d49dd357472c1ff7b494018348814fc36fe6097",
+    "apps/desktop/src-tauri/src/win_platform.rs": "483d43e0637a4bfc792082dfadd48f6b059e0bf0537e9ad3eec79c51f345dec9",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "067be07a3a96e5932b84532e0b2c4c942964a811ad92895bc7652b4930e2e343",
+    "crates/aura-app/src/host.rs": "9eaee64c5141ac2d4261a3654b602a7de769be2dea218807206f51698f3879cc",
+    "crates/aura-win/src/uia.rs": "91271fb1ea082a7ce83ebb4f5739ebede6d47a1964c6a2418d9aef773bce984b",
+    "specs/012-selecao-e-cor-de-destaque/change.md": "38af10a258f40be7a33663a6da70dfcc173834c21aeb60e86b163f02e94fbd54"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-win/src/uia.rs",
+    "apps/desktop/src-tauri/src/win_platform.rs",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/e2e/specs/selection-refocus.e2e.ts",
+    "specs/012-selecao-e-cor-de-destaque/change.md"
+  ],
+  "limitations": "Apps whose controls have no UI Automation TextPattern (e.g. WinForms text boxes) still give no selection; no synthetic Ctrl+C by design.",
+  "observations": "Chips '❝ Aura QA seleção' then '❝ outro trecho selecionado', always one chip; previous build showed none.",
+  "procedure": "Host red/green (one selection chip, replace, no duplicate, removed chip only back on @seleção or after a quick command); native red on the previous release and green: WPF QA text box (UIA TextPattern) selects text, gives the foreground back to the Overlay, chip appears and is replaced on a new selection; regressions answer-shortcuts and profile-model.",
+  "result": "passed",
+  "tested_revision": "local:55fdb88e3698a5c1920e93e1121d6e1bbe7686e65362648baac052184405c541",
+  "ticket": null,
+  "timestamp": "2026-10-04T19:04:00+00:00"
+}

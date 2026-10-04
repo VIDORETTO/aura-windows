@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-024"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 1546F528946335BB15041DEC1220AB67064D2FC2F97A5CDC87A2791B7F894CC9; app-server rust-v0.159.0; Node MCP server",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-036",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/mcp-tools.e2e.ts": "864d906139416431ea32b4bdb7974f9dc7eafc05ea65a17c05751394d6c2b15c",
+    "apps/desktop/src/ipc/mock.ts": "2f5409315e6b574c355f85fec7e6584661a9b4546576d667e77db29ecd55622f",
+    "apps/desktop/src/settings/Extensions.tsx": "6eec8bd6f02443fa0fbef98ae1f9cb1a35298d54f42f5fdbbc5a61a4a3a4369b",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "702ae7c6913e29e00e760859eb4e738662f35cd88f05a50990f970d4bf84c7a0",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Extensions.tsx",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/e2e/specs/mcp-tools.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Change applies after the agent restarts (existing notice), as before for MCP edits.",
+  "observations": "Before: qa_echo and qa_write offered; after disabling qa_write: only qa_echo offered to the model in a new conversation.",
+  "procedure": "React red/green tool toggles; native red on TK-023 release; native green with real MCP server, UI toggle, agent restart and model request tools inspection.",
+  "result": "passed",
+  "tested_revision": "local:611d6312af7f47738a4f0a46f69139654cfb2b2f2ea9a2557bb3009d5c6a0a8e",
+  "ticket": "TK-024",
+  "timestamp": "2026-10-04T00:22:41+00:00"
+}

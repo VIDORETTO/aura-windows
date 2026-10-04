@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-030"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 C7CFF8986A0D742914FBF1E90AEF558DD00533FC30D02FFE37C82E4F8FC6805B",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-042",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/retention.e2e.ts": "33e3da161c353a2f7e1a6573a86d54332b79e9d668a7ee3bf6a705ab83d5b755",
+    "apps/desktop/src/settings/Privacy.tsx": "e18359d5180b0d4ec75343225cf7177ab71d6b4710480498dae68598a88b5ac6",
+    "crates/aura-app/src/host.rs": "e75a8a59711168157296ef9a9daad529286daaf1ebc48740e55eb1ea764ebf0e",
+    "crates/aura-app/src/privacy.rs": "6290f5e2ded933a800435f273b0a73d373ec7334772d5a9225b1df53ecd711f8",
+    "crates/aura-app/src/recorder.rs": "a68483ad09b0bafd04c5ce3b15b893fa8e67566f2828283a03ae21c03907a8ff",
+    "crates/aura-policy/src/lib.rs": "521bb69898dcaa50fb01aa6b4862794da832d6411ab53b3d8e3816633a8cba09",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-policy/src/lib.rs",
+    "crates/aura-app/src/privacy.rs",
+    "crates/aura-app/src/recorder.rs",
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/src/settings/Privacy.tsx",
+    "apps/desktop/e2e/specs/retention.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Deletion by age/size relies on the existing pure retention-plan tests; not timed natively with real old segments.",
+  "observations": "UI saved 3 days/5 GB/manual; recorder received the limits; persisted after restart.",
+  "procedure": "Host red/green retention settings and recorder wiring; React red/green; native red on TK-029 release; native green via Privacy UI with restart.",
+  "result": "passed",
+  "tested_revision": "local:66264bd45bce3995899762c7e35cf4c8d11ca7482ab804105c74353b039c2213",
+  "ticket": "TK-030",
+  "timestamp": "2026-10-04T01:08:25+00:00"
+}

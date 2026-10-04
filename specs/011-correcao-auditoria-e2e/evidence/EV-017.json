@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-006"
+  ],
+  "environment": "Windows11 WebView2/driver154.0.4258.53 reale2e release A793A3CB23C907F51CC31CF95F5AAF63F43D858035D50102BB2A19E0F51716FE isolated profile; loopbackauthorize only; ViteIAB",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-017",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/auth-cancel.e2e.ts": "94cb9acf04cde141367b9639e78d959c66c8360f488d425334a36cdaffd4128b",
+    "apps/desktop/e2e/wdio.conf.ts": "ee6a2a1b4ae7c4f2243431374cde7e3765054f908f726053f22bf04c989c74ca",
+    "apps/desktop/src-tauri/Cargo.toml": "36f0a52a0e6a3c9d40d4dfc1ea879f38b07f689fb298daf642071f3637e431cd",
+    "apps/desktop/src-tauri/src/main.rs": "fe9f45d6282140e3bcb67d3ecee1c8962e1fb5332882310b45c557c8612d65ed",
+    "apps/desktop/src/ipc/mock.ts": "0aba9cf9e633721fb63d5dd210205f6365c16bbe1395ac859b32cb866dc7e7ff",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "555b2dfdc472be850c7beaa53cb25e468a1aeb7c7bdefd506e6bd91795921f76",
+    "apps/desktop/src/state/app.ts": "5c9b91387610ad9b658441c8bc796ef3cd10a532c1343b76142b0a16cfeafde6",
+    "crates/aura-app/src/host.rs": "daf03a6dd971708e469177ef4deec17f02d58833822e0087fc47df3cb7d4e498",
+    "crates/aura-app/tests/host.rs": "24d999012c84bbdc79acee86a2b5c14ab3d620f47f7a8374205c0068d738098e",
+    "specs/011-correcao-auditoria-e2e/plan.md": "f50286b4dfea1a4567822c26ce9984f6eeb7c9ffd08c802b5722ef5b317103f9",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/e2e/wdio.conf.ts",
+    "apps/desktop/e2e/specs/auth-cancel.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "OAuthfull authorization not executed; nativeexternalauthorize dependency replaced by loopback page via explicit e2e compilefeature excluded production. InvalidfakeTimer harness discarded, notred. UI/mockcurrenttests/Vite; nativecurrentfinalartifact retested. Evidence invalidated because an input changed.",
+  "observations": "Hostred cancelled+failed; greenexactCancelled twice and genuinefailureonce.27Host/78UI passed, workspace/types/golden/build/clippy/fmt/diffpass. NativePT/EN waitingBrowser,cancelled,waitingBrowser,cancelled zeroFailed/accountnull; auth-cancel-native-final.log1/1/photoauth-cancel-native-green.png. Previewcancel persisted pastdeadline, retrysucceededWelcome/Input, photoauth-cancel-preview-green.jpg. Local Standards/Spec review no blocker.",
+  "procedure": "cargo test -p aura-app --test host (27); workspaceRust; ipc_contract; UI78/typecheck/build; clippyapp/desktop alltargets com/sem e2e -Dwarnings; fmt/diff; cargo release e2e,tauri/custom-protocol; AURA_E2E_LOCAL_AUTH=1 WebDriverauth-cancel1/1; Vite real cancel/delayeddeadline/retry",
+  "result": "stale",
+  "tested_revision": "local:238a8a82fc9e91737bb31a50c87d876a89a235f4d9865501a6ecebea40a78405",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-03T18:34:57+00:00"
+}

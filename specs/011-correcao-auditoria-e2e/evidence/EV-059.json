@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-006"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-059",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/auth-cancel.e2e.ts": "94cb9acf04cde141367b9639e78d959c66c8360f488d425334a36cdaffd4128b",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/auth-cancel.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Loopback authorize page only; complete external OAuth not approved.",
+  "observations": "Two cancellations PT/EN: states waitingBrowser, cancelled, waitingBrowser, cancelled; no technical failure text; no active account.",
+  "procedure": "WebDriver auth-cancel.e2e with AURA_E2E_LOCAL_AUTH=1 on the final e2e,tauri/custom-protocol release SHA256 846E10EB2B1CBAED70F38F370D0042E4B0C4C183F7BC5D696EFCA2A90619D89C (named aura-auth-qa.exe), fresh profile. Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "passed",
+  "tested_revision": "local:c24950fa6a774f8fb5d0a615dc81a65b1b9b7fee7685e79f4468ed137aa19709",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-04T17:09:08+00:00"
+}

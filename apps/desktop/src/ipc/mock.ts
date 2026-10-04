@@ -5,6 +5,8 @@
 import type { Bridge } from "./bridge";
 import { HOST_EVENT } from "./bridge";
 import type * as T from "./types";
+import { en } from "../i18n/en";
+import { ptBR, type MessageKey } from "../i18n/pt-BR";
 
 type Handler = (payload: unknown) => void;
 
@@ -21,6 +23,9 @@ const DEFAULT_SETTINGS: T.Settings = {
   globalVoiceShortcut: "Ctrl+Alt+Space",
   attachScreenOnOpen: false,
   sendAfterDictation: false,
+  microphoneDeviceId: null,
+  systemAudioDeviceId: null,
+  disabledSkills: [],
   defaultModel: null,
   defaultEffort: null,
   personalInstructions: "",
@@ -31,6 +36,12 @@ const DEFAULT_SETTINGS: T.Settings = {
   asrVocabulary: [],
   cloudAsrProvider: null,
   onboarded: true,
+  ttsVoice: null,
+  ttsProvider: null,
+  ttsCloudVoice: "alloy",
+  ttsCloudConsent: [],
+  autoRead: false,
+  accentColor: null,
 };
 
 const PRESETS: T.Preset[] = [
@@ -76,7 +87,13 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
   const listeners = new Map<string, Set<Handler>>();
   const emit = (event: string, payload: unknown) => listeners.get(event)?.forEach((h) => h(payload));
   const host = (e: T.HostEvent) => emit(HOST_EVENT, e);
+  const localizedQuick = () => {
+    const keys: Record<string, MessageKey> = { tldr: "quick.template.tldr", traduzir: "quick.template.translate", reescrever: "quick.template.rewrite", explicar: "quick.template.explain", corrigir: "quick.template.correct", "resumir-tela": "quick.template.screen" };
+    const table = state.settings.language === "en" ? en : ptBR;
+    return state.quick.map((q) => q.builtin && keys[q.name] ? { ...q, template: table[keys[q.name]] } : q);
+  };
   const state = new MockState(opts.signedIn ?? false);
+  let loginAttempt = 0;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   async function streamAnswer(threadId: string, text: string) {
@@ -147,6 +164,8 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     settings_get: () => state.settings,
     settings_update: ({ patch }) => {
       if (patch.opacity !== undefined && (patch.opacity < 0.5 || patch.opacity > 1)) throw { code: "settings", message: "opacidade fora do intervalo" };
+      if (patch.accentColor && !/^#[0-9a-fA-F]{6}$/.test(patch.accentColor)) throw { code: "settings", message: "cor inválida" };
+      if (patch.accentColor) patch = { ...patch, accentColor: patch.accentColor.toLowerCase() };
       state.settings = { ...state.settings, ...patch };
       host({ channel: "settings", event: state.settings });
       return state.settings;
@@ -156,6 +175,11 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     privacy_set_source: ({ source, mode, agent }) => {
       const key = source === "systemAudio" ? "systemAudio" : source === "mic" ? "mic" : "screen";
       state.privacy = { ...state.privacy, [key]: { mode, agent } };
+      return state.privacy;
+    },
+    privacy_set_retention: ({ days, maxGb, applyToManual }) => {
+      if (days < 1 || days > 365 || maxGb < 1 || maxGb > 1000) throw { code: "out_of_range", message: "retenção fora do intervalo" };
+      state.privacy = { ...state.privacy, retention: { days, maxGb, applyToManual } };
       return state.privacy;
     },
     privacy_set_paused: ({ paused }) => {
@@ -177,15 +201,25 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     privacy_clear_access_log: () => {
       state.accessLog = [];
     },
+    privacy_access_thumbnail: ({ id }) =>
+      state.accessLog.find((e) => e.id === id)?.hasThumbnail ? "data:image/png;base64,iVBORw0KGgo=" : null,
+    privacy_open_conversation: ({ threadId }) => {
+      host({ channel: "openConversation", event: { threadId } });
+    },
     consent_answer: () => undefined,
     auth_status: () => ({ accounts: state.account ? [state.account] : [], active: state.account }),
     auth_login: async () => {
+      const attempt = ++loginAttempt;
       host({ channel: "login", event: { state: "waitingBrowser", authorizeUrl: "https://auth.openai.com/oauth/authorize?mock=1" } });
       await sleep(tick * 20);
+      if (attempt !== loginAttempt) return;
       state.account = mockAccount();
       host({ channel: "login", event: { state: "completed", account: state.account, firstTime: true } });
     },
-    auth_cancel: () => host({ channel: "login", event: { state: "cancelled" } }),
+    auth_cancel: () => {
+      ++loginAttempt;
+      host({ channel: "login", event: { state: "cancelled" } });
+    },
     auth_logout: () => {
       state.account = null;
       return true;
@@ -197,6 +231,8 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     providers_presets: () => PRESETS,
     providers_list: () => state.providers,
     providers_save: ({ draft, credential }) => {
+      // Like the registry: an update keeps discovered models and the stored key.
+      const existing = draft.id ? state.providers.find((x) => x.id === draft.id) : undefined;
       const p: T.Provider = {
         id: draft.id ?? `${draft.preset}-${++state.seq}`,
         name: draft.name,
@@ -205,17 +241,30 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
         baseUrl: draft.baseUrl ?? PRESETS.find((x) => x.id === draft.preset)?.baseUrl ?? "",
         auth: "bearer",
         extraHeaders: draft.extraHeaders ?? {},
-        models: [],
-        credentialHint: credential ? `••••${String(credential).slice(-4)}` : null,
+        models: existing?.models ?? [],
+        credentialHint: credential ? `••••${String(credential).slice(-4)}` : existing?.credentialHint ?? null,
         status: "unverified",
         lastError: null,
         quirks: { noParallelToolCalls: false, reasoningEffort: false, noStreamOptions: false },
       };
-      state.providers = [...state.providers.filter((x) => x.id !== p.id), p];
+      state.providers = existing ? state.providers.map((x) => (x.id === p.id ? p : x)) : [...state.providers, p];
+      host({ channel: "providersChanged", event: {} });
       return p;
+    },
+    providers_model_save: ({ id, model }) => {
+      const spec = { ...model, id: String(model.id).trim(), manual: true, estimated: false } as T.ModelSpec;
+      state.providers = state.providers.map((p) => (p.id === id ? { ...p, models: [...p.models.filter((m) => m.id !== spec.id), spec] } : p));
+      host({ channel: "providersChanged", event: {} });
+      return state.providers.find((p) => p.id === id);
+    },
+    providers_model_remove: ({ id, modelId }) => {
+      state.providers = state.providers.map((p) => (p.id === id ? { ...p, models: p.models.filter((m) => m.id !== modelId) } : p));
+      host({ channel: "providersChanged", event: {} });
+      return state.providers.find((p) => p.id === id);
     },
     providers_remove: ({ id }) => {
       state.providers = state.providers.filter((p) => p.id !== id);
+      host({ channel: "providersChanged", event: {} });
     },
     providers_test: async ({ id }) => {
       await sleep(tick * 10);
@@ -226,6 +275,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
         models: [{ id: "llama-3.3-70b", displayName: "Llama 3.3 70B", contextWindow: 131072, maxOutput: 32768, supportsImages: false, supportsTools: true, supportsReasoning: false, estimated: true }],
       };
       state.providers = state.providers.map((x) => (x.id === id ? tested : x));
+      host({ channel: "providersChanged", event: {} });
       return tested;
     },
     conversation_start: ({ options }) => {
@@ -243,10 +293,15 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     conversation_compact: ({ threadId }) => host({ channel: "conversation", event: { type: "compacted", threadId } }),
     conversation_set_mode: () => undefined,
-    conversation_history: ({ query }) => ({
-      items: state.history.filter((h) => !query?.search || h.title.toLowerCase().includes(String(query.search).toLowerCase())),
-      nextCursor: null,
-    }),
+    conversation_history: ({ query }) => {
+      // Offset cursors, newest first, like the app-server pages.
+      const all = state.history
+        .filter((h) => !query?.search || h.title.toLowerCase().includes(String(query.search).toLowerCase()))
+        .sort((a, b) => b.updatedAt - a.updatedAt);
+      const start = Number(query?.cursor ?? 0);
+      const end = start + Number(query?.limit ?? 50);
+      return { items: all.slice(start, end), nextCursor: end < all.length ? String(end) : null };
+    },
     conversation_open: ({ threadId }) => {
       const h = state.history.find((x) => x.id === threadId);
       return h ? [{ role: "user", text: h.title }, { role: "assistant", text: h.preview }] : [];
@@ -293,6 +348,12 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);
       return chip;
     },
+    context_attach_recent: ({ tray, clip }) => {
+      const what = [clip.screen ? "tela" : null, clip.audio ? { mic: "microfone", system: "áudio do sistema", both: "microfone + sistema" }[clip.audio as string] : null].filter(Boolean).join(" + ");
+      const chip: T.ContextChip = { id: `chip_${++state.seq}`, kind: clip.screen ? "clip" : "audio", label: `Últimos ${clip.minutes} min · ${what}`, previewPath: clip.screen ? PIXEL : null, payload: { type: "text", text: "…" }, tokenEstimate: 3000, blockedReason: null };
+      state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);
+      return chip;
+    },
     capture_selection: ({ tray }) => {
       const chip: T.ContextChip = { id: `chip_${++state.seq}`, kind: "selection", label: "❝ texto selecionado", previewPath: null, payload: { type: "text", text: "texto selecionado" }, tokenEstimate: 5, blockedReason: null };
       state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);
@@ -317,6 +378,13 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       return chip;
     },
     region_cancel: () => undefined,
+    attach_clipboard_image: ({ tray, mime }) => {
+      const name = `clipboard.${String(mime).split("/")[1]}`;
+      const info: T.AttachmentInfo = { id: `att_${++state.seq}`, conversation: "draft", fileName: name, stored: name, hash: "0".repeat(64), summary: "imagem", kind: "image", tokens: 800, warnings: [] };
+      const chip: T.ContextChip = { id: `chip_${state.seq}`, kind: "image", label: `Imagem colada · ${name}`, previewPath: null, payload: { type: "image", path: name }, tokenEstimate: 800, blockedReason: null };
+      state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);
+      return [info, chip];
+    },
     attach_file: ({ tray, path }) => {
       const name = String(path).split(/[\\/]/).pop() ?? "arquivo";
       const info: T.AttachmentInfo = { id: `att_${++state.seq}`, conversation: "draft", fileName: name, stored: path, hash: "0".repeat(64), summary: "3 páginas", kind: "pdf", tokens: 2400, warnings: [] };
@@ -326,22 +394,22 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     attachments_list: () => [],
     insert_into_app: () => true,
-    quick_list: () => state.quick,
+    quick_list: localizedQuick,
     quick_save: ({ name, template }) => {
       state.quick = [...state.quick.filter((q) => q.name !== name), { name, template, builtin: false, enabled: true }];
-      return state.quick;
+      return localizedQuick();
     },
     quick_delete: ({ name }) => {
       state.quick = state.quick.filter((q) => q.name !== name || q.builtin);
-      return state.quick;
+      return localizedQuick();
     },
     quick_toggle: ({ name, enabled }) => {
       state.quick = state.quick.map((q) => (q.name === name ? { ...q, enabled } : q));
-      return state.quick;
+      return localizedQuick();
     },
     quick_expand: ({ input, typed }) => {
       const [cmd, ...rest] = String(input).slice(1).split(/\s+/);
-      const q = state.quick.find((x) => x.name === cmd);
+      const q = localizedQuick().find((x) => x.name === cmd);
       if (!q) throw { code: "quick_command", message: `comando desconhecido: /${cmd}` };
       const arg = rest[0] ?? "inglês";
       const body = typed || rest.slice(1).join(" ") || "texto selecionado";
@@ -360,13 +428,25 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     mcp_detect: () => [],
     mcp_import: () => state.mcp,
     agent_restart: () => true,
-    mcp_status: () => [{ name: "aura", tools: ["screen_capture", "screen_text"], auth: "unsupported" }, ...state.mcp.map((m) => ({ name: m.name, tools: [], auth: m.transport.type === "http" ? "notLoggedIn" : null }))],
+    // A stdio server whose command is "fail" does not start (status/log tests).
+    mcp_status: () => [{ name: "aura", tools: ["screen_capture", "screen_text"], auth: "unsupported", error: null }, ...state.mcp.map((m) => {
+      const failed = m.transport.type === "stdio" && m.transport.command === "fail";
+      return { name: m.name, tools: m.transport.type === "stdio" && m.enabled && !failed ? ["qa_echo", "qa_write"].filter((t) => !m.disabledTools.includes(t)) : [], auth: m.transport.type === "http" ? "notLoggedIn" : null, error: failed ? "MCP startup failed: connection closed: initialize response" : null };
+    })],
+    mcp_diagnose: ({ name }) => {
+      const m = state.mcp.find((x) => x.name === name);
+      const failed = m?.transport.type === "stdio" && m.transport.command === "fail";
+      return failed ? { connected: false, exitCode: 3, log: ["starting", "missing QA_TOKEN"] } : { connected: true, exitCode: null, log: [] };
+    },
     mcp_login: () => undefined,
     workspace_files: () => [
       { path: "relatorio.md", absolute: "C:/ws/relatorio.md", bytes: 120, modified: Date.now() / 1000 },
       { path: "pagina.html", absolute: "C:/ws/pagina.html", bytes: 80, modified: Date.now() / 1000 - 5 },
+      { path: "relatorio.pdf", absolute: "C:/ws/relatorio.pdf", bytes: 5000, modified: Date.now() / 1000 - 10 },
+      { path: "scan.pdf", absolute: "C:/ws/scan.pdf", bytes: 9000, modified: Date.now() / 1000 - 20 },
     ],
     workspace_read: ({ path }) => (String(path).endsWith(".html") ? "<h1>Olá</h1><script>alert(1)</script>" : "# Relatório\n\nTudo certo."),
+    workspace_pdf_preview: ({ path }): T.PdfPreview => (String(path).includes("scan") ? { totalPages: 2, pages: [] } : { totalPages: 7, pages: [1, 2, 3, 4, 5].map((n) => ({ number: n, text: `Texto da página ${n}` })) }),
     open_path: () => undefined,
     skills_list: () => state.skills,
     skills_review: () => {
@@ -380,11 +460,43 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     skills_delete: ({ name }) => {
       state.skills = state.skills.filter((s) => s.manifest.name !== name);
     },
+    memories_get: () => memoryView(state.memorySummary, state.memoryRegistry),
+    memories_forget_fact: ({ fact }) => {
+      const drop = (text: string) => text.split("\n").filter((l) => l.replace(/^\s*[-*]\s+/, "").trim() !== fact || !/^\s*[-*]\s+/.test(l)).join("\n");
+      state.memorySummary = drop(state.memorySummary);
+      state.memoryRegistry = drop(state.memoryRegistry);
+      return memoryView(state.memorySummary, state.memoryRegistry);
+    },
+    memories_save: ({ summary, registry }) => {
+      state.memorySummary = summary;
+      state.memoryRegistry = registry;
+      return memoryView(summary, registry);
+    },
+    memories_forget_all: () => {
+      state.memorySummary = "";
+      state.memoryRegistry = "";
+    },
+    // Aura skills plus one system skill, like the app-server catalog.
+    skills_catalog: (): T.SkillEntry[] => [
+      ...state.skills.map((s) => ({ name: s.manifest.name, description: s.manifest.description, path: `aura/${s.manifest.name}/SKILL.md`, origin: "aura" as const, enabled: !state.disabledSkills.includes(`aura/${s.manifest.name}/SKILL.md`) })),
+      { name: "skill-creator", description: "Cria Skills", path: "system/skill-creator/SKILL.md", origin: "system" as const, enabled: !state.disabledSkills.includes("system/skill-creator/SKILL.md") },
+    ],
+    skills_set_enabled: ({ path, enabled }) => {
+      state.disabledSkills = state.disabledSkills.filter((p) => p !== path).concat(enabled ? [] : [String(path)]);
+    },
+    skills_source: ({ name }) => {
+      const s = state.skills.find((x) => x.manifest.name === name);
+      if (!s) throw { code: "skill", message: `Skill não encontrada: ${name}` };
+      return [s.manifest.description, s.skillMd];
+    },
+    skills_update: ({ name, description, body }) => {
+      state.skills = state.skills.map((s) => (s.manifest.name === name ? { ...s, manifest: { ...s.manifest, description }, skillMd: body } : s));
+    },
     recording_start: ({ title }) => {
       const modes = [state.privacy.screen, state.privacy.mic, state.privacy.systemAudio];
       if (!modes.some((m) => m.mode.type === "manual")) throw { code: "recording", message: "nenhuma fonte está no modo \"Gravação manual\"" };
       const id = `rec_${++state.seq}`;
-      state.recordings = [{ id, source: "screen,mic", title, startedAt: Date.now() / 1000, endedAt: null, bytes: 0 }, ...state.recordings];
+      state.recordings = [{ id, source: "screen,mic", title, startedAt: Date.now() / 1000, endedAt: null, bytes: 0, durationMs: null }, ...state.recordings];
       state.activeRecording = id;
       host({ channel: "privacy", event: { paused: state.privacy.paused, screen: "manual", mic: "manual", systemAudio: "off", recording: ["screen", "mic"] } });
       return id;
@@ -392,7 +504,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     recording_stop: () => {
       const id = state.activeRecording;
       state.activeRecording = null;
-      state.recordings = state.recordings.map((r) => (r.id === id ? { ...r, endedAt: Date.now() / 1000, bytes: 2_400_000 } : r));
+      state.recordings = state.recordings.map((r) => (r.id === id ? { ...r, endedAt: Date.now() / 1000, bytes: 2_400_000, durationMs: Math.round((Date.now() / 1000 - r.startedAt) * 1000) } : r));
       host({ channel: "privacy", event: { paused: state.privacy.paused, screen: "manual", mic: "manual", systemAudio: "off", recording: [] } });
       return id;
     },
@@ -402,6 +514,14 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       state.recordings = state.recordings.filter((r) => r.id !== id);
     },
     recording_export: ({ dir }) => [`${dir}/mic.wav`, `${dir}/screen-0001.mp4`],
+    recording_playback: ({ id }) => [
+      { kind: "audio", source: "mic", mime: "audio/wav", path: `cache/playback/${id}/mic.wav` },
+      { kind: "video", source: "screen", mime: "video/mp4", path: `cache/playback/${id}/screen-0001.mp4` },
+    ],
+    recording_attach: ({ id }) => ({
+      chips: ["mic.wav", "screen-0001.mp4"].map((name, i) => ({ id: `chip_${id}_${i}`, kind: "file" as const, label: name, previewPath: null, payload: { type: "text" as const, text: name }, tokenEstimate: 10, blockedReason: null })),
+      failed: [],
+    }),
     attachment_read: () => "[Página 3]\n…",
     voice_models: () => state.voiceModels,
     voice_install: async ({ id }) => {
@@ -434,6 +554,17 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       host({ channel: "voice", event: s });
       return s;
     },
+    audio_test_start: (args) => {
+      const source = args.source as T.AudioSourceKind;
+      clearInterval(state.audioTests[source]);
+      // A tone in the browser preview; tests drive levels through events.
+      state.audioTests[source] = setInterval(() => host({ channel: "audioLevel", event: { source, dbfs: -12 - Math.random() * 6 } }), 40);
+    },
+    audio_test_stop: (args) => {
+      const source = args.source as T.AudioSourceKind;
+      clearInterval(state.audioTests[source]);
+      delete state.audioTests[source];
+    },
     audio_devices: ({ system }) => [{ id: system ? "Alto-falantes" : "Microfone", name: system ? "Alto-falantes (Realtek)" : "Microfone (USB)", isDefault: true }],
     overlay_set_mode: () => undefined,
     overlay_hide: () => undefined,
@@ -451,10 +582,40 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       providers: state.providers.length,
       mcpServers: state.mcp.length,
       pendingConsents: 0,
+      gateway: { port: 0, reachable: true },
+      mcp: [],
+      worker: { installed: false, running: false, spawns: 0, gpu: false, model: null },
+      capture: { paused: state.privacy.paused, active: [], recording: false },
+      account: null,
+      disk: { freeBytes: null, auraBytes: 0 },
+      ...state.diagnosticsExtra,
     }),
     diagnostics_export: ({ dest }) => dest,
+    updater_configured: () => false,
+    onboarding_resume: () => {
+      state.settings = { ...state.settings, onboarded: false };
+      host({ channel: "settings", event: state.settings });
+      return state.settings;
+    },
     notify: () => undefined,
-    speak: () => ["UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=", "audio/wav"],
+    speak: () => {
+      const id = state.settings.ttsProvider;
+      if (id && !state.settings.ttsCloudConsent.includes(id)) throw { code: "consent_required", message: state.providers.find((p) => p.id === id)?.name ?? id };
+      return ["UklGRiQAAABXQVZFZm10IBAAAAABAAEAgD4AAAB9AAACABAAZGF0YQAAAAA=", "audio/wav"];
+    },
+    speech_options: () => ({
+      voices: [
+        { id: "win-maria", name: "Microsoft Maria", language: "pt-BR" },
+        { id: "win-zira", name: "Microsoft Zira", language: "en-US" },
+      ],
+      cloud: state.providers.filter((p) => p.preset === "custom" || p.preset === "openai").map((p) => ({ id: p.id, name: p.name })),
+    }),
+    speech_consent: () => {
+      const id = state.settings.ttsProvider;
+      if (id && !state.settings.ttsCloudConsent.includes(id)) state.settings = { ...state.settings, ttsCloudConsent: [...state.settings.ttsCloudConsent, id] };
+      host({ channel: "settings", event: state.settings });
+      return state.settings;
+    },
     erase_all_data: () => {
       Object.assign(state, new MockState(false));
     },
@@ -502,6 +663,10 @@ function mockAnswer(q: string): string {
 export class MockState {
   seq = 0;
   cancelled = false;
+  audioTests: Partial<Record<T.AudioSourceKind, ReturnType<typeof setInterval>>> = {};
+  disabledSkills: string[] = [];
+  memorySummary = "";
+  memoryRegistry = "";
   settings: T.Settings = { ...DEFAULT_SETTINGS };
   account: T.ChatGptAccount | null;
   providers: T.Provider[] = [];
@@ -509,7 +674,7 @@ export class MockState {
   trays = new Map<string, T.ContextChip[]>();
   pendingApproval: { threadId: string; turnId: string; requestId: string } | null = null;
   accessLog: T.AccessLogEntry[] = [
-    { at: Date.now() / 1000 - 60, source: "screen", requester: "agent", tool: "screen_capture", conversation: "uuid-1", decision: "ask", reason: null },
+    { id: 1, at: Date.now() / 1000 - 60, source: "screen", requester: "agent", tool: "screen_capture", conversation: "uuid-1", decision: "ask", reason: null, hasThumbnail: false, threadId: null },
   ];
   quick: T.QuickCommand[] = [
     { name: "tldr", template: "Resuma em até três frases, direto ao ponto:\n\n{selecao}", builtin: true, enabled: true },
@@ -522,12 +687,15 @@ export class MockState {
   mcp: T.McpServerSpec[] = [];
   recordings: T.Recording[] = [];
   profiles: T.AppProfile[] = [];
+  /** Test override of the pipeline part of `diagnostics`. */
+  diagnosticsExtra: Partial<T.Diagnostics> = {};
   activeRecording: string | null = null;
   skills: T.SkillReview[] = [];
   privacy: T.PrivacyView = {
     screen: { mode: { type: "onDemand" }, agent: "ask" },
     mic: { mode: { type: "onDemand" }, agent: "ask" },
     systemAudio: { mode: { type: "off" }, agent: "ask" },
+    retention: { days: 7, maxGb: 20, applyToManual: false },
     paused: false,
     exclusions: [
       { id: "keepass", process: "KeePass.exe", titleGlob: null, class: null, enabled: true, builtin: true },
@@ -536,9 +704,9 @@ export class MockState {
     ],
   };
   voiceModels: T.ModelView[] = [
-    voice("parakeet-tdt-0.6b-v3-int8", "Parakeet TDT 0.6B v3", "Rápido e preciso em 25 idiomas europeus, incluindo português.", 670_000_000, true),
+    voice("parakeet-tdt-0.6b-v3", "Parakeet TDT 0.6B v3", "Rápido e preciso em 25 idiomas europeus, incluindo português.", 670_000_000, true),
     voice("whisper-small", "Whisper Small", "Multilíngue, leve, bom para computadores modestos.", 488_000_000, false),
-    voice("whisper-large-v3-turbo-q5", "Whisper Large v3 Turbo (Q5)", "Melhor qualidade multilíngue; recomendado com GPU.", 574_000_000, false),
+    voice("whisper-turbo-q5", "Whisper Large v3 Turbo (Q5)", "Melhor qualidade multilíngue; recomendado com GPU.", 574_000_000, false),
   ];
 
   constructor(signedIn: boolean) {
@@ -559,7 +727,7 @@ function voice(id: string, name: string, description: string, size: number, reco
       accuracy: 0.85,
       streaming: false,
       minRamMb: 2048,
-      gpuRecommended: id.includes("large"),
+      gpuRecommended: id.includes("turbo"),
       license: id.startsWith("parakeet") ? "CC-BY-4.0" : "MIT",
       sourceUrl: "https://huggingface.co",
     },
@@ -569,4 +737,9 @@ function voice(id: string, name: string, description: string, size: number, reco
     recommended,
     downloading: false,
   };
+}
+
+function memoryView(summary: string, registry: string): T.MemoryView {
+  const facts = summary.split("\n").map((l) => /^\s*[-*]\s+(.+)/.exec(l)?.[1]?.trim()).filter((f): f is string => !!f);
+  return { summary, registry, facts };
 }

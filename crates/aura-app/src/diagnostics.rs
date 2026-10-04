@@ -6,6 +6,33 @@ use serde_json::{Value, json};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+/// `gabriel@example.com` → `g***@example.com` (diagnostics never show a
+/// full address).
+pub fn mask_email(email: &str) -> String {
+    match email.split_once('@') {
+        Some((user, domain)) => {
+            let first: String = user.chars().take(1).collect();
+            format!("{first}***@{domain}")
+        }
+        None => "***".into(),
+    }
+}
+
+/// Total size of the files under `dir` (symlinks not followed).
+pub fn dir_size(dir: &Path) -> u64 {
+    let Ok(entries) = std::fs::read_dir(dir) else {
+        return 0;
+    };
+    entries
+        .flatten()
+        .map(|e| match e.file_type() {
+            Ok(t) if t.is_dir() => dir_size(&e.path()),
+            Ok(t) if t.is_file() => e.metadata().map(|m| m.len()).unwrap_or(0),
+            _ => 0,
+        })
+        .sum()
+}
+
 /// Last bytes of each log file included in the package.
 const LOG_TAIL: u64 = 2 * 1024 * 1024;
 
@@ -91,4 +118,15 @@ pub fn settings_view(s: &aura_core::settings::Settings) -> Value {
         );
     }
     v
+}
+
+#[cfg(test)]
+mod mask_tests {
+    use super::mask_email;
+
+    #[test]
+    fn email_is_masked() {
+        assert_eq!(mask_email("gabriel@example.com"), "g***@example.com");
+        assert_eq!(mask_email("sem-arroba"), "***");
+    }
 }

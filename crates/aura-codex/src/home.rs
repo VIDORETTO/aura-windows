@@ -27,6 +27,9 @@ pub struct BaseConfig {
     pub memories: bool,
     /// `unelevated` (default) or `elevated`.
     pub windows_sandbox: String,
+    /// Skills the user turned off (008 AC-001); Codex reads them from here
+    /// because this file is regenerated on every start.
+    pub disabled_skills: Vec<PathBuf>,
 }
 
 impl Default for BaseConfig {
@@ -37,6 +40,7 @@ impl Default for BaseConfig {
             web_search: true,
             memories: false,
             windows_sandbox: "unelevated".into(),
+            disabled_skills: Vec::new(),
         }
     }
 }
@@ -106,6 +110,20 @@ pub fn render(base: &BaseConfig, contributors: &[&dyn ConfigContributor]) -> Tab
             ]),
         );
         root.insert("mcp_servers".into(), Value::Table(servers));
+    }
+
+    if !base.disabled_skills.is_empty() {
+        let entries = base
+            .disabled_skills
+            .iter()
+            .map(|p| {
+                table([
+                    ("path", Value::String(p.to_string_lossy().into_owned())),
+                    ("enabled", Value::Boolean(false)),
+                ])
+            })
+            .collect();
+        root.insert("skills".into(), table([("config", Value::Array(entries))]));
     }
 
     for c in contributors {
@@ -178,6 +196,31 @@ mod tests {
         assert!(text.contains("[model_providers.aura-groq]"));
         assert!(text.contains("url = \"http://127.0.0.1:4100/mcp\""));
         assert!(!text.to_lowercase().contains("sk-"));
+    }
+
+    #[test]
+    fn disabled_skills_survive_the_regenerated_config() {
+        let base = BaseConfig {
+            disabled_skills: vec![PathBuf::from(r"C:\Aura\skills\revisar\SKILL.md")],
+            ..Default::default()
+        };
+        let doc = render(&base, &[]);
+        let parsed: toml::Value = toml::from_str(&toml::to_string(&doc).unwrap()).unwrap();
+        assert_eq!(
+            parsed["skills"]["config"],
+            toml::Value::Array(vec![toml::Value::Table(
+                [
+                    (
+                        "path".to_string(),
+                        toml::Value::String(r"C:\Aura\skills\revisar\SKILL.md".into())
+                    ),
+                    ("enabled".to_string(), toml::Value::Boolean(false)),
+                ]
+                .into_iter()
+                .collect()
+            )])
+        );
+        assert!(render(&BaseConfig::default(), &[]).get("skills").is_none());
     }
 
     #[test]

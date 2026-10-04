@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "Windows11 WebView2 154 normal production no demo/e2e SHA256 8F5C9AC15A31D805DFA6D5FA9E72699C537FF4CE24176ECA18C888B74A6B6B99",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-021",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/asr-language.e2e.ts": "e8ad2cad7e3cda616f154db696e6135aad326c89b9c8929ce57d890e4054e9ae",
+    "apps/desktop/src-tauri/src/shortcuts.rs": "360a8f455ee6638137e29f22929069aa9a60328c79b9e7bb571164f44933236d",
+    "apps/desktop/src/i18n/en.ts": "9f1c63809278dbac40fc9f62f3ea416a9b76b0e964b74094dbe6a0b1d4b141fd",
+    "apps/desktop/src/i18n/pt-BR.ts": "6d79f5cc389680851ffdc272342525a01bb3663f93d5affa5f353a932b0b6e5f",
+    "apps/desktop/src/overlay/InputBar.tsx": "dfe0ccf59ef87183206d51c711eb8fa52d906b0071f037cc4417d74ed8e9ae08",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "99e8745035ff1425eaf9c00c2b1c1376d2067e9c7a0e74b0c426d4856e6442db",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "88dbc5313bf4217a59bc03e985e4daa3fcc1a8f9ccd8a76d38c14fd51a61be6b",
+    "crates/aura-core/src/settings.rs": "69e83f4f91d78b7054114a61ed94ecb47edcaeff8269759c1adfef656dd58676",
+    "specs/011-correcao-auditoria-e2e/plan.md": "c5f7b1171cd5ebeb9d23091637f10623d9634d49fc8550612071c6eed040c338",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/src-tauri/src/shortcuts.rs",
+    "apps/desktop/src/i18n/en.ts",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/e2e/specs/asr-language.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No acoustic model/autodetection quality, latency or physical hotkey approval. Native invoke immutable, rejected observer harness not product red. Fast click race confirmed and assigned TK010, unresolved here. Evidence invalidated because an input changed.",
+  "observations": "Native selected Spanish then auto null, restarted preserved; PT/EN real hold Listening/Empty. React external bridge proves null requests. Native repeat1/1. Standards/Spec review no blocker in language slice.",
+  "procedure": "Core JSON red/green; UI PT/EN release language null and selector; native fixed->auto red then hold green and separate-process restart; repeat regression; core/app/golden/UI85/types/build/clippy/fmt/diff.",
+  "result": "stale",
+  "tested_revision": "local:715486b6b520158e8145d8c70434ec672f308c6ffaeb1b0822516c1460c8caa2",
+  "ticket": "TK-009",
+  "timestamp": "2026-10-03T19:23:57+00:00"
+}

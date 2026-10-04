@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-039"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 46BBFEE8F455CEC6E363F0D0822106E2B620EF5910BF642F0E21247E467418B4",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-051",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/onboarding-resume.e2e.ts": "0ec25e8536c633283063db85e79c4c00535be0057bb51f8927edba0867a5bf84",
+    "apps/desktop/src-tauri/src/commands.rs": "8123feda2e8507725a465dd93b4c0843bc1bc36d719a1a8d55ad4100d1f608f0",
+    "apps/desktop/src/settings/General.tsx": "72194833297f21ff13a970a4522359dc4ce1bcd0e29f8d6d562076b14fa35794",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/General.tsx",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/e2e/specs/onboarding-resume.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "The guide still has 3 steps (privacy, shortcut, voice); sign-in and the guided first request of 010 AC-006 happen outside it (login card / empty state).",
+  "observations": "Guide shown again at step 1 of 3 after the click; onboarded=false persisted.",
+  "procedure": "React red/green; native red on TK-038 release; native green clicking Resume getting started in Settings and observing the guide in the Overlay.",
+  "result": "passed",
+  "tested_revision": "local:f17b33ba898d4fb0516d00734826b4df8400ae932bb1fae384926ea972646e1a",
+  "ticket": "TK-039",
+  "timestamp": "2026-10-04T16:43:58+00:00"
+}

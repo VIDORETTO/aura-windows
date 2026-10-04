@@ -260,7 +260,7 @@ input,
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal {
-  color: #8250df;
+  color: var(--accent);
 }
 .hljs-string,
 .hljs-attr {
@@ -275,16 +275,16 @@ input,
 }
 .hljs-title,
 .hljs-function {
-  color: #0550ae;
+  color: color-mix(in srgb, var(--accent) 65%, var(--text));
 }
 :root[data-theme="dark"] .hljs-keyword {
-  color: #c792ea;
+  color: color-mix(in srgb, var(--accent) 70%, #ffffff);
 }
 :root[data-theme="dark"] .hljs-string {
   color: #a5e075;
 }
 :root[data-theme="dark"] .hljs-title {
-  color: #82aaff;
+  color: color-mix(in srgb, var(--accent) 50%, #ffffff);
 }
 
 ::-webkit-scrollbar {

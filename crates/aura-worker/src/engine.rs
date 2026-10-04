@@ -134,6 +134,13 @@ mod real {
         }
     }
 
+    /// Half the logical processors (≈ physical cores), never fewer than the
+    /// whisper.cpp default of min(4, logical), at most 16.
+    fn cpu_threads() -> i32 {
+        let logical = std::thread::available_parallelism().map_or(4, |n| n.get());
+        (logical / 2).max(logical.min(4)).min(16) as i32
+    }
+
     impl Engine for Whisper {
         fn transcribe(
             &mut self,
@@ -144,6 +151,9 @@ mod real {
             let params = WhisperInferenceParams {
                 language: language.map(str::to_string),
                 initial_prompt: (!prompt.is_empty()).then(|| prompt.to_string()),
+                // whisper.cpp defaults to min(4, cores); dictation latency
+                // on CPU scales with threads up to the physical core count.
+                n_threads: cpu_threads(),
                 ..Default::default()
             };
             let r = self

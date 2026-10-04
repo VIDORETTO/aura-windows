@@ -13,23 +13,41 @@ pub struct GatewayConfigContributor {
     pub port: u16,
 }
 
+fn provider_config(p: &Provider, port: u16) -> Table {
+    let mut t = Table::new();
+    t.insert("name".into(), Value::String(p.name.clone()));
+    t.insert(
+        "base_url".into(),
+        Value::String(gateway_base_url(port, &p.id)),
+    );
+    t.insert("env_key".into(), Value::String(GATEWAY_TOKEN_ENV.into()));
+    t.insert("wire_api".into(), Value::String("responses".into()));
+    t.insert("requires_openai_auth".into(), Value::Boolean(false));
+    t.insert("supports_websockets".into(), Value::Boolean(false));
+    t.insert("request_max_retries".into(), Value::Integer(2));
+    t.insert("stream_idle_timeout_ms".into(), Value::Integer(120_000));
+    t
+}
+
+/// Registers the current provider even when the engine predates its creation.
+/// Credentials remain in the gateway; only the environment variable name is sent.
+pub fn provider_override(p: &Provider, port: u16) -> serde_json::Map<String, serde_json::Value> {
+    let mut config = serde_json::Map::new();
+    config.insert(
+        format!("model_providers.{}", codex_provider_id(&p.id)),
+        serde_json::json!(provider_config(p, port)),
+    );
+    config
+}
+
 impl ConfigContributor for GatewayConfigContributor {
     fn contribute(&self, config: &mut Table) {
         let providers = section(config, "model_providers");
         for p in &self.providers {
-            let mut t = Table::new();
-            t.insert("name".into(), Value::String(p.name.clone()));
-            t.insert(
-                "base_url".into(),
-                Value::String(gateway_base_url(self.port, &p.id)),
+            providers.insert(
+                codex_provider_id(&p.id),
+                Value::Table(provider_config(p, self.port)),
             );
-            t.insert("env_key".into(), Value::String(GATEWAY_TOKEN_ENV.into()));
-            t.insert("wire_api".into(), Value::String("responses".into()));
-            t.insert("requires_openai_auth".into(), Value::Boolean(false));
-            t.insert("supports_websockets".into(), Value::Boolean(false));
-            t.insert("request_max_retries".into(), Value::Integer(2));
-            t.insert("stream_idle_timeout_ms".into(), Value::Integer(120_000));
-            providers.insert(codex_provider_id(&p.id), Value::Table(t));
         }
     }
 }

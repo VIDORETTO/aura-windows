@@ -1,0 +1,50 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Windows11 UI Vitest5, real Rust host with test OS and loopback discovery",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "apps/desktop/src/ipc/__fixtures__/contract.json": "130c3180d53f430609c88c1a5bdc6684472ed6cd12af9ecb20ae83606b4a0f46",
+    "apps/desktop/src/ipc/mock.ts": "9264b6edf1f82c11ccc43e14c07b416bd4ac9ea52ea4de8cc732bb32fef2d2a8",
+    "apps/desktop/src/ipc/types.ts": "13215782159c47d4ac5c3fa7b9a58a54a52546fec3085156802ceec57a30f8f5",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "b2749374aa40c5e34fcf5b3b1b0f0dd3939212822534dacaf3c32954b7e76cc2",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "c4bea127914730e06e2b4a2f4a985e9f1fd18596631b16bf37399aba4f56237d",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "cf99a124a4140a24b453ecc6cfb9136fed1c0e1d2929eeae2324b4746cc5e80b",
+    "apps/desktop/src/overlay/session.ts": "927517a093393ca90c292079fb8d1447b0fb13ca822df1b76adf8769eef0c9cb",
+    "apps/desktop/src/state/app.ts": "9beb2fe92b060e9da6d991e1f3d39495dfdb15ec860a3c8c6b30a4d58988ed10",
+    "apps/desktop/src/test/harness.ts": "83ee3d132b52239c7afb4850b22b90775e428312806f95bc771ed5f68e40c922",
+    "crates/aura-app/src/events.rs": "77f7bd0824e5e5fb61ab43bb2830816b3e9df79eee6e6020535186522fbda2fe",
+    "crates/aura-app/src/host.rs": "94e3f51205c620a7018eebdbaba80a3dfbcc15eec815125e03d138bc319ac56d",
+    "crates/aura-app/tests/host.rs": "28e5dd94f3f67fef782aeee19f25d46c2a82ec19aa4708b7db2216253c16489a",
+    "crates/aura-app/tests/ipc_contract.rs": "867604c44a71125c464f11efb6e946bd5fad7985a140b07bfe24bb08f4c52524",
+    "specs/011-correcao-auditoria-e2e/plan.md": "941b7543d45298178d0bc36ec0c503e5675ebf96797777a5eee889252400ab3b",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/events.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "crates/aura-app/tests/ipc_contract.rs",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/ipc/__fixtures__/contract.json",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/test/harness.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "New native production executable validation pending; no paid inference or personal credentials. Evidence invalidated because an input changed.",
+  "observations": "Save/remove/discovery invalidates; event literal providersChanged/event{} no secrets; mounted Overlay refreshes model/provider and keeps draft; out-of-order old response rejected; first local selected; error status rendered. Native baseline failed mounted textarea after save. Logs target/qa-tools/providers-*.",
+  "procedure": "Host TDD3 public cases and UI TDD6, UI66/66, typecheck, cargo workspace, golden update/retest and clippy -D warnings",
+  "result": "stale",
+  "tested_revision": "local:f019579396ebb28ec9763c7574affcf5d88a106a94a48c5f090693552f209915",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-03T13:54:32+00:00"
+}

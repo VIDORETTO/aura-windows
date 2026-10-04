@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "0fa1668351de756b2660daa72c6722a1d8a3501af521819e8957f6cd5fdb5be0",
+  "docs/project/backlog.md": "3fca7f660ac6a0e1fcb25d1e559d2542406ab64cf382731710969d1e6c1f415c",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -19,5 +19,8 @@
   "specs/009-produtividade/todo.md": "9da728cc055c2f0234994af0b650ee05967c1d713b387fccf73dc7196754137d",
   "specs/009-produtividade/verification.md": "2748bd15a3f1ea93f71b87fb056dd18b5eec4087a1a26d6cc9a84e33a59d42ab",
   "specs/010-distribuicao-e-qualidade/todo.md": "b08b90eca72c67d5002758496a01b6753375f8fe7f105385e18134cbd9fd83aa",
-  "specs/010-distribuicao-e-qualidade/verification.md": "5e61bd0e7adb8fe92f6c4cb0933698789407e03b6726ceaadf9a9452286caeb6"
+  "specs/010-distribuicao-e-qualidade/verification.md": "5e61bd0e7adb8fe92f6c4cb0933698789407e03b6726ceaadf9a9452286caeb6",
+  "specs/011-correcao-auditoria-e2e/todo.md": "c7a90b46a3fbf435bf57446120437d5aa56098b5a2e8f7b783fee2c0dc9b0f20",
+  "specs/011-correcao-auditoria-e2e/verification.md": "0d243e746c6eb7ad90c5bbe41de2c03635c491fbab60a4bcd7453a9d6842d2b3",
+  "specs/012-selecao-e-cor-de-destaque/verification.md": "9fbedcb10f7b24381b486ec843f3ab9771e664275419f2a958dcb5bec964c260"
 }

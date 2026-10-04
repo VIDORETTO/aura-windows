@@ -45,13 +45,14 @@ impl Foreground for WinForeground {
             .map(|m| m.area)
     }
 
-    /// Selection captured by [`Foreground::snapshot`] (UI Automation only:
-    /// no synthetic Ctrl+C on every Overlay open).
+    /// Selection of the previous app as last seen by [`Foreground::snapshot`]
+    /// (UI Automation only: no synthetic Ctrl+C). Not consumed: the Host keeps
+    /// one chip per selection.
     fn selection(&self, max_chars: usize) -> Option<String> {
         self.selection
             .lock()
             .unwrap()
-            .take()
+            .clone()
             .map(|s| s.chars().take(max_chars).collect())
     }
 
@@ -60,8 +61,15 @@ impl Foreground for WinForeground {
     }
 
     fn snapshot(&self) {
-        let _ = self.current();
-        *self.selection.lock().unwrap() = aura_win::uia::focused_selection(50_000);
+        // With Aura itself in front, the focused element is ours: keep what
+        // was read from the previous app.
+        match wi::foreground_app() {
+            Some(a) if a.pid != self.own_pid => {
+                *self.last.lock().unwrap() = Some(a);
+                *self.selection.lock().unwrap() = aura_win::uia::focused_selection(50_000);
+            }
+            _ => {}
+        }
     }
 }
 
@@ -82,8 +90,9 @@ pub fn platform() -> Platform {
     }
 }
 
-/// Hardware facts for the ASR recommendation.
-pub fn hardware() -> aura_asr::catalog::Hardware {
+/// Hardware facts for the ASR recommendation; worker is the bundled
+/// speech worker, asked whether it can run models on a GPU.
+pub fn hardware(worker: Option<&std::path::Path>) -> aura_asr::catalog::Hardware {
     let hw = aura_win::system::probe();
     aura_asr::catalog::Hardware {
         ram_mb: hw.ram_mb,
@@ -106,6 +115,7 @@ pub fn hardware() -> aura_asr::catalog::Hardware {
             })
             .collect(),
         npu: false,
+        gpu_inference: worker.is_some_and(aura_asr::worker_client::gpu_inference),
     }
 }
 
@@ -139,7 +149,19 @@ pub fn child_job() -> Option<&'static aura_win::job::ChildJob> {
 pub struct WinSpeech;
 
 impl aura_app::speech::Speech for WinSpeech {
-    fn synthesize(&self, text: &str, language: &str) -> Result<(Vec<u8>, String), String> {
-        aura_win::speech::synthesize(text, language).map(|b| (b, "audio/wav".to_string()))
+    fn voices(&self) -> Vec<aura_app::speech::SpeechVoice> {
+        aura_win::speech::voices()
+            .into_iter()
+            .map(|(id, name, language)| aura_app::speech::SpeechVoice { id, name, language })
+            .collect()
+    }
+
+    fn synthesize(
+        &self,
+        text: &str,
+        language: &str,
+        voice: Option<&str>,
+    ) -> Result<(Vec<u8>, String), String> {
+        aura_win::speech::synthesize(text, language, voice).map(|b| (b, "audio/wav".to_string()))
     }
 }

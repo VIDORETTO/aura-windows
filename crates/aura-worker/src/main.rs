@@ -31,8 +31,18 @@ fn engines() -> Vec<&'static str> {
     v
 }
 
+/// Whether this build runs models on a GPU (the `vulkan` feature).
+fn gpu() -> bool {
+    cfg!(feature = "vulkan")
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
+    // `--capabilities`: one JSON line for the app's model recommendation.
+    if std::env::args().any(|a| a == "--capabilities") {
+        println!("{}", json!({"engines": engines(), "gpu": gpu()}));
+        return;
+    }
     let (_peer, mut incoming): (Peer, _) = Peer::spawn(tokio::io::stdin(), tokio::io::stdout());
     let mut current: Option<(String, Box<dyn engine::Engine>)> = None;
     while let Some(msg) = incoming.recv().await {
@@ -45,9 +55,9 @@ async fn main() {
             continue;
         };
         match method.as_str() {
-            "health" => {
-                responder.ok(json!({"version": env!("CARGO_PKG_VERSION"), "engines": engines()}))
-            }
+            "health" => responder.ok(
+                json!({"version": env!("CARGO_PKG_VERSION"), "engines": engines(), "gpu": gpu()}),
+            ),
             "asr.load" => {
                 let engine = params["engine"].as_str().unwrap_or_default().to_string();
                 let dir = std::path::PathBuf::from(params["modelDir"].as_str().unwrap_or_default());

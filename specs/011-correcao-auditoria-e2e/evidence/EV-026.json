@@ -1,0 +1,38 @@
+{
+  "acceptance_refs": [
+    "AC-014"
+  ],
+  "environment": "Windows11 WebView2 154 production custom-protocol SHA256 0C9BA80208F4CFA417FB214A0BD4BFD5D0E71ED0BC1169E6E1875DA7B1A8EBE1; app-server rust-v0.159.0; loopback upstream",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-026",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-effort.e2e.ts": "b763deb922aae2f2e3b2db373715d4aa6ff9c9a8d3aa8f32c2d47f6ce5310b95",
+    "apps/desktop/src/i18n/en.ts": "83ee5f276c88157fb8cc285a953fc27db8d016536216ccc1df47c3e2c2ff4011",
+    "apps/desktop/src/i18n/pt-BR.ts": "a31f6526e2df49ecda46e79495ed1e5bc5314e94a2b21033ed71dbc82495c00b",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "268738a516d26fc7a1c6b9fc2dd39c4b5ae441ad1dfc5c864f172d620cf2534b",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "7a7a3477b9171a3ac09ba66926d44665bc20e09e516eb0e588476df003ac4727",
+    "apps/desktop/src/overlay/session.ts": "64cfcfd81258e79c5c478ca1e0f80e724b43e81580dffcce72c99f744b5cd586",
+    "apps/desktop/src/ui/Popover.tsx": "94ba13a984ba508f576498dcf0aaaa4ef393f512a0dfa14aa14b6258fe030703",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/ui/Popover.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/i18n/en.ts",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/e2e/specs/model-effort.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Native red not run (previous binary overwritten). Settings defaultEffort not validated per model by Host. First native attempt timed out on cold app-server start.",
+  "observations": "qa-reasoner Images/Tools/Reasoning with Low/Medium/High; qa-plain Text only, no effort; upstream received reasoning.effort=high for qa-reasoner.",
+  "procedure": "React red/green effort section, capabilities, wire-aware provider efforts; UI102/typecheck/build; native model-effort E2E with loopback upstream capturing request body; providers-refresh and panels regressions.",
+  "result": "passed",
+  "tested_revision": "local:24b20053346e86a7523e9d92c21e72893f877dab018e991b6e526c7b8f52467d",
+  "ticket": "TK-014",
+  "timestamp": "2026-10-03T22:50:18+00:00"
+}

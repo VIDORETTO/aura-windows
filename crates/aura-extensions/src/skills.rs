@@ -38,6 +38,8 @@ pub enum SkillError {
     UnsafePath,
     #[error("já existe uma Skill chamada \"{0}\"")]
     AlreadyExists(String),
+    #[error("Skill não encontrada: {0}")]
+    NotFound(String),
     #[error("io: {0}")]
     Io(String),
 }
@@ -412,6 +414,47 @@ pub fn create(
     Ok(dir)
 }
 
+/// Description and instructions of an Aura skill, for the editor (AC-003).
+pub fn read_editable(skills_root: &Path, name: &str) -> Result<(String, String), SkillError> {
+    validate_name(name)?;
+    let md = std::fs::read_to_string(skills_root.join(name).join("SKILL.md"))
+        .map_err(|_| SkillError::NotFound(name.into()))?;
+    let manifest = parse_manifest(&md)?;
+    let (_, body) = parse_frontmatter(&md)?;
+    Ok((manifest.description, body.trim().to_string()))
+}
+
+/// Rewrites an existing Aura skill's description and instructions; other
+/// files in its folder are kept.
+pub fn update(
+    skills_root: &Path,
+    name: &str,
+    description: &str,
+    body: &str,
+) -> Result<(), SkillError> {
+    validate_name(name)?;
+    let dir = skills_root.join(name);
+    if !dir.join("SKILL.md").is_file() {
+        return Err(SkillError::NotFound(name.into()));
+    }
+    let description = description.trim();
+    if description.is_empty() {
+        return Err(SkillError::MissingField("description"));
+    }
+    if description.chars().count() > MAX_DESCRIPTION {
+        return Err(SkillError::DescriptionTooLong);
+    }
+    let desc = serde_json::to_string(description).expect("json string is valid YAML");
+    std::fs::write(
+        dir.join("SKILL.md"),
+        format!(
+            "---\nname: {name}\ndescription: {desc}\n---\n\n{}\n",
+            body.trim()
+        ),
+    )?;
+    Ok(())
+}
+
 /// Where a skill comes from, shown in the list (AC-001).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -434,6 +477,40 @@ pub fn origin_of(path: &Path, aura_root: &Path, user_root: &Path) -> SkillOrigin
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_aura_skill_can_be_read_back_and_edited_in_place() {
+        let root = tempfile::tempdir().unwrap();
+        create(
+            root.path(),
+            "revisar-contrato",
+            "Revisa contratos",
+            "Leia com calma.",
+        )
+        .unwrap();
+        let (description, body) = read_editable(root.path(), "revisar-contrato").unwrap();
+        assert_eq!(description, "Revisa contratos");
+        assert_eq!(body, "Leia com calma.");
+        update(
+            root.path(),
+            "revisar-contrato",
+            "Revisa contratos de aluguel",
+            "Confira multas.",
+        )
+        .unwrap();
+        let md = std::fs::read_to_string(root.path().join("revisar-contrato/SKILL.md")).unwrap();
+        let m = parse_manifest(&md).unwrap();
+        assert_eq!(m.description, "Revisa contratos de aluguel");
+        assert!(md.ends_with("Confira multas.\n"));
+        assert_eq!(
+            update(root.path(), "nao-existe", "x", "y"),
+            Err(SkillError::NotFound("nao-existe".into()))
+        );
+        assert_eq!(
+            update(root.path(), "revisar-contrato", "  ", "y"),
+            Err(SkillError::MissingField("description"))
+        );
+    }
 
     #[test]
     fn frontmatter_variants() {

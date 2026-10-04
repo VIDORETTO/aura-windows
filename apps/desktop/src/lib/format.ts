@@ -24,6 +24,42 @@ export function relativeTime(unixSeconds: number, lang: "ptBr" | "en", now = Dat
   return rtf.format(Math.round(diff / 86400), "day");
 }
 
+/** Exact local date and time, with seconds (access log). */
+export function exactTime(unixSeconds: number, lang: "ptBr" | "en", timeZone?: string): string {
+  return new Date(unixSeconds * 1000).toLocaleString(lang === "en" ? "en" : "pt-BR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone,
+  });
+}
+
+/** Text color over an accent `#rrggbb`: white or near-black, whichever has
+ * the higher WCAG contrast (012). */
+export function accentContrast(hex: string): string {
+  const channel = (i: number) => {
+    const v = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  const lum = 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
+  const dark = 0.0113; // relative luminance of #1b1b1f
+  const onWhite = 1.05 / (lum + 0.05);
+  const onDark = (lum + 0.05) / (dark + 0.05);
+  return onWhite >= onDark ? "#ffffff" : "#1b1b1f";
+}
+
+/** Recording length as `m:ss` or `h:mm:ss`. */
+export function clockDuration(ms: number): string {
+  const total = Math.round(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = String(total % 60).padStart(2, "0");
+  return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`;
+}
+
 export function durationMs(ms: number): string {
   if (ms < 1000) return `${ms} ms`;
   return `${(ms / 1000).toFixed(ms < 10_000 ? 1 : 0)} s`;

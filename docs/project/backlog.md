@@ -22,3 +22,4 @@
 | `008-extensoes-do-agente` | Specification: Extensões do agente | `effort` | `—` | `implementation` | `active` | `0/6` | Status/OAuth de servidores MCP (TK-002); painéis Alterações/Arquivos (TK-005); Memórias (TK-006) |
 | `009-produtividade` | Specification: Produtividade no desktop | `effort` | `—` | `implementation` | `active` | `0/5` | Validar seleção UIA e inserir no app; Minibar (TK-002), TTS (TK-003), Perfis (TK-004) |
 | `010-distribuicao-e-qualidade` | Specification: Distribuição e qualidade | `effort` | `—` | `implementation` | `active` | `0/6` | Instalador NSIS assinado, updater, exportação de diagnóstico, auditoria de acessibilidade; aura-bench na máquina de referência |
+| `011-correcao-auditoria-e2e` | Correção integral da auditoria E2E | `effort` | `—` | `implementation` | `active` | `39/41` | TK-041: Startup follows 001 AC-001: tray only, toast explains how to open; relaunch opens the Overlay |

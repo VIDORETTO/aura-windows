@@ -4,10 +4,12 @@
 //   pnpm -C apps/desktop/e2e install && pnpm -C apps/desktop/e2e test
 import { spawn, type ChildProcess } from "node:child_process";
 import path from "node:path";
+import { createServer, type Server } from "node:http";
 
 // AURA_E2E_APP: another build (e.g. while target/release/aura.exe is in use).
 const app = process.env.AURA_E2E_APP ?? path.resolve(import.meta.dirname, "../../../target/release/aura.exe");
 let driver: ChildProcess | undefined;
+let authorization: Server | undefined;
 
 export const config: WebdriverIO.Config = {
   runner: "local",
@@ -19,7 +21,18 @@ export const config: WebdriverIO.Config = {
   framework: "mocha",
   reporters: ["spec"],
   mochaOpts: { timeout: 60_000 },
-  beforeSession: () => {
+  beforeSession: async () => {
+    if (process.env.AURA_E2E_LOCAL_AUTH === "1") {
+      authorization = createServer((_req, res) => {
+        // Do not log the OAuth query, and never complete a callback or request tokens.
+        res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+        res.end("<title>Aura QA authorization</title><p>Local cancellation test. No account or identity requested.</p>");
+      });
+      await new Promise<void>((resolve) => authorization!.listen(0, "127.0.0.1", resolve));
+      const address = authorization.address();
+      if (!address || typeof address === "string") throw new Error("QA authorization has no loopback port");
+      process.env.AURA_E2E_AUTH_PORT = String(address.port);
+    }
     driver = spawn("tauri-driver", [], { stdio: [null, process.stdout, process.stderr] });
   },
   // A fresh profile opens on the login card, and demo mode has no fake ChatGPT
@@ -37,5 +50,9 @@ export const config: WebdriverIO.Config = {
     });
     await browser.refresh();
   },
-  afterSession: () => driver?.kill(),
+  afterSession: () => {
+    driver?.kill();
+    authorization?.close();
+    delete process.env.AURA_E2E_AUTH_PORT;
+  },
 };

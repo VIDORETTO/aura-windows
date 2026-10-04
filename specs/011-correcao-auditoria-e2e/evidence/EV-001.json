@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-042"
+  ],
+  "environment": "Windows 11; WebView2/EdgeDriver 154.0.4258.53; DPI 100%; perfil isolado; original SHA256 592C2010FE11AC9D6B8B36BF04AFAC1D5E012AF01595CE82490C8251A15CF055",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "specs/011-correcao-auditoria-e2e/plan.md": "dbc2279d89066cf7852c175eb6415ea3420ece50c2d9f7bb5686c2281463430a",
+    "specs/011-correcao-auditoria-e2e/spec.md": "0bfff1e2e96756ea27a9c048e3f1d4bb2b7a62ef64a5ae09181dd8223828a6ac",
+    "target/qa-tools/resize-height-baseline.log": "c53da23abdc49c4361c055aeded78711091d1bb8fa754a0210388c14e60dab52"
+  },
+  "input_paths": [
+    "target/qa-tools/resize-height-baseline.log",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Relato de largura e DPI125/150 não reproduzidos; red original não comprova correção atual Evidence invalidated because an input changed.",
+  "observations": "Red comportamental: compacto janela 400 shell 80; expandido altura interna 64 entrada corta; largura acompanha nas laterais",
+  "procedure": "pnpm -C apps/desktop/e2e test --spec ./specs/resize.e2e.ts; executável original preservado",
+  "result": "stale",
+  "tested_revision": "local:40796feb94970ff86c3fc697a779be2f0969785c882f46c28fe7db76ec52f3f9",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-03T12:59:10+00:00"
+}

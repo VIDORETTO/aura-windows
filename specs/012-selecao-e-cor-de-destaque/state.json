@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "5b130b69ac3ede8dc5a8fdc6b0e1ceccac7a8393"
+  },
+  "blockers": [],
+  "effort_id": "012-selecao-e-cor-de-destaque",
+  "inputs": {
+    "contract": {
+      "fingerprint": "5a9ef4980c893187b34654c785afd39ee1cf76e151db857c00684a1da896df42",
+      "path": "specs/012-selecao-e-cor-de-destaque/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

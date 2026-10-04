@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-021"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 F20F3BBAD47450F2BE2E25CB89A583946589F2329B491B098A4646AE6BBFC4D4; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-033",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/provider-manual-model.e2e.ts": "65b838aa3d418a1591848a5d0d08ae20281d03ffc065178b7b1ac208dfc7dbb7",
+    "apps/desktop/src-tauri/src/commands.rs": "c64b44574ab309d80012af1f1a2cf84e33676013731f0c8845791fb5753998ec",
+    "apps/desktop/src/ipc/commands.ts": "58ed7067f3fe8ece15e02ffd17ac0bf5a415ed8e9e0892b5e808863a294ffeed",
+    "apps/desktop/src/ipc/mock.ts": "186460ab000eb360d8e6b3b9ffaf01d91ad7cf9e495712cabdb37bdd997dde64",
+    "apps/desktop/src/ipc/types.ts": "7bae39d68cdeaad10188579dbc3a44226bf20cca51312cac2fc0f65663ed82a9",
+    "apps/desktop/src/settings/Providers.tsx": "1fb2f121100fd860a8f8eb2d8d62cdb538f466acca50dcc665035229e3dbd8dc",
+    "crates/aura-app/src/host.rs": "f322878607a76c212e38b31c3fccdd46eb0e81e0073a4b6fbe422cb3ae1e4b90",
+    "crates/aura-app/tests/host.rs": "6d868d86c2630f18edd60c428eaa18a4ccbebb9971149c9a478449244aa9417e",
+    "crates/aura-gateway/src/discovery.rs": "f472256ef5d4e7cdc7226b019f2d15a463ff51792e47c50d4167bfb27ccc0aac",
+    "crates/aura-gateway/src/registry.rs": "87f9499499c84645ae3aba069ca67b4b02f3a2a05add57016a89c6cf36515d92",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-gateway/src/registry.rs",
+    "crates/aura-gateway/src/discovery.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/settings/Providers.tsx",
+    "apps/desktop/src/ipc/commands.ts",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/e2e/specs/provider-manual-model.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Registry unit test was written together with the implementation (no separate red). Max output not editable in UI.",
+  "observations": "Manual model persisted through re-test (status unverified, no error), shown with Tools/Reasoning in picker, turn sent with model qa-manual-model.",
+  "procedure": "Registry tests; Host red/green manual model and 404 status; React red/green; native red on TK-020 release; native green adding model via UI, re-test, picker and real turn to loopback without /models.",
+  "result": "passed",
+  "tested_revision": "local:788ce5daefe008e734374b93b5edf04c29475b9f2d013b08f45d4bdd404f6c57",
+  "ticket": "TK-021",
+  "timestamp": "2026-10-03T23:51:46+00:00"
+}

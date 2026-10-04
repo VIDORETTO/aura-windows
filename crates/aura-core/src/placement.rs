@@ -54,7 +54,7 @@ pub struct SavedPlacement {
 /// Default logical sizes at 96 DPI.
 pub const COMPACT_SIZE: (i32, i32) = (640, 64);
 pub const EXPANDED_WIDTH: i32 = 640;
-pub const MIN_EXPANDED: (i32, i32) = (480, 320);
+pub const MIN_EXPANDED: (i32, i32) = (480, 360);
 
 fn scale(v: i32, dpi: u32) -> i32 {
     ((v as i64 * dpi as i64) as f64 / 96.0).round() as i32
@@ -86,6 +86,10 @@ pub fn place_overlay(
                 (rect.w as f64 * f).round() as i32,
                 (rect.h as f64 * f).round() as i32,
             );
+        }
+        if mode == OverlayMode::Expanded {
+            rect.w = rect.w.max(scale(MIN_EXPANDED.0, target.dpi));
+            rect.h = rect.h.max(scale(MIN_EXPANDED.1, target.dpi));
         }
         return Some(clamp_into(rect, area));
     }
@@ -139,11 +143,44 @@ mod tests {
     fn saved_placement_on_present_monitor_is_restored() {
         let saved = SavedPlacement {
             monitor_id: "B".into(),
-            rect: Rect::new(2100, 100, 700, 500),
+            rect: Rect::new(2100, 100, 800, 600),
             dpi: 144,
         };
         let r = place_overlay(&monitors(), "B", Some(&saved), OverlayMode::Expanded).unwrap();
-        assert_eq!(r, Rect::new(2100, 100, 700, 500));
+        assert_eq!(r, Rect::new(2100, 100, 800, 600));
+    }
+
+    #[test]
+    fn legacy_expanded_placement_restores_at_the_mode_minimum() {
+        let saved = SavedPlacement {
+            monitor_id: "A".into(),
+            rect: Rect::new(80, 80, 480, 64),
+            dpi: 96,
+        };
+        assert_eq!(
+            place_overlay(&monitors(), "A", Some(&saved), OverlayMode::Expanded),
+            Some(Rect::new(80, 80, 480, 360))
+        );
+    }
+
+    #[test]
+    fn expanded_minimum_is_scaled_at_125_and_150_percent() {
+        for (dpi, width, height) in [(120, 600, 450), (144, 720, 540)] {
+            let monitor = Monitor {
+                id: "A".into(),
+                work_area: Rect::new(0, 0, 1920, 1040),
+                dpi,
+            };
+            let saved = SavedPlacement {
+                monitor_id: "A".into(),
+                rect: Rect::new(80, 80, 480, 64),
+                dpi,
+            };
+            assert_eq!(
+                place_overlay(&[monitor], "A", Some(&saved), OverlayMode::Expanded),
+                Some(Rect::new(80, 80, width, height))
+            );
+        }
     }
 
     #[test]

@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-026"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 7BD6A4181777F8A91547536515C5FC8967091F62D45376FB459ECCBB3ADE39DC; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-038",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/memories.e2e.ts": "479a07bd17422ab4b8c8d8f0617d32bd8e2ff061dca2b340e19b88e7a729df1a",
+    "apps/desktop/src-tauri/src/commands.rs": "88314d39154ca131b4f42ae26b5a9226a5f83f0c5611c898f1649520f7c0e140",
+    "apps/desktop/src/ipc/commands.ts": "e8f7b5852d92398950c75533819aa33d150f65feab942bc13e9703d8e954b154",
+    "apps/desktop/src/ipc/types.ts": "82f0942671fcd2c5e74aff790991bc89cb6d4a39203c35c8e520f44fd90a4de6",
+    "apps/desktop/src/settings/General.tsx": "9f17790eae50a574e8a31cf9f151061e1982540abf88c393850e1348799640ea",
+    "crates/aura-app/src/host.rs": "4c8aba999a0886d6f85003fae85468f9a4475ab4908231abe0bd254b1b1b587a",
+    "crates/aura-app/src/memories.rs": "93f895b4f750286273406cd3167677cfc41921495318e59b1775ec9ee4f5a30d",
+    "crates/aura-app/tests/host.rs": "de2be0c6aa4eefc692a6c2ef82dda2878c8d56ac9c70099788980a74e6a7de00",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/memories.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/settings/General.tsx",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/commands.ts",
+    "apps/desktop/e2e/specs/memories.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Memory files were seeded (real generation needs model calls). Consolidation applying the notes was not exercised (requires real model).",
+  "observations": "Request carried alpha+beta, then only alpha after forgetting beta, then neither after forgetting everything; consolidation note written.",
+  "procedure": "Host red/green memories; React red/green; JSON-RPC probe of memory methods; native red on TK-025 release; native green with seeded memory files, real app-server and loopback request inspection.",
+  "result": "passed",
+  "tested_revision": "local:e6737ec3bda7956529b3127598112fb404874f1d48c9a4b0092b60003e867bcc",
+  "ticket": "TK-026",
+  "timestamp": "2026-10-04T00:46:28+00:00"
+}

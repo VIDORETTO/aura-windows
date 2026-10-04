@@ -13,6 +13,9 @@ use serde::Serialize;
     rename_all_fields = "camelCase"
 )]
 pub enum HostEvent {
+    /// Provider metadata changed; every window must reload its own catalog.
+    /// The payload deliberately contains no credentials or provider details.
+    ProvidersChanged {},
     Conversation(ConversationEvent),
     Login(LoginProgress),
     /// The agent asked for a source with permission "Ask" (004 AC-008).
@@ -29,12 +32,22 @@ pub enum HostEvent {
         done: bool,
         error: Option<String>,
     },
+    /// Live input level of a device test in Settings (005 AC-001), in dBFS
+    /// (floor −100), at about 30 Hz.
+    AudioLevel {
+        source: aura_audio::AudioSourceKind,
+        dbfs: f32,
+    },
     /// Push-to-talk state (listening, transcribing, done…).
     Voice(aura_asr::ptt::PttState),
     /// Overlay-facing notice (toast): `info`, `warning`, `error`.
     Notice {
         level: String,
         message: String,
+    },
+    /// Settings asked the Overlay to show a conversation (access-log link).
+    OpenConversation {
+        thread_id: String,
     },
 }
 

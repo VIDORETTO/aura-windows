@@ -1,0 +1,52 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "Windows11 WebView2/driver154.0.4258.53 release production ECC7FD46E67E4410404E7A0A29F4F39D60847FBEFCA564FA0BFCC9A6617C8869 isolated profile",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-011",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/localization.e2e.ts": "3b826daeb4003c48d272ded15aaa4168dbd77f3e2e8bcf22121847220ba2303e",
+    "apps/desktop/src-tauri/src/main.rs": "ee200d0e34e87241b975b2d32470eed29615f8e3877c61fc1d6cca61eb952639",
+    "apps/desktop/src/i18n": "84583b5dd9bc3cdb92760473452048188801ddbe821e754ce76e5aa8549b7eaa",
+    "apps/desktop/src/ipc": "2f3690afef091af74baa1821399ee7d549160e0d7d37b7bbc4f6d428d680c252",
+    "apps/desktop/src/overlay": "ff7a1ad2b13fe1a5e808f970995e977a49eb802fca92897fca873ce0a9261457",
+    "apps/desktop/src/settings": "424c0a99ec9cb3fdb5559178475f2860674c59559871fbc458e051c65dd6537d",
+    "crates/aura-app/build.rs": "c0b25e41a8a9858651cd0a2e45a9146ec5e0bb44e496a69c11b5f7caaee3c550",
+    "crates/aura-app/src/attachments.rs": "e6ff7c48272befafeeb1a88121ebebb5eed3da336a3fb2d117a101d74374413a",
+    "crates/aura-app/src/host.rs": "074227836a267096e9919f3d3567e54cb13810769380b43ffbc25d78999bd756",
+    "crates/aura-app/src/localization.rs": "e6b065739e1cec4611bc2a748e238f2e69bac9bfe9742e33abf5648eede44318",
+    "crates/aura-app/tests/host.rs": "ac435b580ed825efd4c841d7b04aa9bc35f631e742ada8b1abb3209fa77e52f1",
+    "crates/aura-app/tests/ipc_contract.rs": "22d1cf6b505ed91ec3be03d5b3b07a7be0676dd0bdca9ff310c584df15207bef",
+    "crates/aura-core/src/context.rs": "bd1602ba29d90f69bc6238e29dc58554a1ae1aee86f3e695fa168620d75d8ed7",
+    "crates/aura-win/examples/qa_tray.rs": "4ab7e5ea2a35dbec23b89d189f7dd8b8caddffc77c25a918982de6fb3783b52d",
+    "specs/011-correcao-auditoria-e2e/plan.md": "6c3a9c47904c89ac6dce9cbc286e116c505715620065eab289221fc49dce7dcc",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/i18n",
+    "apps/desktop/src/overlay",
+    "apps/desktop/src/settings",
+    "apps/desktop/src/ipc",
+    "crates/aura-app/build.rs",
+    "crates/aura-app/src/localization.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/attachments.rs",
+    "crates/aura-core/src/context.rs",
+    "crates/aura-app/tests/host.rs",
+    "crates/aura-app/tests/ipc_contract.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "crates/aura-win/examples/qa_tray.rs",
+    "apps/desktop/e2e/specs/localization.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Ready(mock) and plural2 were React tested; native actual stateStopped and1line. Tray callback opens real HMENU; not physical icon click. Discarded failed clear-draft preparations final/final2 are not passed. Evidence invalidated because an input changed.",
+  "observations": "72 UI passed, workspace/types/golden/clippy/fmt/diff passed. Native3/3 title/DiagnosticsStopped/MCP/quick/custom/chip/aria/tray EN PT EN; logs localization-native-complete, localization-ui-all, localization-workspace, localization-typecheck-final, localization-golden-final, localization-clippy/tray-clippy. Local Standards+Spec review no blocker.",
+  "procedure": "pnpm -C apps/desktop test (72); typecheck; cargo test --workspace --exclude aura-desktop; ipc_contract; clippy app/desktop/core all-targets and win qa_tray -D warnings; fmt/diff; pnpm build; cargo build -p aura-desktop --release --features tauri/custom-protocol; WebDriver localization.e2e production (3)",
+  "result": "stale",
+  "tested_revision": "local:d1ab1ce18e0e1cf1a5b56b55161489de3bfdb58866658d91ad0713594f6e9ac9",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-03T14:59:59+00:00"
+}

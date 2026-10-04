@@ -37,6 +37,7 @@ describe("IPC contract", () => {
     expect(s.downloads["codex"]).toMatchObject({ bytes: 10, total: 100 });
     expect(s.consents).toEqual([]); // requested then resolved
     expect(s.appServer).toEqual({ state: "ready", version: "0.159.0" });
+    expect(s.audioLevels).toEqual({ mic: -12.5 });
   });
 
   it("settings keys match the TS type and the mock defaults", () => {
@@ -47,6 +48,8 @@ describe("IPC contract", () => {
   });
 
   it("chips, MCP specs, decisions and modes use the documented tags", () => {
+    const attachment = contract.attachmentChip as unknown as ContextChip;
+    expect(attachment.attachmentLabel).toEqual({ fileName: "1 linhas.txt", parts: [{ type: "count", amount: 1, unit: "line" }] });
     const chip = contract.chip as unknown as ContextChip;
     expect(chip.payload).toEqual({ type: "image", path: "C:/tmp/a.png" });
     expect(chip.previewPath).toBe("C:/tmp/a.png");

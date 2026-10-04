@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows11 WebView2/driver154.0.4258.53 production7CEF37E8E8BD4B9629B3CCC84FF4D84F1E40562932B93EE550F4F81C24B25772, two screens100percent",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/resize.e2e.ts": "27676c5c280542716d884d4d4bee12c47c1647eb9465fc789c803b603cdc9c6e",
+    "apps/desktop/src-tauri/src/overlay.rs": "e41a59b8061d378cbfcebec2fb5d6789647911a6c5950723443b8dbdf51b22f7",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "cf99a124a4140a24b453ecc6cfb9136fed1c0e1d2929eeae2324b4746cc5e80b",
+    "crates/aura-core/src/placement.rs": "cef6237726080c116616dadc14cacfaa0a2c99ebee488cf1ed9cddac1a21d392",
+    "crates/aura-win/examples/qa_resize.rs": "e078e34550718418192d67e83558beadfe0e8de1692b1af0886bdca435ac8d1a",
+    "specs/011-correcao-auditoria-e2e/plan.md": "812b561fb268e8b6b43a4c13d73c2ddf738496a45415d02562858ff38b1d78aa",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-core/src/placement.rs",
+    "crates/aura-win/examples/qa_resize.rs",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Original width report not reproduced; native DPI125/150 unavailable on current screens, pure DPI does not replace native test. TK001 notdone. Evidence invalidated because an input changed.",
+  "observations": "Height variant corrected and all9 native cases passed current frontend; log resize-after-providers-production.log.",
+  "procedure": "Production resize.e2e9/9 after TK003; both screens100percent,480/640/900, all expanded borders/corners, compact East/West, menus/reopen",
+  "result": "stale",
+  "tested_revision": "local:8c204c8435fe41fc8be26c6e4766da1a58516760856ae491b64cbdeba86eb19d",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-03T14:12:41+00:00"
+}

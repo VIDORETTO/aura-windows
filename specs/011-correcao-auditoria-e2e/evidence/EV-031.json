@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-019"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 CAA738B245738123A50B10819AF701BBC5BE8B6E29818132848A166E355EAF02; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-031",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/provider-edit.e2e.ts": "c06366e6ad47af0c0c5819ae9a626079115b4ea9df0a974186f395f669d9f3f4",
+    "apps/desktop/src/ipc/mock.ts": "1ddfb4baa4adf7487744e67fd9317494853fb581421f397b902ffee90eab1d25",
+    "apps/desktop/src/settings/Providers.tsx": "db9b93b4d9bb8dcfd8077b62c170cab474b2b5e7ccec40cd8d1a0a74f248c69b",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "55146256ef63d669dc303123c55d964d85ccb17ac46ca75555349509d2f0d054",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Providers.tsx",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/e2e/specs/provider-edit.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Key replacement verified in React/mock only; native run used a keyless provider to avoid writing to the personal Windows Credential Manager.",
+  "observations": "Same provider id after edit; models from new URL; existing conversation reached the new URL only.",
+  "procedure": "React red (original file)/green provider edit; native red on TK-018 release; native green editing keyless provider name/URL with two loopback upstreams and existing conversation turn.",
+  "result": "passed",
+  "tested_revision": "local:fd92ffc58cc1e245370281d558c42fde04be2493ed53798daf322526c366dc4f",
+  "ticket": "TK-019",
+  "timestamp": "2026-10-03T23:35:12+00:00"
+}

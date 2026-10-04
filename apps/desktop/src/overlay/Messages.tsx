@@ -7,6 +7,7 @@ import type { ConsentRequest, TurnError } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { hasCode, loadHighlighter, renderMarkdown } from "../lib/markdown";
 import { durationMs } from "../lib/format";
+import { speakText, useSpeech } from "../lib/speech";
 import { useApp } from "../state/app";
 import { Button, cx } from "../ui/primitives";
 import { ChipList } from "./ChipList";
@@ -49,36 +50,12 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-/** One answer plays at a time. */
-let playing: HTMLAudioElement | null = null;
-
 function SpeakButton({ text }: { text: string }) {
   const t = useT();
-  const [state, setState] = useState<"idle" | "loading" | "playing">("idle");
-  const stop = () => {
-    playing?.pause();
-    playing = null;
-    setState("idle");
-  };
-  const play = async () => {
-    if (state !== "idle") return stop();
-    setState("loading");
-    try {
-      const [b64, mime] = await api.speak(text);
-      playing?.pause();
-      const audio = new Audio(`data:${mime};base64,${b64}`);
-      playing = audio;
-      audio.onended = () => setState("idle");
-      setState("playing");
-      await audio.play().catch(() => setState("idle"));
-    } catch (e) {
-      setState("idle");
-      useApp.getState().notify("warning", String((e as { message?: string })?.message ?? e));
-    }
-  };
+  const active = useSpeech((s) => s.current === text);
   return (
-    <button type="button" className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg" onClick={() => void play()}>
-      {state === "playing" ? <StopIcon size={12} /> : <Volume2 size={12} />} {state === "playing" ? t("speech.stop") : t("speech.listen")}
+    <button type="button" title="Ctrl+Shift+L" className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg" onClick={() => void speakText(text)}>
+      {active ? <StopIcon size={12} /> : <Volume2 size={12} />} {active ? t("speech.stop") : t("speech.listen")}
     </button>
   );
 }
@@ -86,7 +63,7 @@ function SpeakButton({ text }: { text: string }) {
 const Assistant = memo(function Assistant({ text, streaming }: { text: string; streaming: boolean }) {
   const t = useT();
   return (
-    <div className="group">
+    <div className="group" data-answer>
       <Markdown text={text} streaming={streaming} />
       {!streaming && text && (
         <div className="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
@@ -94,6 +71,7 @@ const Assistant = memo(function Assistant({ text, streaming }: { text: string; s
           <SpeakButton text={text} />
           <button
             type="button"
+            title="Ctrl+Shift+Enter"
             className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg"
             onClick={() => void api.insertIntoApp(text)}
           >
@@ -312,6 +290,8 @@ function BlockView({ block }: { block: Block }) {
       return <Assistant text={block.text} streaming={false} />;
     case "error":
       return <ErrorCard error={block.error} />;
+    case "compaction":
+      return <CompactionDivider />;
     case "input":
       return <UserInputCard requestId={block.requestId} source={block.source} prompt={block.prompt} autoResolveMs={block.autoResolveMs} resolved={block.resolved} />;
   }
@@ -349,6 +329,17 @@ export function MessageList({ thread }: { thread: Thread }) {
           <Loader2 size={13} className="animate-spin" />
         </div>
       )}
+    </div>
+  );
+}
+
+function CompactionDivider() {
+  const t = useT();
+  return (
+    <div role="separator" aria-label={t("command.compact.done")} className="flex items-center gap-2 text-[11px] text-muted">
+      <span className="h-px flex-1 bg-line" />
+      <span>{t("command.compact.done")}</span>
+      <span className="h-px flex-1 bg-line" />
     </div>
   );
 }

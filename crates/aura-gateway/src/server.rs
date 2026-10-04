@@ -142,6 +142,9 @@ fn random_token() -> String {
     hex::encode(b)
 }
 
+/// Largest Responses request accepted from Codex.
+pub const MAX_TURN_BYTES: usize = 256 * 1024 * 1024;
+
 /// Starts the server. `extra` (the MCP router) is merged as-is; it performs
 /// its own authentication.
 pub async fn start(routes: Arc<Routes>, extra: Option<Router>) -> std::io::Result<GatewayHandle> {
@@ -154,6 +157,8 @@ pub async fn start(routes: Arc<Routes>, extra: Option<Router>) -> std::io::Resul
         .route("/p/{id}/v1/responses", post(responses))
         .route("/p/{id}/v1/models", get(models))
         .route_layer(middleware::from_fn_with_state(state.clone(), auth))
+        // Turns carry images as base64 (up to 10 per turn, 20 MB each).
+        .layer(axum::extract::DefaultBodyLimit::max(MAX_TURN_BYTES))
         .with_state(state);
     let app = match extra {
         Some(extra) => provider_routes.merge(extra),

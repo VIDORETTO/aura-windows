@@ -81,6 +81,10 @@ pub struct Hardware {
     pub cpu_cores: u32,
     pub gpus: Vec<Gpu>,
     pub npu: bool,
+    /// The installed speech worker can run models on a GPU. Without it a
+    /// dedicated GPU does not make large models usable (they run on CPU).
+    #[serde(default)]
+    pub gpu_inference: bool,
 }
 
 const CJK: &[&str] = &["zh", "ja", "ko", "yue"];
@@ -93,7 +97,7 @@ pub fn recommend(catalog: &Catalog, hw: &Hardware, ui_lang: &str) -> Option<Stri
         .next()
         .unwrap_or(ui_lang)
         .to_lowercase();
-    let big_gpu = hw.gpus.iter().any(|g| g.dedicated && g.vram_mb >= 6144);
+    let big_gpu = hw.gpu_inference && hw.gpus.iter().any(|g| g.dedicated && g.vram_mb >= 6144);
     let prefs: &[&str] = if big_gpu {
         &[
             "whisper-turbo",
@@ -157,6 +161,7 @@ mod tests {
                 })
                 .unwrap_or_default(),
             npu: false,
+            gpu_inference: true,
         }
     }
 
@@ -198,6 +203,21 @@ mod tests {
         assert_eq!(
             recommend(&c, &hw(8192, None), "tr").as_deref(),
             Some("whisper-small")
+        );
+    }
+
+    #[test]
+    fn dedicated_gpu_without_gpu_inference_keeps_the_cpu_recommendation() {
+        let c = full_catalog();
+        let mut cpu_only = hw(16384, Some(8192));
+        cpu_only.gpu_inference = false;
+        assert_eq!(
+            recommend(&c, &cpu_only, "pt-BR").as_deref(),
+            Some("parakeet-tdt-0.6b-v3")
+        );
+        assert_eq!(
+            recommend(&c, &cpu_only, "en").as_deref(),
+            Some("parakeet-tdt-0.6b-v3")
         );
     }
 

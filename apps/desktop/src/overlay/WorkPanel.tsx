@@ -4,7 +4,7 @@
 import { ExternalLink, FileText, FolderOpen, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../ipc/commands";
-import type { WorkspaceFile } from "../ipc/types";
+import type { PdfPreview, WorkspaceFile } from "../ipc/types";
 import { useT } from "../i18n";
 import { formatBytes } from "../lib/format";
 import { renderMarkdown } from "../lib/markdown";
@@ -37,7 +37,34 @@ export function diffLines(diff: string): { kind: "add" | "del" | "hunk" | "file"
   }));
 }
 
+/** Text of the first pages (008 AC-014); the layout opens in the PDF viewer. */
+function PdfText({ threadId, file }: { threadId: string; file: WorkspaceFile }) {
+  const t = useT();
+  const [preview, setPreview] = useState<PdfPreview | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    setPreview(null);
+    setError(null);
+    api.workspacePdfPreview(threadId, file.path).then(setPreview, (e) => setError(String(e?.message ?? e)));
+  }, [threadId, file.path]);
+  if (error) return <p className="text-xs text-muted">{error}</p>;
+  if (!preview) return null;
+  if (preview.pages.length === 0) return <p className="text-xs text-muted">{t("work.pdf.noText")}</p>;
+  return (
+    <section aria-label={t("work.preview", { name: file.path })} className="max-h-72 overflow-auto rounded border border-line p-2 text-[12px]">
+      <p className="mb-1.5 text-[11px] text-muted">{t("work.pdf.summary", { shown: preview.pages.length, total: preview.totalPages })}</p>
+      {preview.pages.map((p) => (
+        <div key={p.number} className="mb-2">
+          <h3 className="text-[11px] font-medium text-muted">{t("work.pdf.page", { n: p.number })}</h3>
+          <p className="selectable whitespace-pre-wrap">{p.text.trim()}</p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
 function Preview({ threadId, file }: { threadId: string; file: WorkspaceFile }) {
+  const t = useT();
   const [text, setText] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const isHtml = /\.html?$/i.test(file.path);
@@ -50,6 +77,8 @@ function Preview({ threadId, file }: { threadId: string; file: WorkspaceFile }) 
     }
   }, [threadId, file.path, isHtml]);
   if (IMAGE.test(file.path)) return <img src={previewSrc(file.absolute)} alt={file.path} className="max-h-72 rounded border border-line" />;
+  if (/\.pdf$/i.test(file.path)) return <PdfText threadId={threadId} file={file} />;
+  if (!TEXT.test(file.path) && !isHtml) return <p className="text-xs text-muted">{t("work.noPreview")}</p>;
   if (error) return <p className="text-xs text-muted">{error}</p>;
   if (text === null) return null;
   if (isHtml) return <iframe title={file.path} sandbox="" srcDoc={sandboxedHtml(text)} className="h-72 w-full rounded border border-line bg-white" />;
@@ -70,7 +99,7 @@ export function WorkPanel({ threadId, onClose }: { threadId: string; onClose: ()
   const lines = useMemo(() => (diff ? diffLines(diff) : []), [diff]);
 
   return (
-    <aside className="flex w-80 shrink-0 flex-col border-l border-line" aria-label={t("work.title")}>
+    <aside className="absolute inset-y-0 right-0 z-10 flex w-80 shrink-0 flex-col border-l border-line bg-[var(--surface-menu)] backdrop-blur-xl min-[1024px]:static min-[1024px]:z-auto" aria-label={t("work.title")}>
       <div className="flex items-center gap-1 border-b border-line px-2 py-1">
         {(["files", "changes"] as const).map((k) => (
           <button key={k} type="button" aria-pressed={tab === k} onClick={() => setTab(k)} className={cx("rounded px-2 py-1 text-[12px]", tab === k ? "bg-hover font-medium" : "text-muted hover:bg-hover")}>

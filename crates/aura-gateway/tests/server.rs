@@ -362,3 +362,28 @@ async fn connection_test_categories() {
         ConnectionCategory::Network
     );
 }
+
+#[tokio::test]
+async fn turns_with_several_images_fit_the_body_limit() {
+    // QA-033: 8 keyframes of a clip (~1–2 MB each as base64) in one turn;
+    // axum's default 2 MB limit answered 413 before routing.
+    let gw = start(Routes::new(), None).await.unwrap();
+    let image = "A".repeat(2 * 1024 * 1024);
+    let parts: Vec<Value> = (0..8)
+        .map(|_| json!({"type": "input_image", "image_url": format!("data:image/png;base64,{image}")}))
+        .collect();
+    let body = json!({"model": "m", "input": [{"role": "user", "content": parts}]}).to_string();
+    let r = reqwest::Client::new()
+        .post(format!("{}/p/none/v1/responses", gw.base_url()))
+        .bearer_auth(gw.token.expose())
+        .header("content-type", "application/json")
+        .body(body)
+        .send()
+        .await
+        .unwrap();
+    assert_eq!(
+        r.status(),
+        404,
+        "routed (unknown provider), not rejected by size"
+    );
+}

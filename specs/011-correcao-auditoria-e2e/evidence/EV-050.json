@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-038"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 487BAE28C1E687B5F24A595A4407F05F862542DC3DB84EE7239BB50442DDF25D",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-050",
+  "input_fingerprints": {
+    ".github/workflows/release.yml": "c7192253822aa41176484d52150d6dfeef57988b17c94837eead6feb638a2b7e",
+    "apps/desktop/src-tauri/src/commands.rs": "73d33b72c0d0ad4859a949c6cd89a4560c4efaca383efd4a650054ecb7d0c269",
+    "apps/desktop/src/lib/updates.ts": "147dac4fc8a4e5d6ab1020bdf6fc80c3d82f8357929827fe4ea2c1dd768ab75b",
+    "crates/aura-core/src/release.rs": "846479443a44152be6bfa2aa979435608fbfa1de08c1c4ee8a29602f88357251",
+    "docs/qa/instalacao.md": "2fd5c29933882fcea8c682abbbaa306f8b149800a8d70723dc0f9c1484b9c37d",
+    "scripts/check-updater-key.mjs": "8f633169a135ca1875de42b1676580950d417b54c3cadbece18f5d8b54c6cf9f",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-core/src/release.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/lib/updates.ts",
+    "scripts/check-updater-key.mjs",
+    ".github/workflows/release.yml",
+    "docs/qa/instalacao.md",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No real signing key generated (maintainer decision) and no signed update downloaded/applied; 010 AC-004 remains open.",
+  "observations": "Placeholder key detected; UI explains updates are not configured; release guard blocks unsigned/placeholder releases.",
+  "procedure": "aura-core unit tests for key detection; React red/green; guard script run against the real config (exit 1), a synthetic valid config (exit 0) and CI without secret (exit 1); native red on TK-037 release and green on TK-038 release.",
+  "result": "partial",
+  "tested_revision": "local:0f26d86b0146c3f5dc35d3a3c6de08e6b82ab89fc8bb3cce7988527bb77a1a43",
+  "ticket": "TK-038",
+  "timestamp": "2026-10-04T16:39:19+00:00"
+}

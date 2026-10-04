@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows11 WebView2/driver154.0.4258.53, packaged demo SHA2561EC08AF482205443909207F195E063CE541B7D01A671B57035E522453C1A9860, isolated profile, 100percent",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-005",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/panels.e2e.ts": "05f45c9151852912a759aa3ff4e43d362bf1bbf31640420a8569b26f9b8315a4",
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "2889051f02a60c24daacd5d7c29a7f1b47de0c330f7455aae7ce831bd0ebec26",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "ab989e741122e5d24219d79c67f22e985f72bdfba3e663ff1ee38063c238d715",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "deb385e976a5111f86341c9eb9d775aa768841ee72d2182d12d56e34cdcdf587",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "3960f734189df6b2b3b5ea467df25f64949b48b3eaa8d53d2e153a2a4aa0fc0d",
+    "apps/desktop/src/overlay/session.ts": "0911dcd6838c3dca347f0157077291df61940ef23c45b9940191cbf29d4c064f",
+    "specs/011-correcao-auditoria-e2e/plan.md": "5a345d69cb23a58a206383c2f5bb7b1fd6dd6919c80f0301bb4515d44f844a63",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/e2e/specs/panels.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Demo backend controlled; only frontend layout and native window covered, not provider inference. TK001 DPI pending separately. Evidence invalidated because an input changed.",
+  "observations": "Conversation480/640 and704(Files)/768(History) at1024, both-direction exclusion, draft preserved, Escape. Native panels1/1 and resize9/9. Logs target/qa-tools/panels-native-green.log, resize-after-panels-demo.log, panels-ui-all.log, panels-typecheck.log. Local review specs/011-correcao-auditoria-e2e/review.md.",
+  "procedure": "Native WebDriver panels.e2e e resize.e2e, pnpm test60/60, typecheck, build frontend/release demo, local review Standards/Spec",
+  "result": "stale",
+  "tested_revision": "local:f3d276cd4923f5fdea301186e6a684e51073a803abffbb0d4e90b908e249a1c2",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-03T13:37:47+00:00"
+}

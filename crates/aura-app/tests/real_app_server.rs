@@ -185,6 +185,25 @@ async fn real_app_server_byok_turn_and_mcp_tool() {
     };
     let host = Host::start(cfg).await.expect("host");
 
+    // Reproduce the mounted Overlay: catalog loading starts the engine before
+    // the first provider is registered. New conversations must work immediately.
+    let warming = host
+        .save_provider(
+            serde_json::from_value(
+                json!({"name": "Warming", "preset": "custom", "baseUrl": base_url}),
+            )
+            .unwrap(),
+            Some("sk-test-warming".into()),
+        )
+        .unwrap();
+    host.start_conversation(StartOptions {
+        provider: format!("aura-{}", warming.id),
+        model: Some("mock-model".into()),
+        ..Default::default()
+    })
+    .await
+    .expect("warm engine with an existing provider");
+
     let draft =
         serde_json::from_value(json!({"name": "Mock", "preset": "custom", "baseUrl": base_url}))
             .unwrap();

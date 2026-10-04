@@ -22,6 +22,8 @@ use tokio::sync::broadcast;
 
 #[derive(Clone)]
 pub enum AsrBackend {
+    /// A broken/missing local installation; never synthesize fake results.
+    Unavailable,
     /// `aura-worker.exe` next to the app (Windows builds with `engines`).
     Worker {
         program: PathBuf,
@@ -30,6 +32,21 @@ pub enum AsrBackend {
     },
     /// Deterministic text (tests and the Linux demo).
     Fake { text: String },
+}
+
+/// Speech worker state for Diagnostics (010 AC-011).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct WorkerDiag {
+    /// `aura-worker.exe` is present next to the app.
+    pub installed: bool,
+    /// The worker process is running now (it stops when idle).
+    pub running: bool,
+    pub spawns: u64,
+    /// The worker runs speech models on the GPU.
+    pub gpu: bool,
+    /// Selected speech model.
+    pub model: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -79,7 +96,7 @@ impl Voice {
                 idle,
                 on_spawn,
             } => Some(WorkerClient::new(program.clone(), *idle, on_spawn.clone())),
-            AsrBackend::Fake { .. } => None,
+            AsrBackend::Fake { .. } | AsrBackend::Unavailable => None,
         };
         Self {
             catalog: Catalog::builtin(),
@@ -199,10 +216,10 @@ impl Voice {
     }
 
     fn transcriber(&self) -> Result<Arc<dyn Transcriber>, String> {
-        let local = self.local_transcriber().ok();
+        let local = self.local_transcriber();
         let cloud = self.cloud.read().unwrap().clone();
         match (local, cloud) {
-            (Some(local), Some(cloud)) => {
+            (Ok(local), Some(cloud)) => {
                 let events = self.events.clone();
                 Ok(Arc::new(aura_asr::transcriber::FallbackTranscriber {
                     primary: local,
@@ -215,14 +232,15 @@ impl Voice {
                     }),
                 }))
             }
-            (Some(local), None) => Ok(local),
-            (None, Some(cloud)) => Ok(cloud),
-            (None, None) => Err("model_missing".into()),
+            (Ok(local), None) => Ok(local),
+            (Err(_), Some(cloud)) => Ok(cloud),
+            (Err(error), None) => Err(error),
         }
     }
 
     fn local_transcriber(&self) -> Result<Arc<dyn Transcriber>, String> {
         match &self.backend {
+            AsrBackend::Unavailable => Err("worker_missing".into()),
             AsrBackend::Fake { text } => Ok(Arc::new(FakeTranscriber {
                 text: text.clone(),
                 delay: Duration::from_millis(10),
@@ -260,15 +278,18 @@ impl Voice {
     }
 
     /// Key down: opens the microphone (if needed) and starts listening.
-    pub async fn press(&self, device: DeviceSel) -> Result<(), String> {
+    /// Returns the chosen device id when it was missing and the OS default
+    /// was opened instead (005 AC-002).
+    pub async fn press(&self, device: DeviceSel) -> Result<Option<String>, String> {
         let ptt = self.ptt()?;
+        let mut fallback = None;
         let rx = {
             let mut hub = self.hub.lock().unwrap();
             if hub.is_none() {
-                *hub = Some(
-                    AudioHub::start(self.audio.clone(), AudioSourceKind::Mic, device)
-                        .map_err(|e| e.to_string())?,
-                );
+                let started = AudioHub::start(self.audio.clone(), AudioSourceKind::Mic, device)
+                    .map_err(|e| e.to_string())?;
+                fallback = started.fallback_from().map(str::to_string);
+                *hub = Some(started);
             }
             hub.as_ref().expect("hub").subscribe()
         };
@@ -277,7 +298,7 @@ impl Voice {
             w.set_keep_warm(true);
         }
         ptt.press(rx).await;
-        Ok(())
+        Ok(fallback)
     }
 
     fn stop_hub(&self) {
@@ -308,6 +329,22 @@ impl Voice {
         };
         self.stop_hub();
         state
+    }
+
+    pub async fn worker_diag(&self) -> WorkerDiag {
+        let installed =
+            matches!(&self.backend, AsrBackend::Worker { program, .. } if program.exists());
+        let (running, spawns) = match &self.worker {
+            Some(w) => (w.is_running().await, w.spawn_count()),
+            None => (false, 0),
+        };
+        WorkerDiag {
+            installed,
+            running,
+            spawns,
+            gpu: self.hardware.gpu_inference,
+            model: self.selected.read().unwrap().clone(),
+        }
     }
 
     pub async fn shutdown(&self) {

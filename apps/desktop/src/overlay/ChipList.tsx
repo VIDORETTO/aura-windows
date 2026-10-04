@@ -2,7 +2,8 @@ import { FileText, Image as ImageIcon, Lock, Monitor, Quote, Sparkles, X } from 
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { inTauri } from "../ipc/bridge";
 import type { ContextChip } from "../ipc/types";
-import { useT } from "../i18n";
+import { useT, type MessageKey } from "../i18n";
+import { useApp } from "../state/app";
 import { cx } from "../ui/primitives";
 import { Floating } from "../ui/floating";
 import { useRef, useState } from "react";
@@ -15,9 +16,10 @@ export function previewSrc(path: string): string {
 }
 
 export function ChipList({ chips, onRemove, grow = false }: { chips: ContextChip[]; onRemove?: (id: string) => void; grow?: boolean }) {
+  const t = useT();
   if (chips.length === 0) return null;
   return (
-    <ul className="flex flex-wrap gap-1.5" aria-label="Contexto">
+    <ul className="flex flex-wrap gap-1.5" aria-label={t("context.list")}>
       {chips.map((c) => (
         <Chip key={c.id} chip={c} onRemove={onRemove} grow={grow} />
       ))}
@@ -27,6 +29,13 @@ export function ChipList({ chips, onRemove, grow = false }: { chips: ContextChip
 
 function Chip({ chip: c, onRemove, grow }: { chip: ContextChip; onRemove?: (id: string) => void; grow: boolean }) {
   const t = useT();
+  const language = useApp((s) => s.settings?.language ?? "ptBr");
+  const numbers = new Intl.NumberFormat(language === "en" ? "en" : "pt-BR");
+  const label = c.attachmentLabel
+    ? `${c.attachmentLabel.fileName} · ${c.attachmentLabel.parts.map((part) => part.type === "image"
+      ? t("context.summary.image")
+      : t(`context.summary.${part.unit}.${part.amount === 1 ? "one" : "many"}` as MessageKey, { n: numbers.format(part.amount) })).join(" · ")}`
+    : c.label;
   const ref = useRef<HTMLLIElement>(null);
   const [hover, setHover] = useState(false);
   const Icon = c.blockedReason ? Lock : ICONS[c.kind];
@@ -41,10 +50,10 @@ function Chip({ chip: c, onRemove, grow }: { chip: ContextChip; onRemove?: (id: 
         "fade-in flex max-w-[260px] items-center gap-1.5 rounded-full border border-line bg-surface-strong py-0.5 pl-2 pr-1 text-xs",
         c.blockedReason && "text-muted",
       )}
-      title={blocked ?? `${c.label} · ${t("context.tokens", { n: c.tokenEstimate })}`}
+      title={blocked ?? `${label} · ${t("context.tokens", { n: c.tokenEstimate })}`}
     >
       <Icon size={13} className={c.blockedReason ? "text-warning" : "text-accent"} aria-hidden />
-      <span className="truncate">{blocked ? `${c.label} — ${blocked}` : c.label}</span>
+      <span className="truncate">{blocked ? `${label} — ${blocked}` : label}</span>
       {preview && hover && (
         <Floating anchor={ref} placement="above" grow={grow} className="pointer-events-none">
           <img data-chip-preview src={preview} alt="" className="max-h-40 max-w-[240px] rounded-md border border-line shadow-lg" />
@@ -54,7 +63,7 @@ function Chip({ chip: c, onRemove, grow }: { chip: ContextChip; onRemove?: (id: 
         <button
           type="button"
           className="rounded-full p-0.5 text-muted hover:bg-hover hover:text-fg"
-          aria-label={t("context.remove", { label: c.label })}
+          aria-label={t("context.remove", { label })}
           onClick={() => onRemove(c.id)}
         >
           <X size={12} />

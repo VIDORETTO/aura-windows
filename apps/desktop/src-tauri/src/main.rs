@@ -10,6 +10,7 @@ mod shortcuts;
 mod win_platform;
 
 use aura_app::events::HostEvent;
+use aura_app::localization::text;
 use aura_app::paths::AppPaths;
 use aura_app::voice::AsrBackend;
 use aura_app::{CodexRuntime, Host, HostConfig};
@@ -24,6 +25,14 @@ use tauri_plugin_opener::OpenerExt as _;
 
 pub const EVENT: &str = "aura://event";
 
+struct TrayMenu {
+    open: MenuItem<tauri::Wry>,
+    new: MenuItem<tauri::Wry>,
+    pause: MenuItem<tauri::Wry>,
+    settings: MenuItem<tauri::Wry>,
+    quit: MenuItem<tauri::Wry>,
+}
+
 pub fn open_url(app: &AppHandle, url: &str) {
     if let Err(e) = app.opener().open_url(url, None::<&str>) {
         tracing::warn!("could not open browser: {e}");
@@ -32,6 +41,7 @@ pub fn open_url(app: &AppHandle, url: &str) {
 
 /// Settings window, created on demand (it is not needed at startup).
 pub fn open_settings(app: &AppHandle, section: Option<&str>) {
+    let language = app.state::<AppState>().host.settings().language;
     let route = format!("index.html#/settings/{}", section.unwrap_or("general"));
     if let Some(w) = app.get_webview_window("settings") {
         let _ = w.emit("aura://navigate", route.trim_start_matches("index.html#"));
@@ -41,7 +51,7 @@ pub fn open_settings(app: &AppHandle, section: Option<&str>) {
         return;
     }
     let built = WebviewWindowBuilder::new(app, "settings", WebviewUrl::App(route.into()))
-        .title("Aura — Configurações")
+        .title(text(language, "native.settingsTitle"))
         .inner_size(960.0, 680.0)
         .min_inner_size(760.0, 520.0)
         .center()
@@ -72,7 +82,10 @@ pub fn open_region_selector(
         f.height
     );
     let w = WebviewWindowBuilder::new(app, "region", WebviewUrl::App(route.into()))
-        .title("Aura — região")
+        .title(text(
+            app.state::<AppState>().host.settings().language,
+            "native.regionTitle",
+        ))
         .decorations(false)
         .always_on_top(true)
         .skip_taskbar(true)
@@ -99,6 +112,23 @@ pub fn close_region_selector(app: &AppHandle) {
 
 /// Applies settings that live outside the host (autostart, hotkeys).
 pub fn apply_settings(app: &AppHandle, s: &Settings) {
+    if let Some(window) = app.get_webview_window("settings") {
+        let _ = window.set_title(text(s.language, "native.settingsTitle"));
+    }
+    if let Some(window) = app.get_webview_window("region") {
+        let _ = window.set_title(text(s.language, "native.regionTitle"));
+    }
+    if let Some(menu) = app.try_state::<TrayMenu>() {
+        for (item, key) in [
+            (&menu.open, "native.tray.open"),
+            (&menu.new, "native.tray.new"),
+            (&menu.pause, "native.tray.pause"),
+            (&menu.settings, "native.tray.settings"),
+            (&menu.quit, "native.tray.quit"),
+        ] {
+            let _ = item.set_text(text(s.language, key));
+        }
+    }
     let autostart = app.autolaunch();
     let result = if s.start_with_windows {
         autostart.enable()
@@ -117,19 +147,51 @@ pub fn apply_settings(app: &AppHandle, s: &Settings) {
 }
 
 fn build_tray(app: &AppHandle) -> tauri::Result<()> {
-    let open = MenuItem::with_id(app, "open", "Abrir Aura", true, None::<&str>)?;
-    let new = MenuItem::with_id(app, "new", "Nova conversa", true, None::<&str>)?;
-    let pause = MenuItem::with_id(
+    let language = app.state::<AppState>().host.settings().language;
+    let open = MenuItem::with_id(
         app,
-        "pause",
-        "Pausar/retomar privacidade",
+        "open",
+        text(language, "native.tray.open"),
         true,
         None::<&str>,
     )?;
-    let settings = MenuItem::with_id(app, "settings", "Configurações…", true, None::<&str>)?;
-    let quit = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
+    let new = MenuItem::with_id(
+        app,
+        "new",
+        text(language, "native.tray.new"),
+        true,
+        None::<&str>,
+    )?;
+    let pause = MenuItem::with_id(
+        app,
+        "pause",
+        text(language, "native.tray.pause"),
+        true,
+        None::<&str>,
+    )?;
+    let settings = MenuItem::with_id(
+        app,
+        "settings",
+        text(language, "native.tray.settings"),
+        true,
+        None::<&str>,
+    )?;
+    let quit = MenuItem::with_id(
+        app,
+        "quit",
+        text(language, "native.tray.quit"),
+        true,
+        None::<&str>,
+    )?;
     let sep = PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(app, &[&open, &new, &pause, &sep, &settings, &quit])?;
+    app.manage(TrayMenu {
+        open,
+        new,
+        pause,
+        settings,
+        quit,
+    });
     let mut builder = TrayIconBuilder::with_id("aura")
         .tooltip("Aura")
         .menu(&menu)
@@ -190,6 +252,7 @@ fn host_config() -> HostConfig {
             });
             hook
         });
+        let hardware = win_platform::hardware(worker.as_deref());
         HostConfig {
             platform: win_platform::platform(),
             codex: CodexRuntime::Binary {
@@ -205,11 +268,9 @@ fn host_config() -> HostConfig {
                     idle: std::time::Duration::from_secs(120),
                     on_spawn: adopt,
                 },
-                None => AsrBackend::Fake {
-                    text: String::new(),
-                },
+                None => AsrBackend::Unavailable,
             },
-            hardware: win_platform::hardware(),
+            hardware,
             disk: Arc::new(win_platform::WinDisk),
             capture_interval: std::time::Duration::from_secs(1),
             paths,
@@ -230,6 +291,18 @@ fn host_config() -> HostConfig {
 fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let handle = app.handle().clone();
     let cfg = host_config();
+    #[cfg(feature = "e2e")]
+    let cfg = {
+        let mut cfg = cfg;
+        if let Ok(port) = std::env::var("AURA_E2E_AUTH_PORT") {
+            let port: u16 = port.parse()?;
+            if port == 0 {
+                return Err("E2E authorization requires a listening loopback port".into());
+            }
+            cfg.siwc.authorize_url = format!("http://127.0.0.1:{port}/authorize");
+        }
+        cfg
+    };
     let _ = aura_core::logging::init_logging(&cfg.paths.logs());
     // tauri.conf.json scopes %LOCALAPPDATA%\Aura; AURA_HOME moves the data root.
     let scope = app.asset_protocol_scope();
@@ -275,17 +348,34 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     }
 
     overlay::decorate(&handle);
+    overlay::track_previous_app(&handle);
     build_tray(&handle)?;
     let settings = host.settings();
     #[cfg(windows)]
     shortcuts::start(&handle, &settings);
     apply_settings(&handle, &settings);
 
-    // `--background` (autostart) keeps the Overlay hidden; otherwise greet.
+    // 001 AC-001: starting Aura leaves only the tray icon. A manual start
+    // (not `--background` autostart) says where Aura is and how to open it;
+    // starting it again while it runs opens the Overlay (single instance).
     if !std::env::args().any(|a| a == "--background") {
-        overlay::show(&handle);
+        use tauri_plugin_notification::NotificationExt;
+        let body = text(settings.language, "native.started.body")
+            .replace("{shortcut}", &settings.invoke_shortcut);
+        let _ = handle
+            .notification()
+            .builder()
+            .title(text(settings.language, "native.started.title"))
+            .body(body)
+            .show();
     }
     Ok(())
+}
+
+#[cfg(all(test, windows, not(feature = "demo")))]
+#[test]
+fn native_configuration_never_uses_a_fake_speech_transcriber() {
+    assert!(!matches!(host_config().asr, AsrBackend::Fake { .. }));
 }
 
 fn main() {
@@ -309,10 +399,13 @@ fn main() {
             commands::privacy_get,
             commands::privacy_set_source,
             commands::privacy_set_paused,
+            commands::privacy_set_retention,
             commands::privacy_upsert_exclusion,
             commands::privacy_remove_exclusion,
             commands::privacy_access_log,
             commands::privacy_clear_access_log,
+            commands::privacy_access_thumbnail,
+            commands::privacy_open_conversation,
             commands::consent_answer,
             commands::auth_status,
             commands::auth_login,
@@ -325,6 +418,8 @@ fn main() {
             commands::providers_save,
             commands::providers_remove,
             commands::providers_test,
+            commands::providers_model_save,
+            commands::providers_model_remove,
             commands::conversation_start,
             commands::conversation_send,
             commands::conversation_steer,
@@ -345,7 +440,9 @@ fn main() {
             commands::tray_move,
             commands::capture_screen,
             commands::capture_selection,
+            commands::context_attach_recent,
             commands::attach_file,
+            commands::attach_clipboard_image,
             commands::attachments_list,
             commands::insert_into_app,
             commands::quick_list,
@@ -360,21 +457,33 @@ fn main() {
             commands::mcp_import,
             commands::agent_restart,
             commands::mcp_status,
+            commands::mcp_diagnose,
             commands::mcp_login,
             commands::workspace_files,
             commands::workspace_read,
+            commands::workspace_pdf_preview,
             commands::open_path,
             commands::skills_list,
             commands::skills_review,
             commands::skills_install,
             commands::skills_create,
             commands::skills_delete,
+            commands::skills_catalog,
+            commands::skills_set_enabled,
+            commands::skills_source,
+            commands::memories_get,
+            commands::memories_forget_fact,
+            commands::memories_save,
+            commands::memories_forget_all,
+            commands::skills_update,
             commands::recording_start,
             commands::recording_stop,
             commands::recordings_list,
             commands::recording_active,
             commands::recording_delete,
             commands::recording_export,
+            commands::recording_playback,
+            commands::recording_attach,
             commands::attachment_read,
             commands::voice_models,
             commands::voice_install,
@@ -384,6 +493,8 @@ fn main() {
             commands::ptt_press,
             commands::ptt_release,
             commands::ptt_cancel,
+            commands::audio_test_start,
+            commands::audio_test_stop,
             commands::audio_devices,
             commands::profiles_list,
             commands::profiles_save,
@@ -401,6 +512,10 @@ fn main() {
             commands::diagnostics,
             commands::notify,
             commands::speak,
+            commands::speech_options,
+            commands::updater_configured,
+            commands::onboarding_resume,
+            commands::speech_consent,
             commands::diagnostics_export,
             commands::erase_all_data,
         ])

@@ -18,6 +18,7 @@ export interface Bridge {
 export const HOST_EVENT = "aura://event";
 
 let bridge: Bridge | null = null;
+let initializing: Promise<Bridge> | null = null;
 
 export function inTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
@@ -33,19 +34,27 @@ async function tauriBridge(): Promise<Bridge> {
   };
 }
 
-export async function getBridge(): Promise<Bridge> {
-  if (bridge) return bridge;
-  if (inTauri()) {
-    bridge = await tauriBridge();
-  } else {
-    const { createMockBridge } = await import("./mock");
-    bridge = createMockBridge();
-  }
-  return bridge;
+export function getBridge(): Promise<Bridge> {
+  if (bridge) return Promise.resolve(bridge);
+  if (initializing) return initializing;
+  const pending = (inTauri()
+    ? tauriBridge()
+    : import("./mock").then(({ createMockBridge }) => createMockBridge()))
+    .then((created) => {
+      if (initializing === pending) bridge = created;
+      return created;
+    })
+    .catch((error) => {
+      if (initializing === pending) initializing = null;
+      throw error;
+    });
+  initializing = pending;
+  return pending;
 }
 
 /** Tests inject a bridge (usually a fresh mock). */
 export function setBridge(b: Bridge | null) {
+  initializing = null;
   bridge = b;
 }
 

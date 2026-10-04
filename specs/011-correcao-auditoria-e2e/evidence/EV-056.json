@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-056",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/providers-refresh.e2e.ts": "265a2bfd0a2efcda989da7e9728546c8261ca896ea382dfae78d8b2fe0f1703e",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/providers-refresh.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Loopback upstreams only.",
+  "observations": "Provider catalog refresh without remounting the Overlay passed (1/1).",
+  "procedure": "WebDriver providers-refresh.e2e on the final release with a fresh profile and the pinned app-server. Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "passed",
+  "tested_revision": "local:3adb376dda5cebc6282a5e8379e6aca047782131b16556812739ebf5b299b32f",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-04T17:09:08+00:00"
+}

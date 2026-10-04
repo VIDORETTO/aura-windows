@@ -249,6 +249,10 @@ Roteiros detalhados: `docs/qa/acessibilidade.md`, `docs/qa/instalacao.md`.
 
 ---
 
+## 6.1 Correção da auditoria E2E (011) — 04/10/2026
+
+Os 42 achados de `docs/qa/auditoria-e2e-2026-10-02.md` foram tratados no esforço `specs/011-correcao-auditoria-e2e/`: 39 de 41 tickets corrigidos e verificados no app de produção. Pendentes: QA-001 com DPI 125%/150% (TK-001, parcial) e a chave de assinatura do updater (TK-038, bloqueado — ver `docs/qa/instalacao.md`). Detalhes e comandos: `docs/qa/HANDOFF-correcao-auditoria-2026-10-03.md`.
+
 ## 7. Fila de trabalho restante
 
 | # | Tarefa | Ticket |

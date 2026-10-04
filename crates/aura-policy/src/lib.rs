@@ -105,6 +105,29 @@ pub struct Policy {
     pub system_audio: SourcePolicy,
     pub exclusions: Vec<ExclusionRule>,
     pub paused: bool,
+    /// Limits for continuous/manual recordings (004 AC-016, 005 AC-006).
+    #[serde(default)]
+    pub retention: Retention,
+}
+
+/// User-facing retention limits; applied whenever a segment is written.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Retention {
+    pub days: u32,
+    pub max_gb: u32,
+    /// Manual recordings also follow the limits.
+    pub apply_to_manual: bool,
+}
+
+impl Default for Retention {
+    fn default() -> Self {
+        Self {
+            days: 7,
+            max_gb: 20,
+            apply_to_manual: false,
+        }
+    }
 }
 
 impl Default for Policy {
@@ -124,6 +147,7 @@ impl Default for Policy {
             },
             exclusions: default_exclusions(),
             paused: false,
+            retention: Retention::default(),
         }
     }
 }

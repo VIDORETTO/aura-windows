@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows11, Vitest5, Node local",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "2889051f02a60c24daacd5d7c29a7f1b47de0c330f7455aae7ce831bd0ebec26",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "ab989e741122e5d24219d79c67f22e985f72bdfba3e663ff1ee38063c238d715",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "deb385e976a5111f86341c9eb9d775aa768841ee72d2182d12d56e34cdcdf587",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "3960f734189df6b2b3b5ea467df25f64949b48b3eaa8d53d2e153a2a4aa0fc0d",
+    "apps/desktop/src/overlay/session.ts": "0911dcd6838c3dca347f0157077291df61940ef23c45b9940191cbf29d4c064f",
+    "specs/011-correcao-auditoria-e2e/plan.md": "5a345d69cb23a58a206383c2f5bb7b1fd6dd6919c80f0301bb4515d44f844a63",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Layout novo ainda nao executado no WebView2; nao valida inferencia de provider. Evidence invalidated because an input changed.",
+  "observations": "Suite UI 60/60 passou e typecheck passou. Baseline nativo demo red: ambos asides visiveis e conversa0px a480; logs target/qa-tools/panels-native-red-demo.log e panels-width-native-red.log. Novo build nativo ainda em curso.",
+  "procedure": "Vitest OverlayApp: 2 casos red reais de exclusao; green 19/19; suite UI completa e typecheck",
+  "result": "stale",
+  "tested_revision": "local:6a80c1e62f9b81dcfae2ef67de5fdf28a1e0a9e09a4140012c586ea4a02f676e",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-03T13:34:09+00:00"
+}

@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "Windows11 WebView2 154 production custom-protocol no demo/e2e SHA256 244AE84A21082999168805CA8089AA4EB8D93C8D10B92BFAB72ADB51C03D7E03",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-020",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/voice-repeat.e2e.ts": "cbd19c33a87433116731c2bbcebb8d21db8362a44f9627a3071843ee45a0f24b",
+    "apps/desktop/src/overlay/InputBar.tsx": "1bd311c66108f1e48687f360997b6362fc37059ef6b199482338a988147514d2",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "9e10987a985af5870ac7e5020fdf15917c3d6ab47a18fd334f35f642439d6b41",
+    "apps/desktop/src/state/app.ts": "adffd26211eb606f2c9353436987087285be9b3eac9e3e85311267a3b4e96743",
+    "apps/desktop/src/test/harness.ts": "9a8fa1474c9f5365b757a6b2a4154708c4066878c731abf15cda825ff6dcdab5",
+    "specs/011-correcao-auditoria-e2e/plan.md": "a315946beedc82bf7abce6d1767200c412b350bbd2e81340152f8433c4fdc9a8",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/test/harness.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/e2e/specs/voice-repeat.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "ASR outputs controlled at event seam; no acoustic ASR model or latency approval. Native UI/IPC/WebView real; microphone regression real WASAPI without ASR. Evidence invalidated because an input changed.",
+  "observations": "Repeat across cycles and after clear passed native1/1; duplicate Done ignored; React batching and two auto-send IPC requests passed; review no blocker.",
+  "procedure": "React red/green, native red on TK007 and green on current; UI82/typecheck/build/diff; real microphone initial/restart regression.",
+  "result": "stale",
+  "tested_revision": "local:fcf9078439a6727e983e8cd23185d885fa0218bb6dcd172350b174e5eca609a8",
+  "ticket": "TK-008",
+  "timestamp": "2026-10-03T19:09:38+00:00"
+}

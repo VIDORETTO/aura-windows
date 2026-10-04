@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-034"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 2C3BDB8D5FFA494E991B310968B11B786466BB5FA81244B158EC769C1EF7E672",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-046",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/read-aloud.e2e.ts": "c28931a1f1acd2b23f464a2f66f6c4978b34a985f77e47abe42a21d29efe7927",
+    "apps/desktop/src/lib/speech.ts": "c90461603c950bc2094dc34eedb3cba333620f5aa837a40e2502c614db7abb51",
+    "apps/desktop/src/settings/Voice.tsx": "f881be0316850c5ee8c2eb153483a94c5437cfd9c515a942157fb2b162bd2f1e",
+    "crates/aura-app/src/host.rs": "fdf75588866b51580183d5768df57877b5e6b640a78afecb28337f7fbde6dad4",
+    "crates/aura-app/src/speech.rs": "ab0df86469da53e9991e1c26c2705e27f1b9bfec44f6207b1e1ac3a7f18a2555",
+    "crates/aura-win/src/speech.rs": "7a81c9c707da2ada8080cdc3ccab4eb5ddae91374c4665ab5106a32ca8157160",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/speech.rs",
+    "crates/aura-win/src/speech.rs",
+    "apps/desktop/src/lib/speech.ts",
+    "apps/desktop/src/settings/Voice.tsx",
+    "apps/desktop/e2e/specs/read-aloud.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Audible output quality not judged (no speaker capture); OpenAI real endpoint not called (loopback only). Ctrl+Shift+L belongs to TK-035.",
+  "observations": "Two installed voices produced different WAV; consent dialog before any cloud request; cloud request body model tts-1/voice alloy/response_format wav; auto-read sent the finished answer once without a second consent.",
+  "procedure": "Host red/green for voices, cloud consent gate, cloud request and cleanup on provider removal; React red/green; native red on TK-033 release; native green with real Windows voices, loopback OpenAI-compatible /audio/speech and loopback model for auto-read.",
+  "result": "passed",
+  "tested_revision": "local:bdbfce66d43ef22601a3ed0e248d8530d2598b51c31698b4efe825afa64f5b73",
+  "ticket": "TK-034",
+  "timestamp": "2026-10-04T16:10:54+00:00"
+}

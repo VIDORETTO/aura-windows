@@ -1,0 +1,38 @@
+{
+  "acceptance_refs": [
+    "AC-010"
+  ],
+  "environment": "Windows11 WebView2 154 normal production no demo/e2e SHA256 805B30DFE31F825661E95584F495F69EA6D64037784DF9CC413F8DEECC2D01F5",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-022",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/asr-language.e2e.ts": "e0602c5dc8892c7fc40aa5ee05002f4b91c2058c5a63dae03303e6b73a267241",
+    "apps/desktop/e2e/specs/voice-toggle.e2e.ts": "5c4d75aed8d2e3a4de59d9579659f7e5afe3c84056a46fb021b2d13877726481",
+    "apps/desktop/src/i18n/en.ts": "79944ccc038d8c9f3719ff5736623ec95f6c446b7992750dc4c3a80f98608353",
+    "apps/desktop/src/i18n/pt-BR.ts": "33818a6d0367ba28c7cd21daabefffaad36b030109033c4b7f083bd43e399044",
+    "apps/desktop/src/overlay/InputBar.tsx": "8845fc31a2adae47b978331d5e995fc34096f4c0663efab6403b24da76f6859f",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "5c0321fe33e75df903fcd9bf74e10e7ebe2bb1b3ba9bde002620e0740282be9a",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "4db5c7c71ce5c4af9b7fd36aec11533d53f59deb49c3996782b3b39b79c03b6d",
+    "specs/011-correcao-auditoria-e2e/plan.md": "acfd580d38716b9b64a42fba3ade6e1f78d568836187b9a1c1a31dbe553e0016",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/i18n/en.ts",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/e2e/specs/voice-toggle.e2e.ts",
+    "apps/desktop/e2e/specs/asr-language.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No acoustic ASR/model/latency/physical hotkey or DPI125/150 approval. Prior disabled release failed focus; CtrlSpace filter skipped and full92 actually ran. No retained audio. Evidence invalidated because an input changed.",
+  "observations": "Native Enter->Space focus BUTTON, mouse toggle/leave/Esc1/1. Language initial/restart, repeat and microphone initial/restart1/1 each; resize9/9. UI pending/retry/Partial cancel covered. Standards/Spec review no final blocker.",
+  "procedure": "React click/keyboard/pending/error/cancel red-green; native Enter red, focus loss red and final toggle green; UI92/types/build/diff; language/repeat/microphone native regressions and resize9.",
+  "result": "stale",
+  "tested_revision": "local:88165cce17a49e3fd1f71c66d0defb405bf045f1b1d1046ff73f833993b8d7ab",
+  "ticket": "TK-010",
+  "timestamp": "2026-10-03T19:41:09+00:00"
+}

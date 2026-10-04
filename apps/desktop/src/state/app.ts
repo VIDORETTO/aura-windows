@@ -3,8 +3,10 @@
 
 import { create } from "zustand";
 import { api } from "../ipc/commands";
+import { accentContrast } from "../lib/format";
 import { onHostEvent } from "../ipc/bridge";
 import type {
+  AudioSourceKind,
   AppServerState,
   AuthStatus,
   ConsentRequest,
@@ -31,6 +33,9 @@ export interface Download {
 }
 
 interface AppStore {
+  catalogRevision: number;
+  /** Latest dBFS per source while a device test runs in Settings. */
+  audioLevels: Partial<Record<AudioSourceKind, number>>;
   ready: boolean;
   settings: Settings | null;
   privacy: PrivacyView | null;
@@ -40,10 +45,14 @@ interface AppStore {
   consents: ConsentRequest[];
   downloads: Record<string, Download>;
   voice: PttState;
+  /** Ordered terminal results, independent of transcript content. */
+  voiceResultRevision: number;
   /** Sources recording in the background (indicators). */
   recording: string[];
   appServer: AppServerState;
   notices: Notice[];
+  /** Conversation another window asked the Overlay to show (access log). */
+  conversationRequest: { threadId: string; seq: number } | null;
   setSettings: (s: Settings) => void;
   setPrivacy: (p: PrivacyView) => void;
   refreshAuth: () => Promise<void>;
@@ -56,6 +65,8 @@ interface AppStore {
 let noticeSeq = 0;
 
 export const useApp = create<AppStore>((set, get) => ({
+  catalogRevision: 0,
+  audioLevels: {},
   ready: false,
   settings: null,
   privacy: null,
@@ -65,9 +76,11 @@ export const useApp = create<AppStore>((set, get) => ({
   consents: [],
   downloads: {},
   voice: { state: "idle" },
+  voiceResultRevision: 0,
   recording: [],
   appServer: { state: "stopped" },
   notices: [],
+  conversationRequest: null,
   setSettings: (settings) => {
     set({ settings });
     applyTheme(settings);
@@ -89,12 +102,18 @@ export const useApp = create<AppStore>((set, get) => ({
   },
   handle: (e) => {
     switch (e.channel) {
+      case "audioLevel":
+        set((s) => ({ audioLevels: { ...s.audioLevels, [e.event.source]: e.event.dbfs } }));
+        break;
+      case "providersChanged":
+        set((s) => ({ catalogRevision: s.catalogRevision + 1 }));
+        break;
       case "conversation":
         if (e.event.type === "appServerState") set({ appServer: e.event.state });
         else useConversation.getState().apply(e.event);
         break;
       case "login":
-        set({ login: e.event.state === "completed" ? null : e.event });
+        set({ login: e.event.state === "completed" || e.event.state === "cancelled" ? null : e.event });
         if (e.event.state === "completed") {
           set({ welcome: e.event.firstTime || !e.event.account.welcomed });
           void get().refreshAuth();
@@ -114,13 +133,19 @@ export const useApp = create<AppStore>((set, get) => ({
         break;
       case "download":
         set((s) => ({ downloads: { ...s.downloads, [e.event.id]: e.event } }));
-        if (e.event.error) get().notify("error", e.event.error);
+        if (e.event.error && e.event.error !== "cancelled") get().notify("error", e.event.error);
         break;
       case "voice":
-        set({ voice: e.event });
+        set((s) => ({
+          voice: e.event,
+          voiceResultRevision: s.voiceResultRevision + (e.event.state === "done" && s.voice.state !== "done" ? 1 : 0),
+        }));
         break;
       case "notice":
         get().notify(e.event.level, e.event.message);
+        break;
+      case "openConversation":
+        set((s) => ({ conversationRequest: { threadId: e.event.threadId, seq: (s.conversationRequest?.seq ?? 0) + 1 } }));
         break;
       case "settings":
         get().setSettings(e.event);
@@ -135,6 +160,15 @@ export function applyTheme(s: Settings) {
   if (s.theme === "system") root.removeAttribute("data-theme");
   else root.setAttribute("data-theme", s.theme);
   root.style.setProperty("--overlay-opacity", String(s.opacity));
+  // Accent chosen by the user (012); high contrast keeps the system colors.
+  const forced = typeof matchMedia === "function" && matchMedia("(forced-colors: active)").matches;
+  if (s.accentColor && !forced) {
+    root.style.setProperty("--accent", s.accentColor);
+    root.style.setProperty("--accent-contrast", accentContrast(s.accentColor));
+  } else {
+    root.style.removeProperty("--accent");
+    root.style.removeProperty("--accent-contrast");
+  }
   root.lang = s.language === "en" ? "en" : "pt-BR";
 }
 

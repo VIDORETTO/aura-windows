@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-023"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 F263175C4757EC133CF7975E88E81FD7549C915A923C716DE70E36C0EA335B03; app-server rust-v0.159.0; Node",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-035",
+  "input_fingerprints": {
+    "apps/desktop/e2e/mcp-server.ts": "5e1af9d2774d72f0eb296444b61ef6fc6065fe7588e43c99d7624adf7131c88b",
+    "apps/desktop/e2e/specs/mcp-args.e2e.ts": "d0fe316b039d1b84b2bca2ae4f3e2f981636f9f54f66fb5edba9c45bb96e091c",
+    "apps/desktop/src/lib/args.test.ts": "bad5d46c2b96b204acc49f8ea4b9ad5e7a83772946d862c81d7c63029624a76a",
+    "apps/desktop/src/lib/args.ts": "3ac4b68bfc5063fb036c49c56620f3c85a8c3cb9657fc8bc8e1b31325feca59e",
+    "apps/desktop/src/settings/Extensions.tsx": "a23b25231d7b8c76a4828ec062f72ea3002c2657589ca1cf24bc6197859ba4f6",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/lib/args.ts",
+    "apps/desktop/src/lib/args.test.ts",
+    "apps/desktop/src/settings/Extensions.tsx",
+    "apps/desktop/e2e/mcp-server.ts",
+    "apps/desktop/e2e/specs/mcp-args.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "A quoted value ending in a backslash before the closing quote is read as an escaped quote (documented semantics).",
+  "observations": "Saved args and server argv exactly as intended, including empty argument; tools listed.",
+  "procedure": "Unit red/green parser; React red/green; native red on TK-022 release; native green starting a real MCP server from a folder with spaces via app-server and checking its argv.",
+  "result": "passed",
+  "tested_revision": "local:1dfddb68ef0d995aab17090d08ce8c541d28a03b6a8c3a3267d400fdc2926f63",
+  "ticket": "TK-023",
+  "timestamp": "2026-10-04T00:17:34+00:00"
+}

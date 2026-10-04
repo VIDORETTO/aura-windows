@@ -11,6 +11,8 @@ import { GLOBAL_THREAD, useConversation } from "../state/conversation";
 import { UserInputCard } from "./UserInputCard";
 import { WorkPanel } from "./WorkPanel";
 import { Toasts } from "../ui/Toasts";
+import { SpeechConsentDialog } from "../ui/SpeechConsentDialog";
+import { speakText } from "../lib/speech";
 import { Kbd, Progress, cx } from "../ui/primitives";
 import { percent } from "../lib/format";
 import { Header } from "./Header";
@@ -33,25 +35,31 @@ const NO_BLOCKS: never[] = [];
  */
 function useAutoHeight(ref: React.RefObject<HTMLDivElement | null>, compact: boolean) {
   const extra = useFloatLayout(floatBottom);
-  const last = useRef(0);
   useLayoutEffect(() => {
     if (!compact || !inTauri() || !ref.current) return;
     const el = ref.current;
+    let cancelled = false;
     const fit = async () => {
-      const h = Math.max(Math.ceil(el.getBoundingClientRect().height), Math.ceil(extra));
-      if (Math.abs(h - last.current) < 2) return;
-      last.current = h;
       const { getCurrentWindow, LogicalSize } = await import("@tauri-apps/api/window");
+      // A menu or mode change may have disposed this effect during the import.
+      if (cancelled) return;
+      const h = Math.max(64, Math.ceil(el.getBoundingClientRect().height), Math.ceil(extra));
+      // Compare the actual viewport: remembering only the content height misses
+      // external/native resizes that do not change the compact shell itself.
+      if (Math.abs(h - window.innerHeight) < 2) return;
       await getCurrentWindow().setSize(new LogicalSize(window.innerWidth, h));
     };
     void fit();
     const obs = new ResizeObserver(() => void fit());
     obs.observe(el);
-    return () => obs.disconnect();
+    const onResize = () => void fit();
+    window.addEventListener("resize", onResize);
+    return () => {
+      cancelled = true;
+      obs.disconnect();
+      window.removeEventListener("resize", onResize);
+    };
   }, [ref, compact, extra]);
-  useEffect(() => {
-    last.current = 0;
-  }, [compact]);
 }
 
 /** Moves and resizes are remembered per monitor (001 AC-012). */
@@ -79,6 +87,7 @@ function usePersistPlacement() {
 export function OverlayApp() {
   const t = useT();
   const ready = useApp((s) => s.ready);
+  const catalogRevision = useApp((s) => s.catalogRevision);
   const auth = useApp((s) => s.auth);
   const welcome = useApp((s) => s.welcome);
   const consents = useApp((s) => s.consents);
@@ -102,7 +111,7 @@ export function OverlayApp() {
     void session.loadCatalog();
     void session.refreshChips();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [auth?.active?.clientId]);
+  }, [auth?.active?.clientId, catalogRevision, settings?.language]);
 
   // Overlay shown by the host (hotkey, tray): focus, optional context.
   useEffect(() => {
@@ -138,7 +147,28 @@ export function OverlayApp() {
     };
   }, []);
 
+  // Settings' access log asked to show a conversation (QA-031).
+  const conversationRequest = useApp((s) => s.conversationRequest);
+  useEffect(() => {
+    if (conversationRequest) void useSession.getState().openConversation(conversationRequest.threadId);
+  }, [conversationRequest]);
+
   // Answer finished while the user was elsewhere → system notification.
+  // "Read answers automatically" (009 AC-005): on every finished turn of
+  // the open conversation, read its last answer.
+  useEffect(
+    () =>
+      useConversation.subscribe((s, prev) => {
+        const id = useSession.getState().threadId;
+        const before = id ? prev.threads[id] : undefined;
+        const after = id ? s.threads[id] : undefined;
+        if (!before?.running || !after || after.running || !useApp.getState().settings?.autoRead) return;
+        const last = [...after.blocks].reverse().find((b) => b.type === "assistant");
+        if (last && last.type === "assistant" && last.text.trim()) void speakText(last.text);
+      }),
+    [],
+  );
+
   const wasRunning = useRef(false);
   useEffect(() => {
     if (wasRunning.current && !running && thread && (session.minibar || document.hidden)) {
@@ -160,6 +190,9 @@ export function OverlayApp() {
         const s = useSession.getState();
         if (focused) {
           if (s.minibar) s.setMinibar(false);
+          // Back from another app: its current selection and title (012 AC-001).
+          void s.captureSelection();
+          void api.previousApp().then((app) => app && setPrevious(app)).catch(() => undefined);
           return;
         }
         const action = blurAction({
@@ -194,12 +227,23 @@ export function OverlayApp() {
       if (e.key === "Escape") {
         // Esc never hides the Overlay (001 AC-005, revision 2): the shortcut
         // and "minimize to tray" do.
-        if (useApp.getState().voice.state === "listening") void api.pttCancel();
+        if (["listening", "partial"].includes(useApp.getState().voice.state)) void api.pttCancel();
         else if (s.historyOpen) s.toggleHistory(false);
         e.preventDefault();
       } else if (e.ctrlKey && e.shiftKey && k === "s") {
         e.preventDefault();
         void s.captureScreen(false);
+      } else if (e.ctrlKey && e.shiftKey && k === "l") {
+        // Listen to the last answer; again stops (009 AC-005).
+        e.preventDefault();
+        const text = lastAnswer();
+        if (text) void speakText(text);
+      } else if (e.ctrlKey && e.shiftKey && e.key === "Enter") {
+        // Insert the selected code block, or the last answer, into the app
+        // the Overlay was opened over (009 AC-009).
+        e.preventDefault();
+        const text = selectedAnswerText() ?? lastAnswer();
+        if (text) void api.insertIntoApp(text);
       } else if (e.ctrlKey && e.shiftKey && k === "e") {
         e.preventDefault();
         void s.newConversation(true);
@@ -255,7 +299,7 @@ export function OverlayApp() {
             {welcome && <WelcomeModal />}
             {!welcome && settings && !settings.onboarded && <FirstRun />}
             {expanded && (
-              <div className="flex min-h-0 flex-1">
+              <div className="relative flex min-h-0 flex-1">
                 {session.historyOpen && <HistoryPanel />}
                 <div className="flex min-w-0 flex-1 flex-col">
                   {thread && thread.blocks.length > 0 ? (
@@ -307,6 +351,25 @@ export function OverlayApp() {
         )}
       </div>
       {(expanded || session.minibar || !ready || !signedIn) && <Toasts />}
+      <SpeechConsentDialog />
     </div>
   );
+}
+
+/** Last answer of the open conversation. */
+function lastAnswer(): string | null {
+  const id = useSession.getState().threadId;
+  const thread = id ? useConversation.getState().threads[id] : undefined;
+  const last = thread ? [...thread.blocks].reverse().find((b) => b.type === "assistant") : undefined;
+  return last && last.type === "assistant" && last.text.trim() ? last.text : null;
+}
+
+/** Text selected inside an answer (e.g. a code block), if any. */
+function selectedAnswerText(): string | null {
+  const sel = typeof window !== "undefined" ? window.getSelection() : null;
+  const text = sel?.toString() ?? "";
+  if (!sel || sel.rangeCount === 0 || !text.trim()) return null;
+  const node = sel.getRangeAt(0).commonAncestorContainer;
+  const el = node instanceof Element ? node : node.parentElement;
+  return el?.closest("[data-answer]") ? text : null;
 }

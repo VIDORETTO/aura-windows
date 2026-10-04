@@ -1,0 +1,40 @@
+{
+  "active_ticket": "TK-041",
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "5b130b69ac3ede8dc5a8fdc6b0e1ceccac7a8393"
+  },
+  "blockers": [
+    "TK-038 needs the maintainer's updater signing key pair; no key was generated or simulated."
+  ],
+  "effort_id": "011-correcao-auditoria-e2e",
+  "inputs": {
+    "contract": {
+      "fingerprint": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950",
+      "path": "specs/011-correcao-auditoria-e2e/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+      "path": "specs/011-correcao-auditoria-e2e/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": "EV-063",
+  "last_invalidation": {
+    "evidence": [
+      "EV-022"
+    ],
+    "inputs": {},
+    "timestamp": "2026-10-03T20:01:01+00:00"
+  },
+  "mode": "standard",
+  "next_action": "Pending outside the agent: TK-001 native drag at 125%/150% DPI (requires changing display scaling) and the width report; TK-038 maintainer updater signing key, secret and signed-update test (010 AC-004). Everything else verified on the final build.",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 73,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-10-04T17:09:32+00:00"
+}

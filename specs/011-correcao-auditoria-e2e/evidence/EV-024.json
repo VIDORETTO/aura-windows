@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-012"
+  ],
+  "environment": "Windows11 WebView2 154 production custom-protocol SHA256 E6243060C5E493688B60EA00B6330C047F95DC36DBE1D9957C1FA087708D8FBF",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-024",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/voice-catalog.e2e.ts": "686090eccd2a36a27f6a290f3543f5824a9c7d10114d79eacdcfd5cd07c3bca6",
+    "apps/desktop/src/i18n/en.ts": "a306ea8aa68a890a6ae2d56a9f1891d1ac07d4d21355786bf658ff12a9a80259",
+    "apps/desktop/src/i18n/models.ts": "593ec8e0f5119eee0b4b48fe5e4ea5503c730c2adfadc5ae8268416467588543",
+    "apps/desktop/src/i18n/pt-BR.ts": "2aebb6797c0e84c5922df7adf09d84a97facc80349dae2c6bd842a45dc88c63b",
+    "apps/desktop/src/ipc/mock.ts": "9cd608d930e0e1b4e3b1c31991f084f66f44393864770b7fbfe9e4a3c9f110cd",
+    "apps/desktop/src/overlay/VoiceInstallCard.tsx": "15b008933140ce98a1d6eeb0d0d0a1660c825a063235f3e2aaba304a10176b24",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "0dde36e80943f6c2e53cd3c4554b2029dc1ea53d68693b42ea927cfdf7b17434",
+    "apps/desktop/src/settings/Voice.tsx": "7ab476297bfd9106eaa38b0f87950a334cb193444b027a9fba4e6860126010dc",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Voice.tsx",
+    "apps/desktop/src/i18n/models.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/overlay/VoiceInstallCard.tsx",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/e2e/specs/voice-catalog.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Bars reflect catalog ratings, not measured on this machine.",
+  "observations": "Parakeet V3 85/85, 25 languages incl pt, CPU min 2 GB RAM, English description; Whisper Turbo 40/82 multilingual GPU recommended min 4 GB; PT labels after switch.",
+  "procedure": "React red/green catalog metadata and localized descriptions; native red on TK-011 release, green voice-catalog E2E EN/PT on release; UI98/typecheck/build.",
+  "result": "passed",
+  "tested_revision": "local:cd77a2e790d927222d5ea010e2f50580744843b46ea19d4faf256884412e59ab",
+  "ticket": "TK-012",
+  "timestamp": "2026-10-03T21:12:13+00:00"
+}

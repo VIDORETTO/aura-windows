@@ -1,7 +1,7 @@
 // Button-anchored popover (menus, appearance) on top of <Floating>: closes on
 // outside click and Esc (which never reaches the Overlay's own Esc handling).
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Floating } from "./floating";
 import { cx } from "./primitives";
 
@@ -59,11 +59,14 @@ export function PopoverPanel({
 
 /** One selectable row inside a popover menu. */
 export function MenuOption({ selected, onSelect, children, hint }: { selected?: boolean; onSelect: () => void; children: ReactNode; hint?: string }) {
+  const id = useId();
   return (
     <button
       type="button"
       role="menuitemradio"
       aria-checked={selected}
+      aria-labelledby={`${id}-label`}
+      aria-describedby={hint ? `${id}-hint` : undefined}
       onClick={onSelect}
       className={cx(
         "flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px] hover:bg-hover",
@@ -72,8 +75,8 @@ export function MenuOption({ selected, onSelect, children, hint }: { selected?: 
     >
       <span className={cx("h-1.5 w-1.5 shrink-0 self-start rounded-full mt-[7px]", selected ? "bg-accent" : "bg-transparent")} aria-hidden />
       <span className="min-w-0 flex-1">
-        <span className="block truncate">{children}</span>
-        {hint && <span className="block text-[11px] leading-snug text-muted">{hint}</span>}
+        <span id={`${id}-label`} className="block truncate">{children}</span>
+        {hint && <span id={`${id}-hint`} className="block text-[11px] leading-snug text-muted">{hint}</span>}
       </span>
     </button>
   );

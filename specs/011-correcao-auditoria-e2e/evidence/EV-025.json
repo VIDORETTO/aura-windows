@@ -1,0 +1,50 @@
+{
+  "acceptance_refs": [
+    "AC-013"
+  ],
+  "environment": "Windows11 WebView2 154 production custom-protocol SHA256 1330E10C452BA4C0E0C815FBC4EEFADF0520E410284865DE8436001FAB357450; VB-Cable; SAPI",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-025",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/audio-test.e2e.ts": "ad52d76d25b4b35bcd01da4f8b552feabd2ece5d0b3d91152a884ab438bfcb68",
+    "apps/desktop/src-tauri/src/commands.rs": "06b05652eb3b4ef1680fb6039fac10da98887be8f0d927e0fcbac5bf453350cd",
+    "apps/desktop/src/ipc/mock.ts": "70ec8825b055d5721fcf2a0e42e02437257b0d59b1c2c28c1235c9c75a577cee",
+    "apps/desktop/src/ipc/types.ts": "7e7e4498a1ad3fbe37d179a2692bbbd5aebfaf0842953942cf37dcc78b71fa38",
+    "apps/desktop/src/settings/Voice.tsx": "e5b7cab3079c9522382f7c3d9201dc154158332990fe7dce6ce4da63e01502f8",
+    "apps/desktop/src/state/app.ts": "31dbba8d3f159f53810fcddef486356a4f4c808e672ff134a213e8da5c49109e",
+    "crates/aura-app/src/events.rs": "dc50ba09966a14415d7a85251d571f6390e5563cbe4cf98a64ea5a2a887e0bba",
+    "crates/aura-app/src/host.rs": "677816c0e3819dd71ec1b3faeb17f7611e012fa5616c2efa37cfadce067d638e",
+    "crates/aura-app/src/recorder.rs": "a27c7cfa27d5129f95de0fc4c0e8bfa05acdb59204aa6550386f206478047753",
+    "crates/aura-app/src/voice.rs": "7dd99524828ad1fad779ee392da9131bdbb9130600cdcd5a459b7c510cc4c4db",
+    "crates/aura-audio/src/hub.rs": "569a9e7ecaa35ac6b68f67f100924fed3a566598473791d00557e878b94a089b",
+    "crates/aura-core/src/settings.rs": "0e58c2197e6459e2b451cd717fd93d74e878d0eeafb44275821883e39dab371c",
+    "crates/aura-win/src/audio.rs": "2bf2826edecba619c9f2ddd26644560439dcbe125ac86ed34bacce2c14f30c53",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/events.rs",
+    "crates/aura-app/src/recorder.rs",
+    "crates/aura-app/src/voice.rs",
+    "crates/aura-audio/src/hub.rs",
+    "crates/aura-win/src/audio.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/settings/Voice.tsx",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/e2e/specs/audio-test.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Test tone plays on default output only. Rate measured from events, not screen frames.",
+  "observations": "Mic CABLE Output 28 Hz peak -16.6 dBFS; system loopback CABLE Input silence -63.7 to speech -14.7; missing output and missing mic fall back with localized warning; stop no longer hangs on silent loopback; preference persisted.",
+  "procedure": "Core/Host/UI/golden red-green; native red (no test command) then audio-test E2E with VB-Cable + SAPI on release; regressions microphone x2, toggle, catalog, real ASR; workspace/clippy/fmt/UI99/typecheck/build.",
+  "result": "passed",
+  "tested_revision": "local:1f6e0c4c70565a82508ec86d1c64ca74b52fe31f3bd3ffd16c0920120818ed9a",
+  "ticket": "TK-013",
+  "timestamp": "2026-10-03T21:38:08+00:00"
+}

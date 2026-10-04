@@ -45,6 +45,10 @@ pub struct Settings {
     pub global_voice_shortcut: String,
     pub attach_screen_on_open: bool,
     pub send_after_dictation: bool,
+    /// Preferred microphone device id; `None` follows the current OS default.
+    pub microphone_device_id: Option<String>,
+    /// Output device recorded as System audio (loopback); None = OS default.
+    pub system_audio_device_id: Option<String>,
     pub default_model: Option<String>,
     pub default_effort: Option<String>,
     pub personal_instructions: String,
@@ -60,6 +64,22 @@ pub struct Settings {
     pub cloud_asr_provider: Option<String>,
     /// First-run onboarding finished (010 TK-003).
     pub onboarded: bool,
+    /// SKILL.md paths turned off in Settings (008 AC-001); changed through
+    /// the skills commands, not settings patches.
+    pub disabled_skills: Vec<String>,
+    /// Offline Windows voice for reading answers (None = by UI language).
+    pub tts_voice: Option<String>,
+    /// BYOK provider used as a cloud voice (None = offline Windows voice).
+    pub tts_provider: Option<String>,
+    /// Voice name sent to the cloud provider.
+    pub tts_cloud_voice: String,
+    /// Providers the user agreed to send answer text to (009 AC-006);
+    /// changed through `speech_consent`, not settings patches.
+    pub tts_cloud_consent: Vec<String>,
+    /// Read every finished answer aloud (009 AC-005).
+    pub auto_read: bool,
+    /// Accent color `#rrggbb` chosen by the user (012); None = Aura's default.
+    pub accent_color: Option<String>,
 }
 
 impl Default for Settings {
@@ -77,6 +97,8 @@ impl Default for Settings {
             global_voice_shortcut: "Ctrl+Alt+Space".into(),
             attach_screen_on_open: false,
             send_after_dictation: false,
+            microphone_device_id: None,
+            system_audio_device_id: None,
             default_model: None,
             default_effort: None,
             personal_instructions: String::new(),
@@ -87,6 +109,13 @@ impl Default for Settings {
             asr_vocabulary: Vec::new(),
             cloud_asr_provider: None,
             onboarded: false,
+            disabled_skills: Vec::new(),
+            tts_voice: None,
+            tts_provider: None,
+            tts_cloud_voice: "alloy".into(),
+            tts_cloud_consent: Vec::new(),
+            auto_read: false,
+            accent_color: None,
         }
     }
 }
@@ -107,16 +136,50 @@ pub struct SettingsPatch {
     pub global_voice_shortcut: Option<String>,
     pub attach_screen_on_open: Option<bool>,
     pub send_after_dictation: Option<bool>,
+    #[serde(
+        default,
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub microphone_device_id: Option<Option<String>>,
+    #[serde(
+        default,
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub system_audio_device_id: Option<Option<String>>,
     pub default_model: Option<Option<String>>,
     pub default_effort: Option<Option<String>>,
     pub personal_instructions: Option<String>,
     pub app_server_idle_minutes: Option<u32>,
     pub worker_idle_minutes: Option<u32>,
     pub memories: Option<bool>,
+    #[serde(
+        default,
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub asr_language: Option<Option<String>>,
     pub asr_vocabulary: Option<Vec<String>>,
     pub cloud_asr_provider: Option<Option<String>>,
     pub onboarded: Option<bool>,
+    #[serde(
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub tts_voice: Option<Option<String>>,
+    #[serde(
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub tts_provider: Option<Option<String>>,
+    pub tts_cloud_voice: Option<String>,
+    pub auto_read: Option<bool>,
+    #[serde(
+        deserialize_with = "nullable_patch",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub accent_color: Option<Option<String>>,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -129,6 +192,15 @@ pub enum SettingsError {
     ShortcutInUse,
     #[error("storage error: {0}")]
     Storage(String),
+}
+
+/// A missing patch field keeps its value; explicit JSON null clears it.
+fn nullable_patch<'de, D, T>(deserializer: D) -> Result<Option<Option<T>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer).map(Some)
 }
 
 impl Settings {
@@ -181,6 +253,26 @@ impl Settings {
         }
         if let Some(v) = patch.send_after_dictation {
             next.send_after_dictation = v;
+        }
+        if let Some(v) = &patch.microphone_device_id {
+            if v.as_deref()
+                .is_some_and(|id| id.chars().count() > 1024 || id.contains('\0'))
+            {
+                return Err(SettingsError::OutOfRange {
+                    field: "microphoneDeviceId",
+                });
+            }
+            next.microphone_device_id = v.clone().filter(|id| !id.trim().is_empty());
+        }
+        if let Some(v) = &patch.system_audio_device_id {
+            if v.as_deref()
+                .is_some_and(|id| id.chars().count() > 1024 || id.contains('\0'))
+            {
+                return Err(SettingsError::OutOfRange {
+                    field: "systemAudioDeviceId",
+                });
+            }
+            next.system_audio_device_id = v.clone().filter(|id| !id.trim().is_empty());
         }
         if let Some(v) = &patch.default_model {
             next.default_model = v.clone();
@@ -242,6 +334,49 @@ impl Settings {
         }
         if let Some(v) = patch.onboarded {
             next.onboarded = v;
+        }
+        if let Some(v) = &patch.tts_voice {
+            if v.as_deref().is_some_and(|id| id.chars().count() > 512) {
+                return Err(SettingsError::OutOfRange { field: "ttsVoice" });
+            }
+            next.tts_voice = v.clone().filter(|s| !s.trim().is_empty());
+        }
+        if let Some(v) = &patch.tts_provider {
+            next.tts_provider = v.clone().filter(|s| !s.trim().is_empty());
+        }
+        if let Some(v) = &patch.tts_cloud_voice {
+            let v = v.trim();
+            if v.is_empty()
+                || v.len() > 64
+                || !v
+                    .chars()
+                    .all(|c| c.is_ascii_alphanumeric() || "-_.".contains(c))
+            {
+                return Err(SettingsError::OutOfRange {
+                    field: "ttsCloudVoice",
+                });
+            }
+            next.tts_cloud_voice = v.to_string();
+        }
+        if let Some(v) = patch.auto_read {
+            next.auto_read = v;
+        }
+        if let Some(v) = &patch.accent_color {
+            next.accent_color = match v {
+                None => None,
+                Some(hex) => {
+                    let h = hex.trim();
+                    let valid = h.len() == 7
+                        && h.starts_with('#')
+                        && h[1..].chars().all(|c| c.is_ascii_hexdigit());
+                    if !valid {
+                        return Err(SettingsError::OutOfRange {
+                            field: "accentColor",
+                        });
+                    }
+                    Some(h.to_ascii_lowercase())
+                }
+            };
         }
         if let Some(v) = &patch.cloud_asr_provider {
             next.cloud_asr_provider = v.clone().filter(|s| !s.trim().is_empty());
@@ -385,6 +520,144 @@ mod voice_settings_tests {
     use super::*;
 
     #[test]
+    fn automatic_asr_language_clears_a_fixed_json_preference() {
+        assert!(
+            serde_json::to_value(SettingsPatch::default())
+                .unwrap()
+                .get("asrLanguage")
+                .is_none()
+        );
+        let fixed = Settings::default()
+            .apply(&serde_json::from_value(serde_json::json!({ "asrLanguage": "es" })).unwrap())
+            .unwrap();
+        let kept = fixed
+            .apply(&serde_json::from_value(serde_json::json!({ "language": "en" })).unwrap())
+            .unwrap();
+        assert_eq!(kept.asr_language.as_deref(), Some("es"));
+        let auto = kept
+            .apply(&serde_json::from_value(serde_json::json!({ "asrLanguage": null })).unwrap())
+            .unwrap();
+        assert_eq!(auto.asr_language, None);
+    }
+
+    #[test]
+    fn microphone_json_preference_can_be_selected_kept_and_cleared() {
+        let selected = Settings::default()
+            .apply(
+                &serde_json::from_value(serde_json::json!({
+                    "microphoneDeviceId": "Mic B (USB)"
+                }))
+                .unwrap(),
+            )
+            .unwrap();
+        assert_eq!(
+            serde_json::to_value(&selected).unwrap()["microphoneDeviceId"],
+            "Mic B (USB)"
+        );
+        let kept = selected
+            .apply(&serde_json::from_value(serde_json::json!({ "language": "en" })).unwrap())
+            .unwrap();
+        assert_eq!(
+            serde_json::to_value(&kept).unwrap()["microphoneDeviceId"],
+            "Mic B (USB)"
+        );
+        let cleared = kept
+            .apply(
+                &serde_json::from_value(serde_json::json!({ "microphoneDeviceId": null })).unwrap(),
+            )
+            .unwrap();
+        assert_eq!(
+            serde_json::to_value(cleared).unwrap()["microphoneDeviceId"],
+            serde_json::Value::Null
+        );
+    }
+
+    #[test]
+    fn serializing_an_unspecified_microphone_patch_does_not_clear_the_preference() {
+        let wire = serde_json::to_value(SettingsPatch::default()).unwrap();
+        assert!(wire.get("microphoneDeviceId").is_none());
+    }
+
+    #[test]
+    fn system_audio_device_is_nullable_bounded_and_kept_when_omitted() {
+        assert_eq!(
+            serde_json::from_str::<Settings>("{}")
+                .unwrap()
+                .system_audio_device_id,
+            None
+        );
+        let patch: SettingsPatch =
+            serde_json::from_str(r#"{"systemAudioDeviceId":"Speakers (USB)"}"#).unwrap();
+        let chosen = Settings::default().apply(&patch).unwrap();
+        assert_eq!(
+            chosen.system_audio_device_id.as_deref(),
+            Some("Speakers (USB)")
+        );
+        let kept = chosen
+            .apply(&serde_json::from_str(r#"{"opacity":0.9}"#).unwrap())
+            .unwrap();
+        assert_eq!(
+            kept.system_audio_device_id.as_deref(),
+            Some("Speakers (USB)")
+        );
+        let cleared = kept
+            .apply(&serde_json::from_str(r#"{"systemAudioDeviceId":null}"#).unwrap())
+            .unwrap();
+        assert_eq!(cleared.system_audio_device_id, None);
+        assert_eq!(
+            chosen
+                .apply(&SettingsPatch {
+                    system_audio_device_id: Some(Some("Out\0".into())),
+                    ..Default::default()
+                })
+                .unwrap_err(),
+            SettingsError::OutOfRange {
+                field: "systemAudioDeviceId"
+            }
+        );
+    }
+
+    #[test]
+    fn microphone_ids_are_preserved_bounded_and_default_on_blank_or_legacy_settings() {
+        assert_eq!(
+            serde_json::from_str::<Settings>("{}")
+                .unwrap()
+                .microphone_device_id,
+            None
+        );
+        let selected = Settings::default()
+            .apply(&SettingsPatch {
+                microphone_device_id: Some(Some(" Mic B ".into())),
+                ..Default::default()
+            })
+            .unwrap();
+        assert_eq!(selected.microphone_device_id.as_deref(), Some(" Mic B "));
+        assert_eq!(
+            selected
+                .apply(&SettingsPatch {
+                    microphone_device_id: Some(Some("  ".into())),
+                    ..Default::default()
+                })
+                .unwrap()
+                .microphone_device_id,
+            None
+        );
+        for invalid in ["x".repeat(1025), "Mic\0B".into()] {
+            assert_eq!(
+                selected
+                    .apply(&SettingsPatch {
+                        microphone_device_id: Some(Some(invalid)),
+                        ..Default::default()
+                    })
+                    .unwrap_err(),
+                SettingsError::OutOfRange {
+                    field: "microphoneDeviceId"
+                }
+            );
+        }
+    }
+
+    #[test]
     fn vocabulary_and_language_are_validated() {
         let s = Settings::default();
         let p = SettingsPatch {
@@ -439,6 +712,33 @@ mod tests {
             })
             .unwrap();
         assert_eq!(next.opacity, 0.5);
+    }
+
+    #[test]
+    fn accent_color_is_a_hex_rgb_or_the_default() {
+        // 012 AC-002.
+        let s = Settings::default();
+        assert_eq!(s.accent_color, None);
+        let patch = |v: serde_json::Value| -> SettingsPatch {
+            serde_json::from_value(serde_json::json!({ "accentColor": v })).unwrap()
+        };
+        let next = s.apply(&patch(serde_json::json!("#E4572E"))).unwrap();
+        assert_eq!(next.accent_color.as_deref(), Some("#e4572e"));
+        for bad in ["red", "#e4572", "#e4572ez", "e4572e", "#e4572e00"] {
+            assert_eq!(
+                next.apply(&patch(serde_json::json!(bad))).unwrap_err(),
+                SettingsError::OutOfRange {
+                    field: "accentColor"
+                },
+                "{bad}"
+            );
+        }
+        assert_eq!(
+            next.apply(&patch(serde_json::Value::Null))
+                .unwrap()
+                .accent_color,
+            None
+        );
     }
 
     #[test]

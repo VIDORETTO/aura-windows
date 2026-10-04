@@ -125,13 +125,9 @@ fn dispatch(app: &AppHandle, ev: HotkeyEvent) {
         }
         HotkeyEvent::PushToTalkUp if overlay::is_visible(app) => {
             let _ = app.emit_to(overlay::LABEL, "aura://ptt", "up");
-            let lang = match host.settings().language {
-                aura_core::settings::Language::PtBr => Some("pt".to_string()),
-                aura_core::settings::Language::En => None,
-            };
             tauri::async_runtime::spawn(async move {
                 // The result arrives in the UI as a `voice` event.
-                host.ptt_release(lang, vec![]).await;
+                host.ptt_release(None, vec![]).await;
             });
         }
         _ => {}

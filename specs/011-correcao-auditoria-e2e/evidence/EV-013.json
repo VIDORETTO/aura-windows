@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows11 production ECC7FD46E67E4410404E7A0A29F4F39D60847FBEFCA564FA0BFCC9A6617C8869 isolated",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "apps/desktop/e2e/provider.ts": "daf70e4043021dde4fe74bcfa4670469e1a2900d1677e5e98d1437407cd51d10",
+    "apps/desktop/e2e/specs/panels.e2e.ts": "3bf276ee5a3852593b5f578de0a6fedae9d69c05ff52096c25cac3f54cac8256",
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "2889051f02a60c24daacd5d7c29a7f1b47de0c330f7455aae7ce831bd0ebec26",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "aab79fc880bddaf590e425ac3a38de53a63ba3d7940fc945484818eef2f11666",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "3960f734189df6b2b3b5ea467df25f64949b48b3eaa8d53d2e153a2a4aa0fc0d",
+    "apps/desktop/src/overlay/session.ts": "927517a093393ca90c292079fb8d1447b0fb13ca822df1b76adf8769eef0c9cb",
+    "specs/011-correcao-auditoria-e2e/plan.md": "6c3a9c47904c89ac6dce9cbc286e116c505715620065eab289221fc49dce7dcc",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/e2e/specs/panels.e2e.ts",
+    "apps/desktop/e2e/provider.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Loopback response controlled, actual pinned appserver. Evidence invalidated because an input changed.",
+  "observations": "panels-after-localization1/1 actual conversation480/640/1024 panel exclusion/draft/Escape passed; UI/types passed. Local review no blocker.",
+  "procedure": "WebDriver panels.e2e with AURA_E2E_REAL_PROVIDER=1 production and loopback upstream; UI72/types",
+  "result": "stale",
+  "tested_revision": "local:f00cc1546af1b5d7fe57b8768e14429a47dac39f277cd2b72ecb81090e1ea00b",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-03T15:00:39+00:00"
+}

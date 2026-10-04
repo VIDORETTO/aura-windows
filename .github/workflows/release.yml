@@ -26,6 +26,10 @@ jobs:
         working-directory: apps/desktop
       - shell: pwsh
         run: ./scripts/prepare-sidecars.ps1 -Release
+      # Updates must be verifiable: no placeholder key, no unsigned artifacts (QA-038).
+      - run: node scripts/check-updater-key.mjs
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
       # Code signing: configure Azure Trusted Signing or a PFX (see docs/HANDOFF.md → Release).
       - uses: tauri-apps/tauri-action@v0
         env:

@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-062",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/asr-language.e2e.ts": "e0602c5dc8892c7fc40aa5ee05002f4b91c2058c5a63dae03303e6b73a267241",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/asr-language.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No acoustic or physical shortcut approval.",
+  "observations": "null clears the ASR language, absent patch keeps it, UI does not derive it from the interface language (1/1).",
+  "procedure": "WebDriver asr-language.e2e on the final release. Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "passed",
+  "tested_revision": "local:26d053b0cba30bc1a7d11ea47d1bdab35e8127d14ba7e943b9933eb36d3e2647",
+  "ticket": "TK-009",
+  "timestamp": "2026-10-04T17:09:09+00:00"
+}

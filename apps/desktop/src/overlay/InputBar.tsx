@@ -1,14 +1,16 @@
 import { ArrowUp, AtSign, Mic, Paperclip, Square } from "lucide-react";
+import { RecentClipDialog } from "./RecentClipDialog";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { api } from "../ipc/commands";
+import { api, errorCode, errorMessage } from "../ipc/commands";
 import { inTauri } from "../ipc/bridge";
-import type { QuickCommand, SkillReview } from "../ipc/types";
+import type { QuickCommand, SkillEntry } from "../ipc/types";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { IconButton, cx } from "../ui/primitives";
 import { Floating } from "../ui/floating";
 import { ChipList } from "./ChipList";
 import { useSession } from "./session";
+import { VoiceInstallCard } from "./VoiceInstallCard";
 
 export interface MenuItem {
   id: string;
@@ -30,6 +32,18 @@ export function insertAtCaret(value: string, caret: number, text: string): [stri
   return [next, before.length + sep.length + text.length];
 }
 
+/** Clipboard image types the model inputs accept. */
+const PASTE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif"];
+
+function toBase64(file: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).replace(/^data:[^,]*,/, ""));
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export function filterMenu(items: MenuItem[], query: string): MenuItem[] {
   const q = query.toLowerCase();
   return items.filter((i) => i.label.toLowerCase().includes(q)).slice(0, 8);
@@ -46,32 +60,46 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
   const captureScreen = useSession((s) => s.captureScreen);
   const captureSelection = useSession((s) => s.captureSelection);
   const attach = useSession((s) => s.attach);
+  const attachRecent = useSession((s) => s.attachRecent);
   const hasThread = useSession((s) => s.threadId !== null);
   const voice = useApp((s) => s.voice);
+  const voiceResultRevision = useApp((s) => s.voiceResultRevision);
   const settings = useApp((s) => s.settings);
 
   const [value, setValue] = useState("");
   const [quick, setQuick] = useState<QuickCommand[]>([]);
-  const [skills, setSkills] = useState<SkillReview[]>([]);
+  const [skills, setSkills] = useState<SkillEntry[]>([]);
   const [menuIndex, setMenuIndex] = useState(0);
   const [atOpen, setAtOpen] = useState(false);
+  const [recentOpen, setRecentOpen] = useState(false);
   const ref = useRef<HTMLTextAreaElement>(null);
   const bar = useRef<HTMLDivElement>(null);
-  const lastVoice = useRef<string | null>(null);
+  const lastVoice = useRef(0);
+  const voicePending = useRef(false);
+  const [voiceBusy, setVoiceBusy] = useState(false);
 
   useEffect(() => {
     ref.current?.focus();
   }, [autoFocusKey]);
 
   useEffect(() => {
-    void api.quickList().then(setQuick).catch(() => undefined);
-    void api.skillsList().then(setSkills).catch(() => undefined);
-  }, [autoFocusKey]);
+    if (voice.state === "failed" && voice.error === "worker_missing") {
+      useApp.getState().notify("warning", t("voice.worker.missing"));
+    }
+  }, [voice, t]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void api.quickList().then((list) => { if (!cancelled) setQuick(list); }).catch(() => undefined);
+    // Disabled skills leave the menu (008 AC-001).
+    void api.skillsCatalog().then((list) => { if (!cancelled) setSkills(list.filter((s) => s.enabled)); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [autoFocusKey, settings?.language]);
 
   // Dictation result → caret (or send, when configured).
   useEffect(() => {
-    if (voice.state !== "done" || voice.text === lastVoice.current) return;
-    lastVoice.current = voice.text;
+    if (voice.state !== "done" || voiceResultRevision === lastVoice.current) return;
+    lastVoice.current = voiceResultRevision;
     const el = ref.current;
     const [next, caret] = insertAtCaret(value, el?.selectionStart ?? value.length, voice.text);
     if (settings?.sendAfterDictation) {
@@ -82,7 +110,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
       requestAnimationFrame(() => el?.setSelectionRange(caret, caret));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voice]);
+  }, [voice, voiceResultRevision]);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -97,9 +125,10 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     const builtins: MenuItem[] = [
       { id: "plano", label: "/plano", hint: t("mode.plan.desc"), insert: "/plano " },
       { id: "tela", label: "/tela", hint: t("context.screen"), insert: "/tela " },
+      { id: "compactar", label: "/compactar", hint: t("command.compact.hint"), insert: "/compactar" },
     ];
     const cmds = quick.filter((q) => q.enabled).map((q) => ({ id: `q:${q.name}`, label: `/${q.name}`, hint: q.template.replace(/\{[^}]+\}/g, "…").split("\n")[0], insert: `/${q.name} ` }));
-    const sk = skills.map((s) => ({ id: `s:${s.manifest.name}`, label: `/${s.manifest.name}`, hint: s.manifest.description, insert: `$${s.manifest.name} ` }));
+    const sk = skills.map((s) => ({ id: `s:${s.name}`, label: `/${s.name}`, hint: s.description, insert: `$${s.name} ` }));
     return [...builtins, ...cmds, ...sk];
   }, [quick, skills, t]);
   const shownSlash = slashQuery !== null ? filterMenu(slashItems, slashQuery) : [];
@@ -108,8 +137,9 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     { id: "tela", label: `@${t("context.screen").toLowerCase()}`, hint: "Ctrl+Shift+S", insert: "", run: () => void captureScreen(false) },
     { id: "regiao", label: `@${t("context.region").toLowerCase()}`, hint: "", insert: "", run: () => void api.regionOpen() },
     { id: "janela", label: `@${t("context.window").toLowerCase()}`, hint: "", insert: "", run: () => void captureScreen(true) },
-    { id: "selecao", label: `@${t("context.selection").toLowerCase()}`, hint: "", insert: "", run: () => void captureSelection() },
+    { id: "selecao", label: `@${t("context.selection").toLowerCase()}`, hint: "", insert: "", run: () => void captureSelection(true) },
     { id: "arquivo", label: `@${t("context.file").toLowerCase()}`, hint: "", insert: "", run: () => void pickFiles() },
+    { id: "recente", label: `@${t("context.recent").toLowerCase()}`, hint: t("context.recent.hint"), insert: "", run: () => setRecentOpen(true) },
   ];
   const menu = shownSlash.length > 0 ? shownSlash : atOpen ? atItems : [];
 
@@ -156,9 +186,12 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
         setMenuIndex((i) => (i - 1 + menu.length) % menu.length);
         return;
       }
-      if (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey && (atOpen || slashQuery !== ""))) {
+      const item = menu[Math.min(menuIndex, menu.length - 1)];
+      // Enter on a complete command (e.g. "/compactar") runs it instead of re-inserting it.
+      const complete = e.key === "Enter" && !item.run && item.insert === value;
+      if (!complete && (e.key === "Tab" || (e.key === "Enter" && !e.shiftKey && (atOpen || slashQuery !== "")))) {
         e.preventDefault();
-        choose(menu[Math.min(menuIndex, menu.length - 1)]);
+        choose(item);
         return;
       }
       if (e.key === "Escape") {
@@ -169,9 +202,39 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
         return;
       }
     }
+    // Ctrl+Shift+Enter inserts the answer into the previous app (Overlay).
+    if (e.key === "Enter" && e.ctrlKey && e.shiftKey) {
+      e.preventDefault();
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       void submit(e.ctrlKey);
+    }
+  };
+
+  /** Ctrl+V with an image (002 AC-013): attach it; plain text pastes as usual. */
+  const onPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const images = [...(e.clipboardData?.items ?? [])].filter((i) => i.kind === "file" && i.type.startsWith("image/"));
+    if (images.length === 0) return;
+    e.preventDefault();
+    for (const item of images) {
+      if (!PASTE_TYPES.includes(item.type)) {
+        useApp.getState().notify("warning", t("input.paste.unsupported", { type: item.type }));
+        continue;
+      }
+      const file = item.getAsFile();
+      if (file) void pasteImage(file);
+    }
+  };
+
+  const pasteImage = async (file: File) => {
+    try {
+      const s = useSession.getState();
+      await api.attachClipboardImage(s.tray(), s.threadId, file.type, await toBase64(file));
+      await s.refreshChips();
+    } catch (e) {
+      useApp.getState().notify("error", errorMessage(e));
     }
   };
 
@@ -183,12 +246,32 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
 
   const listening = voice.state === "listening" || voice.state === "partial";
   const transcribing = voice.state === "transcribing";
+  const toggleVoice = async () => {
+    if (voicePending.current || transcribing) return;
+    voicePending.current = true;
+    setVoiceBusy(true);
+    try {
+      if (listening) await api.pttRelease(null);
+      else await api.pttPress();
+    } catch (e) {
+      const error = errorMessage(e);
+      if (errorCode(e) === "asr" && (error === "model_missing" || error === "worker_missing")) {
+        useApp.getState().handle({ channel: "voice", event: { state: "failed", error } });
+      } else useApp.getState().notify("warning", error);
+    } finally {
+      voicePending.current = false;
+      setVoiceBusy(false);
+    }
+  };
 
   return (
     <div ref={bar} className="relative flex flex-col gap-1.5 px-3 py-2">
+      {voice.state === "failed" && voice.error === "model_missing" && (
+        <VoiceInstallCard onReady={() => { useApp.getState().handle({ channel: "voice", event: { state: "idle" } }); ref.current?.focus(); }} />
+      )}
       {menu.length > 0 && (
         <Floating anchor={bar} placement={compact ? "below" : "above"} grow={compact} matchWidth className="px-3">
-        <ul role="listbox" aria-label="Sugestões" className="menu-surface rounded-md border border-line py-1 shadow-lg">
+        <ul role="listbox" aria-label={t("input.suggestions")} className="menu-surface rounded-md border border-line py-1 shadow-lg">
           {menu.map((m, i) => (
             <li
               key={m.id}
@@ -207,6 +290,17 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
         </ul>
         </Floating>
       )}
+      {recentOpen && (
+        <Floating anchor={bar} placement={compact ? "below" : "above"} grow={compact} matchWidth className="px-3">
+          <RecentClipDialog
+            onAttach={attachRecent}
+            onClose={() => {
+              setRecentOpen(false);
+              ref.current?.focus();
+            }}
+          />
+        </Floating>
+      )}
       <ChipList chips={chips} onRemove={(id) => void removeChip(id)} grow={compact} />
       <div className="flex items-end gap-1.5">
         <div className="mb-1.5 flex h-5 w-5 shrink-0 items-center justify-center" aria-hidden>
@@ -220,14 +314,16 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
           placeholder={voice.state === "partial" ? `🎙 ${voice.text}` : listening ? t("voice.listening") : transcribing ? t("voice.transcribing") : hasThread ? t("input.reply") : t("input.placeholder")}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={onKeyDown}
+          onPaste={onPaste}
           className="max-h-[180px] min-h-[28px] flex-1 resize-none bg-transparent py-1 text-[15px] leading-[21px] outline-none placeholder:text-muted focus-visible:outline-none"
         />
         <IconButton
-          label={t("input.mic")}
+          label={t(listening ? "input.mic.finish" : "input.mic")}
           active={listening}
-          onPointerDown={() => void api.pttPress().catch((e) => useApp.getState().notify("warning", String(e?.message ?? e)))}
-          onPointerUp={() => void api.pttRelease(settings?.language === "en" ? null : "pt")}
-          onPointerLeave={() => listening && void api.pttRelease(settings?.language === "en" ? null : "pt")}
+          aria-disabled={voiceBusy || transcribing}
+          className={voiceBusy || transcribing ? "opacity-40" : undefined}
+          onClick={() => void toggleVoice()}
+          onKeyDown={(e) => { if (e.ctrlKey && e.key === " ") e.preventDefault(); }}
         >
           <Mic size={17} className={listening ? "text-danger" : undefined} />
         </IconButton>
@@ -246,7 +342,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
             label={t("input.send")}
             disabled={!value.trim() && chips.length === 0}
             onClick={() => void submit(false)}
-            className="bg-accent text-white hover:bg-accent hover:text-white hover:brightness-110"
+            className="bg-accent text-[var(--accent-contrast)] hover:bg-accent hover:text-[var(--accent-contrast)] hover:brightness-110"
           >
             <ArrowUp size={17} />
           </IconButton>

@@ -482,6 +482,7 @@ dependencies = [
  "aura-policy",
  "aura-store",
  "aura-win",
+ "base64 0.22.1",
  "serde",
  "serde_json",
  "tauri",

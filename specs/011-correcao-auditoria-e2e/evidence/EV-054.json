@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-054",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/resize.e2e.ts": "f3b1ed7505efe669d1bfd22bc25f5605aae1b5cb670de67771596e84734fb7f3",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "QA-001 still partial: native drag at 125%/150% DPI not executed (needs changing the user's display scaling) and the specific width report was not reproduced.",
+  "observations": "9/9 passing on the final build.",
+  "procedure": "WebDriver resize.e2e on the final release with the qa_resize SendInput probe (9 cases: compact side handles, widths, external resize, expanded minimum, every edge/corner, context menu, hide/reopen width, two monitors, legacy placement); spec now opens the Overlay by relaunching (Aura starts in the tray since TK-041). Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "partial",
+  "tested_revision": "local:75bce8e97b44212e17d3c656cd624cd1ac00eb0041ca3074afbdbce34f98992f",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-04T17:09:07+00:00"
+}

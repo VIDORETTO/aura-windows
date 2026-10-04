@@ -135,6 +135,7 @@ pub fn parse_models(body: &Value) -> Vec<ModelSpec> {
                     })
                     .unwrap_or(reasoning_est),
                 estimated,
+                manual: false,
                 id,
             })
         })

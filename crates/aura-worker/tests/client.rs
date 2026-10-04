@@ -65,6 +65,16 @@ async fn keep_warm_prevents_idle_stop_and_crash_is_retried() {
     assert!(client.spawn_count() >= 2);
 }
 
+#[test]
+fn capabilities_report_cpu_only_without_the_vulkan_feature() {
+    assert_eq!(
+        aura_asr::worker_client::gpu_inference(&worker()),
+        cfg!(feature = "vulkan")
+    );
+    let missing = std::path::Path::new("does-not-exist/aura-worker.exe");
+    assert!(!aura_asr::worker_client::gpu_inference(missing));
+}
+
 #[tokio::test]
 async fn unknown_engine_reports_a_clear_error() {
     let dir = tempfile::tempdir().unwrap();

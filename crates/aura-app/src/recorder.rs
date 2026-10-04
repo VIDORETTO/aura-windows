@@ -26,7 +26,7 @@ use rusqlite::params;
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -50,6 +50,9 @@ fn background_kind(mode: CaptureMode) -> Option<&'static str> {
 struct AudioRun {
     hub: AudioHub,
     stop: Arc<AtomicBool>,
+    /// Flush requests (generation asked, generation done) so readers of the
+    /// recent buffer also get the open segment.
+    flush: Arc<(AtomicU64, AtomicU64)>,
     task: tokio::task::JoinHandle<()>,
     kind: String,
     recording_id: Option<String>,
@@ -70,6 +73,8 @@ pub struct Recording {
     pub started_at: i64,
     pub ended_at: Option<i64>,
     pub bytes: u64,
+    /// Recorded span (first to last segment), when it has ended.
+    pub duration_ms: Option<u64>,
 }
 
 pub struct CaptureService {
@@ -84,6 +89,8 @@ pub struct CaptureService {
     screen: tokio::sync::Mutex<Option<ScreenRun>>,
     audio: tokio::sync::Mutex<HashMap<AudioSourceKind, AudioRun>>,
     manual: Mutex<Option<String>>,
+    /// Preferred (microphone, system output) device ids; None = OS default.
+    devices: Mutex<(Option<String>, Option<String>)>,
     interval: Duration,
 }
 
@@ -114,8 +121,20 @@ impl CaptureService {
             screen: tokio::sync::Mutex::new(None),
             audio: tokio::sync::Mutex::new(HashMap::new()),
             manual: Mutex::new(None),
+            devices: Mutex::new((None, None)),
             interval,
         })
+    }
+
+    /// Devices for the next audio capture; a missing one falls back to the
+    /// OS default (005 AC-002).
+    pub fn set_devices(&self, mic: Option<String>, system: Option<String>) {
+        *self.devices.lock().unwrap() = (mic, system);
+    }
+
+    /// Limits the recorders apply now (from the privacy policy).
+    pub fn retention(&self) -> RetentionPolicy {
+        self.retention.lock().unwrap().clone()
     }
 
     /// Sources currently recording (`screen`, `mic`, `system`).
@@ -237,11 +256,24 @@ impl CaptureService {
         seg_kind: &str,
         recording_id: Option<String>,
     ) -> Result<AudioRun, String> {
-        let hub = AudioHub::start(self.platform.audio.clone(), kind, DeviceSel::Default)
-            .map_err(|e| e.to_string())?;
+        let device = {
+            let (mic, system) = self.devices.lock().unwrap().clone();
+            match kind {
+                AudioSourceKind::Mic => mic,
+                AudioSourceKind::SystemAudio => system,
+            }
+        };
+        let hub = AudioHub::start(
+            self.platform.audio.clone(),
+            kind,
+            device.map(DeviceSel::Id).unwrap_or(DeviceSel::Default),
+        )
+        .map_err(|e| e.to_string())?;
         let mut rx = hub.subscribe();
         let stop = Arc::new(AtomicBool::new(false));
         let stop2 = stop.clone();
+        let flush = Arc::new((AtomicU64::new(0), AtomicU64::new(0)));
+        let flush2 = flush.clone();
         let retention = self.retention.lock().unwrap().clone();
         let mut writer = AudioSegmentWriter::new(
             kind.key(),
@@ -266,6 +298,13 @@ impl CaptureService {
                         if let Err(e) = writer.push(&chunk) {
                             tracing::warn!("audio segment: {e}");
                         }
+                        let asked = flush2.0.load(Ordering::SeqCst);
+                        if asked > flush2.1.load(Ordering::SeqCst) {
+                            if let Err(e) = writer.flush() {
+                                tracing::warn!("audio segment: {e}");
+                            }
+                            flush2.1.store(asked, Ordering::SeqCst);
+                        }
                     }
                     Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
                     Err(_) => break,
@@ -276,6 +315,7 @@ impl CaptureService {
         Ok(AudioRun {
             hub,
             stop,
+            flush,
             task,
             kind: seg_kind.into(),
             recording_id,
@@ -340,7 +380,7 @@ impl CaptureService {
                 let mut st = c.prepare("SELECT id, source, title, started_at, ended_at FROM recordings ORDER BY started_at DESC")?;
                 let rows = st
                     .query_map([], |r| {
-                        Ok(Recording { id: r.get(0)?, source: r.get(1)?, title: r.get(2)?, started_at: r.get(3)?, ended_at: r.get(4)?, bytes: 0 })
+                        Ok(Recording { id: r.get(0)?, source: r.get(1)?, title: r.get(2)?, started_at: r.get(3)?, ended_at: r.get(4)?, bytes: 0, duration_ms: None })
                     })?
                     .collect::<Result<Vec<_>, _>>()?;
                 Ok(rows)
@@ -354,11 +394,20 @@ impl CaptureService {
             .chain(self.audio_store.list(None).unwrap_or_default())
             .collect();
         for r in &mut rows {
-            r.bytes = all
+            let segs: Vec<_> = all
                 .iter()
                 .filter(|s| s.recording_id.as_deref() == Some(&r.id))
-                .map(|s| s.bytes)
-                .sum();
+                .collect();
+            r.bytes = segs.iter().map(|s| s.bytes).sum();
+            let span = segs
+                .iter()
+                .map(|s| s.start_ms)
+                .min()
+                .zip(segs.iter().map(|s| s.end_ms).max());
+            r.duration_ms = r.ended_at.map(|end| match span {
+                Some((start, stop)) => (stop - start).max(0) as u64,
+                None => ((end - r.started_at).max(0) as u64) * 1000,
+            });
         }
         rows
     }
@@ -407,18 +456,7 @@ impl CaptureService {
             )
             .map_err(|e| e.to_string())?;
             let path = dir.join(format!("{source}.wav"));
-            let spec = hound::WavSpec {
-                channels: 1,
-                sample_rate: 16_000,
-                bits_per_sample: 16,
-                sample_format: hound::SampleFormat::Int,
-            };
-            let mut w = hound::WavWriter::create(&path, spec).map_err(|e| e.to_string())?;
-            for s in pcm {
-                w.write_sample((s.clamp(-1.0, 1.0) * i16::MAX as f32) as i16)
-                    .map_err(|e| e.to_string())?;
-            }
-            w.finalize().map_err(|e| e.to_string())?;
+            write_wav(&path, &pcm)?;
             out.push(path);
         }
         let screen: Vec<_> = self
@@ -432,6 +470,57 @@ impl CaptureService {
             let bytes = self.screen_store.read(&seg.id).map_err(|e| e.to_string())?;
             let path = dir.join(format!("screen-{:04}.mp4", i + 1));
             std::fs::write(&path, bytes).map_err(|e| e.to_string())?;
+            out.push(path);
+        }
+        Ok(out)
+    }
+
+    /// Closes the open audio segment of every running source so the most
+    /// recent seconds are readable (waits up to 1 s per source).
+    pub async fn flush_audio(&self) {
+        let pending: Vec<_> = self
+            .audio
+            .lock()
+            .await
+            .values()
+            .map(|run| {
+                let g = run.flush.0.fetch_add(1, Ordering::SeqCst) + 1;
+                (run.flush.clone(), g)
+            })
+            .collect();
+        for (flush, g) in pending {
+            let deadline = std::time::Instant::now() + Duration::from_secs(1);
+            while flush.1.load(Ordering::SeqCst) < g && std::time::Instant::now() < deadline {
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        }
+    }
+
+    /// Decrypts the last `minutes` of the audio buffer of `which` (`mic`,
+    /// `system`, `both`) into `dir` as 16 kHz mono WAV, one file per source.
+    pub fn export_recent_audio(
+        &self,
+        minutes: f64,
+        which: &str,
+        dir: &Path,
+    ) -> Result<Vec<PathBuf>, String> {
+        let now = now_ms();
+        let from = now - (minutes * 60_000.0) as i64;
+        let wanted: &[&str] = match which {
+            "mic" => &["mic"],
+            "system" => &["system"],
+            _ => &["mic", "system"],
+        };
+        std::fs::create_dir_all(dir).map_err(|e| e.to_string())?;
+        let mut out = Vec::new();
+        for s in wanted {
+            let pcm =
+                read_range(&self.audio_store, &PcmZstd, s, from, now).map_err(|e| e.to_string())?;
+            if pcm.is_empty() {
+                continue;
+            }
+            let path = dir.join(format!("{s}.wav"));
+            write_wav(&path, &pcm)?;
             out.push(path);
         }
         Ok(out)
@@ -474,7 +563,9 @@ fn retention_for(p: &Policy) -> RetentionPolicy {
         .unwrap_or(5);
     RetentionPolicy {
         buffer_ms: minutes as i64 * 60_000,
-        ..RetentionPolicy::default()
+        max_age_ms: p.retention.days as i64 * 86_400_000,
+        max_bytes: p.retention.max_gb as u64 * 1024 * 1024 * 1024,
+        apply_to_manual: p.retention.apply_to_manual,
     }
 }
 
@@ -527,6 +618,7 @@ impl RecentMedia for CaptureService {
             let now = now_ms();
             let from = now - (minutes * 60_000.0) as i64;
             let transcriber = self.voice.transcriber_for_files()?;
+            self.flush_audio().await;
             let mut per_source: HashMap<&str, Vec<TimedText>> = HashMap::new();
             let wanted: &[&str] = match source {
                 "mic" => &["mic"],
@@ -575,4 +667,20 @@ impl RecentMedia for CaptureService {
             Ok(format_transcript(&lines, now - from, label))
         })
     }
+}
+
+/// 16 kHz mono 16-bit WAV (export and clips).
+fn write_wav(path: &Path, pcm: &[f32]) -> Result<(), String> {
+    let spec = hound::WavSpec {
+        channels: 1,
+        sample_rate: 16_000,
+        bits_per_sample: 16,
+        sample_format: hound::SampleFormat::Int,
+    };
+    let mut w = hound::WavWriter::create(path, spec).map_err(|e| e.to_string())?;
+    for s in pcm {
+        w.write_sample((s.clamp(-1.0, 1.0) * i16::MAX as f32) as i16)
+            .map_err(|e| e.to_string())?;
+    }
+    w.finalize().map_err(|e| e.to_string())
 }

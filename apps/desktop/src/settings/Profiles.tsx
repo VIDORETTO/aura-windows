@@ -1,7 +1,8 @@
 import { AppWindow, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
-import type { AppProfile } from "../ipc/types";
+import type { AppProfile, ModelInfo, Provider } from "../ipc/types";
+import { decodeProfileModel, encodeProfileModel, PLAN_PROVIDER } from "../lib/profileModel";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { Badge, Button, Field, Section, Select, Switch, TextArea, TextField } from "../ui/primitives";
@@ -13,8 +14,26 @@ export function ProfilesSection() {
   const notify = useApp((s) => s.notify);
   const [list, setList] = useState<AppProfile[]>([]);
   const [draft, setDraft] = useState<AppProfile | null>(null);
+  const [planModels, setPlanModels] = useState<ModelInfo[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const reload = async () => setList(await api.profilesList());
-  useEffect(() => void reload(), []);
+  useEffect(() => {
+    void reload();
+    void api.modelsList().then(setPlanModels).catch(() => undefined);
+    void api.providersList().then(setProviders).catch(() => undefined);
+  }, []);
+  // Every model the Overlay can use: ChatGPT plan and each provider's models.
+  const modelOptions = [
+    ...planModels.map((m) => ({ value: encodeProfileModel(PLAN_PROVIDER, m.id), label: `ChatGPT · ${m.displayName}` })),
+    ...providers.flatMap((p) => p.models.map((m) => ({ value: encodeProfileModel(`aura-${p.id}`, m.id), label: `${p.name} · ${m.displayName ?? m.id}` }))),
+  ];
+  const modelLabel = (v: string | null) => {
+    if (!v) return null;
+    const known = modelOptions.find((o) => o.value === v);
+    if (known) return known.label;
+    const { provider, model } = decodeProfileModel(v);
+    return provider === PLAN_PROVIDER ? `ChatGPT · ${model}` : model;
+  };
 
   const fromCurrentApp = async () => {
     const app = await api.previousApp();
@@ -64,6 +83,19 @@ export function ProfilesSection() {
               <option value="plan">{t("mode.plan")}</option>
             </Select>
           </Field>
+          <Field label={t("profiles.model")} hint={t("profiles.model.hint")}>
+            <Select aria-label={t("profiles.model")} value={draft.defaultModel ?? ""} onChange={(e) => setDraft({ ...draft, defaultModel: e.target.value || null })}>
+              <option value="">{t("profiles.model.none")}</option>
+              {draft.defaultModel && !modelOptions.some((o) => o.value === draft.defaultModel) && (
+                <option value={draft.defaultModel}>{modelLabel(draft.defaultModel)}</option>
+              )}
+              {modelOptions.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
           <div className="col-span-2">
             <Field label={t("profiles.instructions")}>
               <TextArea rows={4} maxLength={4000} value={draft.instructions} onChange={(e) => setDraft({ ...draft, instructions: e.target.value })} />
@@ -86,6 +118,7 @@ export function ProfilesSection() {
             <div className="flex items-center gap-2 text-sm font-medium">
               {p.name} <Badge>{p.processPattern}</Badge>
               {p.attachScreen && <Badge tone="accent">{t("context.screen")}</Badge>}
+              {p.defaultModel && <Badge>{modelLabel(p.defaultModel)}</Badge>}
             </div>
             <div className="truncate text-xs text-muted">{p.instructions || "—"}</div>
           </div>

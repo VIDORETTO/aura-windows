@@ -79,6 +79,8 @@ struct World {
     next: u64,
     active_turn: HashMap<String, String>,
     interrupted: HashMap<String, bool>,
+    skill_roots: Vec<String>,
+    disabled_skills: Vec<String>,
 }
 
 impl World {
@@ -153,7 +155,10 @@ async fn handle(
             let mut w = world.lock().await;
             let id = w.id("thr");
             let ephemeral = params.get("ephemeral").and_then(Value::as_bool).unwrap_or(false);
-            let t = thread_obj(&id, "", ephemeral);
+            let mut t = thread_obj(&id, "", ephemeral);
+            if let Some(p) = params.get("modelProvider").and_then(Value::as_str) {
+                t["modelProvider"] = json!(p);
+            }
             if !ephemeral {
                 w.threads.push(t.clone());
             }
@@ -185,10 +190,22 @@ async fn handle(
             let w = world.lock().await;
             let term = params.get("searchTerm").and_then(Value::as_str).unwrap_or("").to_lowercase();
             let archived = params.get("archived").and_then(Value::as_bool).unwrap_or(false);
+            // Like the real server: no modelProviders = only the configured
+            // default provider; an empty list = every provider.
+            let providers: Option<Vec<String>> = params.get("modelProviders").and_then(Value::as_array).map(|a| {
+                a.iter().filter_map(Value::as_str).map(str::to_string).collect()
+            });
             let data: Vec<Value> = w
                 .threads
                 .iter()
                 .filter(|t| t.get("archived").and_then(Value::as_bool).unwrap_or(false) == archived)
+                .filter(|t| {
+                    let p = t["modelProvider"].as_str().unwrap_or_default();
+                    match &providers {
+                        None => p == "aura-chatgpt-plan",
+                        Some(list) => list.is_empty() || list.iter().any(|x| x == p),
+                    }
+                })
                 .filter(|t| term.is_empty() || t["preview"].as_str().unwrap_or("").to_lowercase().contains(&term))
                 .cloned()
                 .collect();
@@ -246,7 +263,38 @@ async fn handle(
              "defaultReasoningEffort": "medium", "inputModalities": ["text", "image"],
              "supportedReasoningEfforts": [{"reasoningEffort": "low"}, {"reasoningEffort": "medium"}, {"reasoningEffort": "high"}]}
         ], "nextCursor": null})),
-        "skills/list" => responder.ok(json!({"data": []})),
+        "skills/extraRoots/set" => {
+            let mut w = world.lock().await;
+            w.skill_roots = params["extraRoots"].as_array().into_iter().flatten().filter_map(Value::as_str).map(str::to_string).collect();
+            responder.ok(json!({}));
+        }
+        "skills/list" => {
+            // Extra roots as "user" skills: <root>/<name>/SKILL.md, like the real server.
+            let w = world.lock().await;
+            let mut skills = vec![];
+            for root in &w.skill_roots {
+                for entry in std::fs::read_dir(root).into_iter().flatten().flatten() {
+                    let md_path = entry.path().join("SKILL.md");
+                    let Ok(md) = std::fs::read_to_string(&md_path) else { continue };
+                    let field = |k: &str| md.lines().find_map(|l| l.strip_prefix(&format!("{k}: ")).map(|v| v.trim_matches('"').to_string())).unwrap_or_default();
+                    let path = md_path.to_string_lossy().into_owned();
+                    let enabled = !w.disabled_skills.contains(&path);
+                    skills.push(json!({"name": field("name"), "description": field("description"), "path": path, "scope": "user", "enabled": enabled, "pluginId": null}));
+                }
+            }
+            skills.push(json!({"name": "skill-creator", "description": "System skill", "path": "C:/codex/skills/.system/skill-creator/SKILL.md", "scope": "system", "enabled": true, "pluginId": null}));
+            responder.ok(json!({"data": [{"cwd": params["cwds"][0], "skills": skills, "errors": []}]}));
+        }
+        "skills/config/write" => {
+            let mut w = world.lock().await;
+            let path = params["path"].as_str().unwrap_or_default().to_string();
+            let enabled = params["enabled"].as_bool().unwrap_or(true);
+            w.disabled_skills.retain(|p| *p != path);
+            if !enabled {
+                w.disabled_skills.push(path);
+            }
+            responder.ok(json!({"effectiveEnabled": enabled}));
+        }
         "turn/interrupt" => {
             let id = str_param("threadId");
             world.lock().await.interrupted.insert(id, true);

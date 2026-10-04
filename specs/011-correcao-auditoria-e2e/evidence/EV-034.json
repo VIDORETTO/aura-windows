@@ -1,0 +1,46 @@
+{
+  "acceptance_refs": [
+    "AC-022"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 D4908B227F4E473FFC59B9CD955FA52B85868759AD0DD3C02C3736F228CD0DAD; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-034",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/skills.e2e.ts": "cd959b564ab007b0798cb0ac9d4ad5a6cbde51bb65eed4fefbadd0cba7030f06",
+    "apps/desktop/src/ipc/commands.ts": "7c06acfcec83de0c7ad8826567460a0465b6e4a09390251501873d1e42db7ef8",
+    "apps/desktop/src/ipc/types.ts": "c6f57d2b33ba4fe1c1cfbd1a5e047a85bb699b305bdc1af8822b5cc505265906",
+    "apps/desktop/src/overlay/InputBar.tsx": "463548798d1a6b5e347a775dd4a0103842198b1244c42f15af1b61b0d7e165bf",
+    "apps/desktop/src/settings/Extensions.tsx": "33baa5d2e24c89c469ef20f316b0eb9764cb1975af88a1ce9340978732b6d9a7",
+    "crates/aura-app/src/host.rs": "497cf2bd083810e9f49810a100a47bbf12bcfc52a9d8fa35dd8b145340a0bd44",
+    "crates/aura-codex/src/fake.rs": "e67bc0e3277de8c0f8d41bd2582f42e3464c204768542bbcbf1d104593dbf007",
+    "crates/aura-codex/src/home.rs": "6d4b4273a9632f56cc60f7bffbf0b804499d888126f0b117f4517f2fa8ad6ecb",
+    "crates/aura-codex/src/service.rs": "fad046b8a66e6b7255c22864d9d04fd6d1d39d6e488c316b594d46df583b358f",
+    "crates/aura-core/src/settings.rs": "bb995ee31c5316fea18ff0efd0917f17dc249c7cdd0e50a148f143eb8398c0df",
+    "crates/aura-extensions/src/skills.rs": "0474d34b7bd2a213c3f66bbfe130659cb508a5817c8774c7b5d56cce0146f23f",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-extensions/src/skills.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-codex/src/fake.rs",
+    "crates/aura-codex/src/home.rs",
+    "crates/aura-core/src/settings.rs",
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/src/settings/Extensions.tsx",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/commands.ts",
+    "apps/desktop/e2e/specs/skills.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Service and slash-menu tests written together with code. Only Aura skills are editable; user/system skills are toggle-only by design.",
+  "observations": "Origins aura/user/system; disabled skill absent from new conversation request; SKILL.md updated; disabled state persisted after restart.",
+  "procedure": "Extensions/home/Host/React red-green; service tests with protocol-faithful fake; JSON-RPC probe of pinned app-server; native red on TK-021 release; native green create/list/disable/new-conversation/edit/restart.",
+  "result": "passed",
+  "tested_revision": "local:16d5af359b0c1d1c55b830bf4e44da9049a235a942ff1ea3f843112b9dcc699b",
+  "ticket": "TK-022",
+  "timestamp": "2026-10-04T00:11:26+00:00"
+}

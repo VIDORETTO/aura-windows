@@ -1,9 +1,12 @@
 // Signed auto-update (010 TK-002) through the Tauri updater plugin.
 import { inTauri } from "../ipc/bridge";
+import { api } from "../ipc/commands";
 
-export type UpdateCheck = { kind: "none" } | { kind: "available"; version: string; notes: string } | { kind: "unsupported" };
+export type UpdateCheck = { kind: "none" } | { kind: "available"; version: string; notes: string } | { kind: "unsupported" } | { kind: "notConfigured" };
 
 export async function checkForUpdate(): Promise<UpdateCheck> {
+  // A build without the release signing key cannot verify updates (QA-038).
+  if (!(await api.updaterConfigured().catch(() => false))) return { kind: "notConfigured" };
   if (!inTauri()) return { kind: "unsupported" };
   const { check } = await import("@tauri-apps/plugin-updater");
   const update = await check();

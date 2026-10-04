@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-010"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-063",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/voice-toggle.e2e.ts": "5c4d75aed8d2e3a4de59d9579659f7e5afe3c84056a46fb021b2d13877726481",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/voice-toggle.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Keyboard/mouse through WebDriver; ASR result path covered by TK-011.",
+  "observations": "1/1 passing.",
+  "procedure": "WebDriver voice-toggle.e2e on the final release (click/Enter/Space toggle, focus loss, pending guard, Escape on partial). Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "passed",
+  "tested_revision": "local:1aea69442cf58bba67b6a978c8f9f1dd09c43b0e73ed515c4f7168e91bd79197",
+  "ticket": "TK-010",
+  "timestamp": "2026-10-04T17:09:09+00:00"
+}

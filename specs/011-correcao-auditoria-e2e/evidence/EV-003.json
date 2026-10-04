@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Produção Windows11; WebView2 154.0.4258.53; duas telas100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/resize.e2e.ts": "27676c5c280542716d884d4d4bee12c47c1647eb9465fc789c803b603cdc9c6e",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "2c53c5c9faaaa0d4e902c299dd774c0d3d391de5fb422c3fece3dbbec3b5980c",
+    "specs/011-correcao-auditoria-e2e/plan.md": "3e1fe287e0786ff81542c90616d395e0230ee59ab1e77c14c9c577dba6655213",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950",
+    "target/qa-tools/resize-production-final.log": "8b1fef5b8282035a1d1c15eb338a870ff98e305da64d36755b9e5086c39353ad"
+  },
+  "input_paths": [
+    "target/qa-tools/resize-production-final.log",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Relato específico largura não reproduzido; falta execução nativa125/150 Evidence invalidated because an input changed.",
+  "observations": "Altura corrigida; 9/9 nativos; larguras acompanham; menus e reabertura corretos",
+  "procedure": "pnpm -C apps/desktop/e2e test --spec ./specs/resize.e2e.ts",
+  "result": "stale",
+  "tested_revision": "local:e731dc65abc40cf6068f200d0233bb994b3fb73487cb3ddc8b7117a7e92e0dd2",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-03T13:16:40+00:00"
+}

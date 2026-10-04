@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-037"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 A7C6F27088162222FADB2750D51CAA57891C2F0BE940B98467533006BB1C7E49",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-049",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/diagnostics.e2e.ts": "fbf7a5f998619bb85eab0209c87b4712bbf9f30739b676b99f1f964bbffcd587",
+    "apps/desktop/src/settings/Diagnostics.tsx": "67cbd6ee07b0f7ee1fd3078d879727db635aaad9f74c712cbd09cffcb83778ab",
+    "crates/aura-app/src/diagnostics.rs": "d2cc5d063a3ba819dfd949a6cf0c94577ef6fd389a2f9f77af53ea4a33d86f93",
+    "crates/aura-app/src/host.rs": "0adf9187998426195834834113669afbe3f2d98fbe73bdbaac4b3c442405e9ae",
+    "crates/aura-app/src/voice.rs": "87d7936dc40bbde2a46d22d635102bf9583bddf1e0ed6801114de7aad2931ee3",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/voice.rs",
+    "crates/aura-app/src/diagnostics.rs",
+    "apps/desktop/src/settings/Diagnostics.tsx",
+    "apps/desktop/e2e/specs/diagnostics.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No ChatGPT account signed in on the QA profile, so the masked account line was verified in Host/React tests only. Windows 10 clean VM of 010 SC-001 not run.",
+  "observations": "Gateway reachable, aura MCP 6 tools, worker installed/idle CPU with Parakeet V3, mic active, free space within 0.01% of PowerShell, Aura folder 1.1 GB.",
+  "procedure": "Host red/green with independent size oracle; mask unit test; React green; native red on TK-036 release; native green comparing disk free with PowerShell Get-PSDrive and checking the Diagnostics screen.",
+  "result": "passed",
+  "tested_revision": "local:b973790b505d22eba96bce149abbd69232922f02d05c7bb42b4d6c173425b3ba",
+  "ticket": "TK-037",
+  "timestamp": "2026-10-04T16:33:19+00:00"
+}

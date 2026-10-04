@@ -1,4 +1,5 @@
 import { KeyRound, Loader2 } from "lucide-react";
+import { AuraLogo } from "../ui/AuraLogo";
 import { api } from "../ipc/commands";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
@@ -11,7 +12,7 @@ export function LoginCard() {
   const waiting = login?.state === "waitingBrowser";
   return (
     <div className="flex flex-col items-center gap-3 px-6 py-6 text-center">
-      <img src="/logo.svg" alt="" className="h-12 w-12" />
+      <AuraLogo className="h-12 w-12" />
       <div>
         <h1 className="text-lg font-semibold">{t("login.title")}</h1>
         <p className="mt-1 max-w-sm text-[13px] text-muted">{t("login.subtitle")}</p>

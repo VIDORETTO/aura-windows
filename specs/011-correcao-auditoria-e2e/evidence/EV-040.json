@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-028"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 392B583E890AF43936A0730831FEDE11010D7157B057DF98CA7A63C8296771D8; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-040",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/pdf-preview.e2e.ts": "93ca0cdc8f3cef0d716e3c3748da043b100323d69468dbe633da9535a76437ed",
+    "apps/desktop/src/ipc/commands.ts": "bf13ecc21203799d2bed766fd327212dc51e92e28ee3e6a9c138bb6d406ef632",
+    "apps/desktop/src/overlay/WorkPanel.test.tsx": "57b624e77c9ea5245f5378c27d7a154c8a8f082f3cd965e5d77c200d35572bae",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "44b24f6dd242344faa860c44d7b5c010cbdf496b9b234ef0c1791797516fd9a1",
+    "crates/aura-app/src/host.rs": "1fe416ea953aefd2421a1aa4b4c587d4f121c3403c01586b366edc212785794a",
+    "crates/aura-app/tests/host.rs": "74d74a2867affe88996d3b5a025d36b640c23a6e2d748372f40359642d32d0bd",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/src/overlay/WorkPanel.test.tsx",
+    "apps/desktop/src/ipc/commands.ts",
+    "apps/desktop/e2e/specs/pdf-preview.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Text-layer preview, not a rendered page image; layout requires Open (default viewer).",
+  "observations": "Text preview 5 of 7 pages with page headings; scanned-PDF explanation shown.",
+  "procedure": "Host red/green PDF text preview; React red/green; native red on TK-026 release; native green with generated PDFs in a real conversation workspace.",
+  "result": "passed",
+  "tested_revision": "local:3cf97861f078ef6d6723dd4c5fed5bce0505282c7782b9395cd9301dafd9c5f4",
+  "ticket": "TK-028",
+  "timestamp": "2026-10-04T00:54:24+00:00"
+}

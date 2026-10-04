@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows11 Vite8.3.1 realIAB; nativee2erelease A793A3CB23C907F51CC31CF95F5AAF63F43D858035D50102BB2A19E0F51716FE WebView2154 noauthoverride in smoke",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-018",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/localization.e2e.ts": "3b826daeb4003c48d272ded15aaa4168dbd77f3e2e8bcf22121847220ba2303e",
+    "apps/desktop/src/ipc/bridge.test.ts": "e589a9b781d34d056d90636241ee3349a8fd3c8f97e8661fd8786a82ae30a970",
+    "apps/desktop/src/ipc/bridge.ts": "f3335e05bf33da4242c3ee752e5c94ab160f5aa376275ebeb994445519a8a548",
+    "apps/desktop/src/ipc/mock.ts": "0aba9cf9e633721fb63d5dd210205f6365c16bbe1395ac859b32cb866dc7e7ff",
+    "apps/desktop/src/main.tsx": "acc61c70ef5fd0f80df8863a450359689637444cc17d3ac5f0ac6baaf357c177",
+    "apps/desktop/src/state/app.ts": "5c9b91387610ad9b658441c8bc796ef3cd10a532c1343b76142b0a16cfeafde6",
+    "specs/011-correcao-auditoria-e2e/plan.md": "f50286b4dfea1a4567822c26ce9984f6eeb7c9ffd08c802b5722ef5b317103f9",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/ipc/bridge.ts",
+    "apps/desktop/src/ipc/bridge.test.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/main.tsx",
+    "apps/desktop/e2e/specs/localization.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "MockloginnotrealOAuth; nativeartifacte2efeature but loopbackoverrideflag absent forsmoke, actualhostengine no demo. Evidence invalidated because an input changed.",
+  "observations": "Bridge4 regressionpassed, previewfreshlogin/cancel/retryreachedwelcome/input, nativeIPC/eventslocalization3/3 auth-cancel-localization-regression.log. No newblockingreviewfinding.",
+  "procedure": "UI78 inclbridge4/typecheck/build; Vite real retryaftercancel welcome/input; nativeWebDriverlocalization3/3 currentrelease",
+  "result": "stale",
+  "tested_revision": "local:56ae822ddf0c349f44f22f91ac3f9f3afedac3156a324a91cd3c86e4b53729eb",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-03T18:34:58+00:00"
+}

@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-036"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 00A3382345E8C1D376A9535B712CFA7DB94003848369B02B7C5EC6B7C50C6E1B",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-048",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/profile-model.e2e.ts": "e05402f0d0aa22b47b992bab696f296ecaf7b7340369faf30e70e1777830a63e",
+    "apps/desktop/src/lib/profileModel.ts": "1d7bb3d60ff34cbd66650ffb66b4b276a440281a83778aaa40cf67e5d23f425e",
+    "apps/desktop/src/overlay/session.ts": "af730bf1f7c581feb0a05f67175b57afc149f762a2c055b817d49ce0b26545eb",
+    "apps/desktop/src/settings/Profiles.tsx": "08d15eb8caca0ea34de46c6812735011d4a6c98ca21bdaff254ab1d08bdcf11c",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Profiles.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/lib/profileModel.ts",
+    "apps/desktop/e2e/specs/profile-model.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Profile model applies to new conversations only (existing thread keeps its model), as before.",
+  "observations": "Profile saved aura-<provider>::qa-other; active profile QA target; model button qa-other; upstream request model qa-other.",
+  "procedure": "React red/green for the profile model field and provider+model application; native red on TK-035 release; native green creating the profile in Settings and opening the Overlay with the global shortcut over a QA WinForms window, turn sent to the loopback provider.",
+  "result": "passed",
+  "tested_revision": "local:a79a7d842d2ed5487323b35e87d1d25036b522cc783243c9487731578044d5a2",
+  "ticket": "TK-036",
+  "timestamp": "2026-10-04T16:25:02+00:00"
+}

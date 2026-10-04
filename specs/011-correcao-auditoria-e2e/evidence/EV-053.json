@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-041"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-053",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/startup-tray.e2e.ts": "ab0aae51a60f9dbcc9ad9cedba6ee2c00cb42e095aa31c1ce48253fcf2fc0395",
+    "apps/desktop/src-tauri/src/main.rs": "8e7aa76c11f544603dffba36ed4a69a882eb19fa8769fc6772c97eb423c740e0",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/e2e/specs/startup-tray.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Toast content not captured from the Action Center; logon autostart (001 AC-015) not executed; tray menu items not clicked in this run.",
+  "observations": "No user-visible window at start; Overlay 656x89 after relaunch; three existing E2E specs still pass.",
+  "procedure": "Native red on TK-040 release and green on TK-041 release reading visible top-level windows of the Aura process with EnumWindows/GetWindowRect/DWM cloak, then launching the executable again; regression specs on the same build.",
+  "result": "passed",
+  "tested_revision": "local:82b4326bd420c58bff52a813838c3f193ed9eec86f57c037eae8265439b17a6e",
+  "ticket": "TK-041",
+  "timestamp": "2026-10-04T16:53:39+00:00"
+}

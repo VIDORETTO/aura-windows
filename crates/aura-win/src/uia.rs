@@ -89,8 +89,22 @@ pub fn window_text(window: u64, max_chars: usize) -> Option<String> {
 pub fn focused_selection(max_chars: usize) -> Option<String> {
     let uia = automation()?;
     unsafe {
-        let el = uia.GetFocusedElement().ok()?;
-        let tp = text_pattern(&el)?;
+        let mut el = uia.GetFocusedElement().ok()?;
+        // Some apps expose TextPattern on the document that contains the
+        // focused element (browsers, rich editors): look a few levels up.
+        let walker = uia.ControlViewWalker().ok();
+        let mut tp = text_pattern(&el);
+        for _ in 0..5 {
+            if tp.is_some() {
+                break;
+            }
+            let Some(parent) = walker.as_ref().and_then(|w| w.GetParentElement(&el).ok()) else {
+                break;
+            };
+            el = parent;
+            tp = text_pattern(&el);
+        }
+        let tp = tp?;
         let ranges = tp.GetSelection().ok()?;
         let mut out = String::new();
         for i in 0..ranges.Length().ok()? {

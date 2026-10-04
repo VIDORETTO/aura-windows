@@ -3,10 +3,12 @@
 //! 100 ms hotkey→visible budget of 001).
 
 use aura_app::host::{Host, OverlayMode, SavedPlacement};
-use aura_core::placement::{Monitor, Rect, place_overlay};
+use aura_core::placement::{MIN_EXPANDED, Monitor, Rect, place_overlay};
 use serde::Serialize;
 use std::sync::Mutex;
-use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize, WebviewWindow};
+use tauri::{
+    AppHandle, Emitter, LogicalSize, Manager, PhysicalPosition, PhysicalSize, WebviewWindow,
+};
 
 pub const LABEL: &str = "overlay";
 
@@ -61,6 +63,24 @@ fn apply_rect(w: &WebviewWindow, r: Rect) {
     let _ = w.set_position(PhysicalPosition::new(r.x, r.y));
 }
 
+fn apply_minimum(w: &WebviewWindow, mode: OverlayMode) {
+    let height = match mode {
+        OverlayMode::Compact => 64.0,
+        OverlayMode::Expanded => f64::from(MIN_EXPANDED.1),
+    };
+    let scale = w.scale_factor().unwrap_or(1.0);
+    let mut minimum = LogicalSize::new(480.0, height);
+    // Tao's undecorated Windows track size omits the invisible native frame.
+    // Include its measured extent so the CLIENT area meets our logical minimum.
+    if let (Ok(outer), Ok(inner)) = (w.outer_size(), w.inner_size()) {
+        minimum.width += f64::from(outer.width.saturating_sub(inner.width)) / scale;
+        minimum.height += f64::from(outer.height.saturating_sub(inner.height)) / scale;
+    }
+    if let Err(e) = w.set_min_size(Some(minimum)) {
+        tracing::warn!("could not set overlay minimum size: {e}");
+    }
+}
+
 fn target_monitor(app: &AppHandle, prev: Option<&aura_core::events::PreviousApp>) -> String {
     if let Some(p) = prev.filter(|p| !p.monitor_id.is_empty()) {
         return p.monitor_id.clone();
@@ -88,12 +108,41 @@ pub fn is_visible(app: &AppHandle) -> bool {
         .unwrap_or(false)
 }
 
+/// While the Overlay is visible but not focused, keep reading the app in
+/// front and its selection, so returning to the Overlay brings the current
+/// selection without hiding and showing it (012 AC-001).
+pub fn track_previous_app(app: &AppHandle) {
+    use std::sync::Arc;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    let Some(w) = window(app) else { return };
+    let away = Arc::new(AtomicBool::new(false));
+    let flag = away.clone();
+    w.on_window_event(move |e| {
+        if let tauri::WindowEvent::Focused(focused) = e {
+            flag.store(!focused, Ordering::SeqCst);
+        }
+    });
+    let app = app.clone();
+    std::thread::Builder::new()
+        .name("aura-previous-app".into())
+        .spawn(move || {
+            loop {
+                std::thread::sleep(std::time::Duration::from_millis(300));
+                if away.load(Ordering::SeqCst) && is_visible(&app) {
+                    let _ = host(&app).prepare_overlay();
+                }
+            }
+        })
+        .ok();
+}
+
 pub fn show(app: &AppHandle) {
     let Some(w) = window(app) else { return };
     let h = host(app);
     // Snapshot BEFORE showing: afterwards the foreground window is ours.
     let prev = h.prepare_overlay();
     let mode = *MODE.lock().unwrap();
+    apply_minimum(&w, mode);
     let monitor = target_monitor(app, prev.as_ref());
     let saved = h.saved_placement(&monitor, mode);
     if let Some(r) = place_overlay(&monitors(app), &monitor, saved.as_ref(), mode) {
@@ -142,6 +191,7 @@ pub fn toggle(app: &AppHandle) {
 pub fn set_mode(app: &AppHandle, mode: OverlayMode) {
     *MODE.lock().unwrap() = mode;
     let Some(w) = window(app) else { return };
+    apply_minimum(&w, mode);
     let h = host(app);
     let monitor = target_monitor(app, h.previous_app().as_ref());
     let mons = monitors(app);

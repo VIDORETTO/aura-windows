@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-016"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 D00052803DFBACAA9FB5A27C034F343E5C8FAFAF770DFB6C8E8CC5401EB1D357; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-028",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/history.e2e.ts": "29cfe891ed7c720fc891f6b00f8948670de2760d20c8cea47b4c6b63f2abc9f7",
+    "apps/desktop/src/ipc/mock.ts": "fd2f822f04ace8e1eb906490ed370fd354153f27ce9f821438962660089553a7",
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "97395cc21e9b118cf27ad495d2f0914991d5d977f5a565a999bb1e783142ea15",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "9197865ef2ed31ce3b2354edfcfe59bc5747a4f42ff21350fad40b4d37851519",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/e2e/specs/history.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Scroll-triggered loading not implemented; explicit button only.",
+  "observations": "First page 50 without oldest; Load more reached 100 rows and showed QA page 001.",
+  "procedure": "React paging red/green with 120 mock conversations; native red on TK-015 release; native green with 55+ real app-server conversations; UI suite.",
+  "result": "passed",
+  "tested_revision": "local:0b1620029d384db47c151ed72a0ba1d7958356f26ab649324c077ccef6257d1b",
+  "ticket": "TK-016",
+  "timestamp": "2026-10-03T23:07:35+00:00"
+}

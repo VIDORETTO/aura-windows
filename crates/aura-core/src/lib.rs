@@ -10,6 +10,7 @@ pub mod gesture;
 pub mod jsonrpc;
 pub mod logging;
 pub mod placement;
+pub mod release;
 pub mod secret;
 pub mod settings;
 

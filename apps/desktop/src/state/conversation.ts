@@ -43,7 +43,8 @@ export type Block =
   | { type: "approval"; approval: Approval; resolved?: string }
   | { type: "plan"; id: string; text: string }
   | { type: "input"; requestId: string; source: string; prompt: unknown; autoResolveMs: number | null; resolved?: string }
-  | { type: "error"; id: string; error: TurnError };
+  | { type: "error"; id: string; error: TurnError }
+  | { type: "compaction"; id: string };
 
 export interface Thread {
   id: string;
@@ -199,6 +200,7 @@ export function reduce(state: ConvState, ev: ConversationEvent): ConvState {
       next = { ...t, tokens: { used: ev.used, window: ev.window } };
       break;
     case "compacted":
+      next = { ...t, blocks: [...t.blocks, { type: "compaction", id: `compact_${t.blocks.length}` }] };
       break;
     case "turnCompleted": {
       const blocks = t.blocks.map((b) => (b.type === "assistant" && b.streaming ? { ...b, streaming: false } : b));

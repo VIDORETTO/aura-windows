@@ -147,6 +147,20 @@ pub struct CodexService {
     shared: Arc<Shared>,
     store: Store,
     workspaces_root: PathBuf,
+    /// Skill folders besides Codex's own roots (Aura-managed skills).
+    skill_roots: std::sync::Mutex<Vec<PathBuf>>,
+}
+
+/// One skill as the app-server sees it (`skills/list`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CodexSkill {
+    pub name: String,
+    pub description: String,
+    pub path: PathBuf,
+    /// `user`, `repo`, `system`, `admin`.
+    pub scope: String,
+    pub enabled: bool,
 }
 
 fn input_json(i: &TurnInput) -> Value {
@@ -188,6 +202,7 @@ impl CodexService {
             }),
             store,
             workspaces_root,
+            skill_roots: std::sync::Mutex::new(Vec::new()),
         });
         svc.clone().spawn_router(incoming_rx);
         svc.clone().spawn_supervisor_listener();
@@ -303,6 +318,54 @@ impl CodexService {
         Ok(self.supervisor.ensure_running().await?)
     }
 
+    /// Skill folders the app-server should load besides its own roots.
+    pub fn set_skill_roots(&self, roots: Vec<PathBuf>) {
+        *self.skill_roots.lock().unwrap() = roots;
+    }
+
+    async fn apply_skill_roots(&self, peer: &Peer) -> Result<(), ServiceError> {
+        let roots = self.skill_roots.lock().unwrap().clone();
+        if !roots.is_empty() {
+            peer.request("skills/extraRoots/set", json!({"extraRoots": roots}))
+                .await?;
+        }
+        Ok(())
+    }
+
+    /// Every skill available to new conversations, with origin scope and
+    /// enabled state (008 AC-001).
+    pub async fn skills(&self) -> Result<Vec<CodexSkill>, ServiceError> {
+        let peer = self.peer().await?;
+        self.apply_skill_roots(&peer).await?;
+        let result = peer
+            .request(
+                "skills/list",
+                json!({"cwds": [self.workspaces_root], "forceReload": true}),
+            )
+            .await?;
+        let mut out: Vec<CodexSkill> = result["data"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .flat_map(|entry| entry["skills"].as_array().cloned().unwrap_or_default())
+            .filter_map(|s| serde_json::from_value(s).ok())
+            .collect();
+        out.sort_by(|a, b| a.name.cmp(&b.name));
+        out.dedup_by(|a, b| a.path == b.path);
+        Ok(out)
+    }
+
+    /// Enables or disables a skill for new conversations (persisted by Codex).
+    pub async fn set_skill_enabled(&self, path: &Path, enabled: bool) -> Result<(), ServiceError> {
+        let peer = self.peer().await?;
+        peer.request(
+            "skills/config/write",
+            json!({"path": path, "enabled": enabled}),
+        )
+        .await?;
+        Ok(())
+    }
+
     /// Starts a conversation (AC-007, AC-017, AC-024, AC-025).
     pub async fn start(&self, opts: StartOptions) -> Result<StartedConversation, ServiceError> {
         let uuid = uuid::Uuid::new_v4().to_string();
@@ -343,6 +406,8 @@ impl CodexService {
         }
 
         let peer = self.peer().await?;
+        // Aura skills join new conversations (unless disabled in Codex).
+        let _ = self.apply_skill_roots(&peer).await;
         let result = peer.request("thread/start", params).await?;
         let thread_id = result["thread"]["id"]
             .as_str()
@@ -558,7 +623,10 @@ impl CodexService {
 
     pub async fn list(&self, q: HistoryQuery) -> Result<HistoryPage, ServiceError> {
         let peer = self.peer().await?;
-        let mut params = json!({"archived": q.archived, "limit": q.limit.unwrap_or(50)});
+        // `modelProviders: []` = every provider. Omitted, the app-server lists
+        // only its configured default, hiding BYOK conversations (QA-015).
+        let mut params =
+            json!({"archived": q.archived, "limit": q.limit.unwrap_or(50), "modelProviders": []});
         if let Some(s) = q.search.filter(|s| !s.trim().is_empty()) {
             params["searchTerm"] = json!(s);
         }

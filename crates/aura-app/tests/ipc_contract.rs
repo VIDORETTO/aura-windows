@@ -34,6 +34,11 @@ fn account() -> ChatGptAccount {
 }
 
 fn build() -> Value {
+    let attachment_chip: ContextChip = serde_json::from_value(json!({
+        "id": "file_1", "kind": "file", "label": "1 linhas.txt · 1 linhas",
+        "attachmentLabel": {"fileName": "1 linhas.txt", "parts": [{"type": "count", "amount": 1, "unit": "line"}]},
+        "previewPath": null, "payload": {"type": "text", "text": "literal"}, "tokenEstimate": 2, "blockedReason": null
+    })).expect("attachment label contract");
     let t = "thr_1".to_string();
     let conversation = vec![
         E::TurnStarted {
@@ -175,6 +180,11 @@ fn build() -> Value {
                 error: None,
             },
             HostEvent::Voice(PttState::Listening),
+            HostEvent::ProvidersChanged {},
+            HostEvent::AudioLevel {
+                source: aura_audio::AudioSourceKind::Mic,
+                dbfs: -12.5,
+            },
             HostEvent::Voice(PttState::Partial { text: "tex".into() }),
             HostEvent::Voice(PttState::Done {
                 text: "texto".into(),
@@ -182,6 +192,9 @@ fn build() -> Value {
             HostEvent::Notice {
                 level: "warning".into(),
                 message: "atalho em uso".into(),
+            },
+            HostEvent::OpenConversation {
+                thread_id: "t1".into(),
             },
         ])
         .collect();
@@ -229,6 +242,7 @@ fn build() -> Value {
         "privacy": {"screen": policy.screen, "mic": policy.mic, "systemAudio": policy.system_audio, "paused": false, "exclusions": &policy.exclusions[..2]},
         "captureModes": [CaptureMode::Off, CaptureMode::OnDemand, CaptureMode::RecentBuffer { minutes: 10 }, CaptureMode::Manual, CaptureMode::Continuous],
         "chip": chip,
+        "attachmentChip": attachment_chip,
         "mcpServers": [mcp, http],
         "decisions": [Decision::Accept, Decision::AcceptForSession, Decision::Decline, Decision::Cancel, Decision::Answer { content: json!({"a": 1}) }],
         "modes": [ConversationMode::Chat, ConversationMode::Task { granted: vec!["C:/proj".into()], network: false }, ConversationMode::Plan],

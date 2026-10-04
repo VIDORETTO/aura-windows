@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-025"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 2F08AC78D08497588AF9F6254AE575400DAFF9654F4D075D05650C2030E714FB; app-server rust-v0.159.0; Node MCP servers",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-037",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/mcp-status.e2e.ts": "f1bd2aa980cf255e799240472226c1109579d669ec8f7dc2005d79f639f8e6d5",
+    "apps/desktop/src-tauri/src/commands.rs": "c85292b41324d6455c4ec104ea6a33fae588afa72bd0d1909c752661a39538be",
+    "apps/desktop/src/ipc/mock.ts": "ff9d21858bdf0c0c8a928cb026397e67ade2a461c821eea8d214dae4be70cf0a",
+    "apps/desktop/src/ipc/types.ts": "1152983c2b273b13bad1fba4126b732edae9941b8dcc62b457c4a1627ac2e645",
+    "apps/desktop/src/settings/Extensions.tsx": "aac5ec35ae3e88a6d9c31b5d003c493541e566800b878570e0a08e049b7e355f",
+    "crates/aura-app/src/host.rs": "563dd5d4519475844b58b5bdb3e488f03f2f4baf243249a4fe40f6a0034e728f",
+    "crates/aura-app/src/mcp_diag.rs": "de94969fbe41195c5b3c14c28a6ba9cfbb71027da97968b098f95d2944ad63b9",
+    "crates/aura-app/tests/host.rs": "676b2a2347a0b04559bf6afaa0a836bb973eb0886dfb6feaa32ebde922a0a5c5",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/mcp_diag.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "apps/desktop/src/settings/Extensions.tsx",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/e2e/specs/mcp-status.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Log lines come from an on-demand diagnostic run (stdio only), not from the app-server's own process; HTTP servers show the error reason only.",
+  "observations": "Connected and error states shown; diagnosis log showed exit code 3 and the server's stderr line.",
+  "procedure": "Diag unit tests; Host red/green status error and diagnose; React red/green; native red on TK-024 release; native green with real ok/failing MCP servers and log view.",
+  "result": "passed",
+  "tested_revision": "local:2fdc6e12541a9c55a999c349c2c4d682f400bacda6f0dfb36f43cfa88d4e0e9a",
+  "ticket": "TK-025",
+  "timestamp": "2026-10-04T00:38:01+00:00"
+}

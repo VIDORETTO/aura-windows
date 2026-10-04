@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-035"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 1AD8A59D81331BB5EBFCDB57FA330422FAEFC230E9A95184AAFCA27585F07480",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-047",
+  "input_fingerprints": {
+    "apps/desktop/e2e/insert-target.ps1": "7182904a68518cf7fa65c7c0943479c90d840930f087995998597558516d9f5f",
+    "apps/desktop/e2e/specs/answer-shortcuts.e2e.ts": "35ca83ae39be990932f16994dd23186c6586fbcd2d3f2b8b7b337bc7fd8d0610",
+    "apps/desktop/src/overlay/InputBar.tsx": "3954c1caea737f8d9a6fa0203145e394fd72100dc547ebc567c768e2b892bbbd",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "71473b2626164ced5d549bf6da62d8362edea1a2bc5d277d413fd504e509854a",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/e2e/specs/answer-shortcuts.e2e.ts",
+    "apps/desktop/e2e/insert-target.ps1",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Overlay reopened through the access-log link path (overlay::show) instead of the global hotkey: synthesized Ctrl+Shift+Space did not reach the hotkey in the test session. Selected-code insertion verified in React only.",
+  "observations": "Voice received the last answer on Ctrl+Shift+L; target text box received exactly the answer on Ctrl+Shift+Enter; clipboard restored to its previous QA value.",
+  "procedure": "React red/green for both shortcuts and selection; native red on TK-034 release; native green with loopback model, consented loopback voice and a QA WinForms target window brought to the foreground.",
+  "result": "passed",
+  "tested_revision": "local:4714fc91a8dfd42dea66885d7e2a20a19e8e68ecb7c351b84c0f331cb0e4bd0a",
+  "ticket": "TK-035",
+  "timestamp": "2026-10-04T16:18:49+00:00"
+}

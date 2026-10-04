@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-040"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 8B25626FA95AC56E19DFA626FAC8B3C7A0D74AD49AC6A2EC89B4D0E6929DB882",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-052",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/onboarding-esc.e2e.ts": "347b6f72a2190896a207a3cb301bae469f0beff7619471c05e174c887393ed5e",
+    "apps/desktop/src/i18n/en.ts": "2bbe7ed481d39d0a5fe2455d0139da84a62dabcbe26faa5c7047ceea3feeaf31",
+    "apps/desktop/src/i18n/pt-BR.ts": "e6b295e2bf9421eae3ceffd0cff161f1481f48ad6584a61c8a73ab61350bd39f",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "apps/desktop/e2e/specs/onboarding-esc.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Overlay visibility after Esc checked through the guide element staying displayed, not through the OS window state.",
+  "observations": "New text shown; guide still displayed after Escape.",
+  "procedure": "React red/green on the guide text; native red on TK-039 release; native green reading the shortcut step and pressing Escape.",
+  "result": "passed",
+  "tested_revision": "local:2995f975ef1f6ec06f92a05531454558dea225fb258dd8b414a3535606347806",
+  "ticket": "TK-040",
+  "timestamp": "2026-10-04T16:47:54+00:00"
+}

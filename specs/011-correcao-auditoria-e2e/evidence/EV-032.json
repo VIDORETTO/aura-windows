@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-020"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 7234891D2C2E816C2F95198AEC533926B6BBC40E4519376A963C779EA78DC0D8; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-032",
+  "input_fingerprints": {
+    "apps/desktop/e2e/responses.ts": "3f4b26e60560193c269d554e56f93df669fb24f7bb2be456e93fb21555be88dd",
+    "apps/desktop/e2e/specs/provider-format.e2e.ts": "df9996c736ae601ffa6c3524613a97aeb0de2a000c88ead059a1e08a4859ba4e",
+    "apps/desktop/src/settings/Providers.tsx": "cf8370c24150bb360f363d42483c771df746286aef2ef308f6715f81c70a5f21",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "0ff9c2cc787dc34e6e714b3b2cedd45b758807376c2b7cb73f2aa2fdf90c8570",
+    "crates/aura-gateway/src/registry.rs": "a95a20b9f88070543687f5aa369bb63536894103738c752e047b3568392813ca",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Providers.tsx",
+    "crates/aura-gateway/src/registry.rs",
+    "apps/desktop/e2e/responses.ts",
+    "apps/desktop/e2e/specs/provider-format.e2e.ts",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Keyless provider: x-api-key auth for Anthropic custom verified by unit test only (avoids writing to the Windows Credential Manager).",
+  "observations": "/v1/models and /v1/chat/completions carried X-QA-Tenant; after edit /v1/messages carried it plus anthropic-version.",
+  "procedure": "Registry red/green auth+header validation; React red/green; native red on TK-019 release; native green creating Custom provider via UI, chat then anthropic after edit, loopback recording paths and headers.",
+  "result": "passed",
+  "tested_revision": "local:35d8c93186e9f1cb89477b5d44babeb87fabe41577e0a9dea075e5f7d9d56e5e",
+  "ticket": "TK-020",
+  "timestamp": "2026-10-03T23:41:03+00:00"
+}

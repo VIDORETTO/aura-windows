@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-015"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 4852618E9AFD744B6B35E62841D0603F43B056D7BB08DE9FF0661B204A5CA88E; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-027",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/history.e2e.ts": "8c2b9b888d8963ada64f89ddd72665893815aa26d2b2c1d4a77ff643c079bd04",
+    "apps/desktop/src/overlay/HistoryPanel.tsx": "b5e303fefd2262349248e08998bd1288de8e68a44e011415a0d4dc2a093bb7d8",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "5f6763386f29eef207e14dc11d5a251dc373bd0696fd308f8128d7aecb6d837e",
+    "crates/aura-codex/src/fake.rs": "dfb80578b143247d40fd9b656466334b118a246cfb643577d47e117584d52d53",
+    "crates/aura-codex/src/service.rs": "e8dea2b0a90041f6299efc5d06f665f4a26a913d2eda9fffa28f45731e8cb5c3",
+    "crates/aura-codex/tests/service.rs": "c71360d12db660889255ff0e247b5f296b57e6f86d558c2d2b3adaf460d79474",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/HistoryPanel.tsx",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-codex/src/fake.rs",
+    "crates/aura-codex/tests/service.rs",
+    "apps/desktop/e2e/specs/history.e2e.ts",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Upstream answers errors (no inference); rename of ChatGPT-plan conversations exercised only via fake app-server.",
+  "observations": "BYOK conversation now listed; renamed via UI to 'QA renamed via UI', persisted after restart.",
+  "procedure": "React rename red/green; aura-codex history provider red/green; native red on TK-014 release and green history E2E with real app-server and loopback upstream including restart; UI suite, clippy.",
+  "result": "passed",
+  "tested_revision": "local:6c624dd47aff8b08775ee495e82c60ea6bcf357d7affd0b1714cc60a43e9adb5",
+  "ticket": "TK-015",
+  "timestamp": "2026-10-03T22:59:16+00:00"
+}

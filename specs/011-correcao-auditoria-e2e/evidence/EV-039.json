@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-027"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 7BD6A4181777F8A91547536515C5FC8967091F62D45376FB459ECCBB3ADE39DC; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-039",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/html-preview.e2e.ts": "db252092c909c9e322c53c0c81cfd02376e7e74b25f50f5a272d876f5d65dc64",
+    "apps/desktop/src-tauri/tauri.conf.json": "480877605ef2839446965f7fdfbcd73f6a0a757a49e51873df05e338e2184e3c",
+    "apps/desktop/src/overlay/WorkPanel.tsx": "3960f734189df6b2b3b5ea467df25f64949b48b3eaa8d53d2e153a2a4aa0fc0d",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/html-preview.e2e.ts",
+    "apps/desktop/src/overlay/WorkPanel.tsx",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No product change; relies on WebView2 not applying frame-src to about:srcdoc (checked on 154).",
+  "observations": "Preview rendered heading and inline style; script did not run; remote image blocked; zero network requests.",
+  "procedure": "Native E2E on packaged release: real conversation, HTML file with script/fetch/remote image in workspace, open preview, inspect iframe, count loopback requests; screenshot.",
+  "result": "passed",
+  "tested_revision": "local:808e43f03e4b3e40b54ca96765cd9098e3e98c4b3c9b0bc1516fd4279b284035",
+  "ticket": "TK-027",
+  "timestamp": "2026-10-04T00:47:43+00:00"
+}

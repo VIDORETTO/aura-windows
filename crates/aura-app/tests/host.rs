@@ -29,6 +29,8 @@ async fn env() -> Env {
     let (platform, fg) = Platform::fake();
     let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform.clone());
     cfg.in_memory_store = true;
+    cfg.siwc.authorize_url = "http://127.0.0.1/qa-authorize".into();
+    cfg.siwc.preferred_port = 0;
     let host = Host::start(cfg).await.unwrap();
     Env {
         host,
@@ -51,6 +53,362 @@ async fn until<F: Fn(&HostEvent) -> bool>(
             return e;
         }
     }
+}
+
+#[tokio::test]
+async fn cancelling_login_emits_only_cancelled_and_allows_another_attempt() {
+    let e = env().await;
+    let mut rx = e.host.subscribe();
+    for _ in 0..2 {
+        let url = e.host.login(None, false).await.unwrap();
+        assert!(url.starts_with("http://127.0.0.1/qa-authorize?"));
+        until(&mut rx, |event| {
+            matches!(
+                event,
+                HostEvent::Login(aura_auth::LoginProgress::WaitingBrowser { .. })
+            )
+        })
+        .await;
+        e.host.cancel_login().await;
+        let mut terminals = vec![];
+        while let Ok(Ok(event)) = tokio::time::timeout(Duration::from_millis(200), rx.recv()).await
+        {
+            if let HostEvent::Login(progress) = event {
+                terminals.push(
+                    serde_json::to_value(progress).unwrap()["state"]
+                        .as_str()
+                        .unwrap()
+                        .to_string(),
+                );
+            }
+        }
+        assert_eq!(terminals, ["cancelled"]);
+        assert!(e.host.auth_status().unwrap().active.is_none());
+    }
+}
+
+#[tokio::test]
+async fn genuine_login_failure_is_forwarded_once() {
+    let e = env().await;
+    let mut rx = e.host.subscribe();
+    let authorize = reqwest::Url::parse(&e.host.login(None, false).await.unwrap()).unwrap();
+    let redirect = authorize
+        .query_pairs()
+        .find(|(key, _)| key == "redirect_uri")
+        .unwrap()
+        .1
+        .into_owned();
+    until(&mut rx, |event| {
+        matches!(
+            event,
+            HostEvent::Login(aura_auth::LoginProgress::WaitingBrowser { .. })
+        )
+    })
+    .await;
+    // State validation fails before token exchange; only the real loopback callback is contacted.
+    reqwest::get(format!("{redirect}?state=qa-invalid-state&code=qa-unused"))
+        .await
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
+    let mut terminals = vec![];
+    while let Ok(Ok(event)) = tokio::time::timeout(Duration::from_millis(200), rx.recv()).await {
+        if let HostEvent::Login(progress) = event {
+            terminals.push(serde_json::to_value(progress).unwrap());
+        }
+    }
+    assert_eq!(
+        terminals,
+        [json!({ "state": "failed", "reason": "state mismatch" })]
+    );
+    assert!(e.host.auth_status().unwrap().active.is_none());
+}
+
+#[tokio::test]
+async fn ptt_uses_saved_microphone_unless_explicitly_overridden() {
+    use aura_audio::{
+        AudioError, AudioSource, AudioSourceKind, AudioStream, DeviceInfo, DeviceSel,
+    };
+    use std::sync::Mutex;
+    struct AudioProbe {
+        opened: Arc<Mutex<Vec<DeviceSel>>>,
+    }
+    impl AudioSource for AudioProbe {
+        fn devices(&self, _: AudioSourceKind) -> Vec<DeviceInfo> {
+            vec![
+                DeviceInfo {
+                    id: "mic-a".into(),
+                    name: "Microphone A".into(),
+                    is_default: true,
+                },
+                DeviceInfo {
+                    id: "mic-b".into(),
+                    name: "Microphone B".into(),
+                    is_default: false,
+                },
+            ]
+        }
+        fn open(
+            &self,
+            kind: AudioSourceKind,
+            device: &DeviceSel,
+        ) -> Result<Box<dyn AudioStream>, AudioError> {
+            self.opened.lock().unwrap().push(device.clone());
+            aura_audio::hub::SyntheticAudio {
+                freq: 440.0,
+                amplitude: 0.0,
+                total_ms: 1000,
+                realtime: true,
+                fail_ids: vec![],
+            }
+            .open(kind, device)
+        }
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let paths = AppPaths::new(dir.path().join("Aura"));
+    let opened = Arc::new(Mutex::new(vec![]));
+    let (mut platform, _) = Platform::fake();
+    platform.audio = Arc::new(AudioProbe {
+        opened: opened.clone(),
+    });
+    let host = Host::start(HostConfig::demo(paths.clone(), platform.clone()))
+        .await
+        .unwrap();
+    host.update_settings(serde_json::from_value(json!({ "microphoneDeviceId": "mic-b" })).unwrap())
+        .unwrap();
+    host.ptt_press(None).await.unwrap();
+    assert_eq!(*opened.lock().unwrap(), [DeviceSel::Id("mic-b".into())]);
+    host.ptt_cancel().await;
+    host.ptt_press(Some("mic-a".into())).await.unwrap();
+    assert_eq!(
+        *opened.lock().unwrap(),
+        [DeviceSel::Id("mic-b".into()), DeviceSel::Id("mic-a".into())]
+    );
+    host.ptt_cancel().await;
+    host.shutdown().await;
+    let restarted = Host::start(HostConfig::demo(paths, platform))
+        .await
+        .unwrap();
+    restarted.ptt_press(None).await.unwrap();
+    assert_eq!(
+        opened.lock().unwrap().last(),
+        Some(&DeviceSel::Id("mic-b".into()))
+    );
+    restarted.ptt_cancel().await;
+    restarted
+        .update_settings(serde_json::from_value(json!({ "microphoneDeviceId": null })).unwrap())
+        .unwrap();
+    restarted.ptt_press(None).await.unwrap();
+    assert_eq!(opened.lock().unwrap().last(), Some(&DeviceSel::Default));
+    restarted.ptt_cancel().await;
+    restarted.shutdown().await;
+}
+
+mod audio_test {
+    use super::*;
+    use aura_audio::{
+        AudioError, AudioSource, AudioSourceKind, AudioStream, DeviceInfo, DeviceSel,
+    };
+    use std::sync::Mutex;
+
+    /// 1 kHz sine at amplitude 0.5 in real time; records what was opened.
+    pub struct Tone {
+        pub opened: Arc<Mutex<Vec<(AudioSourceKind, DeviceSel)>>>,
+        pub fail_ids: Vec<String>,
+    }
+    impl AudioSource for Tone {
+        fn devices(&self, _: AudioSourceKind) -> Vec<DeviceInfo> {
+            vec![]
+        }
+        fn open(
+            &self,
+            kind: AudioSourceKind,
+            device: &DeviceSel,
+        ) -> Result<Box<dyn AudioStream>, AudioError> {
+            self.opened.lock().unwrap().push((kind, device.clone()));
+            aura_audio::hub::SyntheticAudio {
+                freq: 1000.0,
+                amplitude: 0.5,
+                total_ms: 10_000,
+                realtime: true,
+                fail_ids: self.fail_ids.clone(),
+            }
+            .open(kind, device)
+        }
+    }
+
+    pub async fn host_with(
+        fail_ids: &[&str],
+    ) -> (
+        Arc<Host>,
+        Arc<Mutex<Vec<(AudioSourceKind, DeviceSel)>>>,
+        tempfile::TempDir,
+    ) {
+        let dir = tempfile::tempdir().unwrap();
+        let opened = Arc::new(Mutex::new(vec![]));
+        let (mut platform, _) = Platform::fake();
+        platform.audio = Arc::new(Tone {
+            opened: opened.clone(),
+            fail_ids: fail_ids.iter().map(|s| s.to_string()).collect(),
+        });
+        let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+        cfg.in_memory_store = true;
+        (Host::start(cfg).await.unwrap(), opened, dir)
+    }
+
+    /// Level events of `source` received during `window`.
+    pub async fn levels(
+        rx: &mut tokio::sync::broadcast::Receiver<HostEvent>,
+        window: Duration,
+    ) -> Vec<serde_json::Value> {
+        let end = tokio::time::Instant::now() + window;
+        let mut out = vec![];
+        while let Ok(Ok(e)) = tokio::time::timeout_at(end, rx.recv()).await {
+            let v = serde_json::to_value(&e).unwrap();
+            if v["channel"] == "audioLevel" {
+                out.push(v["event"].clone());
+            }
+        }
+        out
+    }
+}
+
+#[tokio::test]
+async fn microphone_test_reports_live_levels_from_the_saved_device_until_stopped() {
+    use aura_audio::{AudioSourceKind, DeviceSel};
+    let (host, opened, _dir) = audio_test::host_with(&[]).await;
+    host.update_settings(serde_json::from_value(json!({ "microphoneDeviceId": "mic-b" })).unwrap())
+        .unwrap();
+    let mut rx = host.subscribe();
+    host.audio_test_start(AudioSourceKind::Mic, None)
+        .await
+        .unwrap();
+    let got = audio_test::levels(&mut rx, Duration::from_millis(1000)).await;
+    assert_eq!(
+        *opened.lock().unwrap(),
+        [(AudioSourceKind::Mic, DeviceSel::Id("mic-b".into()))]
+    );
+    // ≥ 20 Hz over one second, allowing for start-up.
+    assert!(got.len() >= 15, "only {} level events", got.len());
+    // RMS of a 0.5 sine = 0.5/√2 → 20·log10(0.35355) = −9.03 dBFS.
+    for event in &got[2..] {
+        assert_eq!(event["source"], "mic");
+        let dbfs = event["dbfs"].as_f64().unwrap();
+        assert!((dbfs + 9.03).abs() < 1.0, "{dbfs}");
+    }
+    host.audio_test_stop(AudioSourceKind::Mic).await;
+    let _ = audio_test::levels(&mut rx, Duration::from_millis(100)).await;
+    assert!(
+        audio_test::levels(&mut rx, Duration::from_millis(400))
+            .await
+            .is_empty()
+    );
+}
+
+#[tokio::test]
+async fn system_audio_test_uses_the_saved_output_and_warns_when_it_falls_back() {
+    use aura_audio::{AudioSourceKind, DeviceSel};
+    let (host, opened, _dir) = audio_test::host_with(&["gone"]).await;
+    host.update_settings(serde_json::from_value(json!({ "systemAudioDeviceId": "gone" })).unwrap())
+        .unwrap();
+    let mut rx = host.subscribe();
+    host.audio_test_start(AudioSourceKind::SystemAudio, None)
+        .await
+        .unwrap();
+    let mut notice = None;
+    let mut system_levels = 0;
+    let end = tokio::time::Instant::now() + Duration::from_millis(600);
+    while let Ok(Ok(e)) = tokio::time::timeout_at(end, rx.recv()).await {
+        let v = serde_json::to_value(&e).unwrap();
+        if v["channel"] == "notice" {
+            notice = Some(v["event"].clone());
+        }
+        if v["channel"] == "audioLevel" && v["event"]["source"] == "systemAudio" {
+            system_levels += 1;
+        }
+    }
+    assert_eq!(
+        *opened.lock().unwrap(),
+        [
+            (AudioSourceKind::SystemAudio, DeviceSel::Id("gone".into())),
+            (AudioSourceKind::SystemAudio, DeviceSel::Default)
+        ]
+    );
+    let notice = notice.expect("fallback notice");
+    assert_eq!(notice["level"], "warning");
+    assert!(notice["message"].as_str().unwrap().contains("gone"));
+    assert!(system_levels > 0);
+    host.audio_test_stop(AudioSourceKind::SystemAudio).await;
+}
+
+#[tokio::test]
+async fn dictation_with_a_missing_saved_microphone_uses_the_default_and_warns() {
+    use aura_audio::{AudioSourceKind, DeviceSel};
+    let (host, opened, _dir) = audio_test::host_with(&["gone-mic"]).await;
+    host.update_settings(
+        serde_json::from_value(json!({ "microphoneDeviceId": "gone-mic" })).unwrap(),
+    )
+    .unwrap();
+    let mut rx = host.subscribe();
+    host.ptt_press(None).await.unwrap();
+    let notice = until(&mut rx, |e| matches!(e, HostEvent::Notice { .. })).await;
+    let HostEvent::Notice { level, message } = notice else {
+        unreachable!()
+    };
+    assert_eq!(level, "warning");
+    assert!(message.contains("gone-mic"), "{message}");
+    assert_eq!(
+        *opened.lock().unwrap(),
+        [
+            (AudioSourceKind::Mic, DeviceSel::Id("gone-mic".into())),
+            (AudioSourceKind::Mic, DeviceSel::Default)
+        ]
+    );
+    host.ptt_cancel().await;
+}
+
+#[tokio::test]
+async fn audio_test_respects_paused_privacy_without_opening_a_device() {
+    use aura_audio::AudioSourceKind;
+    let (host, opened, _dir) = audio_test::host_with(&[]).await;
+    host.set_paused(true).unwrap();
+    let err = host
+        .audio_test_start(AudioSourceKind::Mic, None)
+        .await
+        .unwrap_err();
+    assert_eq!(err.code, "paused");
+    assert!(opened.lock().unwrap().is_empty());
+}
+
+#[tokio::test]
+async fn recordings_capture_the_saved_audio_devices() {
+    use aura_audio::{AudioSourceKind, DeviceSel};
+    let (host, opened, _dir) = audio_test::host_with(&[]).await;
+    host.update_settings(
+        serde_json::from_value(
+            json!({ "microphoneDeviceId": "mic-b", "systemAudioDeviceId": "speakers-b" }),
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    host.set_source_policy(Source::Mic, CaptureMode::Manual, AgentPermission::Never)
+        .unwrap();
+    host.set_source_policy(
+        Source::SystemAudio,
+        CaptureMode::Manual,
+        AgentPermission::Never,
+    )
+    .unwrap();
+    host.recording_start("QA").await.unwrap();
+    tokio::time::sleep(Duration::from_millis(200)).await;
+    host.recording_stop().await;
+    let opened = opened.lock().unwrap().clone();
+    assert!(opened.contains(&(AudioSourceKind::Mic, DeviceSel::Id("mic-b".into()))));
+    assert!(opened.contains(&(
+        AudioSourceKind::SystemAudio,
+        DeviceSel::Id("speakers-b".into())
+    )));
 }
 
 #[tokio::test]
@@ -164,9 +522,13 @@ fn tools_of(
     consent: Arc<aura_app::consent::ConsentBroker>,
 ) -> HostTools {
     let store = aura_store::Store::open_in_memory().unwrap();
+    let vault = Arc::new(
+        aura_store::Vault::open(&store, &aura_store::StaticKeyProtector::default()).unwrap(),
+    );
     let privacy = aura_app::privacy::PrivacyRepo::new(store);
     let policy = privacy.load().unwrap();
     HostTools {
+        vault,
         platform: e.platform.clone(),
         policy: Arc::new(std::sync::RwLock::new(policy)),
         grants: Arc::new(std::sync::RwLock::new(Default::default())),
@@ -213,6 +575,20 @@ async fn agent_capture_asks_the_user_and_respects_the_answer() {
             .iter()
             .any(|c| matches!(c, Content::Image { mime, .. } if mime == "image/png"))
     );
+    // QA-031: the log keeps the consent outcome and a sealed thumbnail.
+    let entry = tools.privacy.access_log(1).unwrap().remove(0);
+    assert_eq!(
+        (entry.decision.as_str(), entry.reason.as_deref()),
+        ("allow", Some("consent"))
+    );
+    assert!(entry.has_thumbnail);
+    let sealed = tools.privacy.thumbnail(entry.id).unwrap().unwrap();
+    assert_ne!(&sealed[1..4], b"PNG", "thumbnail must be sealed at rest");
+    let png = tools.vault.open_bytes("access-thumb", &sealed).unwrap();
+    assert_eq!(&png[1..4], b"PNG");
+    let w = u32::from_be_bytes(png[16..20].try_into().unwrap());
+    let h = u32::from_be_bytes(png[20..24].try_into().unwrap());
+    assert!(w.max(h) <= 240 && w > 0, "{w}x{h}");
 
     // "Nesta Conversa" → the next call does not ask again.
     let out = tools
@@ -243,6 +619,12 @@ async fn agent_capture_asks_the_user_and_respects_the_answer() {
         panic!()
     };
     assert!(t.contains("\"denied\""), "{t}");
+    let entry = tools.privacy.access_log(1).unwrap().remove(0);
+    assert_eq!(
+        (entry.decision.as_str(), entry.reason.as_deref()),
+        ("deny", Some("user"))
+    );
+    assert!(!entry.has_thumbnail);
 
     // Pausing denies without asking.
     tools.policy.write().unwrap().paused = true;
@@ -322,6 +704,426 @@ async fn always_permission_and_excluded_window() {
 }
 
 #[tokio::test]
+async fn attachment_labels_expose_counts_without_translating_file_names() {
+    let e = env().await;
+    let path = e._dir.path().join("1 linhas.txt");
+    std::fs::write(&path, "one line\n").unwrap();
+    let (_, chip) = e.host.attach("draft", None, &path).await.unwrap();
+    let wire = serde_json::to_value(&chip).unwrap();
+    assert_eq!(
+        wire["attachmentLabel"],
+        json!({
+            "fileName": "1 linhas.txt", "parts": [{"type": "count", "amount": 1, "unit": "line"}]
+        })
+    );
+    assert_eq!(
+        chip.payload,
+        ChipPayload::Mixed {
+            parts: vec![
+                ChipPayload::Text {
+                    text: "Anexo: 1 linhas.txt (1 linhas)".into()
+                },
+                ChipPayload::Text {
+                    text: "one line\n".into()
+                },
+            ]
+        }
+    );
+}
+
+#[tokio::test]
+async fn builtin_prompts_follow_language_without_rewriting_user_commands() {
+    let e = env().await;
+    e.host
+        .save_quick_command("qa-custom", "Modelo pessoal em português: {texto}", false)
+        .unwrap();
+    e.host.toggle_quick_command("tldr", false).unwrap();
+    e.host
+        .update_settings(serde_json::from_value(json!({"language": "en"})).unwrap())
+        .unwrap();
+    let commands = e.host.quick_commands().unwrap();
+    let tldr = commands.iter().find(|c| c.name == "tldr").unwrap();
+    assert_eq!(
+        tldr.template,
+        "Summarize in up to three sentences, straight to the point:\n\n{selecao}"
+    );
+    assert!(!tldr.enabled);
+    assert_eq!(
+        commands
+            .iter()
+            .find(|c| c.name == "qa-custom")
+            .unwrap()
+            .template,
+        "Modelo pessoal em português: {texto}"
+    );
+    e.host.toggle_quick_command("tldr", true).unwrap();
+    let expanded = e
+        .host
+        .expand_quick_command("draft", "/tldr literal input", "")
+        .await
+        .unwrap();
+    assert_eq!(
+        expanded.prompt_text,
+        "Summarize in up to three sentences, straight to the point:\n\nliteral input"
+    );
+    e.host
+        .update_settings(serde_json::from_value(json!({"language": "ptBr"})).unwrap())
+        .unwrap();
+    assert_eq!(
+        e.host
+            .quick_commands()
+            .unwrap()
+            .iter()
+            .find(|c| c.name == "tldr")
+            .unwrap()
+            .template,
+        "Resuma em até três frases, direto ao ponto:\n\n{selecao}"
+    );
+}
+
+/// 1×1 transparent PNG (literal bytes of a known-valid file).
+const PNG_1X1: &[u8] = &[
+    0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52,
+    0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x06, 0x00, 0x00, 0x00, 0x1F, 0x15, 0xC4,
+    0x89, 0x00, 0x00, 0x00, 0x0D, 0x49, 0x44, 0x41, 0x54, 0x78, 0x9C, 0x63, 0x00, 0x01, 0x00, 0x00,
+    0x05, 0x00, 0x01, 0x0D, 0x0A, 0x2D, 0xB4, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE,
+    0x42, 0x60, 0x82,
+];
+
+#[tokio::test]
+async fn pasted_clipboard_image_becomes_an_image_chip_and_other_types_are_refused() {
+    let e = env().await;
+    let (info, chip) = e
+        .host
+        .attach_clipboard_image("draft", None, "image/png", PNG_1X1)
+        .await
+        .unwrap();
+    assert_eq!(chip.kind, ChipKind::Image);
+    assert_eq!(info.kind, "image");
+    assert_eq!(std::fs::read(&info.stored).unwrap(), PNG_1X1);
+    assert!(info.file_name.ends_with(".png"), "{}", info.file_name);
+    assert_eq!(e.host.tray("draft").len(), 1);
+    for mime in ["image/jpeg", "image/webp", "image/gif"] {
+        // Accepted types reach ingestion (bytes here are not a valid image of that type).
+        let err = e
+            .host
+            .attach_clipboard_image("draft", None, mime, b"x")
+            .await
+            .err();
+        assert!(err.is_none_or(|e| e.code != "unsupported"), "{mime}");
+    }
+    let err = e
+        .host
+        .attach_clipboard_image("draft", None, "image/bmp", PNG_1X1)
+        .await
+        .unwrap_err();
+    assert_eq!(err.code, "unsupported");
+    let err = e
+        .host
+        .attach_clipboard_image("draft", None, "image/png", &vec![0u8; 25 * 1024 * 1024])
+        .await
+        .unwrap_err();
+    assert_eq!(err.code, "too_large");
+}
+
+#[tokio::test]
+async fn skills_settings_list_origins_toggle_and_edit_aura_skills() {
+    let e = env().await;
+    e.host
+        .create_skill("revisar-contrato", "Revisa contratos", "Leia com calma.")
+        .unwrap();
+    let catalog = e.host.skills_catalog().await.unwrap();
+    let aura = catalog
+        .iter()
+        .find(|s| s.name == "revisar-contrato")
+        .unwrap();
+    assert_eq!(serde_json::to_value(aura.origin).unwrap(), "aura");
+    assert!(aura.enabled);
+    assert!(
+        catalog
+            .iter()
+            .any(|s| serde_json::to_value(s.origin).unwrap() == "system")
+    );
+    e.host.set_skill_enabled(&aura.path, false).await.unwrap();
+    // Kept by Aura: CODEX_HOME/config.toml is regenerated on every start.
+    assert_eq!(
+        e.host.settings().disabled_skills,
+        [aura.path.to_string_lossy().into_owned()]
+    );
+    let catalog = e.host.skills_catalog().await.unwrap();
+    assert!(
+        !catalog
+            .iter()
+            .find(|s| s.name == "revisar-contrato")
+            .unwrap()
+            .enabled
+    );
+    assert_eq!(
+        e.host.skill_source("revisar-contrato").unwrap(),
+        (
+            "Revisa contratos".to_string(),
+            "Leia com calma.".to_string()
+        )
+    );
+    e.host
+        .update_skill(
+            "revisar-contrato",
+            "Revisa contratos de aluguel",
+            "Confira multas.",
+        )
+        .unwrap();
+    let catalog = e.host.skills_catalog().await.unwrap();
+    assert_eq!(
+        catalog
+            .iter()
+            .find(|s| s.name == "revisar-contrato")
+            .unwrap()
+            .description,
+        "Revisa contratos de aluguel"
+    );
+}
+
+#[test]
+fn mcp_status_reports_startup_errors_from_the_app_server() {
+    // Shape captured from the pinned app-server (rust-v0.159.0) with one
+    // failing and one working stdio server.
+    let raw = json!({"data": [
+        {"name": "qafail", "serverInfo": null, "tools": {}, "toolsError": "MCP startup failed: handshaking with MCP server failed: connection closed: initialize response", "authStatus": "unsupported"},
+        {"name": "qaok", "serverInfo": {"name": "qa-mcp", "version": "1.0.0"}, "tools": {"qa_echo": {"name": "qa_echo"}, "qa_write": {"name": "qa_write"}}, "toolsError": null, "authStatus": "unsupported"}
+    ]});
+    let status = aura_app::host::parse_mcp_status(&raw);
+    assert_eq!(
+        status[0].error.as_deref(),
+        Some(
+            "MCP startup failed: handshaking with MCP server failed: connection closed: initialize response"
+        )
+    );
+    assert!(status[0].tools.is_empty());
+    assert_eq!(status[1].error, None);
+    assert_eq!(status[1].tools, ["qa_echo", "qa_write"]);
+}
+
+#[cfg(windows)]
+#[tokio::test]
+async fn diagnosing_a_failing_stdio_server_returns_its_last_log_lines() {
+    let e = env().await;
+    e.host
+        .save_mcp_server(
+            serde_json::from_value(json!({"name": "qa-fail", "transport": {"type": "stdio", "command": "cmd", "args": ["/C", "echo token missing 1>&2 & exit 2"], "env": {"QA_MODE": {"kind": "plain", "value": "x"}}, "cwd": null}, "enabled": true, "disabledTools": [], "approvalMode": "askForWrites", "startupTimeoutSec": null, "toolTimeoutSec": null})).unwrap(),
+            vec![],
+            None,
+        )
+        .unwrap();
+    let d = e.host.mcp_diagnose("qa-fail").await.unwrap();
+    assert!(!d.connected);
+    assert_eq!(d.exit_code, Some(2));
+    assert_eq!(d.log, ["token missing"]);
+    assert_eq!(
+        e.host.mcp_diagnose("nope").await.unwrap_err().code,
+        "not_found"
+    );
+}
+
+#[tokio::test]
+async fn memories_can_be_reviewed_edited_and_forgotten() {
+    let e = env().await;
+    assert_eq!(
+        e.host.memories().unwrap(),
+        aura_app::host::MemoryView::default()
+    );
+    let dir = e.host.paths.codex_home().join("memories");
+    std::fs::create_dir_all(dir.join("rollout_summaries")).unwrap();
+    std::fs::write(
+        dir.join("memory_summary.md"),
+        "# Summary\n- Prefers metric units\n- Lives in Lisbon\n",
+    )
+    .unwrap();
+    std::fs::write(dir.join("MEMORY.md"), "# Registry\n- Lives in Lisbon\n").unwrap();
+    let view = e.host.memories().unwrap();
+    assert_eq!(view.facts, ["Prefers metric units", "Lives in Lisbon"]);
+    e.host.forget_memory_fact("Lives in Lisbon").unwrap();
+    assert_eq!(
+        std::fs::read_to_string(dir.join("memory_summary.md")).unwrap(),
+        "# Summary\n- Prefers metric units\n"
+    );
+    assert_eq!(
+        std::fs::read_to_string(dir.join("MEMORY.md")).unwrap(),
+        "# Registry\n"
+    );
+    // Consolidation reads user notes, so the removal is not undone later.
+    let notes: Vec<String> = std::fs::read_dir(dir.join("extensions/ad_hoc/notes"))
+        .unwrap()
+        .map(|f| std::fs::read_to_string(f.unwrap().path()).unwrap())
+        .collect();
+    assert_eq!(notes.len(), 1);
+    assert!(notes[0].contains("Forget: Lives in Lisbon"), "{}", notes[0]);
+    e.host
+        .save_memories("# Summary\n- Prefers SI units\n", "# Registry\n")
+        .unwrap();
+    assert_eq!(e.host.memories().unwrap().facts, ["Prefers SI units"]);
+    e.host.forget_all_memories().unwrap();
+    assert!(!dir.exists());
+    assert!(e.host.memories().unwrap().facts.is_empty());
+}
+
+/// Minimal one-font PDF with one text line per page (offsets computed).
+fn pdf_with_pages(pages: &[&str]) -> Vec<u8> {
+    let n = pages.len();
+    let mut objects: Vec<String> = vec![
+        "<< /Type /Catalog /Pages 2 0 R >>".into(),
+        format!(
+            "<< /Type /Pages /Kids [{}] /Count {n} >>",
+            (0..n)
+                .map(|i| format!("{} 0 R", 4 + 2 * i))
+                .collect::<Vec<_>>()
+                .join(" ")
+        ),
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>".into(),
+    ];
+    for (i, text) in pages.iter().enumerate() {
+        objects.push(format!(
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 144] /Contents {} 0 R /Resources << /Font << /F1 3 0 R >> >> >>",
+            5 + 2 * i
+        ));
+        let stream = format!("BT /F1 12 Tf 20 100 Td ({text}) Tj ET");
+        objects.push(format!(
+            "<< /Length {} >>\nstream\n{stream}\nendstream",
+            stream.len()
+        ));
+    }
+    let mut out = b"%PDF-1.4\n".to_vec();
+    let mut offsets = vec![];
+    for (i, o) in objects.iter().enumerate() {
+        offsets.push(out.len());
+        out.extend(format!("{} 0 obj\n{o}\nendobj\n", i + 1).as_bytes());
+    }
+    let xref = out.len();
+    out.extend(format!("xref\n0 {}\n0000000000 65535 f \n", objects.len() + 1).as_bytes());
+    for off in offsets {
+        out.extend(format!("{off:010} 00000 n \n").as_bytes());
+    }
+    out.extend(
+        format!(
+            "trailer\n<< /Size {} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n",
+            objects.len() + 1
+        )
+        .as_bytes(),
+    );
+    out
+}
+
+#[tokio::test]
+async fn workspace_pdf_preview_returns_the_text_of_the_first_pages() {
+    let e = env().await;
+    let conv = e
+        .host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+    let pages: Vec<String> = (1..=7).map(|i| format!("QA page {i}")).collect();
+    let refs: Vec<&str> = pages.iter().map(String::as_str).collect();
+    std::fs::write(conv.workspace.join("report.pdf"), pdf_with_pages(&refs)).unwrap();
+    let preview = e
+        .host
+        .workspace_pdf_preview(&conv.thread_id, "report.pdf")
+        .unwrap();
+    assert_eq!(preview.total_pages, 7);
+    assert_eq!(
+        preview
+            .pages
+            .iter()
+            .map(|p| (p.number, p.text.trim().to_string()))
+            .collect::<Vec<_>>(),
+        (1..=5)
+            .map(|i| (i, format!("QA page {i}")))
+            .collect::<Vec<_>>()
+    );
+    assert!(
+        e.host
+            .workspace_pdf_preview(&conv.thread_id, "../outside.pdf")
+            .is_err()
+    );
+}
+
+#[tokio::test]
+async fn retention_limits_are_configurable_validated_and_used_by_the_recorder() {
+    let dir = tempfile::tempdir().unwrap();
+    let paths = AppPaths::new(dir.path().join("Aura"));
+    let (platform, _) = Platform::fake();
+    let host = Host::start(HostConfig::demo(paths.clone(), platform.clone()))
+        .await
+        .unwrap();
+    // Defaults documented in 004: 7 days, 20 GB, manual recordings kept.
+    assert_eq!(
+        serde_json::to_value(host.privacy()).unwrap()["retention"],
+        json!({"days": 7, "maxGb": 20, "applyToManual": false})
+    );
+    for (days, gb) in [(0, 20), (366, 20), (7, 0), (7, 1001)] {
+        assert_eq!(
+            host.set_retention(days, gb, false).unwrap_err().code,
+            "out_of_range",
+            "{days} {gb}"
+        );
+    }
+    let view = host.set_retention(3, 5, true).unwrap();
+    assert_eq!(
+        serde_json::to_value(view).unwrap()["retention"],
+        json!({"days": 3, "maxGb": 5, "applyToManual": true})
+    );
+    // The recorders take the policy asynchronously (reconcile_capture).
+    let expected = (3 * 86_400_000, 5 * 1024 * 1024 * 1024, true);
+    let mut applied = None;
+    for _ in 0..50 {
+        let r = host.capture().retention();
+        applied = Some((r.max_age_ms, r.max_bytes, r.apply_to_manual));
+        if applied == Some(expected) {
+            break;
+        }
+        tokio::time::sleep(Duration::from_millis(20)).await;
+    }
+    assert_eq!(applied, Some(expected));
+    host.shutdown().await;
+    let again = Host::start(HostConfig::demo(paths, platform))
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(again.privacy()).unwrap()["retention"]["days"],
+        3
+    );
+    again.shutdown().await;
+}
+
+#[tokio::test]
+async fn recent_buffer_length_is_limited_to_one_to_thirty_minutes() {
+    let e = env().await;
+    for bad in [0, 31] {
+        let err = e
+            .host
+            .set_source_policy(
+                Source::Mic,
+                CaptureMode::RecentBuffer { minutes: bad },
+                AgentPermission::Ask,
+            )
+            .unwrap_err();
+        assert_eq!(err.code, "out_of_range", "{bad}");
+    }
+    for ok in [1, 30] {
+        let view = e
+            .host
+            .set_source_policy(
+                Source::Screen,
+                CaptureMode::RecentBuffer { minutes: ok },
+                AgentPermission::Ask,
+            )
+            .unwrap();
+        assert_eq!(
+            serde_json::to_value(&view).unwrap()["screen"]["mode"],
+            json!({"type": "recentBuffer", "minutes": ok})
+        );
+    }
+}
+
+#[tokio::test]
 async fn attachments_quick_commands_and_selection() {
     let e = env().await;
     let csv = e._dir.path().join("vendas.csv");
@@ -332,7 +1134,7 @@ async fn attachments_quick_commands_and_selection() {
     assert!(chip.label.contains("vendas.csv"));
 
     *e.fg.selection.lock().unwrap() = Some("olá".into());
-    let sel = e.host.capture_selection("draft").unwrap().unwrap();
+    let sel = e.host.capture_selection("draft", true).unwrap().unwrap();
     assert_eq!(sel.kind, ChipKind::Selection);
     let exp = e
         .host
@@ -355,6 +1157,142 @@ async fn attachments_quick_commands_and_selection() {
     assert_eq!(
         e.fg.pasted.lock().unwrap().as_slice(),
         ["texto ditado".to_string()]
+    );
+}
+
+#[tokio::test]
+async fn manual_provider_model_is_saved_announced_and_removable() {
+    let e = env().await;
+    let p = e
+        .host
+        .save_provider(
+            serde_json::from_value(json!({"name": "Local", "preset": "custom", "wire": "chat", "baseUrl": "http://127.0.0.1:9/v1"}))
+                .unwrap(),
+            None,
+        )
+        .unwrap();
+    let mut rx = e.host.subscribe();
+    let saved = e
+        .host
+        .save_provider_model(
+            &p.id,
+            serde_json::from_value(json!({"id": "qwen3:8b", "displayName": "Qwen 3 8B", "contextWindow": 32768, "maxOutput": null, "supportsImages": false, "supportsTools": true, "supportsReasoning": true, "estimated": true}))
+                .unwrap(),
+        )
+        .unwrap();
+    let m = saved.models.iter().find(|m| m.id == "qwen3:8b").unwrap();
+    assert!(m.manual && m.supports_tools && m.supports_reasoning && !m.estimated);
+    until(&mut rx, |e| matches!(e, HostEvent::ProvidersChanged {})).await;
+    let removed = e.host.remove_provider_model(&p.id, "qwen3:8b").unwrap();
+    assert!(removed.models.is_empty());
+}
+
+#[tokio::test]
+async fn provider_without_models_endpoint_but_manual_models_is_not_an_error() {
+    let e = env().await;
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+    // No routes: GET /v1/models answers 404.
+    let server =
+        tokio::spawn(async move { axum::serve(listener, axum::Router::new()).await.unwrap() });
+    let p = e
+        .host
+        .save_provider(
+            serde_json::from_value(json!({"name": "Sem lista", "preset": "custom", "wire": "chat", "baseUrl": format!("http://{addr}/v1")})).unwrap(),
+            None,
+        )
+        .unwrap();
+    // Without manual models a 404 still reports the problem.
+    let bare = e.host.test_provider(&p.id).await.unwrap();
+    assert_eq!(serde_json::to_value(bare.status).unwrap(), "error");
+    e.host
+        .save_provider_model(
+            &p.id,
+            serde_json::from_value(json!({"id": "manual-1", "displayName": null, "contextWindow": null, "maxOutput": null, "supportsImages": false, "supportsTools": true, "supportsReasoning": false, "estimated": false})).unwrap(),
+        )
+        .unwrap();
+    let tested = e.host.test_provider(&p.id).await.unwrap();
+    server.abort();
+    assert_eq!(serde_json::to_value(tested.status).unwrap(), "unverified");
+    assert_eq!(tested.last_error, None);
+    assert_eq!(tested.models.len(), 1);
+}
+
+#[tokio::test]
+async fn saving_provider_notifies_existing_windows_without_exposing_provider_data() {
+    let e = env().await;
+    let mut rx = e.host.subscribe();
+    let draft = serde_json::from_value(json!({"name": "QA local", "preset": "ollama"})).unwrap();
+    e.host.save_provider(draft, None).unwrap();
+    let event = tokio::time::timeout(Duration::from_secs(1), async {
+        loop {
+            let event = rx.recv().await.unwrap();
+            let value = serde_json::to_value(event).unwrap();
+            if value["channel"] == "providersChanged" {
+                break value;
+            }
+        }
+    })
+    .await
+    .expect("provider catalog invalidation must reach existing windows");
+    assert_eq!(event, json!({"channel": "providersChanged", "event": {}}));
+}
+
+#[tokio::test]
+async fn removing_provider_notifies_existing_windows() {
+    let e = env().await;
+    let draft = serde_json::from_value(json!({"name": "QA local", "preset": "ollama"})).unwrap();
+    let p = e.host.save_provider(draft, None).unwrap();
+    let mut rx = e.host.subscribe();
+    e.host.remove_provider(&p.id).unwrap();
+    let event = tokio::time::timeout(Duration::from_secs(1), async {
+        loop {
+            let value = serde_json::to_value(rx.recv().await.unwrap()).unwrap();
+            if value["channel"] == "providersChanged" {
+                break value;
+            }
+        }
+    })
+    .await
+    .expect("removing a provider must invalidate every window catalog");
+    assert_eq!(event, json!({"channel": "providersChanged", "event": {}}));
+}
+
+#[tokio::test]
+async fn provider_discovery_notifies_existing_windows_after_models_are_stored() {
+    let e = env().await;
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let addr = listener.local_addr().unwrap();
+    let app = axum::Router::new().route(
+        "/v1/models",
+        axum::routing::get(|| async {
+            axum::Json(
+                json!({"data": [{"id": "qa-literal-model", "display_name": "QA literal model"}]}),
+            )
+        }),
+    );
+    let server = tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+    let draft = serde_json::from_value(
+        json!({"name": "QA local", "preset": "ollama", "baseUrl": format!("http://{addr}/v1")}),
+    )
+    .unwrap();
+    let p = e.host.save_provider(draft, None).unwrap();
+    let mut rx = e.host.subscribe();
+    let tested = e.host.test_provider(&p.id).await.unwrap();
+    assert_eq!(tested.models[0].id, "qa-literal-model");
+    let event = tokio::time::timeout(Duration::from_secs(1), async {
+        loop {
+            let value = serde_json::to_value(rx.recv().await.unwrap()).unwrap();
+            if value["channel"] == "providersChanged" {
+                break value;
+            }
+        }
+    })
+    .await;
+    server.abort();
+    assert_eq!(
+        event.expect("discovered models must invalidate every window catalog"),
+        json!({"channel": "providersChanged", "event": {}})
     );
 }
 
@@ -461,6 +1399,58 @@ async fn push_to_talk_dictation() {
         .set_source_policy(Source::Mic, CaptureMode::Off, AgentPermission::Never)
         .unwrap();
     assert_eq!(e.host.ptt_press(None).await.unwrap_err().code, "mic_off");
+}
+
+#[tokio::test]
+async fn missing_model_is_reported_to_the_overlay_without_opening_the_microphone() {
+    use aura_audio::{
+        AudioError, AudioSource, AudioSourceKind, AudioStream, DeviceInfo, DeviceSel,
+    };
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    struct NeverCapture(Arc<AtomicUsize>);
+    impl AudioSource for NeverCapture {
+        fn devices(&self, _: AudioSourceKind) -> Vec<DeviceInfo> {
+            vec![]
+        }
+        fn open(
+            &self,
+            _: AudioSourceKind,
+            _: &DeviceSel,
+        ) -> Result<Box<dyn AudioStream>, AudioError> {
+            self.0.fetch_add(1, Ordering::SeqCst);
+            Err(AudioError::NoDevice)
+        }
+    }
+    let dir = tempfile::tempdir().unwrap();
+    let opened = Arc::new(AtomicUsize::new(0));
+    let (mut platform, _) = Platform::fake();
+    platform.audio = Arc::new(NeverCapture(opened.clone()));
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.asr = aura_app::voice::AsrBackend::Worker {
+        program: dir.path().join("worker-not-needed.exe"),
+        idle: Duration::from_secs(30),
+        on_spawn: None,
+    };
+    let host = Host::start(cfg).await.unwrap();
+    let mut events = host.subscribe();
+    let error = host.ptt_press(None).await.unwrap_err();
+    assert_eq!(error.code, "asr");
+    assert_eq!(error.message, "model_missing");
+    assert_eq!(opened.load(Ordering::SeqCst), 0);
+    let mut states = vec![];
+    while let Ok(Ok(event)) = tokio::time::timeout(Duration::from_millis(200), events.recv()).await
+    {
+        if let HostEvent::Voice(state) = event {
+            states.push(state);
+        }
+    }
+    assert_eq!(
+        states,
+        [aura_asr::ptt::PttState::Failed {
+            error: "model_missing".into()
+        }]
+    );
+    host.shutdown().await;
 }
 
 #[tokio::test]
@@ -599,6 +1589,146 @@ async fn recent_buffers_feed_the_agent_tools() {
 }
 
 #[tokio::test]
+async fn user_attaches_the_recent_buffer_as_a_clip() {
+    use aura_app::host::RecentClip;
+    use aura_core::context::{ChipKind, ChipPayload};
+    let dir = tempfile::tempdir().unwrap();
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.capture_interval = Duration::from_millis(20);
+    let host = Host::start(cfg).await.unwrap();
+    for s in [Source::Screen, Source::Mic] {
+        host.set_source_policy(
+            s,
+            CaptureMode::RecentBuffer { minutes: 2 },
+            AgentPermission::Never,
+        )
+        .unwrap();
+    }
+    tokio::time::sleep(Duration::from_millis(900)).await;
+    let conv = host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+    let clip = |minutes: f64, screen: bool, audio: Option<&str>| RecentClip {
+        minutes,
+        screen,
+        audio: audio.map(str::to_string),
+    };
+
+    // Screen + microphone: keyframes and transcript of the same interval,
+    // files kept in the conversation workspace (004 AC-014, 005 AC-007/009).
+    let chip = host
+        .attach_recent(
+            &conv.thread_id,
+            Some(&conv.thread_id),
+            clip(2.0, true, Some("mic")),
+        )
+        .await
+        .unwrap();
+    assert_eq!(chip.kind, ChipKind::Clip);
+    assert!(chip.label.contains("2 min"), "{}", chip.label);
+    let ChipPayload::Images { paths, caption } = &chip.payload else {
+        panic!("{:?}", chip.payload)
+    };
+    assert!((1..=8).contains(&paths.len()), "{}", paths.len());
+    assert!(
+        paths
+            .iter()
+            .all(|p| p.starts_with(&conv.workspace) && p.exists())
+    );
+    assert_eq!(chip.preview_path.as_ref(), paths.first());
+    let caption = caption.as_deref().unwrap_or_default();
+    assert!(
+        caption.contains("Você: texto ditado de exemplo"),
+        "{caption}"
+    );
+    let wav = paths[0].parent().unwrap().join("mic.wav");
+    assert!(wav.exists(), "audio file of the clip in the workspace");
+
+    // Audio only.
+    let chip = host
+        .attach_recent(
+            &conv.thread_id,
+            Some(&conv.thread_id),
+            clip(1.0, false, Some("both")),
+        )
+        .await
+        .unwrap();
+    assert_eq!(chip.kind, ChipKind::Audio);
+    let ChipPayload::Text { text } = &chip.payload else {
+        panic!()
+    };
+    assert!(text.contains("Você: texto ditado de exemplo"), "{text}");
+
+    // Attached before the conversation existed (draft): the files move into
+    // the workspace of the conversation that sends it.
+    let draft = host
+        .attach_recent("draft", None, clip(1.0, true, None))
+        .await
+        .unwrap();
+    let ChipPayload::Images { paths, .. } = &draft.payload else {
+        panic!()
+    };
+    let draft_dir = paths[0].parent().unwrap().to_path_buf();
+    assert!(!draft_dir.starts_with(&conv.workspace));
+    host.move_tray("draft", &conv.thread_id);
+    host.send(SendRequest {
+        thread_id: conv.thread_id.clone(),
+        text: "o que aconteceu?".into(),
+        tray: conv.thread_id.clone(),
+        accepts_images: true,
+        options: Default::default(),
+    })
+    .await
+    .unwrap();
+    let moved = conv
+        .workspace
+        .join("clips")
+        .join(draft_dir.file_name().unwrap())
+        .join("frame-01.png");
+    assert!(moved.exists(), "{moved:?}");
+    assert!(!draft_dir.exists());
+
+    // Invalid requests and sources without a buffer.
+    for bad in [
+        clip(1.0, false, None),
+        clip(0.0, true, None),
+        clip(31.0, true, None),
+    ] {
+        assert_eq!(
+            host.attach_recent("draft", None, bad)
+                .await
+                .unwrap_err()
+                .code,
+            "invalid"
+        );
+    }
+    assert_eq!(
+        host.attach_recent("draft", None, clip(1.0, false, Some("system")))
+            .await
+            .unwrap_err()
+            .code,
+        "not_recording"
+    );
+    let log = host.access_log(5).unwrap();
+    assert!(
+        log.iter()
+            .any(|e| e.requester == "user" && e.source == "screen")
+    );
+    host.set_paused(true).unwrap();
+    assert_eq!(
+        host.attach_recent("draft", None, clip(1.0, true, None))
+            .await
+            .unwrap_err()
+            .code,
+        "paused"
+    );
+    host.shutdown().await;
+}
+
+#[tokio::test]
 async fn manual_recording_lifecycle() {
     let dir = tempfile::tempdir().unwrap();
     let (platform, _fg) = Platform::fake();
@@ -635,8 +1765,50 @@ async fn manual_recording_lifecycle() {
             .any(|p| p.to_string_lossy().contains("screen-0001")),
         "{out:?}"
     );
+    // QA-032: explicit duration (≈ the 700 ms recorded), playable copies in
+    // the cache and attachment to a conversation.
+    let ms = recs[0].duration_ms.expect("duration");
+    assert!((400..=1500).contains(&ms), "{ms} ms");
+    let media = host.recording_playback(&id).unwrap();
+    let cache = host.paths.captures_tmp();
+    assert!(
+        media
+            .iter()
+            .all(|m| m.path.starts_with(&cache) && m.path.exists())
+    );
+    assert!(
+        media
+            .iter()
+            .any(|m| m.kind == "audio" && m.source == "mic" && m.mime == "audio/wav"),
+        "{media:?}"
+    );
+    assert!(
+        media
+            .iter()
+            .any(|m| m.kind == "video" && m.source == "screen" && m.mime == "video/mp4"),
+        "{media:?}"
+    );
+    let conv = host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+    let attached = host
+        .recording_attach(&id, "draft", Some(&conv.thread_id))
+        .await
+        .unwrap();
+    assert!(
+        attached
+            .chips
+            .iter()
+            .any(|c| c.label.starts_with("mic.wav")),
+        "{attached:?}"
+    );
     host.recording_delete(&id).unwrap();
     assert!(host.recordings().is_empty());
+    assert!(
+        media.iter().all(|m| !m.path.exists()),
+        "playback copies go with the recording"
+    );
     host.shutdown().await;
 }
 
@@ -888,4 +2060,246 @@ async fn video_and_compressed_audio_attachments() {
         .unwrap();
     assert_eq!(info.kind, "audio");
     assert!(info.summary.starts_with("áudio 00:02"), "{}", info.summary);
+}
+
+#[tokio::test]
+async fn access_log_links_the_conversation_and_opens_the_thumbnail() {
+    // QA-031: file-backed store so the test can write an entry the way the
+    // agent tools do (same database, same vault key).
+    let dir = tempfile::tempdir().unwrap();
+    let (platform, _fg) = Platform::fake();
+    let paths = AppPaths::new(dir.path().join("Aura"));
+    let mut cfg = HostConfig::demo(paths.clone(), platform);
+    cfg.siwc.preferred_port = 0;
+    let host = Host::start(cfg).await.unwrap();
+    let conv = host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+
+    let store = aura_store::Store::open(&paths.db()).unwrap();
+    let vault =
+        aura_store::Vault::open(&store, &aura_store::StaticKeyProtector::new([7u8; 32])).unwrap();
+    let repo = aura_app::privacy::PrivacyRepo::new(store);
+    let req = aura_policy::AccessRequest {
+        source: Source::Screen,
+        requester: aura_policy::Requester::Agent {
+            tool: "screen_capture".into(),
+            conversation: conv.conversation_uuid.clone(),
+        },
+        target: aura_policy::Target::Range,
+        visible_windows: vec![],
+        background: false,
+    };
+    let id = repo.log(&req, &aura_policy::Decision::Allow).unwrap();
+    let png = b"\x89PNG-thumb".to_vec();
+    let sealed = vault.seal_bytes("access-thumb", &png).unwrap();
+    repo.complete(id, None, None, Some(&sealed)).unwrap();
+
+    let entry = host.access_log(10).unwrap().remove(0);
+    assert_eq!(entry.id, id);
+    assert_eq!(entry.thread_id.as_deref(), Some(conv.thread_id.as_str()));
+    assert!(entry.has_thumbnail);
+    // "iVBORy10aHVtYg==" is base64 of the literal bytes above.
+    assert_eq!(
+        host.access_thumbnail(id).unwrap().as_deref(),
+        Some("data:image/png;base64,iVBORy10aHVtYg==")
+    );
+
+    let mut rx = host.subscribe();
+    host.reveal_conversation(&conv.thread_id).unwrap();
+    let HostEvent::OpenConversation { thread_id } =
+        until(&mut rx, |e| matches!(e, HostEvent::OpenConversation { .. })).await
+    else {
+        unreachable!()
+    };
+    assert_eq!(thread_id, conv.thread_id);
+    assert_eq!(
+        host.reveal_conversation("nao-existe").unwrap_err().code,
+        "not_found"
+    );
+}
+
+#[tokio::test]
+async fn speech_voice_cloud_consent_and_auto_read() {
+    use axum::routing::post;
+    let e = env().await;
+    // Offline voices of the platform: chosen voice, no consent needed.
+    let opts = e.host.speech_options().unwrap();
+    assert_eq!(
+        opts.voices
+            .iter()
+            .map(|v| v.id.as_str())
+            .collect::<Vec<_>>(),
+        ["fake-pt", "fake-en"]
+    );
+    e.host
+        .update_settings(
+            serde_json::from_value(json!({"ttsVoice": "fake-en", "autoRead": true})).unwrap(),
+        )
+        .unwrap();
+    assert!(e.host.settings().auto_read);
+    assert!(e.host.speak("Olá").await.is_ok());
+    e.host
+        .update_settings(serde_json::from_value(json!({"ttsVoice": "nope"})).unwrap())
+        .unwrap();
+    assert_eq!(e.host.speak("Olá").await.unwrap_err().code, "speech");
+
+    // Cloud voice of a BYOK provider: nothing is sent before the one-time
+    // confirmation (009 AC-006).
+    let bodies = Arc::new(std::sync::Mutex::new(Vec::<serde_json::Value>::new()));
+    let b2 = bodies.clone();
+    let app = axum::Router::new().route(
+        "/v1/audio/speech",
+        post(move |axum::Json(body): axum::Json<serde_json::Value>| {
+            let b2 = b2.clone();
+            async move {
+                b2.lock().unwrap().push(body);
+                ([("content-type", "audio/wav")], b"RIFFqa-voice".to_vec())
+            }
+        }),
+    );
+    let l = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let base = format!("http://{}/v1", l.local_addr().unwrap());
+    tokio::spawn(async move { axum::serve(l, app).await.unwrap() });
+    let p = e
+        .host
+        .save_provider(
+            serde_json::from_value(
+                json!({"name": "Voz QA", "preset": "custom", "wire": "chat", "baseUrl": base}),
+            )
+            .unwrap(),
+            None,
+        )
+        .unwrap();
+    let opts = e.host.speech_options().unwrap();
+    assert_eq!(
+        opts.cloud.iter().map(|c| c.id.as_str()).collect::<Vec<_>>(),
+        [p.id.as_str()]
+    );
+    e.host
+        .update_settings(
+            serde_json::from_value(
+                json!({"ttsVoice": null, "ttsProvider": p.id, "ttsCloudVoice": "nova"}),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    let err = e.host.speak("**Olá**, mundo").await.unwrap_err();
+    assert_eq!(err.code, "consent_required");
+    assert!(err.message.contains("Voz QA"), "{}", err.message);
+    assert!(
+        bodies.lock().unwrap().is_empty(),
+        "nothing sent before consent"
+    );
+    e.host.speech_consent().unwrap();
+    let (b64, mime) = e.host.speak("**Olá**, mundo").await.unwrap();
+    assert_eq!(mime, "audio/wav");
+    assert_eq!(b64, "UklGRnFhLXZvaWNl"); // base64("RIFFqa-voice")
+    assert_eq!(
+        bodies.lock().unwrap()[0],
+        json!({"model": "tts-1", "voice": "nova", "input": "Olá, mundo", "response_format": "wav"})
+    );
+    assert_eq!(e.host.settings().tts_cloud_consent, vec![p.id.clone()]);
+    // Removing the provider forgets its voice and the consent.
+    e.host.remove_provider(&p.id).unwrap();
+    let s = e.host.settings();
+    assert_eq!((s.tts_provider, s.tts_cloud_consent), (None, vec![]));
+}
+
+#[tokio::test]
+async fn diagnostics_show_the_whole_pipeline() {
+    // 010 AC-011: app-server, Gateway, MCP, worker, active captures, account
+    // (no tokens), disk space and versions.
+    let e = env().await;
+    e.host
+        .start_conversation(StartOptions::default())
+        .await
+        .unwrap();
+    e.host
+        .set_source_policy(
+            Source::Mic,
+            CaptureMode::RecentBuffer { minutes: 1 },
+            AgentPermission::Never,
+        )
+        .unwrap();
+    tokio::time::sleep(Duration::from_millis(300)).await;
+    std::fs::write(e.host.paths.root.join("qa-size.bin"), vec![0u8; 1234]).unwrap();
+    let d = e.host.diagnostics().await;
+    assert!(
+        d.gateway.reachable,
+        "gateway answers on 127.0.0.1:{}",
+        d.gateway.port
+    );
+    assert_eq!(d.gateway.port, d.gateway_port);
+    assert_eq!(
+        d.mcp
+            .iter()
+            .map(|m| (m.name.as_str(), m.tools))
+            .collect::<Vec<_>>(),
+        [("aura", 2)]
+    );
+    assert!(!d.worker.installed, "demo build has no aura-worker");
+    assert!(
+        d.capture.active.contains(&"mic".to_string()),
+        "{:?}",
+        d.capture.active
+    );
+    assert!(!d.capture.paused);
+    assert_eq!(d.account, None);
+    assert!(d.disk.aura_bytes >= 1234, "{}", d.disk.aura_bytes);
+    let json = serde_json::to_value(&d).unwrap();
+    for key in ["gateway", "mcp", "worker", "capture", "account", "disk"] {
+        assert!(json.get(key).is_some(), "{key}");
+    }
+}
+
+#[tokio::test]
+async fn selection_chip_follows_the_latest_selection() {
+    // 012 AC-001: returning to the Overlay refreshes one selection chip.
+    let e = env().await;
+    let selections = |host: &Host| -> Vec<String> {
+        host.tray("draft")
+            .into_iter()
+            .filter(|c| c.kind == ChipKind::Selection)
+            .map(|c| match c.payload {
+                ChipPayload::Text { text } => text,
+                _ => String::new(),
+            })
+            .collect()
+    };
+    *e.fg.selection.lock().unwrap() = Some("Aura QA seleção".into());
+    e.host.capture_selection("draft", false).unwrap();
+    e.host.capture_selection("draft", false).unwrap();
+    assert_eq!(
+        selections(&e.host),
+        ["Aura QA seleção"],
+        "same text, one chip"
+    );
+
+    *e.fg.selection.lock().unwrap() = Some("outro trecho".into());
+    e.host.capture_selection("draft", false).unwrap();
+    assert_eq!(selections(&e.host), ["outro trecho"], "new text replaces");
+
+    // Removed by the user: not re-added automatically, only on request.
+    let id = e.host.tray("draft")[0].id.clone();
+    e.host.remove_chip("draft", &id).unwrap();
+    assert!(e.host.capture_selection("draft", false).unwrap().is_none());
+    assert!(selections(&e.host).is_empty());
+    e.host.capture_selection("draft", true).unwrap();
+    assert_eq!(selections(&e.host), ["outro trecho"]);
+
+    // Used by a quick command: the same selection can come back.
+    e.host
+        .expand_quick_command("draft", "/traduzir inglês", "")
+        .await
+        .unwrap();
+    assert!(selections(&e.host).is_empty());
+    e.host.capture_selection("draft", false).unwrap();
+    assert_eq!(selections(&e.host), ["outro trecho"]);
+
+    // No selection in the other app: nothing changes.
+    *e.fg.selection.lock().unwrap() = None;
+    assert!(e.host.capture_selection("draft", false).unwrap().is_none());
+    assert_eq!(selections(&e.host), ["outro trecho"]);
 }

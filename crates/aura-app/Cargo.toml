@@ -35,3 +35,6 @@ zip = { version = "8", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 tempfile.workspace = true
+
+[build-dependencies]
+serde_json.workspace = true

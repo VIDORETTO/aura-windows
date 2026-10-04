@@ -14,6 +14,7 @@ $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
 $exe = Join-Path $root "target\release\aura.exe"
+$worker = Join-Path $root "target\release\aura-worker.exe"
 $stamp = Join-Path $root "target\release\.aura-build"
 $flavor = if ($Demo) { "demo" } else { "real" }
 
@@ -50,8 +51,22 @@ elseif ($newest -and $newest.LastWriteTime -gt (Get-Item $exe).LastWriteTime) {
     $reason = "código mais novo que o executável ($($newest.FullName.Substring($root.Length + 1)))"
 }
 
-if ($reason) {
-    Step "Recompilando: $reason"
+# The speech worker (local voice) is a separate executable next to aura.exe:
+# rebuild it when it is missing, older than its sources or without engines.
+$workerReason = $null
+if (-not $Demo) {
+    $workerNewest = Get-ChildItem (Join-Path $root "crates\aura-worker"), (Join-Path $root "crates\aura-asr") -Recurse -File |
+        Where-Object { $_.FullName -notmatch '\\target\\' } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($Rebuild -or $reason) { $workerReason = "acompanha o app" }
+    elseif (-not (Test-Path $worker)) { $workerReason = "worker de voz ausente" }
+    elseif ($workerNewest.LastWriteTime -gt (Get-Item $worker).LastWriteTime) { $workerReason = "código do worker mais novo" }
+    else {
+        $caps = & $worker --capabilities 2>$null
+        if (-not ("$caps" -match "onnx-parakeet")) { $workerReason = "worker sem motores de voz" }
+    }
+}
+
+function Stop-RunningAura {
     # The running Aura keeps aura.exe locked; its children die with it (Job Object).
     $running = Get-Process aura -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe }
     if ($running) {
@@ -59,14 +74,32 @@ if ($reason) {
         $running | Stop-Process -Force
         Start-Sleep -Milliseconds 800
     }
+}
+
+if ($workerReason) {
+    Step "Preparando o worker de voz com os motores locais ($workerReason)"
+    Stop-RunningAura
+    # transcribe-rs needs libclang (bindgen) and CMake; use the copy in target\qa-tools when present.
+    $clang = Join-Path $root "target\qa-tools\libclang18\libclang-18.1.1.data\platlib\clang\native"
+    if (-not $env:LIBCLANG_PATH -and (Test-Path (Join-Path $clang "libclang.dll"))) { $env:LIBCLANG_PATH = $clang }
+    & (Join-Path $PSScriptRoot "prepare-sidecars.ps1") -Release -Engines
+    if ($LASTEXITCODE -ne 0) { throw "o worker de voz não compilou (precisa de CMake e libclang; defina LIBCLANG_PATH)" }
+    Copy-Item (Join-Path $root "target\release\aura-worker.exe") $worker -Force -ErrorAction SilentlyContinue
+}
+
+if ($reason) {
+    Step "Recompilando: $reason"
+    Stop-RunningAura
     if (-not (Test-Path "apps\desktop\node_modules") -or
         (Get-Item "apps\desktop\pnpm-lock.yaml").LastWriteTime -gt (Get-Item "apps\desktop\node_modules").LastWriteTime) {
         Step "Instalando dependências da interface"
         pnpm -C apps/desktop install --frozen-lockfile
         if ($LASTEXITCODE -ne 0) { throw "pnpm install falhou" }
     }
-    Step "Preparando o sidecar (aura-worker)"
-    & (Join-Path $PSScriptRoot "prepare-sidecars.ps1")
+    if ($Demo) {
+        Step "Preparando o sidecar (aura-worker)"
+        & (Join-Path $PSScriptRoot "prepare-sidecars.ps1")
+    }
     $buildArgs = @("-C", "apps/desktop", "tauri", "build", "--no-bundle")
     if ($Demo) { $buildArgs += @("--features", "demo") }
     Step "Compilando o app (pnpm tauri build --no-bundle$(if ($Demo) { ' --features demo' }))"
@@ -78,7 +111,8 @@ if ($reason) {
 }
 
 if (-not $NoStart) {
-    Step "Iniciando o Aura (Ctrl+Shift+Space abre e fecha o Overlay)"
+    # The first start goes to the tray (001 AC-001); starting it again opens the Overlay.
+    Step "Iniciando o Aura na bandeja (Ctrl+Shift+Space ou executar de novo abre o Overlay)"
     # Already running the same build: the single-instance plugin just shows it.
     Start-Process $exe
 }

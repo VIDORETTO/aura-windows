@@ -1,0 +1,38 @@
+{
+  "acceptance_refs": [
+    "AC-042"
+  ],
+  "environment": "Windows 11; WebView2/EdgeDriver 154.0.4258.53; produção sem demo; duas telas DPI100; SHA256 D6B3A7950E7DA3A2539A4FB42D134ECC3D14EF3101A4BF0311FA6503F56A5384",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/resize.e2e.ts": "27676c5c280542716d884d4d4bee12c47c1647eb9465fc789c803b603cdc9c6e",
+    "apps/desktop/src-tauri/src/overlay.rs": "e41a59b8061d378cbfcebec2fb5d6789647911a6c5950723443b8dbdf51b22f7",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "2c53c5c9faaaa0d4e902c299dd774c0d3d391de5fb422c3fece3dbbec3b5980c",
+    "crates/aura-core/src/placement.rs": "cef6237726080c116616dadc14cacfaa0a2c99ebee488cf1ed9cddac1a21d392",
+    "crates/aura-win/examples/qa_resize.rs": "e078e34550718418192d67e83558beadfe0e8de1692b1af0886bdca435ac8d1a",
+    "specs/011-correcao-auditoria-e2e/plan.md": "3e1fe287e0786ff81542c90616d395e0230ee59ab1e77c14c9c577dba6655213",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950",
+    "target/qa-tools/resize-production-final.log": "8b1fef5b8282035a1d1c15eb338a870ff98e305da64d36755b9e5086c39353ad",
+    "target/qa-tools/rust-tests.log": "660cb9c1e2e8a626f10922c8cfbcce62b9aee866640d9a9a4f0915cc15c33823"
+  },
+  "input_paths": [
+    "target/qa-tools/resize-production-final.log",
+    "target/qa-tools/rust-tests.log",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-core/src/placement.rs",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "crates/aura-win/examples/qa_resize.rs",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "DPI125/150 somente lógica pura; inferência/captura/ASR não exercitados Evidence invalidated because an input changed.",
+  "observations": "9 E2E passaram; mínimo interno expandido 360 entrada324; compacto80; legado64 restaurado360; placement literal DPI125/150 passou",
+  "procedure": "pnpm -C apps/desktop/e2e test --spec ./specs/resize.e2e.ts; cargo test --workspace --exclude aura-desktop; cargo clippy -p aura-desktop -- -D warnings",
+  "result": "stale",
+  "tested_revision": "local:19751baa43c5c6d96b9a3d0d502b81b9495ece3ce87dce9d5be1280e25fee394",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-03T13:16:40+00:00"
+}

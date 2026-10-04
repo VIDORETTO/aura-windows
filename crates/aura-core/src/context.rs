@@ -49,16 +49,47 @@ pub enum ChipPayload {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub enum SummaryUnit {
+    Line,
+    Word,
+    Page,
+    Sheet,
+    Slide,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum SummaryPart {
+    Count { amount: u64, unit: SummaryUnit },
+    Image,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct AttachmentLabel {
+    pub file_name: String,
+    pub parts: Vec<SummaryPart>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct ContextChip {
     pub id: String,
     pub kind: ChipKind,
     pub label: String,
+    /// Optional display metadata; legacy chips keep their original label.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attachment_label: Option<AttachmentLabel>,
     pub preview_path: Option<PathBuf>,
     pub payload: ChipPayload,
     /// Estimated model tokens this chip will consume.
     pub token_estimate: u32,
     /// When set, the chip is shown but will not be sent (privacy policy, model limits).
     pub blocked_reason: Option<String>,
+    /// Folder of files kept with the chip (a Clip's frames and audio); moved
+    /// into the conversation workspace when the chip is sent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub files_dir: Option<PathBuf>,
 }
 
 impl ContextChip {
@@ -67,10 +98,12 @@ impl ContextChip {
             id: Uuid::new_v4().to_string(),
             kind,
             label: label.into(),
+            attachment_label: None,
             preview_path: None,
             token_estimate: estimate_payload_tokens(&payload),
             payload,
             blocked_reason: None,
+            files_dir: None,
         }
     }
 

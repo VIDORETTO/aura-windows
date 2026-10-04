@@ -5,14 +5,38 @@ use windows::Media::SpeechSynthesis::SpeechSynthesizer;
 use windows::Storage::Streams::DataReader;
 use windows::core::HSTRING;
 
-pub fn synthesize(text: &str, language: &str) -> Result<Vec<u8>, String> {
+/// Installed voices as `(id, display name, language)`.
+pub fn voices() -> Vec<(String, String, String)> {
+    let Ok(all) = SpeechSynthesizer::AllVoices() else {
+        return Vec::new();
+    };
+    all.into_iter()
+        .map(|v| {
+            (
+                v.Id().map(|s| s.to_string()).unwrap_or_default(),
+                v.DisplayName().map(|s| s.to_string()).unwrap_or_default(),
+                v.Language().map(|s| s.to_string()).unwrap_or_default(),
+            )
+        })
+        .filter(|(id, _, _)| !id.is_empty())
+        .collect()
+}
+
+pub fn synthesize(text: &str, language: &str, voice: Option<&str>) -> Result<Vec<u8>, String> {
     let err = |e: windows::core::Error| e.message().to_string();
     if text.trim().is_empty() {
         return Err("nada para ler".into());
     }
     let synth = SpeechSynthesizer::new().map_err(err)?;
-    // Prefer a voice for the UI language (e.g. pt-BR "Maria").
-    if let Ok(voices) = SpeechSynthesizer::AllVoices() {
+    if let Some(id) = voice {
+        let all = SpeechSynthesizer::AllVoices().map_err(err)?;
+        let v = all
+            .into_iter()
+            .find(|v| v.Id().map(|s| s == id).unwrap_or(false))
+            .ok_or_else(|| format!("voz não encontrada: {id}"))?;
+        synth.SetVoice(&v).map_err(err)?;
+    } else if let Ok(voices) = SpeechSynthesizer::AllVoices() {
+        // Prefer a voice for the UI language (e.g. pt-BR "Maria").
         let lang = language.to_lowercase();
         let prefix = lang.split('-').next().unwrap_or("").to_string();
         let mut chosen = None;

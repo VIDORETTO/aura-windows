@@ -70,6 +70,16 @@ pub fn privacy_set_source(
 }
 
 #[tauri::command]
+pub fn privacy_set_retention(
+    s: State<'_, AppState>,
+    days: u32,
+    max_gb: u32,
+    apply_to_manual: bool,
+) -> R<PrivacyView> {
+    s.host.set_retention(days, max_gb, apply_to_manual)
+}
+
+#[tauri::command]
 pub fn privacy_set_paused(s: State<'_, AppState>, paused: bool) -> R<PrivacyView> {
     s.host.set_paused(paused)
 }
@@ -87,6 +97,23 @@ pub fn privacy_remove_exclusion(s: State<'_, AppState>, id: String) -> R<Privacy
 #[tauri::command]
 pub fn privacy_access_log(s: State<'_, AppState>, limit: u32) -> R<Vec<AccessLogEntry>> {
     s.host.access_log(limit)
+}
+
+#[tauri::command]
+pub fn privacy_access_thumbnail(s: State<'_, AppState>, id: i64) -> R<Option<String>> {
+    s.host.access_thumbnail(id)
+}
+
+/// Access-log link: shows the Overlay with that conversation.
+#[tauri::command]
+pub fn privacy_open_conversation(
+    app: AppHandle,
+    s: State<'_, AppState>,
+    thread_id: String,
+) -> R<()> {
+    s.host.reveal_conversation(&thread_id)?;
+    overlay::show(&app);
+    Ok(())
 }
 
 #[tauri::command]
@@ -161,10 +188,30 @@ pub fn providers_save(
 }
 
 #[tauri::command]
-pub fn providers_remove(s: State<'_, AppState>, id: String) -> R<()> {
-    s.host.remove_provider(&id)
+pub fn providers_remove(app: AppHandle, s: State<'_, AppState>, id: String) -> R<()> {
+    s.host.remove_provider(&id)?;
+    // Voice/transcription choices that pointed at it were cleared.
+    crate::apply_settings(&app, &s.host.settings());
+    Ok(())
 }
 
+#[tauri::command]
+pub fn providers_model_save(
+    s: State<'_, AppState>,
+    id: String,
+    model: aura_gateway::registry::ModelSpec,
+) -> R<aura_gateway::registry::Provider> {
+    s.host.save_provider_model(&id, model)
+}
+
+#[tauri::command]
+pub fn providers_model_remove(
+    s: State<'_, AppState>,
+    id: String,
+    model_id: String,
+) -> R<aura_gateway::registry::Provider> {
+    s.host.remove_provider_model(&id, &model_id)
+}
 #[tauri::command]
 pub async fn providers_test(s: State<'_, AppState>, id: String) -> R<Provider> {
     s.host.test_provider(&id).await
@@ -292,9 +339,26 @@ pub async fn capture_screen(
     s.host.capture_screen(&tray, window_only).await
 }
 
+/// "@últimos minutos": the user attaches the recent buffer as a Clip.
 #[tauri::command]
-pub fn capture_selection(s: State<'_, AppState>, tray: String) -> R<Option<ContextChip>> {
-    s.host.capture_selection(&tray)
+pub async fn context_attach_recent(
+    s: State<'_, AppState>,
+    tray: String,
+    thread_id: Option<String>,
+    clip: aura_app::host::RecentClip,
+) -> R<ContextChip> {
+    s.host
+        .attach_recent(&tray, thread_id.as_deref(), clip)
+        .await
+}
+
+#[tauri::command]
+pub fn capture_selection(
+    s: State<'_, AppState>,
+    tray: String,
+    explicit: Option<bool>,
+) -> R<Option<ContextChip>> {
+    s.host.capture_selection(&tray, explicit.unwrap_or(false))
 }
 
 #[tauri::command]
@@ -305,6 +369,24 @@ pub async fn attach_file(
     path: PathBuf,
 ) -> R<(AttachmentInfo, ContextChip)> {
     s.host.attach(&tray, thread_id.as_deref(), &path).await
+}
+
+/// Ctrl+V image: base64 from the webview clipboard event.
+#[tauri::command]
+pub async fn attach_clipboard_image(
+    s: State<'_, AppState>,
+    tray: String,
+    thread_id: Option<String>,
+    mime: String,
+    data: String,
+) -> R<(AttachmentInfo, ContextChip)> {
+    use base64::Engine as _;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(data.as_bytes())
+        .map_err(|e| HostError::new("attachment", e.to_string()))?;
+    s.host
+        .attach_clipboard_image(&tray, thread_id.as_deref(), &mime, &bytes)
+        .await
 }
 
 #[tauri::command]
@@ -390,6 +472,14 @@ pub fn mcp_import(s: State<'_, AppState>, names: Vec<String>) -> R<Vec<McpServer
 }
 
 #[tauri::command]
+pub async fn mcp_diagnose(
+    s: State<'_, AppState>,
+    name: String,
+) -> R<aura_app::mcp_diag::McpDiagnosis> {
+    s.host.mcp_diagnose(&name).await
+}
+
+#[tauri::command]
 pub async fn mcp_status(s: State<'_, AppState>) -> R<Vec<aura_app::host::McpStatus>> {
     s.host.mcp_status().await
 }
@@ -413,6 +503,15 @@ pub fn workspace_files(
 #[tauri::command]
 pub fn workspace_read(s: State<'_, AppState>, thread_id: String, path: String) -> R<String> {
     s.host.read_workspace_file(&thread_id, &path)
+}
+
+#[tauri::command]
+pub fn workspace_pdf_preview(
+    s: State<'_, AppState>,
+    thread_id: String,
+    path: String,
+) -> R<aura_app::host::PdfPreview> {
+    s.host.workspace_pdf_preview(&thread_id, &path)
 }
 
 /// Opens a file with its default app, or reveals it in Explorer.
@@ -460,6 +559,54 @@ pub fn skills_create(
 }
 
 #[tauri::command]
+pub async fn skills_catalog(s: State<'_, AppState>) -> R<Vec<aura_app::host::SkillEntry>> {
+    s.host.skills_catalog().await
+}
+
+#[tauri::command]
+pub async fn skills_set_enabled(s: State<'_, AppState>, path: PathBuf, enabled: bool) -> R<()> {
+    s.host.set_skill_enabled(&path, enabled).await
+}
+
+#[tauri::command]
+pub fn memories_get(s: State<'_, AppState>) -> R<aura_app::host::MemoryView> {
+    s.host.memories()
+}
+
+#[tauri::command]
+pub fn memories_forget_fact(s: State<'_, AppState>, fact: String) -> R<aura_app::host::MemoryView> {
+    s.host.forget_memory_fact(&fact)
+}
+
+#[tauri::command]
+pub fn memories_save(
+    s: State<'_, AppState>,
+    summary: String,
+    registry: String,
+) -> R<aura_app::host::MemoryView> {
+    s.host.save_memories(&summary, &registry)
+}
+
+#[tauri::command]
+pub fn memories_forget_all(s: State<'_, AppState>) -> R<()> {
+    s.host.forget_all_memories()
+}
+
+#[tauri::command]
+pub fn skills_source(s: State<'_, AppState>, name: String) -> R<(String, String)> {
+    s.host.skill_source(&name)
+}
+
+#[tauri::command]
+pub fn skills_update(
+    s: State<'_, AppState>,
+    name: String,
+    description: String,
+    body: String,
+) -> R<()> {
+    s.host.update_skill(&name, &description, &body)
+}
+#[tauri::command]
 pub fn skills_delete(s: State<'_, AppState>, name: String) -> R<()> {
     s.host.delete_skill(&name)
 }
@@ -489,6 +636,28 @@ pub fn recording_active(s: State<'_, AppState>) -> Option<String> {
 #[tauri::command]
 pub fn recording_delete(s: State<'_, AppState>, id: String) -> R<()> {
     s.host.recording_delete(&id)
+}
+
+#[tauri::command]
+pub fn recording_playback(
+    s: State<'_, AppState>,
+    id: String,
+) -> R<Vec<aura_app::host::PlaybackMedia>> {
+    s.host.recording_playback(&id)
+}
+
+/// Attaches a recording to the Overlay's current conversation (draft tray,
+/// moved into the open thread by the Overlay) and shows the Overlay.
+#[tauri::command]
+pub async fn recording_attach(
+    app: AppHandle,
+    s: State<'_, AppState>,
+    id: String,
+) -> R<aura_app::host::RecordingAttach> {
+    let res = s.host.recording_attach(&id, "draft", None).await?;
+    overlay::show(&app);
+    let _ = tauri::Emitter::emit_to(&app, overlay::LABEL, "aura://chips-changed", ());
+    Ok(res)
 }
 
 #[tauri::command]
@@ -550,6 +719,21 @@ pub async fn ptt_release(
 #[tauri::command]
 pub async fn ptt_cancel(s: State<'_, AppState>) -> R<PttState> {
     Ok(s.host.ptt_cancel().await)
+}
+
+#[tauri::command]
+pub async fn audio_test_start(
+    s: State<'_, AppState>,
+    source: aura_audio::AudioSourceKind,
+    device: Option<String>,
+) -> R<()> {
+    s.host.audio_test_start(source, device).await
+}
+
+#[tauri::command]
+pub async fn audio_test_stop(s: State<'_, AppState>, source: aura_audio::AudioSourceKind) -> R<()> {
+    s.host.audio_test_stop(source).await;
+    Ok(())
 }
 
 #[tauri::command]
@@ -658,6 +842,32 @@ pub async fn diagnostics(s: State<'_, AppState>) -> R<Diagnostics> {
     Ok(s.host.diagnostics().await)
 }
 
+/// "Resume getting started" (010 AC-006, QA-039): the Overlay shows the
+/// first-run guide again.
+#[tauri::command]
+pub fn onboarding_resume(app: AppHandle, s: State<'_, AppState>) -> R<Settings> {
+    let next = s.host.update_settings(SettingsPatch {
+        onboarded: Some(false),
+        ..Default::default()
+    })?;
+    crate::apply_settings(&app, &next);
+    overlay::show(&app);
+    Ok(next)
+}
+
+/// The build carries a real updater public key (QA-038); with the template
+/// placeholder no update can be verified, so the UI says it is not set up.
+#[tauri::command]
+pub fn updater_configured(app: AppHandle) -> bool {
+    app.config()
+        .plugins
+        .0
+        .get("updater")
+        .and_then(|u| u.get("pubkey"))
+        .and_then(|k| k.as_str())
+        .is_some_and(aura_core::release::updater_key_configured)
+}
+
 /// Windows toast (answer finished while the user was elsewhere).
 #[tauri::command]
 pub fn notify(app: AppHandle, title: String, body: String) -> R<()> {
@@ -668,6 +878,19 @@ pub fn notify(app: AppHandle, title: String, body: String) -> R<()> {
         .body(body)
         .show()
         .map_err(|e| HostError::new("notify", e.to_string()))
+}
+
+#[tauri::command]
+pub fn speech_options(s: State<'_, AppState>) -> R<aura_app::host::SpeechOptions> {
+    s.host.speech_options()
+}
+
+/// One-time consent to send answers to the chosen cloud voice (009 AC-006).
+#[tauri::command]
+pub fn speech_consent(app: AppHandle, s: State<'_, AppState>) -> R<Settings> {
+    let next = s.host.speech_consent()?;
+    crate::apply_settings(&app, &next);
+    Ok(next)
 }
 
 #[tauri::command]

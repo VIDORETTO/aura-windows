@@ -26,6 +26,8 @@ pub struct AudioHub {
     events: broadcast::Sender<HubEvent>,
     running: Arc<AtomicBool>,
     thread: Option<std::thread::JoinHandle<()>>,
+    /// The requested device id when it was unavailable and the default opened.
+    fallback_from: Option<String>,
 }
 
 impl AudioHub {
@@ -36,6 +38,7 @@ impl AudioHub {
     ) -> Result<Self, AudioError> {
         let (tx, _) = broadcast::channel(256);
         let (events, _) = broadcast::channel(16);
+        let mut fallback_from = None;
         let mut stream = match source.open(kind, &device) {
             Ok(s) => s,
             Err(AudioError::NoDevice | AudioError::DeviceLost) if device != DeviceSel::Default => {
@@ -44,6 +47,7 @@ impl AudioHub {
                     DeviceSel::Default => String::new(),
                 };
                 let s = source.open(kind, &DeviceSel::Default)?;
+                fallback_from = Some(wanted.clone());
                 let _ = events.send(HubEvent::DeviceFallback {
                     wanted,
                     using: "default".into(),
@@ -102,7 +106,13 @@ impl AudioHub {
             events,
             running,
             thread: Some(thread),
+            fallback_from,
         })
+    }
+
+    /// The chosen device id when it was missing and the OS default was used.
+    pub fn fallback_from(&self) -> Option<&str> {
+        self.fallback_from.as_deref()
     }
 
     pub fn subscribe(&self) -> broadcast::Receiver<Chunk> {

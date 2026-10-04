@@ -22,6 +22,10 @@ export interface Settings {
   globalVoiceShortcut: string;
   attachScreenOnOpen: boolean;
   sendAfterDictation: boolean;
+  microphoneDeviceId: string | null;
+  systemAudioDeviceId: string | null;
+  /** SKILL.md paths turned off (managed by the skills commands). */
+  disabledSkills: string[];
   defaultModel: string | null;
   defaultEffort: string | null;
   personalInstructions: string;
@@ -32,6 +36,27 @@ export interface Settings {
   asrVocabulary: string[];
   cloudAsrProvider: string | null;
   onboarded: boolean;
+  /** Offline Windows voice (null = by UI language). */
+  ttsVoice: string | null;
+  /** BYOK provider used as a cloud voice (null = offline). */
+  ttsProvider: string | null;
+  ttsCloudVoice: string;
+  /** Providers the user agreed to send answers to; set by `speech_consent`. */
+  ttsCloudConsent: string[];
+  autoRead: boolean;
+  /** Accent color `#rrggbb` (null = Aura's default). */
+  accentColor: string | null;
+}
+
+export interface SpeechVoice {
+  id: string;
+  name: string;
+  language: string;
+}
+
+export interface SpeechOptions {
+  voices: SpeechVoice[];
+  cloud: { id: string; name: string }[];
 }
 
 export type SettingsPatch = Partial<Settings>;
@@ -67,6 +92,8 @@ export interface PrivacyView {
   systemAudio: SourcePolicy;
   paused: boolean;
   exclusions: ExclusionRule[];
+  /** Applied whenever a segment is written (004 AC-016). */
+  retention: { days: number; maxGb: number; applyToManual: boolean };
 }
 
 export interface PrivacyState {
@@ -85,16 +112,44 @@ export interface Recording {
   startedAt: number;
   endedAt: number | null;
   bytes: number;
+  /** Recorded span, once it has ended. */
+  durationMs: number | null;
+}
+
+/** Last minutes of the recent buffer to attach (004 AC-014, 005 AC-007/009). */
+export interface RecentClip {
+  minutes: number;
+  screen: boolean;
+  audio: "mic" | "system" | "both" | null;
+}
+
+/** A playable file of a recording (decrypted copy in the session cache). */
+export interface PlaybackMedia {
+  kind: "audio" | "video";
+  /** `mic`, `system` or `screen`. */
+  source: string;
+  mime: string;
+  path: string;
+}
+
+export interface RecordingAttach {
+  chips: ContextChip[];
+  failed: string[];
 }
 
 export interface AccessLogEntry {
+  id: number;
   at: number;
   source: string;
   requester: string;
   tool: string | null;
   conversation: string | null;
   decision: string;
+  /** Stable code: `covered:N`, `consent`, `user`, `timeout`, a deny reason… */
   reason: string | null;
+  hasThumbnail: boolean;
+  /** Thread of the agent conversation, when it still exists. */
+  threadId: string | null;
 }
 
 export interface ConsentRequest {
@@ -166,6 +221,8 @@ export interface ModelSpec {
   supportsTools: boolean;
   supportsReasoning: boolean;
   estimated: boolean;
+  /** Entered or corrected by the user; discovery keeps it (absent = false). */
+  manual?: boolean;
 }
 
 export interface Provider {
@@ -366,10 +423,16 @@ export interface ContextChip {
   id: string;
   kind: ChipKind;
   label: string;
+  attachmentLabel?: {
+    fileName: string;
+    parts: ({ type: "count"; amount: number; unit: "line" | "word" | "page" | "sheet" | "slide" } | { type: "image" })[];
+  };
   previewPath: string | null;
   payload: ChipPayload;
   tokenEstimate: number;
   blockedReason: string | null;
+  /** Folder of files kept with the chip (Clip frames/audio). */
+  filesDir?: string;
 }
 
 export interface AttachmentInfo {
@@ -423,6 +486,22 @@ export interface DetectedServer {
   spec: McpServerSpec;
   secretNames: string[];
   warnings: string[];
+}
+
+export interface MemoryView {
+  /** memory_summary.md: given to new conversations. */
+  summary: string;
+  /** MEMORY.md: registry the agent searches. */
+  registry: string;
+  facts: string[];
+}
+
+export interface SkillEntry {
+  name: string;
+  description: string;
+  path: string;
+  origin: "aura" | "user" | "system";
+  enabled: boolean;
 }
 
 export interface SkillReview {
@@ -487,6 +566,14 @@ export interface Diagnostics {
   providers: number;
   mcpServers: number;
   pendingConsents: number;
+  gateway: { port: number; reachable: boolean };
+  /** MCP servers as the running app-server sees them. */
+  mcp: { name: string; tools: number; error: string | null }[];
+  worker: { installed: boolean; running: boolean; spawns: number; gpu: boolean; model: string | null };
+  capture: { paused: boolean; active: string[]; recording: boolean };
+  /** Active ChatGPT account (e-mail masked; never tokens). */
+  account: { email: string | null; signedIn: boolean; planUsageEnabled: boolean } | null;
+  disk: { freeBytes: number | null; auraBytes: number };
 }
 
 export interface AppProfile {
@@ -504,6 +591,20 @@ export interface McpStatus {
   name: string;
   tools: string[];
   auth: string | null;
+  /** Why the server did not start; null when connected. */
+  error: string | null;
+}
+
+export interface McpDiagnosis {
+  connected: boolean;
+  exitCode: number | null;
+  log: string[];
+}
+
+export interface PdfPreview {
+  totalPages: number;
+  /** First pages that have a text layer. */
+  pages: { number: number; text: string }[];
 }
 
 export interface WorkspaceFile {
@@ -530,7 +631,11 @@ export type OverlayMode = "compact" | "expanded";
 
 // -------------------------------------------------------------------- events
 
+export type AudioSourceKind = "mic" | "systemAudio";
+
 export type HostEvent =
+  | { channel: "providersChanged"; event: Record<string, never> }
+  | { channel: "audioLevel"; event: { source: AudioSourceKind; dbfs: number } }
   | { channel: "conversation"; event: ConversationEvent }
   | { channel: "login"; event: LoginProgress }
   | { channel: "consent"; event: ConsentRequest }
@@ -539,4 +644,5 @@ export type HostEvent =
   | { channel: "download"; event: { id: string; bytes: number; total: number | null; done: boolean; error: string | null } }
   | { channel: "voice"; event: PttState }
   | { channel: "notice"; event: { level: "info" | "warning" | "error"; message: string } }
+  | { channel: "openConversation"; event: { threadId: string } }
   | { channel: "settings"; event: Settings };

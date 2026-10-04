@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows11 WebView2/driver 154.0.4258.53 production custom-protocol SHA256 E2693A146AADB157DD0BDC26B482AC137BEC80CF4EACDD9488ED4F7C33BC99A3; fresh isolated profiles; DPI 100%",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-058",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/localization.e2e.ts": "3b826daeb4003c48d272ded15aaa4168dbd77f3e2e8bcf22121847220ba2303e",
+    "apps/desktop/src/ipc/bridge.ts": "f3335e05bf33da4242c3ee752e5c94ab160f5aa376275ebeb994445519a8a548",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/ipc/bridge.ts",
+    "apps/desktop/e2e/specs/localization.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Does not approve external OAuth.",
+  "observations": "Bridge initialization and native IPC/events passed.",
+  "procedure": "Vitest bridge tests (concurrent init, reset/injection, retry) inside UI 140/140 and native localization.e2e 3/3 on the final release. Final regression: cargo test --workspace --exclude aura-desktop (45 suites), clippy -D warnings (workspace and aura-desktop with e2e), fmt, ipc_contract golden, UI 140/140, typecheck.",
+  "result": "passed",
+  "tested_revision": "local:c00853b407525a9d0d76d31c5144898a5a3d0e5abfab795f8a1efcafd8bba126",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-04T17:09:08+00:00"
+}

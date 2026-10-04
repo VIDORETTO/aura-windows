@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-042"
+  ],
+  "environment": "Windows11 production ECC7FD46E67E4410404E7A0A29F4F39D60847FBEFCA564FA0BFCC9A6617C8869 two monitors100percent",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/resize.e2e.ts": "27676c5c280542716d884d4d4bee12c47c1647eb9465fc789c803b603cdc9c6e",
+    "apps/desktop/src-tauri/src/overlay.rs": "e41a59b8061d378cbfcebec2fb5d6789647911a6c5950723443b8dbdf51b22f7",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "aab79fc880bddaf590e425ac3a38de53a63ba3d7940fc945484818eef2f11666",
+    "crates/aura-core/src/placement.rs": "cef6237726080c116616dadc14cacfaa0a2c99ebee488cf1ed9cddac1a21d392",
+    "crates/aura-win/examples/qa_resize.rs": "e078e34550718418192d67e83558beadfe0e8de1692b1af0886bdca435ac8d1a",
+    "specs/011-correcao-auditoria-e2e/plan.md": "6c3a9c47904c89ac6dce9cbc286e116c505715620065eab289221fc49dce7dcc",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-core/src/placement.rs",
+    "crates/aura-win/examples/qa_resize.rs",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Native100percent only; 125/150puretests not native proof. Evidence invalidated because an input changed.",
+  "observations": "resize-after-localization9/9 min internal360 input324 legacyrestored, border/corners/menu/reopen passed.",
+  "procedure": "WebDriver resize.e2e production actual mouse probe qa_resize, 9 cases; workspace/UI72/types/fmt",
+  "result": "stale",
+  "tested_revision": "local:6b68f6d4befad587f6be31f2ec3a39cd2dd515660e6d6b823553230760e0beb0",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-03T15:00:40+00:00"
+}

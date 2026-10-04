@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-029"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 D982A0A352F1F8A0712C2CB795714352B659E7153A71992D309F796870DB8AE6",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-041",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/buffer-minutes.e2e.ts": "b2180920644c936fafaad65e947951b0eb81b202ade53931c3b75e389804f9db",
+    "apps/desktop/src/settings/Privacy.tsx": "f96680935f5cd73e206399d30f003c97cf8d69ee8598fc7641b68526848a21d6",
+    "crates/aura-app/src/host.rs": "b492558e05799a99f581e4665f9d0715ae95ab529a048cf32c838a27cb7ed1be",
+    "crates/aura-app/tests/host.rs": "7b1eb4a772465b97db7ae76010b4f21d6f0dd85c070355c8c18d67fe352074c4",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src/settings/Privacy.tsx",
+    "apps/desktop/e2e/specs/buffer-minutes.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Buffer pruning by the chosen minutes relies on existing retention tests; not timed natively. Test screen segments deleted.",
+  "observations": "2 min saved, 45 clamped to 30, persisted after restart.",
+  "procedure": "Host red/green range validation; React red/green minutes field; native red on TK-028 release; native green setting/clamping minutes and restart.",
+  "result": "passed",
+  "tested_revision": "local:c55da2c5ab4122c95cb003593450fc51d5506aa43fd7121fcb4d716fb96c904e",
+  "ticket": "TK-029",
+  "timestamp": "2026-10-04T01:00:42+00:00"
+}

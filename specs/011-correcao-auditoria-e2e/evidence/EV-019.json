@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-007"
+  ],
+  "environment": "Windows11 WebView2 154 release normal no demo/e2e SHA256 697DBDE547A950E6380312ECF9A3BD6737E1990269E40A9E3E88B76854BDE5DD",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-019",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/microphone.e2e.ts": "97b49f869fda6d3dd038ead9775fd93055e8e53817054bea97a636274ce1a35e",
+    "apps/desktop/src/ipc/__fixtures__/contract.json": "e9499ecbd2a8c270f1a1f7bc528f97802d753e9979666025cf731ee30f1defa5",
+    "apps/desktop/src/ipc/mock.ts": "cc814e399ea3cf481d00c97be8fe82db6a795245de5380e0c353511ec3d2adab",
+    "apps/desktop/src/ipc/types.ts": "4784f9b17908a45a2a9b9ce044e410f42a03f24164bf535f42119345ee09ef22",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "054edc974f4faa9f5e9afb2a55809ef3dc5d1ab8b6ab119bb4b6a5544c62ab11",
+    "apps/desktop/src/settings/Voice.tsx": "63c2c030333cf8ab2669d8dd25d70eb4734f8e385d87a27fcbd981f61652a895",
+    "crates/aura-app/src/host.rs": "7416bd32e5b99694c2ffb366a6dd9564979cb9edc03aec7aab05ed6343cdd65b",
+    "crates/aura-app/tests/host.rs": "8b5f32bbf6cb7270be1546242a602438439408fad1453cb8ab559353a35d8b9b",
+    "crates/aura-core/src/settings.rs": "71e8876247322e2e44c1d80a97697af4f85d8bfa41f2948fe56d3686b674b74a",
+    "crates/aura-store/src/settings_repo.rs": "2414add532955b4db4d8009ef7ac9dfc437e1f001b73416ebfbddc648497f437",
+    "specs/011-correcao-auditoria-e2e/plan.md": "f30bd2d6fd8b0874f476adcabc029ba4c8d57e4f6409efdd8083776ce1dd62e8",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "crates/aura-store/src/settings_repo.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "apps/desktop/src/settings/Voice.tsx",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/src/ipc/types.ts",
+    "apps/desktop/src/ipc/mock.ts",
+    "apps/desktop/src/ipc/__fixtures__/contract.json",
+    "apps/desktop/e2e/specs/microphone.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "No ASR, retained PCM, or acoustic identification; device IDs remain adapter friendly names. Other audio findings pending. Evidence invalidated because an input changed.",
+  "observations": "Native two devices Fifine/CABLE selected, listening/cancelled; restart persisted CABLE, default cleared. Both logs 1/1; independent Host device-id assertions; review no blocking finding.",
+  "procedure": "TDD core JSON/Host/UI; Store reopen; UI79/workspace/golden/typecheck/build/clippy/fmt; native microphone initial and separate-process restart.",
+  "result": "stale",
+  "tested_revision": "local:b310df2d547ac191855f231f1b3a7970c43b86a290be39e54fd0d06498d916a3",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-03T19:00:28+00:00"
+}

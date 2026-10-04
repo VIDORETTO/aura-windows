@@ -1,8 +1,9 @@
-import { Server, Sparkles, Trash2, Zap } from "lucide-react";
+import { Pencil, Server, Sparkles, Trash2, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
 import { inTauri } from "../ipc/bridge";
-import type { DetectedServer, McpApprovalMode, McpServerSpec, McpStatus, QuickCommand, SkillReview } from "../ipc/types";
+import { formatArgs, parseArgs } from "../lib/args";
+import type { DetectedServer, McpApprovalMode, McpServerSpec, McpStatus, QuickCommand, SkillEntry, SkillReview, McpDiagnosis } from "../ipc/types";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { Badge, Button, Field, Section, Select, Switch, TextArea, TextField } from "../ui/primitives";
@@ -15,13 +16,34 @@ function useNotifyError() {
 function Skills() {
   const t = useT();
   const fail = useNotifyError();
-  const [skills, setSkills] = useState<SkillReview[]>([]);
+  const [skills, setSkills] = useState<SkillEntry[]>([]);
+  /** Aura skill being edited (name); the create form doubles as the editor. */
+  const [editing, setEditing] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [review, setReview] = useState<{ path: string; review: SkillReview } | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [body, setBody] = useState("");
-  const reload = async () => setSkills(await api.skillsList());
+  const reload = async () => setSkills(await api.skillsCatalog().catch(() => [] as SkillEntry[]));
+  const startEdit = async (name: string) => {
+    try {
+      const [desc, instructions] = await api.skillsSource(name);
+      setCreating(false);
+      setEditing(name);
+      setName(name);
+      setDescription(desc);
+      setBody(instructions);
+    } catch (e) {
+      fail(e);
+    }
+  };
+  const closeEditor = () => {
+    setCreating(false);
+    setEditing(null);
+    setName("");
+    setDescription("");
+    setBody("");
+  };
   useEffect(() => void reload(), []);
 
   const importSkill = async () => {
@@ -78,10 +100,10 @@ function Skills() {
           </div>
         </div>
       )}
-      {creating && (
+      {(creating || editing) && (
         <div className="grid gap-3 py-3">
           <Field label={t("extensions.skills.name")}>
-            <TextField value={name} onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} />
+            <TextField value={name} disabled={editing !== null} onChange={(e) => setName(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} />
           </Field>
           <Field label={t("extensions.skills.description")}>
             <TextField value={description} maxLength={1024} onChange={(e) => setDescription(e.target.value)} />
@@ -90,17 +112,15 @@ function Skills() {
             <TextArea rows={6} value={body} onChange={(e) => setBody(e.target.value)} />
           </Field>
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={() => setCreating(false)}>{t("common.cancel")}</Button>
+            <Button variant="ghost" onClick={closeEditor}>{t("common.cancel")}</Button>
             <Button
               variant="primary"
               disabled={!name || !description}
               onClick={async () => {
                 try {
-                  await api.skillsCreate(name, description, body);
-                  setCreating(false);
-                  setName("");
-                  setDescription("");
-                  setBody("");
+                  if (editing) await api.skillsUpdate(editing, description, body);
+                  else await api.skillsCreate(name, description, body);
+                  closeEditor();
                   await reload();
                 } catch (e) {
                   fail(e);
@@ -113,18 +133,42 @@ function Skills() {
         </div>
       )}
       {skills.length === 0 && !creating && <p className="py-3 text-[13px] text-muted">{t("extensions.skills.empty")}</p>}
-      {skills.map((s) => (
-        <div key={s.manifest.name} className="flex items-center gap-3 py-2.5">
-          <Sparkles size={15} className="text-accent" />
-          <div className="min-w-0 flex-1">
-            <div className="text-sm font-medium">{s.manifest.name}</div>
-            <div className="truncate text-xs text-muted">{s.manifest.description}</div>
-          </div>
-          <Button size="sm" variant="danger" aria-label={t("common.delete")} onClick={async () => { await api.skillsDelete(s.manifest.name); await reload(); }}>
-            <Trash2 size={13} />
-          </Button>
-        </div>
-      ))}
+      <ul>
+        {skills.map((s) => (
+          <li key={s.path} aria-label={s.name} className="flex items-center gap-3 py-2.5">
+            <Sparkles size={15} className="text-accent" />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                {s.name}
+                <Badge tone={s.origin === "aura" ? "accent" : "muted"}>{t(`extensions.skills.origin.${s.origin}`)}</Badge>
+              </div>
+              <div className="truncate text-xs text-muted">{s.description}</div>
+            </div>
+            <Switch
+              label={t("extensions.skills.enable", { name: s.name })}
+              checked={s.enabled}
+              onChange={async (v) => {
+                try {
+                  await api.skillsSetEnabled(s.path, v);
+                  await reload();
+                } catch (e) {
+                  fail(e);
+                }
+              }}
+            />
+            {s.origin === "aura" && (
+              <>
+                <Button size="sm" variant="ghost" aria-label={t("extensions.skills.edit", { name: s.name })} onClick={() => void startEdit(s.name)}>
+                  <Pencil size={13} />
+                </Button>
+                <Button size="sm" variant="danger" aria-label={t("common.delete")} onClick={async () => { await api.skillsDelete(s.name); await reload(); }}>
+                  <Trash2 size={13} />
+                </Button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
     </Section>
   );
 }
@@ -145,18 +189,48 @@ function McpServers() {
   const [secret, setSecret] = useState("");
   const [approval, setApproval] = useState<McpApprovalMode>("askForWrites");
   const [status, setStatus] = useState<McpStatus[]>([]);
+  const parsedArgs = parseArgs(args);
+  const [toolsOf, setToolsOf] = useState<string | null>(null);
+  const [logs, setLogs] = useState<Record<string, McpDiagnosis | "loading">>({});
+  const showLog = async (name: string) => {
+    setLogs((l) => ({ ...l, [name]: "loading" }));
+    try {
+      const d = await api.mcpDiagnose(name);
+      setLogs((l) => ({ ...l, [name]: d }));
+    } catch (e) {
+      setLogs((l) => {
+        const { [name]: _, ...rest } = l;
+        return rest;
+      });
+      fail(e);
+    }
+  };
+  const setToolEnabled = async (s: McpServerSpec, tool: string, on: boolean) => {
+    const disabledTools = on ? s.disabledTools.filter((x) => x !== tool) : [...s.disabledTools.filter((x) => x !== tool), tool];
+    try {
+      await api.mcpSave({ ...s, disabledTools }, [], null);
+      await reload();
+    } catch (e) {
+      fail(e);
+    }
+  };
   const reload = async () => {
     setServers(await api.mcpList());
     setStatus(await api.mcpStatus().catch(() => []));
   };
   useEffect(() => void reload(), []);
+  // Servers start with the agent: keep the state fresh while this page is open.
+  useEffect(() => {
+    const timer = setInterval(() => void api.mcpStatus().then(setStatus).catch(() => undefined), 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const save = async () => {
     const env: Record<string, { kind: "secret" }> = secretVar ? { [secretVar]: { kind: "secret" } } : {};
     const spec: McpServerSpec = {
       name,
       transport: kind === "stdio"
-        ? { type: "stdio", command, args: args.split(/\s+/).filter(Boolean), env, cwd: null }
+        ? { type: "stdio", command, args: parsedArgs.ok ? parsedArgs.args : [], env, cwd: null }
         : { type: "http", url, bearerSecret: !!secret, headers: {} },
       enabled: true,
       disabledTools: [],
@@ -208,10 +282,10 @@ function McpServers() {
       )}
       {adding && (
         <div className="grid grid-cols-2 gap-3 py-3">
-          <Field label="Nome">
+          <Field label={t("extensions.mcp.name")}>
             <TextField value={name} onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9_-]/g, "-"))} />
           </Field>
-          <Field label="Transporte">
+          <Field label={t("extensions.mcp.transport")}>
             <Select value={kind} onChange={(e) => setKind(e.target.value as "stdio" | "http")}>
               <option value="stdio">stdio</option>
               <option value="http">HTTP</option>
@@ -222,10 +296,23 @@ function McpServers() {
               <Field label={t("extensions.mcp.command")}>
                 <TextField value={command} placeholder="npx" onChange={(e) => setCommand(e.target.value)} />
               </Field>
-              <Field label={t("extensions.mcp.args")}>
+              <Field label={t("extensions.mcp.args")} hint={t("extensions.mcp.args.hint")}>
                 <TextField value={args} placeholder="-y @modelcontextprotocol/server-github" onChange={(e) => setArgs(e.target.value)} />
               </Field>
-              <Field label="Variável secreta (opcional)">
+              <div className="col-span-2 -mt-1.5 text-xs">
+                {parsedArgs.ok ? (
+                  parsedArgs.args.length > 0 && (
+                    <ol aria-label={t("extensions.mcp.args.parsed")} className="flex flex-wrap gap-1">
+                      {parsedArgs.args.map((a, i) => (
+                        <li key={i} className="rounded bg-hover px-1.5 py-0.5 font-mono">{a === "" ? t("extensions.mcp.args.empty") : a}</li>
+                      ))}
+                    </ol>
+                  )
+                ) : (
+                  <p role="alert" className="text-danger">{t("extensions.mcp.args.unterminated")}</p>
+                )}
+              </div>
+              <Field label={t("extensions.mcp.secretVar")}>
                 <TextField value={secretVar} placeholder="GITHUB_TOKEN" onChange={(e) => setSecretVar(e.target.value.toUpperCase())} />
               </Field>
             </>
@@ -234,7 +321,7 @@ function McpServers() {
               <TextField value={url} placeholder="https://…/mcp" onChange={(e) => setUrl(e.target.value)} />
             </Field>
           )}
-          <Field label={kind === "http" ? "Token (opcional)" : "Valor secreto"}>
+          <Field label={t(kind === "http" ? "extensions.mcp.token" : "extensions.mcp.secretValue")}>
             <TextField type="password" autoComplete="off" value={secret} onChange={(e) => setSecret(e.target.value)} />
           </Field>
           <Field label={t("extensions.mcp.approval")}>
@@ -246,22 +333,72 @@ function McpServers() {
           </Field>
           <div className="col-span-2 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setAdding(false)}>{t("common.cancel")}</Button>
-            <Button variant="primary" disabled={!name || (kind === "stdio" ? !command : !url)} onClick={() => void save()}>{t("common.save")}</Button>
+            <Button variant="primary" disabled={!name || (kind === "stdio" ? !command || !parsedArgs.ok : !url)} onClick={() => void save()}>{t("common.save")}</Button>
           </div>
         </div>
       )}
       {servers.length === 0 && !adding && <p className="py-3 text-[13px] text-muted">{t("extensions.mcp.empty")}</p>}
       {servers.map((s) => (
-        <div key={s.name} className="flex items-center gap-3 py-2.5">
-          <Server size={15} className="text-muted" />
+        <div key={s.name} className="flex items-start gap-3 py-2.5">
+          <Server size={15} className="mt-0.5 text-muted" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium">{s.name}</div>
             <div className="truncate font-mono text-[11px] text-muted">
-              {s.transport.type === "stdio" ? `${s.transport.command} ${s.transport.args.join(" ")}` : s.transport.url}
+              {s.transport.type === "stdio" ? `${s.transport.command} ${formatArgs(s.transport.args)}`.trim() : s.transport.url}
             </div>
             {(() => {
               const st = status.find((x) => x.name === s.name);
-              return st ? <div className="truncate text-[11px] text-muted" title={st.tools.join(", ")}>{t("extensions.mcp.tools", { n: st.tools.length })}</div> : null;
+              const log = logs[s.name];
+              return (
+                <>
+                  <div role="status" aria-label={t("extensions.mcp.stateOf", { name: s.name })} className={`truncate text-[11px] ${st?.error ? "text-danger" : st ? "text-success" : "text-muted"}`}>
+                    {!s.enabled ? t("extensions.mcp.state.disabled") : st?.error ? t("extensions.mcp.state.error", { reason: st.error }) : st ? t("extensions.mcp.state.connected") : t("extensions.mcp.state.unknown")}
+                  </div>
+                  {st?.error && s.transport.type === "stdio" && (
+                    <button type="button" className="text-[11px] text-muted underline-offset-2 hover:underline" aria-label={t("extensions.mcp.showLogOf", { name: s.name })} onClick={() => void showLog(s.name)}>
+                      {t("extensions.mcp.showLog")}
+                    </button>
+                  )}
+                  {log && (
+                    <pre role="log" aria-label={t("extensions.mcp.logOf", { name: s.name })} className="selectable mt-1 max-h-40 overflow-auto whitespace-pre-wrap rounded bg-hover p-2 font-mono text-[11px]">
+                      {log === "loading"
+                        ? t("common.loading")
+                        : [
+                            log.connected ? t("extensions.mcp.log.connected") : log.exitCode !== null ? t("extensions.mcp.log.exited", { code: log.exitCode }) : t("extensions.mcp.log.noAnswer"),
+                            ...(log.log.length ? log.log : [t("extensions.mcp.log.empty")]),
+                          ].join("\n")}
+                    </pre>
+                  )}
+                </>
+              );
+            })()}
+            {(() => {
+              const st = status.find((x) => x.name === s.name);
+              // Disabled tools are not reported by the server; keep them listed (off).
+              const tools = [...new Set([...(st?.tools ?? []), ...s.disabledTools])].sort();
+              if (tools.length === 0) return null;
+              return (
+                <>
+                  <button type="button" className="text-[11px] text-muted underline-offset-2 hover:underline" aria-expanded={toolsOf === s.name} aria-label={t("extensions.mcp.toolsOf", { name: s.name })} onClick={() => setToolsOf((n) => (n === s.name ? null : s.name))}>
+                    {t("extensions.mcp.tools", { n: tools.length - s.disabledTools.length })}
+                  </button>
+                  {toolsOf === s.name && (
+                    <div className="mt-1.5">
+                      <ul className="flex flex-col gap-1">
+                        {tools.map((tool) => (
+                          <li key={tool}>
+                            <label className="flex items-center gap-1.5 font-mono text-[12px]">
+                              <input type="checkbox" checked={!s.disabledTools.includes(tool)} onChange={(e) => void setToolEnabled(s, tool, e.target.checked)} />
+                              {tool}
+                            </label>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-1 text-[11px] text-muted">{t("extensions.mcp.tools.newConversations")}</p>
+                    </div>
+                  )}
+                </>
+              );
             })()}
           </div>
           {status.find((x) => x.name === s.name)?.auth === "notLoggedIn" && (
@@ -279,11 +416,16 @@ function McpServers() {
 
 function QuickCommands() {
   const t = useT();
+  const language = useApp((s) => s.settings?.language);
   const fail = useNotifyError();
   const [list, setList] = useState<QuickCommand[]>([]);
   const [name, setName] = useState("");
   const [template, setTemplate] = useState("");
-  useEffect(() => void api.quickList().then(setList), []);
+  useEffect(() => {
+    let cancelled = false;
+    void api.quickList().then((commands) => { if (!cancelled) setList(commands); });
+    return () => { cancelled = true; };
+  }, [language]);
   return (
     <Section title={t("extensions.quick")}>
       {list.map((q) => (

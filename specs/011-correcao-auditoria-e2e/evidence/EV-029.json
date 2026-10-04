@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-017"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 4D9E19649079A8FA3723DABADE9B238D390060E1EC39BD6188004DD4F959FDE7; app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-029",
+  "input_fingerprints": {
+    "apps/desktop/e2e/responses.ts": "bfa559197e5638ecc3568667b0ecb1b6e03fb16b1cb1fa478fafdb2582965ef2",
+    "apps/desktop/e2e/specs/compact.e2e.ts": "799c094ba49f4409e2fc66fecd9e12bd2851ae9f5c31aa4eb1553c5b711be99c",
+    "apps/desktop/src/overlay/InputBar.tsx": "a18edd3b41ba3a420a80fd161df0e09ea1c533e4e5d4dcc252f497f77f4b795b",
+    "apps/desktop/src/overlay/Messages.tsx": "3bfa34f1796e0e3c667afebb4927d24361a69e170f67dd6adb60a70bc7620dd4",
+    "apps/desktop/src/overlay/session.ts": "2c0b9e26380b7611f4050a4f17ab575695efec2218f37482e527324b7acfebaf",
+    "apps/desktop/src/state/conversation.ts": "2022d1b5336492a72224a286864fcd5921fd7afbcfaab7515a67ee8b0dcd1037",
+    "specs/011-correcao-auditoria-e2e/plan.md": "bd49be8719ee58d09b10add56e4ca5954751a9486bb6cf5a1d7cf428b43f2ec3",
+    "specs/011-correcao-auditoria-e2e/spec.md": "66fb5d7a39575e103b4e499444c75b397a0157790a2e3454c7d681a1602c4950"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/overlay/Messages.tsx",
+    "apps/desktop/src/state/conversation.ts",
+    "apps/desktop/e2e/responses.ts",
+    "apps/desktop/e2e/specs/compact.e2e.ts",
+    "specs/011-correcao-auditoria-e2e/spec.md",
+    "specs/011-correcao-auditoria-e2e/plan.md"
+  ],
+  "limitations": "Deterministic loopback model; real summary quality not evaluated. Fresh-profile cold start can exceed 150 s.",
+  "observations": "Compaction request with app-server summary prompt; separator shown; next turn carries summary and not the old answer; command never sent as prompt.",
+  "procedure": "React red/green /compactar; native red on TK-016 release; native green with real app-server and deterministic Responses loopback including post-compaction turn; UI suite/typecheck.",
+  "result": "passed",
+  "tested_revision": "local:02875039ade68f79a536e154af3db1fb940e8cdfa76c97e13f10ad4cdca56cd9",
+  "ticket": "TK-017",
+  "timestamp": "2026-10-03T23:23:28+00:00"
+}

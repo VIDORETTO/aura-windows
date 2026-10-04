@@ -90,6 +90,9 @@ pub struct ModelSpec {
     pub supports_reasoning: bool,
     /// True when capabilities were guessed from the name.
     pub estimated: bool,
+    /// Entered or corrected by the user (003 AC-013); discovery keeps it.
+    #[serde(default)]
+    pub manual: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -225,6 +228,16 @@ impl<'a> ProviderRegistry<'a> {
         }
         let id = draft.id.clone().unwrap_or_else(|| slug(&draft.name));
         let existing = self.get(&id)?;
+        // Header names are RFC 7230 tokens; values are single-line.
+        let valid_header = |k: &str, v: &str| {
+            !k.is_empty()
+                && k.bytes()
+                    .all(|b| b.is_ascii_alphanumeric() || b"!#$%&'*+-.^_|~".contains(&b))
+                && !v.contains(['\r', '\n'])
+        };
+        if !draft.extra_headers.iter().all(|(k, v)| valid_header(k, v)) {
+            return Err(RegistryError::Invalid("extraHeaders"));
+        }
         let mut headers = preset.map(|p| p.headers.clone()).unwrap_or_default();
         headers.extend(draft.extra_headers.clone());
         let credential_hint = match &draft.credential {
@@ -240,7 +253,12 @@ impl<'a> ProviderRegistry<'a> {
             preset: draft.preset.clone(),
             wire,
             base_url: base_url.trim_end_matches('/').to_string(),
-            auth: AuthStyle::parse(preset.map(|p| p.auth.as_str()).unwrap_or("bearer")),
+            // A custom endpoint in the Anthropic format authenticates like Anthropic.
+            auth: if draft.preset == "custom" && wire == Wire::Anthropic {
+                AuthStyle::XApiKey
+            } else {
+                AuthStyle::parse(preset.map(|p| p.auth.as_str()).unwrap_or("bearer"))
+            },
             extra_headers: headers,
             models: existing
                 .as_ref()
@@ -348,10 +366,48 @@ impl<'a> ProviderRegistry<'a> {
         self.save(&p)
     }
 
+    /// Stores discovered models; user-entered ones survive and win on the same id.
     pub fn set_models(&self, id: &str, models: Vec<ModelSpec>) -> Result<(), RegistryError> {
         let mut p = self.get(id)?.ok_or(RegistryError::NotFound)?;
-        p.models = models;
+        let manual: Vec<ModelSpec> = p.models.iter().filter(|m| m.manual).cloned().collect();
+        let mut merged: Vec<ModelSpec> = models
+            .into_iter()
+            .filter(|m| !manual.iter().any(|x| x.id == m.id))
+            .collect();
+        merged.extend(manual);
+        p.models = merged;
         self.save(&p)
+    }
+
+    /// Adds or corrects one model by hand (providers without /models).
+    pub fn save_model(&self, id: &str, mut spec: ModelSpec) -> Result<Provider, RegistryError> {
+        spec.id = spec.id.trim().to_string();
+        if spec.id.is_empty()
+            || spec.id.chars().count() > 200
+            || spec.id.chars().any(char::is_control)
+        {
+            return Err(RegistryError::Invalid("modelId"));
+        }
+        spec.display_name = spec
+            .display_name
+            .map(|n| n.trim().to_string())
+            .filter(|n| !n.is_empty());
+        spec.manual = true;
+        spec.estimated = false;
+        let mut p = self.get(id)?.ok_or(RegistryError::NotFound)?;
+        match p.models.iter_mut().find(|m| m.id == spec.id) {
+            Some(existing) => *existing = spec,
+            None => p.models.push(spec),
+        }
+        self.save(&p)?;
+        Ok(p)
+    }
+
+    pub fn remove_model(&self, id: &str, model_id: &str) -> Result<Provider, RegistryError> {
+        let mut p = self.get(id)?.ok_or(RegistryError::NotFound)?;
+        p.models.retain(|m| m.id != model_id);
+        self.save(&p)?;
+        Ok(p)
     }
 
     /// Resolves the request target with the credential read now.
@@ -460,6 +516,122 @@ mod tests {
         reg.remove(&p.id).unwrap();
         assert!(creds.get(&credential_target(&p.id)).unwrap().is_none());
         assert!(reg.list().unwrap().is_empty());
+    }
+
+    #[test]
+    fn manual_models_survive_discovery_and_override_guesses() {
+        let store = Store::open_in_memory().unwrap();
+        let creds = MemoryCredentialStore::new();
+        let reg = ProviderRegistry::new(&store, &creds);
+        let p = reg
+            .upsert(ProviderDraft {
+                id: Some("local".into()),
+                name: "Local".into(),
+                preset: "custom".into(),
+                wire: Some(Wire::Chat),
+                base_url: Some("http://127.0.0.1:9/v1".into()),
+                extra_headers: Default::default(),
+                credential: None,
+            })
+            .unwrap();
+        let spec = |id: &str, images: bool| ModelSpec {
+            id: id.into(),
+            display_name: None,
+            context_window: None,
+            max_output: None,
+            supports_images: images,
+            supports_tools: false,
+            supports_reasoning: false,
+            estimated: true,
+            manual: false,
+        };
+        let saved = reg
+            .save_model(
+                &p.id,
+                ModelSpec {
+                    display_name: Some(" Meu modelo ".into()),
+                    ..spec(" my-model:7b ", true)
+                },
+            )
+            .unwrap();
+        let m = saved.models.iter().find(|m| m.id == "my-model:7b").unwrap();
+        assert!(m.manual && !m.estimated && m.supports_images);
+        assert_eq!(m.display_name.as_deref(), Some("Meu modelo"));
+        // Discovery returns a guess for the same id plus another model.
+        reg.set_models(
+            &p.id,
+            vec![spec("my-model:7b", false), spec("other", false)],
+        )
+        .unwrap();
+        let models = reg.get(&p.id).unwrap().unwrap().models;
+        assert_eq!(models.len(), 2);
+        assert!(
+            models
+                .iter()
+                .find(|m| m.id == "my-model:7b")
+                .unwrap()
+                .supports_images
+        );
+        assert!(matches!(
+            reg.save_model(&p.id, spec("  ", false)),
+            Err(RegistryError::Invalid("modelId"))
+        ));
+        let left = reg.remove_model(&p.id, "my-model:7b").unwrap();
+        assert_eq!(
+            left.models
+                .iter()
+                .map(|m| m.id.as_str())
+                .collect::<Vec<_>>(),
+            ["other"]
+        );
+    }
+
+    #[test]
+    fn custom_provider_format_drives_auth_and_headers_are_validated() {
+        let store = Store::open_in_memory().unwrap();
+        let creds = MemoryCredentialStore::new();
+        let reg = ProviderRegistry::new(&store, &creds);
+        let draft = |wire: Wire, headers: &[(&str, &str)]| ProviderDraft {
+            id: Some("meu".into()),
+            name: "Meu".into(),
+            preset: "custom".into(),
+            wire: Some(wire),
+            base_url: Some("https://llm.example/v1".into()),
+            extra_headers: headers
+                .iter()
+                .map(|(k, v)| (k.to_string(), v.to_string()))
+                .collect(),
+            credential: None,
+        };
+        let anthropic = reg
+            .upsert(draft(Wire::Anthropic, &[("X-Tenant", "alpha")]))
+            .unwrap();
+        assert_eq!(anthropic.auth, AuthStyle::XApiKey);
+        assert_eq!(
+            anthropic.extra_headers.get("X-Tenant").map(String::as_str),
+            Some("alpha")
+        );
+        assert_eq!(
+            reg.upsert(draft(Wire::Chat, &[])).unwrap().auth,
+            AuthStyle::Bearer
+        );
+        assert_eq!(
+            reg.upsert(draft(Wire::Responses, &[])).unwrap().auth,
+            AuthStyle::Bearer
+        );
+        for bad in ["", "X Tenant", "X:Tenant", "Ünicode"] {
+            assert!(
+                matches!(
+                    reg.upsert(draft(Wire::Chat, &[(bad, "v")])),
+                    Err(RegistryError::Invalid("extraHeaders"))
+                ),
+                "{bad:?}"
+            );
+        }
+        assert!(matches!(
+            reg.upsert(draft(Wire::Chat, &[("X-Ok", "line\nbreak")])),
+            Err(RegistryError::Invalid("extraHeaders"))
+        ));
     }
 
     #[test]

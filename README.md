@@ -32,17 +32,19 @@ Para quem usa o Windows o dia todo e quer ajuda de IA sem trocar de janela, copi
 
 ## ✨ Funcionalidades
 
-- **Overlay por atalho** — `Ctrl+Shift+Space` abre e fecha; duplo `Ctrl` opcional. Fica fora do Alt+Tab e da barra de tarefas, e é excluído de capturas e compartilhamento de tela.
-- **Contexto de tela sob o seu controle** — anexe a tela, a janela ativa, uma região ou o texto selecionado como "Chips" visíveis antes do envio. O agente pode pedir para olhar: *permitir uma vez*, *nesta conversa* ou *negar*.
-- **Privacidade por fonte** — tela, microfone e áudio do sistema têm cada um um modo: *desligado*, *sob demanda*, *últimos N minutos*, *gravação manual* ou *sempre gravando*. Janelas de gerenciadores de senha e navegação privada são cobertas por padrão; há pausa global e registro de acesso.
-- **Memória recente** — com o buffer ligado, o agente consegue ver quadros e a transcrição dos últimos minutos. Os segmentos ficam cifrados no disco, com retenção automática.
-- **Seu plano ChatGPT ou sua chave** — 14 predefinições de provedores (OpenAI, Azure OpenAI, OpenRouter, Anthropic, Google Gemini, Groq, DeepSeek, Mistral, xAI, Together AI, Ollama, LM Studio, vLLM e personalizado). As chaves ficam no Cofre do Windows.
-- **Agente com ferramentas** — modos Chat, Tarefa (edita arquivos no workspace e em pastas que você liberar) e Plano; aprovações de comandos e alterações; painéis de arquivos gerados e alterações.
-- **Voz local** — segure `Ctrl+Space` para ditar no Overlay (com transcrição parcial ao vivo) ou use `Ctrl+Alt+Space` para ditar em qualquer app. Modelos Parakeet e Whisper baixados e verificados por SHA-256; transcrição na nuvem opcional como reserva; vocabulário personalizado.
+- **Overlay por atalho** — o Aura inicia na bandeja; `Ctrl+Shift+Space` abre e fecha o Overlay (duplo `Ctrl` opcional). Fica fora do Alt+Tab e da barra de tarefas, é excluído de capturas e compartilhamento de tela e pode ser redimensionado.
+- **Contexto de tela sob o seu controle** — anexe a tela, a janela ativa, uma região, o texto selecionado, uma imagem colada (`Ctrl+V`) ou os últimos minutos do buffer como "Chips" visíveis antes do envio. A seleção é atualizada sempre que você volta ao Overlay depois de selecionar texto em outro app. O agente pode pedir para olhar: *permitir uma vez*, *nesta conversa* ou *negar*.
+- **Privacidade por fonte** — tela, microfone e áudio do sistema têm cada um um modo: *desligado*, *sob demanda*, *últimos N minutos* (1 a 30), *gravação manual* ou *sempre gravando*. Janelas de gerenciadores de senha e navegação privada são cobertas por padrão; há pausa global, retenção configurável (dias e espaço) e um registro de acesso com data e hora exatas, motivo, miniatura do que o agente recebeu e link para a conversa.
+- **Memória recente** — com o buffer ligado, você anexa os últimos minutos (tela, microfone, sistema ou ambos) e o agente consegue ver quadros e a transcrição rotulada ("Você"/"Sistema"). Os segmentos ficam cifrados no disco, com retenção automática.
+- **Gravações** — gravação manual com duração, player no próprio Aura, anexar à conversa (áudio é transcrito) e exportar.
+- **Seu plano ChatGPT ou sua chave** — 14 predefinições de provedores (OpenAI, Azure OpenAI, OpenRouter, Anthropic, Google Gemini, Groq, DeepSeek, Mistral, xAI, Together AI, Ollama, LM Studio, vLLM e personalizado). Edite protocolo, cabeçalhos e modelos manuais com capacidades (imagem, ferramentas, raciocínio); o esforço de raciocínio só aparece para modelos que o suportam. As chaves ficam no Cofre do Windows.
+- **Agente com ferramentas** — modos Chat, Tarefa (edita arquivos no workspace e em pastas que você liberar) e Plano; aprovações de comandos e alterações; painéis de arquivos gerados e alterações (com prévia de HTML e de PDF); `/compactar` resume uma conversa longa; histórico com busca, renomear e paginação.
+- **Voz local** — segure `Ctrl+Space` para ditar no Overlay (com transcrição parcial ao vivo) ou use `Ctrl+Alt+Space` para ditar em qualquer app. Catálogo com velocidade, precisão e recomendação conforme o seu hardware; modelos Parakeet e Whisper baixados e verificados por SHA-256; escolha e teste de microfone e áudio do sistema com medidor; transcrição na nuvem opcional como reserva; vocabulário personalizado.
 - **Anexos** — PDF, planilhas (XLSX/XLS/ODS/CSV), documentos (DOCX/ODT/RTF), apresentações (PPTX/ODP), texto, código, HTML, imagens, áudio e vídeo. O agente pode ler partes específicas depois: páginas, abas e linhas, slides, seções ou intervalos de tempo.
-- **Extensões** — Skills (criar ou importar com revisão), comandos rápidos com `/`, servidores MCP (stdio e HTTP, com OAuth) e importação de configurações MCP do Claude Desktop, Cursor, VS Code e Codex CLI.
-- **Produtividade** — perfis por aplicativo (instruções e padrões por app), ouvir respostas em voz alta, "Inserir no app", Minibar enquanto a resposta roda em segundo plano e notificação ao terminar.
-- **Interface em português e inglês**, temas claro/escuro/sistema, opacidade ajustável e suporte a alto contraste.
+- **Extensões** — Skills (origem, ativar/desativar, editar; criar ou importar com revisão), comandos rápidos com `/`, servidores MCP (stdio e HTTP, com OAuth, ferramentas por servidor, status e log de erros) e importação de configurações MCP do Claude Desktop, Cursor, VS Code e Codex CLI. Memórias revisáveis, editáveis e apagáveis.
+- **Produtividade** — perfis por aplicativo (instruções, modo e modelo padrão por app), ouvir respostas em voz alta (voz do Windows offline ou voz de um provedor na nuvem, com confirmação no primeiro uso, e leitura automática), "Inserir no app", Minibar enquanto a resposta roda em segundo plano e notificação ao terminar.
+- **Diagnóstico completo** — motor do agente, Gateway, servidores MCP, worker de voz, capturas ativas, conta (e-mail mascarado) e espaço em disco; exportação redigida.
+- **Interface em português e inglês**, temas claro/escuro/sistema, **cor de destaque à sua escolha** (cores prontas, seletor RGB ou código hex), opacidade ajustável e suporte a alto contraste.
 
 ## 🧠 Como funciona
 
@@ -56,7 +58,7 @@ flowchart LR
     D --> F["Resposta em tempo real<br/>— copiar, ouvir ou inserir no app"]
 ```
 
-1. **Atalho** — o Aura registra o app que estava na frente e abre o Overlay no mesmo monitor.
+1. **Atalho** — o Aura registra o app que estava na frente (e o texto selecionado nele) e abre o Overlay no mesmo monitor. Com o Overlay aberto, voltar a ele depois de selecionar texto em outro app atualiza a seleção.
 2. **Contexto** — o que for enviado aparece antes como Chips (tela, seleção, arquivos); nada sai sem você ver.
 3. **Agente** — o motor Codex responde e, quando precisa, usa as ferramentas do Aura (ver a tela, ler texto de janelas, ler anexos) respeitando a política de privacidade.
 4. **Resultado** — a resposta chega em streaming, com Markdown e código destacado.
@@ -100,7 +102,19 @@ pnpm -C apps/desktop tauri build
 
 Os instaladores ficam em `target/release/bundle/`. O instalador NSIS instala **só para o seu usuário** (sem privilégios de administrador).
 
-**Verificar:** depois de instalar, o ícone do Aura aparece na bandeja e `Ctrl+Shift+Space` abre o Overlay.
+**Verificar:** depois de instalar, o ícone do Aura aparece na bandeja (com uma notificação) e `Ctrl+Shift+Space` abre o Overlay.
+
+<details>
+<summary><b>Rodar a versão mais recente do código com um clique (<code>iniciar-aura.bat</code>)</b></summary>
+
+Na raiz do repositório, `iniciar-aura.bat` recompila só o que mudou e inicia o Aura:
+
+- o app (`target\release\aura.exe`) quando o código for mais novo que o executável;
+- o worker de voz com os motores locais (Parakeet/Whisper) quando estiver ausente, desatualizado ou sem motores — precisa de CMake e libclang (`LIBCLANG_PATH`).
+
+Opções: `-Demo` (agente simulado), `-Rebuild`, `-Pull` (`git pull --ff-only` antes) e `-NoStart`. O Aura inicia na bandeja; rodar o `.bat` de novo, o atalho ou o ícone da bandeja abrem o Overlay.
+
+</details>
 
 <details>
 <summary><b>Experimentar sem conta (modo demonstração)</b></summary>
@@ -125,15 +139,15 @@ Quase tudo é configurado dentro do app, em **Configurações** (`Ctrl+,` no Ove
 
 | Página | O que você configura |
 |---|---|
-| Geral | Tema, opacidade, idioma, iniciar com o Windows, comportamento ao perder o foco, instruções pessoais, modelo padrão, memórias |
+| Geral | Tema, cor de destaque, opacidade, idioma, iniciar com o Windows, comportamento ao perder o foco, instruções pessoais, modelo padrão, memórias (revisar/editar/apagar), retomar primeiros passos |
 | Conta e modelos | Login "Continuar com ChatGPT", troca de conta, sair |
 | Provedores | Provedores com a sua chave (testar conexão, modelos descobertos) |
-| Privacidade | Modo e permissão do agente por fonte, pausa, janelas excluídas, gravações, registro de acesso |
-| Voz | Modelos de reconhecimento (download/uso/remoção), idioma, transcrição na nuvem, vocabulário, enviar após ditar |
-| Extensões | Skills, servidores MCP, comandos rápidos |
-| Perfis de app | Instruções e padrões aplicados por aplicativo |
+| Privacidade | Modo e permissão do agente por fonte, minutos do buffer, retenção (dias/espaço), pausa, janelas excluídas, gravações (player, anexar, exportar), registro de acesso |
+| Voz | Modelos de reconhecimento (catálogo, download/uso/remoção), microfone e áudio do sistema com teste, idioma, transcrição na nuvem, vocabulário, enviar após ditar, leitura em voz alta (voz, voz na nuvem, leitura automática) |
+| Extensões | Skills, servidores MCP (ferramentas, status e logs), comandos rápidos |
+| Perfis de app | Instruções, modo e modelo padrão aplicados por aplicativo |
 | Atalhos | Atalhos globais e duplo toque em `Ctrl` |
-| Diagnóstico | Estado do motor do agente, exportar diagnóstico redigido, apagar todos os dados |
+| Diagnóstico | Estado do motor do agente, Gateway, MCP, worker de voz, capturas, conta e disco; exportar diagnóstico redigido; apagar todos os dados |
 
 **Onde ficam os dados**
 
@@ -152,7 +166,7 @@ Quase tudo é configurado dentro do app, em **Configurações** (`Ctrl+,` no Ove
 
 ## 🚀 Início rápido
 
-1. Abra o Aura e pressione `Ctrl+Shift+Space`.
+1. Abra o Aura (ele fica na bandeja) e pressione `Ctrl+Shift+Space`.
 2. Clique em **Continuar com ChatGPT** e conclua o login no navegador — ou clique em **Usar minha chave** e adicione um provedor.
 3. Siga os primeiros passos (privacidade, atalho e voz) ou pule.
 4. Com um erro na tela, pressione `Ctrl+Shift+S` para anexar a tela e pergunte: *"o que significa esse erro?"*.
@@ -178,14 +192,19 @@ A resposta chega em streaming no Overlay, que se expande para mostrar a conversa
 | `Ctrl+Enter` durante a resposta | Direcionar a resposta atual |
 | `Ctrl+.` | Interromper |
 | `Ctrl+Shift+S` | Anexar a tela |
+| `Ctrl+Shift+L` | Ouvir a última resposta (de novo para parar) |
+| `Ctrl+Shift+Enter` | Inserir a última resposta (ou o trecho selecionado nela) no app anterior |
+| `Ctrl+V` com imagem | Anexar a imagem da área de transferência |
 | `Ctrl+N` / `Ctrl+Shift+E` | Nova conversa / conversa efêmera (não fica no histórico) |
 | `Ctrl+H` / `Ctrl+,` | Histórico / Configurações |
 | `Ctrl+↑` / `Ctrl+↓` | Compactar / expandir |
-| `Esc` | Fechar menu → cancelar ditado → esconder |
+| `Esc` | Fechar menu → cancelar ditado → fechar histórico (nunca esconde o Overlay; use o atalho ou **Minimizar para a bandeja**) |
 
 ### Adicionar contexto com `@`
 
-Digite `@` para anexar **tela**, **região** (seleção sobre a tela congelada), **janela ativa**, **seleção** ou **arquivo**. Arquivos também podem ser arrastados para o Overlay.
+Digite `@` para anexar **tela**, **região** (seleção sobre a tela congelada), **janela ativa**, **seleção**, **arquivo** ou **últimos minutos** (buffer recente de tela e/ou áudio: microfone, sistema ou ambos). Arquivos também podem ser arrastados para o Overlay e imagens coladas com `Ctrl+V`.
+
+A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalho, ou ao voltar a ele depois de selecionar texto em outro app, ela aparece como um único Chip (uma nova seleção substitui a anterior). Apps cujos campos não expõem o texto pela acessibilidade do Windows não fornecem a seleção.
 
 ### Comandos rápidos com `/`
 
@@ -199,6 +218,7 @@ Digite `@` para anexar **tela**, **região** (seleção sobre a tela congelada),
 | `/resumir-tela` | Anexa a tela e resume o que está nela |
 | `/plano` | Entra no modo Plano |
 | `/tela` | Anexa a tela |
+| `/compactar` | Resume a conversa atual para liberar contexto |
 
 Os comandos usam a seleção, o texto digitado ou os anexos. Você pode criar os seus em Configurações › Extensões, e suas Skills também aparecem no menu `/`.
 
@@ -212,7 +232,7 @@ Os comandos usam a seleção, o texto digitado ou os anexos. Você pode criar os
 
 ## ⬆️ Atualizando
 
-O Aura tem atualização automática assinada: **Configurações › Sobre › Verificar atualizações**. Ela funciona quando houver releases publicadas com os artefatos de atualização; até lá, atualize compilando uma versão nova (veja [Instalação](#-instalação)).
+O Aura tem atualização automática assinada: **Configurações › Sobre › Verificar atualizações**. Ela só funciona em compilações com a chave pública de assinatura configurada e com releases publicadas; sem a chave, o app informa que as atualizações automáticas não estão configuradas. Até lá, atualize compilando uma versão nova (veja [Instalação](#-instalação)) ou rode `iniciar-aura.bat -Pull`.
 
 ## 🗑️ Desinstalação
 
@@ -230,6 +250,10 @@ O Aura tem atualização automática assinada: **Configurações › Sobre › V
 | "O microfone está desligado nas configurações de privacidade" | Em Configurações › Privacidade, mude o modo do microfone de *Desligado* |
 | Chip "bloqueado: janela excluída" | A janela em foco está na lista de exclusões (Configurações › Privacidade) |
 | Chip "bloqueado: privacidade pausada" | Retome com `Ctrl+Shift+Alt+P` ou pelo menu da bandeja |
+| O Aura abriu e não apareceu janela | É o esperado: ele inicia na bandeja. Use `Ctrl+Shift+Space`, o ícone da bandeja ou execute-o de novo |
+| A seleção não vira Chip | O app de origem não expõe o texto via UI Automation, ou a privacidade está pausada / a janela está excluída. Copie e cole o texto, ou use `@tela` |
+| Áudio anexado: "a speech model is needed…" | Instale um modelo de voz em Configurações › Voz (a transcrição do áudio é local) |
+| "Atualizações automáticas não estão configuradas" | A compilação não tem a chave de assinatura do updater; atualize pelo código-fonte |
 | Precisa de ajuda do suporte | Configurações › Diagnóstico › **Exportar diagnóstico** gera um `.zip` sem chaves, tokens nem conteúdo de conversas |
 
 ---
@@ -332,7 +356,7 @@ UPDATE_GOLDEN=1 cargo test -p aura-app --test ipc_contract
 | Unitários e integração (Rust) | `cargo test` |
 | Interface, contrato de IPC, i18n e acessibilidade (axe) | `pnpm -C apps/desktop test` |
 | Ponta a ponta com o Codex app-server real (opt-in) | `AURA_CODEX_BIN=/caminho/codex-app-server cargo test -p aura-app --test real_app_server -- --ignored` |
-| Ponta a ponta no Windows | `pnpm -C apps/desktop/e2e install` e `pnpm -C apps/desktop/e2e test` (após `tauri build --no-bundle --features demo`) |
+| Ponta a ponta no Windows | `pnpm -C apps/desktop/e2e install` e `pnpm -C apps/desktop/e2e test --spec ./specs/<spec>.e2e.ts` com `AURA_E2E_APP` e um `AURA_HOME` isolado; `overlay.e2e` usa a build `--features demo`, as demais o app de produção (detalhes em [docs/qa/HANDOFF-correcao-auditoria-2026-10-03.md](./docs/qa/HANDOFF-correcao-auditoria-2026-10-03.md)) |
 | Desempenho | `cargo run -p aura-bench --release -- all --pid <pid> --out bench/latest.json --baseline bench/baseline.json` |
 
 Roteiros manuais: [acessibilidade](./docs/qa/acessibilidade.md) e [instalação e atualização](./docs/qa/instalacao.md).
@@ -343,7 +367,7 @@ Roteiros manuais: [acessibilidade](./docs/qa/acessibilidade.md) e [instalação 
 |---|---|---|
 | [`ci.yml`](./.github/workflows/ci.yml) | Push em `main` e pull requests | Rust no Linux (fmt, clippy, testes, licenças com `cargo deny`, checagem do alvo Windows) · interface (tipos, testes, build) · Windows (testes, clippy, build do app) · E2E no Windows (build demo) |
 | [`perf.yml`](./.github/workflows/perf.yml) | Manual e semanal | Mede com `aura-bench` e compara com `bench/baseline.json` |
-| [`release.yml`](./.github/workflows/release.yml) | Tags `v*` | Gera instaladores e artefatos do updater como release em rascunho |
+| [`release.yml`](./.github/workflows/release.yml) | Tags `v*` | Confere a chave do updater (`scripts/check-updater-key.mjs`) e gera instaladores e artefatos do updater como release em rascunho |
 
 ## 🔐 Segurança
 
@@ -357,7 +381,9 @@ Veja a política completa e como reportar vulnerabilidades em [SECURITY.md](./SE
 ## ⚠️ Limitações
 
 - **Só Windows.** O núcleo compila em outros sistemas, mas captura, atalhos, cofre e áudio dependem de APIs do Windows.
-- **Pré-lançamento.** O shell e os adaptadores do Windows ainda estão sendo validados no Windows ([docs/HANDOFF.md](./docs/HANDOFF.md)); não há instaladores publicados.
+- **Pré-lançamento.** Os 42 achados da auditoria funcional foram corrigidos e verificados no app real, exceto o arraste com DPI 125%/150% (não testado) e a chave de assinatura do updater (ainda não configurada) — ver [docs/qa/auditoria-e2e-2026-10-02.md](./docs/qa/auditoria-e2e-2026-10-02.md). Não há instaladores publicados.
+- **Seleção de texto** depende de UI Automation (TextPattern); não há cópia sintética com `Ctrl+C`.
+- **Cor de destaque** não muda o ícone da bandeja nem o do executável.
 - **Anexos:** até 200 MB por arquivo, 500 páginas por PDF e 2 horas de áudio/vídeo. PDFs escaneados dependem de OCR; codecs de áudio/vídeo além de WAV dependem do Media Foundation do Windows.
 - **Voz local** exige compilar o worker com os motores (`--features engines`, CMake e Clang); sem isso, use a transcrição na nuvem.
 - **OCR** depende dos pacotes de idioma instalados no Windows.
