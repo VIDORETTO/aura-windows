@@ -290,6 +290,11 @@ pub async fn conversation_archive(s: State<'_, AppState>, thread_id: String) -> 
 }
 
 #[tauri::command]
+pub async fn conversation_unarchive(s: State<'_, AppState>, thread_id: String) -> R<()> {
+    s.host.unarchive(&thread_id).await
+}
+
+#[tauri::command]
 pub async fn conversation_delete(s: State<'_, AppState>, thread_id: String) -> R<()> {
     s.host.delete_conversation(&thread_id).await
 }
@@ -350,6 +355,16 @@ pub async fn context_attach_recent(
     s.host
         .attach_recent(&tray, thread_id.as_deref(), clip)
         .await
+}
+
+/// Skill chosen in the `/` menu: a Chip, not `$name` text (015).
+#[tauri::command]
+pub async fn context_attach_skill(
+    s: State<'_, AppState>,
+    tray: String,
+    name: String,
+) -> R<ContextChip> {
+    s.host.attach_skill(&tray, &name).await
 }
 
 #[tauri::command]

@@ -388,3 +388,238 @@ async fn probe_raw_responses_request() {
     }
     host.shutdown().await;
 }
+
+/// Task mode must not write outside the conversation workspace and granted
+/// folders without an Approval. The mock model asks the shell to create a
+/// file in a folder that is neither; the turn must request approval (we
+/// decline) or the sandbox must deny the write.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "needs AURA_CODEX_BIN (real app-server)"]
+async fn real_app_server_task_mode_confines_writes() {
+    use aura_codex::modes::ConversationMode;
+    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
+        return;
+    };
+    let dir = tempfile::Builder::new()
+        .prefix("aura-sbx")
+        .tempdir_in(std::env::var("AURA_E2E_DIR").unwrap_or_else(|_| ".".into()))
+        .unwrap();
+    // AURA_SBX_OUTSIDE picks another folder (e.g. the real Desktop).
+    let outside = std::env::var_os("AURA_SBX_OUTSIDE")
+        .map(std::path::PathBuf::from)
+        .unwrap_or_else(|| dir.path().join("outside"));
+    std::fs::create_dir_all(&outside).unwrap();
+    let target = outside.join("aura-sbx-escaped.txt");
+    let _ = std::fs::remove_file(&target);
+
+    let tools_seen = Arc::new(Mutex::new(Vec::<String>::new()));
+    let ts = tools_seen.clone();
+    let target_s = target.display().to_string();
+    let app = Router::new()
+        .route(
+            "/v1/chat/completions",
+            post(move |axum::Json(b): axum::Json<Value>| {
+                let ts = ts.clone();
+                let target_s = target_s.clone();
+                async move {
+                    let names: Vec<String> = b["tools"]
+                        .as_array()
+                        .into_iter()
+                        .flatten()
+                        .filter_map(|t| t["function"]["name"].as_str().map(str::to_string))
+                        .collect();
+                    *ts.lock().unwrap() = names.clone();
+                    let escalate = b["messages"].to_string().contains("escalado");
+                    let last_role = b["messages"]
+                        .as_array()
+                        .and_then(|m| m.last())
+                        .and_then(|m| m["role"].as_str())
+                        .unwrap_or_default()
+                        .to_string();
+                    let shell = names
+                        .iter()
+                        .find(|n| *n == "shell_command" || *n == "exec_command" || *n == "shell")
+                        .cloned();
+                    let mut sse = String::new();
+                    match (last_role.as_str(), shell) {
+                        ("tool", _) | (_, None) => {
+                            sse.push_str(&chunk(json!({"role": "assistant", "content": "done"}), None));
+                            sse.push_str(&chunk(json!({}), Some("stop")));
+                        }
+                        (_, Some(name)) => {
+                            let script = format!("Set-Content -LiteralPath '{target_s}' -Value escaped");
+                            let args = match name.as_str() {
+                                "exec_command" if escalate => json!({"cmd": script,
+                                    "sandbox_permissions": "require_escalated", "justification": "teste"}),
+                                "exec_command" => json!({"cmd": script}),
+                                "shell_command" => json!({"command": script}),
+                                _ => json!({"command": ["powershell", "-NoProfile", "-Command", script]}),
+                            };
+                            sse.push_str(&chunk(
+                                json!({"role": "assistant", "tool_calls": [{"index": 0, "id": "call_w", "type": "function",
+                                    "function": {"name": name, "arguments": args.to_string()}}]}),
+                                None,
+                            ));
+                            sse.push_str(&chunk(json!({}), Some("tool_calls")));
+                        }
+                    }
+                    sse.push_str("data: [DONE]\n\n");
+                    ([("content-type", "text/event-stream")], sse)
+                }
+            }),
+        )
+        .route(
+            "/v1/models",
+            get(|| async {
+                axum::Json(json!({"object": "list", "data": [{"id": "mock-model", "object": "model"}]}))
+            }),
+        );
+    let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+    let port = listener.local_addr().unwrap().port();
+    tokio::spawn(async move { axum::serve(listener, app).await.unwrap() });
+
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.codex = CodexRuntime::Binary {
+        program: Some(bin.into()),
+        on_spawn: None,
+    };
+    let host = Host::start(cfg).await.expect("host");
+    let draft = serde_json::from_value(
+        json!({"name": "Mock", "preset": "custom", "baseUrl": format!("http://127.0.0.1:{port}/v1")}),
+    )
+    .unwrap();
+    let provider = host.save_provider(draft, Some("sk-x".into())).unwrap();
+    let mut rx = host.subscribe();
+    let conv = host
+        .start_conversation(StartOptions {
+            mode: ConversationMode::Task {
+                granted: vec![],
+                network: false,
+            },
+            provider: format!("aura-{}", provider.id),
+            model: Some("mock-model".into()),
+            ..Default::default()
+        })
+        .await
+        .expect("thread/start");
+    let mut approvals = Vec::new();
+    let mut commands = Vec::new();
+    // 1) Direct write: the sandbox must deny it. 2) Escalation: Approval, declined.
+    for text in ["crie o arquivo", "crie o arquivo escalado"] {
+        host.send(SendRequest {
+            thread_id: conv.thread_id.clone(),
+            text: text.into(),
+            tray: conv.thread_id.clone(),
+            accepts_images: false,
+            options: Default::default(),
+        })
+        .await
+        .unwrap();
+        loop {
+            let e = tokio::time::timeout(Duration::from_secs(120), rx.recv())
+                .await
+                .expect("turn finished in time")
+                .expect("open");
+            match e {
+                HostEvent::Conversation(ConversationEvent::ApprovalRequested {
+                    request_id,
+                    command,
+                    ..
+                }) => {
+                    approvals.push(command.unwrap_or_default());
+                    host.respond(&request_id, aura_codex::approvals::Decision::Decline)
+                        .await
+                        .unwrap();
+                }
+                HostEvent::Conversation(ConversationEvent::TurnCompleted { .. }) => break,
+                HostEvent::Conversation(ev) => {
+                    let s = format!("{ev:?}");
+                    if s.contains("Command") {
+                        commands.push(s);
+                    }
+                }
+                _ => {}
+            }
+        }
+        assert!(!target.exists(), "{text}: wrote outside the workspace");
+    }
+    assert_eq!(
+        approvals.len(),
+        1,
+        "escalation must ask for approval: {approvals:?}"
+    );
+    eprintln!("tools offered: {:?}", tools_seen.lock().unwrap());
+    eprintln!("approvals: {approvals:?}");
+    for c in &commands {
+        eprintln!("cmd: {}", &c[..c.len().min(400)]);
+    }
+    host.shutdown().await;
+    let escaped = target.exists();
+    let _ = std::fs::remove_file(&target);
+    assert!(
+        !escaped,
+        "Task mode wrote outside the workspace without approval: {}",
+        target.display()
+    );
+}
+
+/// History: archive → listed only among archived → `thread/unarchive` → active again.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "needs AURA_CODEX_BIN (real app-server)"]
+async fn real_app_server_archive_and_unarchive() {
+    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
+        return;
+    };
+    let (base_url, _seen) = mock_provider().await;
+    let dir = tempfile::Builder::new()
+        .prefix("aura-arch")
+        .tempdir_in(std::env::var("AURA_E2E_DIR").unwrap_or_else(|_| ".".into()))
+        .unwrap();
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.codex = CodexRuntime::Binary {
+        program: Some(bin.into()),
+        on_spawn: None,
+    };
+    let host = Host::start(cfg).await.expect("host");
+    let draft =
+        serde_json::from_value(json!({"name": "Mock", "preset": "custom", "baseUrl": base_url}))
+            .unwrap();
+    let provider = host.save_provider(draft, Some("sk-x".into())).unwrap();
+    let mut rx = host.subscribe();
+    let conv = host
+        .start_conversation(StartOptions {
+            provider: format!("aura-{}", provider.id),
+            model: Some("mock-model".into()),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    turn(&host, &mut rx, &conv.thread_id, "ping").await;
+    let listed = |archived: bool| {
+        let host = &host;
+        async move {
+            host.history(aura_codex::service::HistoryQuery {
+                archived,
+                ..Default::default()
+            })
+            .await
+            .unwrap()
+            .items
+            .into_iter()
+            .map(|i| i.id)
+            .collect::<Vec<_>>()
+        }
+    };
+    assert!(listed(false).await.contains(&conv.thread_id));
+    host.archive(&conv.thread_id).await.unwrap();
+    assert!(!listed(false).await.contains(&conv.thread_id));
+    assert!(listed(true).await.contains(&conv.thread_id));
+    host.unarchive(&conv.thread_id).await.unwrap();
+    assert!(listed(false).await.contains(&conv.thread_id));
+    assert!(!listed(true).await.contains(&conv.thread_id));
+    host.shutdown().await;
+}

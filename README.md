@@ -37,7 +37,8 @@ Para quem usa o Windows o dia todo e quer ajuda de IA sem trocar de janela, copi
 - **Privacidade por fonte** — tela, microfone e áudio do sistema têm cada um um modo: *desligado*, *sob demanda*, *últimos N minutos* (1 a 30), *gravação manual* ou *sempre gravando*. Janelas de gerenciadores de senha e navegação privada são cobertas por padrão; há pausa global, retenção configurável (dias e espaço) e um registro de acesso com data e hora exatas, motivo, miniatura do que o agente recebeu e link para a conversa.
 - **Memória recente** — com o buffer ligado, você anexa os últimos minutos (tela, microfone, sistema ou ambos) e o agente consegue ver quadros e a transcrição rotulada ("Você"/"Sistema"). Os segmentos ficam cifrados no disco, com retenção automática.
 - **Gravações** — gravação manual com duração, player no próprio Aura, anexar à conversa (áudio é transcrito) e exportar.
-- **Seu plano ChatGPT ou sua chave** — 14 predefinições de provedores (OpenAI, Azure OpenAI, OpenRouter, Anthropic, Google Gemini, Groq, DeepSeek, Mistral, xAI, Together AI, Ollama, LM Studio, vLLM e personalizado). Edite protocolo, cabeçalhos e modelos manuais com capacidades (imagem, ferramentas, raciocínio); o esforço de raciocínio só aparece para modelos que o suportam. As chaves ficam no Cofre do Windows.
+- **Seu plano ChatGPT ou sua chave** — 14 predefinições de provedores (OpenAI, Azure OpenAI, OpenRouter, Anthropic, Google Gemini, Groq, DeepSeek, Mistral, xAI, Together AI, Ollama, LM Studio, vLLM e personalizado). Edite protocolo, cabeçalhos e modelos manuais com capacidades (imagem, ferramentas, raciocínio) e os esforços que cada modelo aceita, com o esforço padrão. Inclui o **GPT-6.1 Sol** (no plano ChatGPT e em provedores compatíveis, com esforços até *Max*). As chaves ficam no Cofre do Windows.
+- **Esforço de raciocínio por modelo e modo** — escolha *Nenhum*, *Mínimo*, *Baixo*, *Médio*, *Alto*, *Muito alto* ou *Máximo* (conforme o modelo) para Chat, Tarefa e Plano; o Aura lembra a escolha feita no seletor e há uma tabela em Configurações › Conta e modelos.
 - **Agente com ferramentas** — modos Chat, Tarefa (edita arquivos no workspace e em pastas que você liberar) e Plano; aprovações de comandos e alterações; painéis de arquivos gerados e alterações (com prévia de HTML e de PDF); `/compactar` resume uma conversa longa; histórico com busca, renomear e paginação.
 - **Voz local** — segure `Ctrl+Space` para ditar no Overlay (com transcrição parcial ao vivo) ou use `Ctrl+Alt+Space` para ditar em qualquer app. Catálogo com velocidade, precisão e recomendação conforme o seu hardware; modelos Parakeet e Whisper baixados e verificados por SHA-256; escolha e teste de microfone e áudio do sistema com medidor; transcrição na nuvem opcional como reserva; vocabulário personalizado.
 - **Anexos** — PDF, planilhas (XLSX/XLS/ODS/CSV), documentos (DOCX/ODT/RTF), apresentações (PPTX/ODP), texto, código, HTML, imagens, áudio e vídeo. O agente pode ler partes específicas depois: páginas, abas e linhas, slides, seções ou intervalos de tempo.
@@ -140,8 +141,8 @@ Quase tudo é configurado dentro do app, em **Configurações** (`Ctrl+,` no Ove
 | Página | O que você configura |
 |---|---|
 | Geral | Tema, cor de destaque, opacidade, idioma, iniciar com o Windows, comportamento ao perder o foco, instruções pessoais, modelo padrão, memórias (revisar/editar/apagar), retomar primeiros passos |
-| Conta e modelos | Login "Continuar com ChatGPT", troca de conta, sair |
-| Provedores | Provedores com a sua chave (testar conexão, modelos descobertos) |
+| Conta e modelos | Login "Continuar com ChatGPT", troca de conta, sair; esforço de raciocínio por modelo e modo |
+| Provedores | Provedores com a sua chave (testar conexão, modelos descobertos, modelos manuais com capacidades e esforços) |
 | Privacidade | Modo e permissão do agente por fonte, minutos do buffer, retenção (dias/espaço), pausa, janelas excluídas, gravações (player, anexar, exportar), registro de acesso |
 | Voz | Modelos de reconhecimento (catálogo, download/uso/remoção), microfone e áudio do sistema com teste, idioma, transcrição na nuvem, vocabulário, enviar após ditar, leitura em voz alta (voz, voz na nuvem, leitura automática) |
 | Extensões | Skills, servidores MCP (ferramentas, status e logs), comandos rápidos |
@@ -229,6 +230,10 @@ Os comandos usam a seleção, o texto digitado ou os anexos. Você pode criar os
 | **Chat** | Responder e ler; nunca altera nada |
 | **Tarefa** | Criar e alterar arquivos no workspace da conversa e em pastas que você liberar, com aprovação |
 | **Plano** | Pesquisar e planejar; não executa |
+
+Dá para trocar de modo no meio da conversa pelo mesmo seletor: aparece "Modo alterado para …" e, a partir da mensagem seguinte, o agente segue o modo novo (as permissões do turno mudam e ele é avisado de que o modo anterior não vale mais).
+
+O esforço de raciocínio fica no mesmo seletor (modelo e modo). O valor escolhido é lembrado para aquele modelo e modo e volta sozinho na próxima vez; em **Configurações › Conta e modelos › Esforço por modelo e modo** você vê e muda todos de uma vez. Modelos de provedores personalizados mostram os esforços que você cadastrou para eles.
 
 ## ⬆️ Atualizando
 

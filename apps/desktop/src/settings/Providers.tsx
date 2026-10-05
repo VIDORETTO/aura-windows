@@ -5,6 +5,10 @@ import type { ModelSpec, Preset, Provider, Wire } from "../ipc/types";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { Badge, Button, Field, Section, Select, Spinner, TextField } from "../ui/primitives";
+import { effortLabel } from "./EffortPresets";
+
+/** Efforts a manual model can accept, lowest first (as the host validates). */
+const EFFORTS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"];
 
 /** RFC 7230 token, as the gateway validates it. */
 const HEADER_NAME = /^[A-Za-z0-9!#$%&'*+.^_|~-]+$/;
@@ -177,7 +181,7 @@ export function ProvidersSection() {
               <Badge tone={p.status === "verified" ? "success" : p.status === "error" ? "danger" : "muted"}>{t(`providers.status.${p.status}`)}</Badge>
             </div>
             <div className="truncate text-xs text-muted">
-              {p.baseUrl} · {p.wire} {p.credentialHint ? `· ${p.credentialHint}` : ""} · {t("providers.models", { n: p.models.length })}
+              {p.baseUrl} · {p.wire} {p.credentialHint ? `· ${p.credentialHint}` : ""}
             </div>
             {p.lastError && <div className="text-xs text-danger">{p.lastError}</div>}
           </div>
@@ -208,7 +212,7 @@ export function ProvidersSection() {
   );
 }
 
-const EMPTY_MODEL: ModelSpec = { id: "", displayName: null, contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: false, supportsReasoning: false, estimated: false };
+const EMPTY_MODEL: ModelSpec = { id: "", displayName: null, contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: false, supportsReasoning: false, estimated: false, efforts: [], defaultEffort: null };
 
 /** Models of one provider: discovered or entered by hand (003 AC-013). */
 function ProviderModels({ provider, onChange }: { provider: Provider; onChange: () => Promise<void> }) {
@@ -216,7 +220,14 @@ function ProviderModels({ provider, onChange }: { provider: Provider; onChange: 
   const notify = useApp((s) => s.notify);
   const [draft, setDraft] = useState<ModelSpec | null>(null);
   const caps = (m: ModelSpec) =>
-    [m.supportsImages && t("picker.cap.images"), m.supportsTools && t("picker.cap.tools"), m.supportsReasoning && t("picker.cap.reasoning")].filter(Boolean).join(" · ") || t("picker.cap.textOnly");
+    [
+      m.supportsImages && t("picker.cap.images"),
+      m.supportsTools && t("picker.cap.tools"),
+      m.supportsReasoning && t("picker.cap.reasoning"),
+      m.efforts?.length ? m.efforts.map((e) => effortLabel(t, e)).join(", ") : null,
+    ]
+      .filter(Boolean)
+      .join(" · ") || t("picker.cap.textOnly");
   const run = async (fn: () => Promise<unknown>) => {
     try {
       await fn();
@@ -228,7 +239,9 @@ function ProviderModels({ provider, onChange }: { provider: Provider; onChange: 
   const save = () =>
     draft &&
     void run(async () => {
-      await api.providersModelSave(provider.id, { ...draft, id: draft.id.trim(), displayName: draft.displayName?.trim() || null, estimated: false });
+      const efforts = draft.supportsReasoning ? EFFORTS.filter((e) => draft.efforts?.includes(e)) : [];
+      const defaultEffort = draft.defaultEffort && efforts.includes(draft.defaultEffort) ? draft.defaultEffort : null;
+      await api.providersModelSave(provider.id, { ...draft, id: draft.id.trim(), displayName: draft.displayName?.trim() || null, estimated: false, efforts, defaultEffort });
       setDraft(null);
     });
   const flag = (key: "supportsImages" | "supportsTools" | "supportsReasoning", label: string) => (
@@ -247,7 +260,7 @@ function ProviderModels({ provider, onChange }: { provider: Provider; onChange: 
               <span className="min-w-0 flex-1 truncate">
                 {label} <span className="text-xs text-muted">· {caps(m)}{m.manual ? ` · ${t("providers.model.manual")}` : m.estimated ? ` · ${t("providers.model.estimated")}` : ""}</span>
               </span>
-              <Button size="sm" variant="ghost" aria-label={t("providers.model.edit", { name: label })} onClick={() => setDraft({ ...m })}>
+              <Button size="sm" variant="ghost" aria-label={t("providers.model.edit", { name: label })} onClick={() => setDraft({ ...m, efforts: m.efforts ?? [], defaultEffort: m.defaultEffort ?? null })}>
                 <Pencil size={12} />
               </Button>
               {m.manual && (
@@ -275,6 +288,39 @@ function ProviderModels({ provider, onChange }: { provider: Provider; onChange: 
             {flag("supportsTools", t("picker.cap.tools"))}
             {flag("supportsReasoning", t("picker.cap.reasoning"))}
           </div>
+          {draft.supportsReasoning && (
+            <>
+              <fieldset aria-label={t("providers.model.efforts")} className="col-span-2 flex flex-wrap items-center gap-3">
+                <legend className="mb-1 text-xs text-muted">{t("providers.model.efforts")}</legend>
+                {EFFORTS.map((e) => (
+                  <label key={e} className="flex items-center gap-1.5 text-[13px]">
+                    <input
+                      type="checkbox"
+                      checked={!!draft.efforts?.includes(e)}
+                      onChange={(ev) =>
+                        setDraft((d) => {
+                          if (!d) return d;
+                          const efforts = ev.target.checked ? [...(d.efforts ?? []), e] : (d.efforts ?? []).filter((x) => x !== e);
+                          return { ...d, efforts, defaultEffort: d.defaultEffort && efforts.includes(d.defaultEffort) ? d.defaultEffort : null };
+                        })
+                      }
+                    />
+                    {effortLabel(t, e)}
+                  </label>
+                ))}
+              </fieldset>
+              <Field label={t("providers.model.defaultEffort")}>
+                <Select aria-label={t("providers.model.defaultEffort")} value={draft.defaultEffort ?? ""} onChange={(e) => setDraft({ ...draft, defaultEffort: e.target.value || null })}>
+                  <option value="">{t("providers.model.defaultEffort.none")}</option>
+                  {EFFORTS.filter((e) => draft.efforts?.includes(e)).map((e) => (
+                    <option key={e} value={e}>
+                      {effortLabel(t, e)}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            </>
+          )}
           <div className="col-span-2 flex justify-end gap-2">
             <Button size="sm" variant="ghost" onClick={() => setDraft(null)}>{t("common.cancel")}</Button>
             <Button size="sm" variant="primary" disabled={!draft.id.trim()} onClick={save}>{t("providers.model.save")}</Button>

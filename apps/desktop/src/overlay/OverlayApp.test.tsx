@@ -52,7 +52,7 @@ describe("Overlay", () => {
     if (state === "partial") await act(async () => { bridge.emitLocal!("aura://event", { channel: "voice", event: { state: "partial", text: "rascunho parcial" } }); });
     await user.keyboard("{Escape}");
     await waitFor(() => expect(commands).toEqual(["ptt_press", "ptt_cancel"]));
-    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("combobox")).toHaveValue("");
   });
 
   it("does not release before a pending microphone start completes", async () => {
@@ -89,7 +89,7 @@ describe("Overlay", () => {
     expect(mic).toHaveAttribute("aria-pressed", "true");
     await user.keyboard(" ");
     await waitFor(() => expect(mic).toHaveAttribute("aria-pressed", "false"));
-    expect(screen.getByRole("textbox")).toHaveValue("texto ditado de exemplo");
+    expect(screen.getByRole("combobox")).toHaveValue("texto ditado de exemplo");
   });
 
   it("toggles dictation with two clicks without releasing on pointer leave", async () => {
@@ -110,7 +110,7 @@ describe("Overlay", () => {
     expect(commands).toEqual(["ptt_press"]);
     await user.click(mic);
     await waitFor(() => expect(commands).toEqual(["ptt_press", "ptt_release"]));
-    expect(await screen.findByRole("textbox")).toHaveValue("texto ditado de exemplo");
+    expect(await screen.findByRole("combobox")).toHaveValue("texto ditado de exemplo");
   });
 
   it.each(["ptBr", "en"])("does not force the UI language %s when releasing dictation", async (language) => {
@@ -137,7 +137,7 @@ describe("Overlay", () => {
       return bridge.invoke<R>(cmd, args);
     } });
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     for (let cycle = 0; cycle < 2; cycle++) {
       await act(async () => {
         bridge.emitLocal!("aura://event", { channel: "voice", event: { state: "listening" } });
@@ -158,7 +158,7 @@ describe("Overlay", () => {
     const bridge = await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     const cycle = async () => {
       await act(async () => {
         bridge.emitLocal!("aura://event", { channel: "voice", event: { state: "listening" } });
@@ -175,7 +175,7 @@ describe("Overlay", () => {
   it("inserts identical dictation in each cycle but ignores a duplicate terminal event", async () => {
     const bridge = await freshApp({ signedIn: true });
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     const cycle = async () => {
       await act(async () => {
         bridge.emitLocal!("aura://event", { channel: "voice", event: { state: "listening" } });
@@ -225,7 +225,7 @@ describe("Overlay", () => {
     const bridge = await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "/tldr");
+    await user.type(await screen.findByRole("combobox"), "/tldr");
     await screen.findByText("Resuma em até três frases, direto ao ponto:");
     await act(async () => { await bridge.invoke("settings_update", { patch: { language: "en" } }); });
     expect(await screen.findByText("Summarize in up to three sentences, straight to the point:")).toBeInTheDocument();
@@ -236,7 +236,7 @@ describe("Overlay", () => {
     await bridge.invoke("settings_update", { patch: { language: "en" } });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     box.focus();
     await user.keyboard("{Control>}{Shift>}s{/Shift}{/Control}");
     expect(await screen.findByRole("list", { name: "Context" })).toBeInTheDocument();
@@ -252,7 +252,7 @@ describe("Overlay", () => {
       await bridge.invoke("providers_save", { draft: { name: "QA local", preset: "ollama" }, credential: null });
       bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} });
     });
-    expect(await screen.findByRole("textbox")).toBeInTheDocument();
+    expect(await screen.findByRole("combobox")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Continuar com ChatGPT/ })).not.toBeInTheDocument();
   });
 
@@ -264,7 +264,7 @@ describe("Overlay", () => {
     await act(async () => {
       provider = await bridge.invoke("providers_save", { draft: { name: "QA local", preset: "ollama" }, credential: null });
     });
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     await act(async () => { await bridge.invoke("providers_remove", { id: provider.id }); });
     expect(await screen.findByRole("button", { name: /Continuar com ChatGPT/ })).toBeInTheDocument();
   });
@@ -278,7 +278,7 @@ describe("Overlay", () => {
     await act(async () => {
       provider = await bridge.invoke("providers_save", { draft: { name: "QA local", preset: "ollama" }, credential: null });
     });
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     await user.keyboard("{Control>}{ArrowDown}{/Control}");
     await user.click(screen.getByRole("button", { name: /^Modelo .*modo/ }));
     await user.click(screen.getByRole("menuitemradio", { name: "QA local" }));
@@ -294,7 +294,7 @@ describe("Overlay", () => {
     await act(async () => {
       await bridge.invoke("providers_save", { draft: { name: "QA local", preset: "ollama" }, credential: null });
     });
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     await user.keyboard("{Control>}{ArrowDown}{/Control}");
     await user.click(screen.getByRole("button", { name: /^Modelo .*modo/ }));
     expect(screen.getByRole("menuitemradio", { name: "QA local" })).toHaveAttribute("aria-checked", "true");
@@ -317,9 +317,9 @@ describe("Overlay", () => {
     await act(async () => {
       await bridge.invoke("providers_save", { draft: { name: "QA local", preset: "ollama" }, credential: null });
     });
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     await act(async () => { finishOld([]); });
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Continuar com ChatGPT/ })).not.toBeInTheDocument();
   });
 
@@ -333,7 +333,7 @@ describe("Overlay", () => {
       bridge.state.providers[0].status = "error";
       bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} });
     });
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.keyboard("{Control>}{ArrowDown}{/Control}");
     await user.click(screen.getByRole("button", { name: /^Modelo .*modo/ }));
     const row = await screen.findByRole("menuitemradio", { name: /QA local/ });
@@ -350,14 +350,14 @@ describe("Overlay", () => {
     expect(await screen.findByRole("dialog", { name: /plano ChatGPT/ })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Entendi" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("sends with Enter, streams the answer and expands", async () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.type(box, "explique este erro{Enter}");
     expect(await screen.findByText("explique este erro")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText(/tipos incompatíveis/)).toBeInTheDocument());
@@ -390,7 +390,7 @@ describe("Overlay", () => {
     } });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.type(box, "explique este erro{Enter}");
     await waitFor(() => expect(screen.getByText(/tipos incompatíveis/)).toBeInTheDocument());
     await user.keyboard("{Control>}{Shift>}L{/Shift}{/Control}");
@@ -432,7 +432,7 @@ describe("Overlay", () => {
     } });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "explique este erro{Enter}");
+    await user.type(await screen.findByRole("combobox"), "explique este erro{Enter}");
     await waitFor(() => expect(screen.getByText(/tipos incompatíveis/)).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: "Ouvir" }));
     const dialog = await screen.findByRole("dialog", { name: "Enviar a resposta para Voz QA?" });
@@ -453,7 +453,7 @@ describe("Overlay", () => {
     } });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "explique este erro{Enter}");
+    await user.type(await screen.findByRole("combobox"), "explique este erro{Enter}");
     await waitFor(() => expect(screen.getByText(/tipos incompatíveis/)).toBeInTheDocument());
     await waitFor(() => expect(spoken).toHaveLength(1));
     expect(spoken[0]).toMatch(/tipos incompatíveis/);
@@ -475,7 +475,7 @@ describe("Overlay", () => {
     const user = userEvent.setup();
     render(<OverlayApp />);
     await user.click(await screen.findByRole("button", { name: "Adicionar contexto" }));
-    await user.click(screen.getByRole("option", { name: /@últimos minutos/ }));
+    await user.click(screen.getByRole("option", { name: /@recente/ }));
     const dialog = screen.getByRole("dialog", { name: "Anexar buffer recente" });
     const minutes = within(dialog).getByRole("spinbutton", { name: "Últimos minutos" });
     expect(minutes).toHaveValue(2);
@@ -497,7 +497,7 @@ describe("Overlay", () => {
     const user = userEvent.setup();
     render(<OverlayApp />);
     await user.click(await screen.findByRole("button", { name: "Adicionar contexto" }));
-    await user.click(screen.getByRole("option", { name: /@últimos minutos/ }));
+    await user.click(screen.getByRole("option", { name: /@recente/ }));
     const dialog = screen.getByRole("dialog", { name: "Anexar buffer recente" });
     expect(within(dialog).getByText("Nenhuma fonte está com o Buffer recente ligado. Ligue em Configurações › Privacidade.")).toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "Anexar" })).toBeDisabled();
@@ -590,7 +590,7 @@ describe("Overlay", () => {
     } });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.type(box, "/comp");
     expect(screen.getByRole("option", { name: /\/compactar/ })).toBeInTheDocument();
     await user.clear(box);
@@ -620,7 +620,7 @@ describe("Overlay", () => {
       return bridge.invoke<R>(cmd, args);
     } });
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     const file = (type: string, bytes: number[]) => new File([new Uint8Array(bytes)], "image", { type });
     const clipboard = (items: { kind: string; type: string; file?: File }[], text = "") => ({
       items: items.map((i) => ({ kind: i.kind, type: i.type, getAsFile: () => i.file ?? null })),
@@ -647,7 +647,7 @@ describe("Overlay", () => {
     await bridge.invoke("skills_set_enabled", { path: "aura/resumir-ata/SKILL.md", enabled: false });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "/r");
+    await user.type(await screen.findByRole("combobox"), "/r");
     expect(await screen.findByRole("option", { name: /\/revisar-contrato/ })).toBeInTheDocument();
     expect(screen.queryByRole("option", { name: /\/resumir-ata/ })).toBeNull();
   });
@@ -656,7 +656,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.type(box, "teste de painéis{Enter}");
     await screen.findByRole("button", { name: "Arquivos e alterações" });
     await user.type(box, "rascunho preservado");
@@ -672,7 +672,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     await user.type(box, "teste inverso{Enter}");
     await user.click(await screen.findByRole("button", { name: "Arquivos e alterações" }));
     await user.type(box, "outro rascunho");
@@ -688,7 +688,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = (await screen.findByRole("textbox")) as HTMLTextAreaElement;
+    const box = (await screen.findByRole("combobox")) as HTMLTextAreaElement;
     await user.type(box, "linha 1{Shift>}{Enter}{/Shift}linha 2");
     expect(box.value).toBe("linha 1\nlinha 2");
     expect(screen.queryByText("linha 1")).not.toBeInTheDocument();
@@ -698,12 +698,13 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "/aprovar{Enter}");
+    await user.type(await screen.findByRole("combobox"), "/aprovar{Enter}");
     const card = await screen.findByRole("group", { name: "Executar comando" });
     expect(within(card).getByText("pip install requests")).toBeInTheDocument();
     await waitFor(() => expect(card).toHaveFocus());
     await user.keyboard("a");
-    await waitFor(() => expect(screen.getByText("Respondido")).toBeInTheDocument());
+    // The card says what was decided, not just "answered".
+    await waitFor(() => expect(within(card).getByText("Aceito")).toBeInTheDocument());
     await waitFor(() => expect(screen.getByText(/instalei/)).toBeInTheDocument());
   });
 
@@ -711,7 +712,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "/pergunta{Enter}");
+    await user.type(await screen.findByRole("combobox"), "/pergunta{Enter}");
     const card = await screen.findByRole("group", { name: "O agente tem uma pergunta" });
     await user.click(within(card).getByLabelText("TypeScript"));
     await user.click(within(card).getByRole("button", { name: "Responder" }));
@@ -722,7 +723,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await user.type(await screen.findByRole("textbox"), "oi{Enter}");
+    await user.type(await screen.findByRole("combobox"), "oi{Enter}");
     expect(await screen.findByRole("button", { name: /% do contexto usado/ })).toBeInTheDocument();
   });
 
@@ -730,7 +731,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = (await screen.findByRole("textbox")) as HTMLTextAreaElement;
+    const box = (await screen.findByRole("combobox")) as HTMLTextAreaElement;
     await user.type(box, "/tra");
     const list = await screen.findByRole("listbox");
     expect(within(list).getByText("/traduzir")).toBeInTheDocument();
@@ -742,7 +743,7 @@ describe("Overlay", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    const box = await screen.findByRole("textbox");
+    const box = await screen.findByRole("combobox");
     box.focus();
     await user.keyboard("{Control>}{Shift>}s{/Shift}{/Control}");
     const chip = await screen.findByText(/Tela · main.rs/);
@@ -755,7 +756,7 @@ describe("Overlay", () => {
     const bridge = await freshApp({ signedIn: true });
     const user = userEvent.setup();
     render(<OverlayApp />);
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     act(() =>
       bridge.emitLocal!("aura://event", {
         channel: "consent",
@@ -770,7 +771,7 @@ describe("Overlay", () => {
   it("dictation result lands at the caret", async () => {
     const bridge = await freshApp({ signedIn: true });
     render(<OverlayApp />);
-    const box = (await screen.findByRole("textbox")) as HTMLTextAreaElement;
+    const box = (await screen.findByRole("combobox")) as HTMLTextAreaElement;
     act(() => bridge.emitLocal!("aura://event", { channel: "voice", event: { state: "done", text: "olá mundo" } }));
     await waitFor(() => expect(box.value).toBe("olá mundo"));
   });
@@ -827,7 +828,7 @@ describe("window behaviour (001 revision 2)", () => {
     const calls = spyCalls(bridge);
     const user = userEvent.setup();
     render(<OverlayApp />);
-    (await screen.findByRole("textbox")).focus();
+    (await screen.findByRole("combobox")).focus();
     await user.keyboard("{Escape}");
     expect(calls).not.toContain("overlay_hide");
     await user.click(screen.getByRole("button", { name: "Minimizar para a bandeja" }));
@@ -837,7 +838,7 @@ describe("window behaviour (001 revision 2)", () => {
   it("compact Overlay has window controls", async () => {
     await freshApp({ signedIn: true });
     render(<OverlayApp />);
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     expect(screen.getByRole("button", { name: "Expandir" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Aparência" })).toBeInTheDocument();
   });
@@ -876,7 +877,7 @@ describe("window behaviour (001 revision 2)", () => {
     expect(gpt).toHaveTextContent("Raciocínio");
     await user.click(within(effortMenu).getByRole("menuitemradio", { name: "Alto" }));
     await user.keyboard("{Escape}");
-    await user.type(screen.getByRole("textbox"), "primeiro{Enter}");
+    await user.type(screen.getByRole("combobox"), "primeiro{Enter}");
     await waitFor(() => expect(efforts).toEqual(["high"]));
 
     // GPT-5.5 mini supports low/medium only: "high" falls back to the model default.
@@ -884,8 +885,86 @@ describe("window behaviour (001 revision 2)", () => {
     act(() => useSession.getState().setModel("gpt-5.5-mini"));
     expect(useSession.getState().effort).toBeNull();
     await waitFor(() => expect(useSession.getState().sending).toBe(false));
-    await user.type(screen.getByRole("textbox"), "segundo{Enter}");
+    await user.type(screen.getByRole("combobox"), "segundo{Enter}");
     await waitFor(() => expect(efforts).toEqual(["high", null]));
+  });
+
+  it("offers a custom model's own efforts and remembers the effort per model and mode (013)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const { useSession } = await import("./session");
+    bridge.state.providers = [{ id: "qa", name: "QA", preset: "custom", wire: "responses", baseUrl: "http://127.0.0.1:9/v1", auth: "none", extraHeaders: {}, credentialHint: null, status: "verified", lastError: null, quirks: { noParallelToolCalls: false, reasoningEffort: false, noStreamOptions: false },
+        models: [{ id: "qa-reasoner", displayName: "QA reasoner", contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false, manual: true, efforts: ["low", "high", "max"], defaultEffort: "high" }] }];
+    useSession.setState({ provider: "aura-qa", model: "qa-reasoner", threadId: null });
+    const sent: unknown[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "conversation_send") sent.push((args.request as { options?: { effort?: unknown } }).options?.effort ?? null);
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Expandir" }));
+    await user.click(await screen.findByRole("button", { name: /modo Chat/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e modo" });
+    const efforts = () => within(within(picker).getByRole("menu", { name: "Esforço de raciocínio" })).getAllByRole("menuitemradio");
+    const checked = () => efforts().find((o) => o.getAttribute("aria-checked") === "true")?.textContent;
+    expect(efforts().map((o) => o.textContent)).toEqual(["Padrão do modelo (alto)", "Baixo", "Alto", "Máximo"]);
+    const modes = within(picker).getByRole("menu", { name: "Modo" });
+
+    await user.click(efforts().find((o) => o.textContent === "Baixo")!);
+    await waitFor(() => expect(bridge.state.settings.effortPresets["aura-qa::qa-reasoner"]).toEqual({ chat: "low" }));
+    await user.click(within(modes).getByRole("menuitemradio", { name: /Tarefa/ }));
+    expect(checked()).toBe("Padrão do modelo (alto)");
+    await user.click(efforts().find((o) => o.textContent === "Máximo")!);
+    await waitFor(() => expect(bridge.state.settings.effortPresets["aura-qa::qa-reasoner"]).toEqual({ chat: "low", task: "max" }));
+    await user.click(within(modes).getByRole("menuitemradio", { name: /Chat/ }));
+    expect(checked()).toBe("Baixo");
+    await user.click(within(modes).getByRole("menuitemradio", { name: /Tarefa/ }));
+    expect(checked()).toBe("Máximo");
+    await user.keyboard("{Escape}");
+    await user.type(screen.getByRole("combobox"), "tarefa{Enter}");
+    await waitFor(() => expect(sent).toEqual(["max"]));
+  });
+
+  it("switches between Chat, Task and Plan in the middle of a conversation (014)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const modes: unknown[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "conversation_set_mode") modes.push(args.mode);
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.type(await screen.findByRole("combobox"), "explique este erro{Enter}");
+    await waitFor(() => expect(screen.getByText(/tipos incompatíveis/)).toBeInTheDocument());
+    await user.click(await screen.findByRole("button", { name: /modo Chat/ }));
+    let picker = screen.getByRole("dialog", { name: "Modelo e modo" });
+    await user.click(within(within(picker).getByRole("menu", { name: "Modo" })).getByRole("menuitemradio", { name: /Tarefa/ }));
+    await waitFor(() => expect(modes).toEqual([{ mode: "task", granted: [], network: false }]));
+    expect(await screen.findByRole("separator", { name: "Modo alterado para Tarefa" })).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    await user.click(await screen.findByRole("button", { name: /modo Tarefa/ }));
+    picker = screen.getByRole("dialog", { name: "Modelo e modo" });
+    await user.click(within(within(picker).getByRole("menu", { name: "Modo" })).getByRole("menuitemradio", { name: /Plano/ }));
+    await waitFor(() => expect(modes).toHaveLength(2));
+    expect(modes[1]).toEqual({ mode: "plan" });
+    expect(screen.getByRole("separator", { name: "Modo alterado para Plano" })).toBeInTheDocument();
+    // Choosing the current mode again changes nothing.
+    await user.click(within(within(picker).getByRole("menu", { name: "Modo" })).getByRole("menuitemradio", { name: /Plano/ }));
+    expect(modes).toHaveLength(2);
+    expect(screen.getAllByRole("separator", { name: /Modo alterado/ })).toHaveLength(2);
+  });
+
+  it("lists GPT-6.1 Sol in the ChatGPT plan with its efforts up to Max (013)", async () => {
+    await freshApp({ signedIn: true });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Expandir" }));
+    await user.click(await screen.findByRole("button", { name: /modo Chat/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e modo" });
+    await user.click(within(within(picker).getByRole("menu", { name: "Modelo" })).getByRole("menuitemradio", { name: "GPT-6.1 Sol" }));
+    expect(within(within(picker).getByRole("menu", { name: "Esforço de raciocínio" })).getAllByRole("menuitemradio").map((o) => o.textContent)).toEqual([
+      "Padrão do modelo (médio)", "Baixo", "Médio", "Alto", "Muito alto", "Máximo",
+    ]);
   });
 
   it("hides the effort choice for a provider model without reasoning and shows its capabilities", async () => {

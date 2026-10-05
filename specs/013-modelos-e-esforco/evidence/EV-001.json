@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 549FE0815780BB94C7C51F661A42D4328208B75F6114C571620B09CA5E82BE3F",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-efforts.e2e.ts": "73afb5386873d6f03aa5d532bdeadd6836fed0676c5c3106f6f0171ead266bba",
+    "apps/desktop/src/overlay/session.ts": "4e9d2e58eb898686f4bed854b0f1b90d41b50190d947b5c2acd2a806ab055de4",
+    "apps/desktop/src/settings/EffortPresets.tsx": "3baa03bd70375f509a616b4d957f49a398a20d59eaa6c42a28450cf4d9f5dddb",
+    "apps/desktop/src/settings/Providers.tsx": "de90f0a55975a0cf5095d8b2eb91b41684d06706d4fdf785080c443b30b204e6",
+    "crates/aura-codex/src/models.rs": "d14cfeaa468460164db8ef042a663ae30b148bd5ffc6f9c1d8bcc78e971230b0",
+    "crates/aura-core/src/model_catalog.rs": "6856004d155bc838681e0bb9674ec99c27851f3c3d2a3cef803f5bf78380cd22",
+    "crates/aura-core/src/settings.rs": "7dab72567168320acc0f899d493f0a784f789905fdb35a030906446a7ffe0b9a",
+    "crates/aura-gateway/src/discovery.rs": "5df5827611317751fd19c2f53f805ae5346ef6c5c316d87e1fc5373b74453c9c",
+    "crates/aura-gateway/src/registry.rs": "49cb2a769ba8b92d83d0b4a6ea2148219283548ff93cc5e625745ae4ba5d4605",
+    "specs/013-modelos-e-esforco/change.md": "80cf9f463f4188d24f0b5be1f756cc03a4618fd9f9cac5ec5f9de10172e0c14f"
+  },
+  "input_paths": [
+    "crates/aura-core/src/model_catalog.rs",
+    "crates/aura-codex/src/models.rs",
+    "crates/aura-gateway/src/discovery.rs",
+    "crates/aura-gateway/src/registry.rs",
+    "crates/aura-core/src/settings.rs",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/settings/EffortPresets.tsx",
+    "apps/desktop/src/settings/Providers.tsx",
+    "apps/desktop/e2e/specs/model-efforts.e2e.ts",
+    "specs/013-modelos-e-esforco/change.md"
+  ],
+  "limitations": "No ChatGPT account in QA: GPT-6.1 Sol in the plan verified by the catalog function and the mock, not by a real plan turn; the plan server still decides access.",
+  "observations": "Discovered GPT-6.1 Sol with 1050000 context, 128000 output, images/tools, efforts low..max default medium; manual model saved efforts [low,high,max] default high; preset {chat: low, task: max} persisted after restart; upstream reasoning.effort max.",
+  "procedure": "Rust red/green: catalog (gpt-6.1-sol), plan list append/enrich, discovery of known models, manual model efforts validation, effortPresets settings; React red/green (picker per-mode memory, plan GPT-6.1 Sol efforts, manual model effort form, effort table); native red on the previous release and green: loopback custom provider discovers gpt-6.1-sol, manual qa-reasoner with Low/High/Max default High via Settings, effort table, picker Low in Chat and Max in Task, restart, Task turn upstream reasoning.effort=max; regressions model-effort, profile-model, provider-manual-model.",
+  "result": "passed",
+  "tested_revision": "local:6d43a46ae2abdbc6fb251a2d65e64e7f7493b0a1138f9167f155f766e3d2213c",
+  "ticket": null,
+  "timestamp": "2026-10-04T21:14:28+00:00"
+}

@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { freshApp } from "../test/harness";
+import { setBridge } from "../ipc/bridge";
 import { SettingsApp, pageFromHash } from "./SettingsApp";
 import { useApp } from "../state/app";
 
@@ -364,10 +365,55 @@ describe("Settings", () => {
     await user.click(screen.getByRole("button", { name: "Salvar memórias" }));
     expect(await within(screen.getByRole("list", { name: "Fatos lembrados" })).findByText("Prefere unidades do SI")).toBeInTheDocument();
 
-    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    // Asked inside the app, never with the browser's confirm dialog.
+    const confirm = vi.spyOn(window, "confirm");
     await user.click(screen.getByRole("button", { name: "Esquecer tudo" }));
+    expect(screen.getByText("Apagar tudo o que o agente lembra?")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+    expect(bridge.state.memorySummary).not.toBe("");
+    await user.click(screen.getByRole("button", { name: "Esquecer tudo" }));
+    await user.click(screen.getByRole("button", { name: "Confirmar" }));
     expect(await screen.findByText("Nada lembrado ainda.")).toBeInTheDocument();
     expect(bridge.state.memorySummary).toBe("");
+    expect(confirm).not.toHaveBeenCalled();
+    confirm.mockRestore();
+  });
+
+  it("each Settings page opens at the top", async () => {
+    await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/privacy";
+    render(<SettingsApp />);
+    const main = await screen.findByRole("main");
+    main.scrollTop = 900;
+    await act(async () => { window.location.hash = "#/settings/voice"; window.dispatchEvent(new HashChangeEvent("hashchange")); });
+    await waitFor(() => expect(main.scrollTop).toBe(0));
+  });
+
+  it("quick commands show a readable preview, not raw placeholders", async () => {
+    await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/extensions";
+    render(<SettingsApp />);
+    expect(await screen.findByText("Traduza para ‹inglês›:")).toBeInTheDocument();
+    expect(screen.queryByText(/\{selecao\}/)).toBeNull();
+  });
+
+  it("erasing all data asks inside the app first", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const erased: string[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "erase_all_data") { erased.push(cmd); return undefined as R; }
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const confirm = vi.spyOn(window, "confirm");
+    window.location.hash = "#/settings/diagnostics";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    await user.click(await screen.findByRole("button", { name: "Apagar todos os meus dados" }));
+    expect(erased).toEqual([]);
+    expect(screen.getByText("Isso apaga conversas, chaves, gravações e configurações. Continuar?")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Confirmar" }));
+    await waitFor(() => expect(erased).toEqual(["erase_all_data"]));
+    expect(confirm).not.toHaveBeenCalled();
     confirm.mockRestore();
   });
 
@@ -518,7 +564,7 @@ describe("Settings", () => {
     await user.click(screen.getByRole("checkbox", { name: "Raciocínio" }));
     await user.click(screen.getByRole("button", { name: "Salvar modelo" }));
     await waitFor(() => expect(calls).toHaveLength(1));
-    expect(calls[0]).toEqual(["providers_model_save", { id: "local", model: { id: "qwen3:8b", displayName: "Qwen 3 8B", contextWindow: 32768, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false } }]);
+    expect(calls[0]).toEqual(["providers_model_save", { id: "local", model: { id: "qwen3:8b", displayName: "Qwen 3 8B", contextWindow: 32768, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false, efforts: [], defaultEffort: null } }]);
     const row = await screen.findByRole("listitem", { name: "Qwen 3 8B" });
     expect(row).toHaveTextContent("Ferramentas · Raciocínio");
     expect(row).toHaveTextContent("Manual");
@@ -533,6 +579,50 @@ describe("Settings", () => {
     await user.click(within(await screen.findByRole("listitem", { name: "Qwen 3 8B" })).getByRole("button", { name: "Remover Qwen 3 8B" }));
     await waitFor(() => expect(calls.at(-1)).toEqual(["providers_model_remove", { id: "local", modelId: "qwen3:8b" }]));
     await waitFor(() => expect(screen.queryByRole("listitem", { name: "Qwen 3 8B" })).toBeNull());
+  });
+
+  it("a custom provider model declares its efforts and default (013)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("providers_save", { draft: { id: "local", name: "Local", preset: "custom", wire: "responses", baseUrl: "http://127.0.0.1:9/v1" }, credential: null });
+    const calls: any[] = [];
+    const invoke = bridge.invoke;
+    bridge.invoke = (async <R,>(cmd: string, args?: Record<string, unknown>) => {
+      if (cmd === "providers_model_save") calls.push(args);
+      return invoke<R>(cmd, args);
+    }) as typeof bridge.invoke;
+    window.location.hash = "#/settings/providers";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelos de Local" }));
+    await user.click(screen.getByRole("button", { name: "Adicionar modelo" }));
+    await user.type(screen.getByRole("textbox", { name: "ID do modelo" }), "qa-reasoner");
+    expect(screen.queryByRole("group", { name: "Esforços aceitos" })).toBeNull();
+    await user.click(screen.getByRole("checkbox", { name: "Raciocínio" }));
+    const group = screen.getByRole("group", { name: "Esforços aceitos" });
+    for (const e of ["Máximo", "Baixo", "Alto"]) await user.click(within(group).getByRole("checkbox", { name: e }));
+    const def = screen.getByRole("combobox", { name: "Esforço padrão" });
+    expect(within(def).getAllByRole("option").map((o) => o.textContent)).toEqual(["Nenhum (o do provedor)", "Baixo", "Alto", "Máximo"]);
+    await user.selectOptions(def, "high");
+    await user.click(screen.getByRole("button", { name: "Salvar modelo" }));
+    await waitFor(() => expect(calls).toHaveLength(1));
+    expect(calls[0].model).toMatchObject({ id: "qa-reasoner", supportsReasoning: true, efforts: ["low", "high", "max"], defaultEffort: "high" });
+    const row = await screen.findByRole("listitem", { name: "qa-reasoner" });
+    expect(row).toHaveTextContent("Baixo, Alto, Máximo");
+  });
+
+  it("edits the reasoning effort of each model per mode (013)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/account";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    const table = await screen.findByRole("table", { name: "Esforço por modelo e modo" });
+    const row = within(table).getByRole("row", { name: /GPT-6\.1 Sol/ });
+    const chat = within(row).getByRole("combobox", { name: "GPT-6.1 Sol — Chat" });
+    expect(within(chat).getAllByRole("option").map((o) => o.textContent)).toEqual(["Padrão do modelo (médio)", "Baixo", "Médio", "Alto", "Muito alto", "Máximo"]);
+    await user.selectOptions(within(row).getByRole("combobox", { name: "GPT-6.1 Sol — Tarefa" }), "max");
+    await waitFor(() => expect(bridge.state.settings.effortPresets["aura-chatgpt-plan::gpt-6.1-sol"]).toEqual({ task: "max" }));
+    await user.selectOptions(within(row).getByRole("combobox", { name: "GPT-6.1 Sol — Tarefa" }), "");
+    await waitFor(() => expect(bridge.state.settings.effortPresets["aura-chatgpt-plan::gpt-6.1-sol"]).toBeUndefined());
   });
 
   it("configures a custom provider's format and extra headers", async () => {

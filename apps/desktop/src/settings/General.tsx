@@ -1,3 +1,4 @@
+import { ConfirmButton } from "../ui/ConfirmButton";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
 import type { MemoryView, ModelInfo, SettingsPatch } from "../ipc/types";
@@ -58,9 +59,6 @@ export function GeneralSection() {
         <Row label={t("general.attachScreen")}>
           <Switch label={t("general.attachScreen")} checked={s.attachScreenOnOpen} onChange={(v) => void updateSettings({ attachScreenOnOpen: v })} />
         </Row>
-        <Row label={t("general.memories")} hint={t("general.memories.hint")}>
-          <Switch label={t("general.memories")} checked={s.memories} onChange={(v) => void updateSettings({ memories: v })} />
-        </Row>
         <AccentRow />
         <Row label={t("general.defaultModel")}>
           <Select aria-label={t("general.defaultModel")} value={s.defaultModel ?? ""} onChange={(e) => void updateSettings({ defaultModel: e.target.value || null })}>
@@ -101,6 +99,7 @@ function MemoriesSection() {
   const notify = useApp((s) => s.notify);
   const [view, setView] = useState<MemoryView | null>(null);
   const [draft, setDraft] = useState<{ summary: string; registry: string } | null>(null);
+  const memoriesOn = useApp((x) => x.settings?.memories ?? false);
   useEffect(() => {
     void api.memoriesGet().then(setView).catch(() => undefined);
   }, []);
@@ -115,6 +114,10 @@ function MemoriesSection() {
   if (!view) return null;
   return (
     <Section title={t("memories.title")} description={t("memories.hint")}>
+      {/* The switch lives with what it controls (it used to be a separate "Memórias" row in General). */}
+      <Row label={t("general.memories")} hint={t("general.memories.hint")}>
+        <Switch label={t("general.memories")} checked={memoriesOn} onChange={(v) => void updateSettings({ memories: v })} />
+      </Row>
       {view.facts.length === 0 && !draft && <p className="py-2 text-[13px] text-muted">{t("memories.empty")}</p>}
       {view.facts.length > 0 && !draft && (
         <ul aria-label={t("memories.facts")} className="flex flex-col gap-1 py-2">
@@ -145,9 +148,9 @@ function MemoriesSection() {
         <div className="flex gap-2 py-2">
           <Button size="sm" onClick={() => setDraft({ summary: view.summary, registry: view.registry })}>{t("memories.edit")}</Button>
           {(view.summary || view.registry) && (
-            <Button size="sm" variant="danger" onClick={() => window.confirm(t("memories.confirmForgetAll")) && void run(() => api.memoriesForgetAll())}>
+            <ConfirmButton question={t("memories.confirmForgetAll")} onConfirm={() => void run(() => api.memoriesForgetAll())}>
               {t("memories.forgetAll")}
-            </Button>
+            </ConfirmButton>
           )}
         </div>
       )}

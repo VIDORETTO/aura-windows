@@ -293,6 +293,55 @@ async fn history_rename_pin_delete_and_workspace_cleanup() {
     assert!(all.items.iter().all(|i| i.id != a.thread_id));
 }
 
+#[test]
+fn next_page_cursor_rereads_the_boundary_second() {
+    // The pinned app-server pages by `updatedAt` with a whole-second cursor and a
+    // strict "older than": conversations in the last item's second were skipped.
+    use aura_codex::service::page_cursor;
+    assert_eq!(
+        page_cursor("2026-10-04T22:22:36Z"),
+        "2026-10-04T22:22:36.999Z"
+    );
+    // Anything else is passed through untouched (opaque cursors).
+    assert_eq!(
+        page_cursor("2026-10-04T22:22:36.5Z"),
+        "2026-10-04T22:22:36.5Z"
+    );
+    assert_eq!(page_cursor("abc123"), "abc123");
+}
+
+#[tokio::test]
+async fn archived_conversations_are_listed_apart_and_can_be_restored() {
+    let h = default_harness();
+    let a = h.svc.start(StartOptions::default()).await.unwrap();
+    let ids = |q: HistoryQuery| {
+        let svc = &h.svc;
+        async move {
+            svc.list(q)
+                .await
+                .unwrap()
+                .items
+                .into_iter()
+                .map(|i| i.id)
+                .collect::<Vec<_>>()
+        }
+    };
+    let archived = || HistoryQuery {
+        archived: true,
+        ..Default::default()
+    };
+    h.svc.archive(&a.thread_id).await.unwrap();
+    assert!(!ids(HistoryQuery::default()).await.contains(&a.thread_id));
+    assert!(ids(archived()).await.contains(&a.thread_id));
+    h.svc.unarchive(&a.thread_id).await.unwrap();
+    assert_eq!(
+        sent(&h.record, "thread/unarchive")[0]["threadId"],
+        a.thread_id.as_str()
+    );
+    assert!(ids(HistoryQuery::default()).await.contains(&a.thread_id));
+    assert!(!ids(archived()).await.contains(&a.thread_id));
+}
+
 #[tokio::test]
 async fn history_lists_conversations_of_every_provider() {
     let h = default_harness();
@@ -523,4 +572,90 @@ async fn codex_model_catalog() {
     let models = h.svc.codex_models().await.unwrap();
     assert_eq!(models[0].id, "gpt-fake");
     assert!(models[0].is_default);
+}
+
+#[tokio::test]
+async fn switching_mode_mid_conversation_tells_the_agent() {
+    // 014: the developer instructions are fixed at thread start; a mode change
+    // is announced in the next turn (sandbox and instruction agree) and never
+    // shows in the transcript.
+    let h = default_harness();
+    let mut rx = h.svc.events();
+    let conv = h.svc.start(StartOptions::default()).await.unwrap();
+    let note_of = |turn: &Value| -> Option<String> {
+        turn["input"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|i| i["text"].as_str())
+            .find(|t| t.starts_with("<aura-mode>"))
+            .map(str::to_string)
+    };
+    h.svc
+        .send(&conv.thread_id, &text("primeira"), TurnOptions::default())
+        .await
+        .unwrap();
+    until_turn_completed(&mut rx).await;
+    assert_eq!(
+        note_of(&sent(&h.record, "turn/start")[0]),
+        None,
+        "same mode as the start"
+    );
+
+    h.svc
+        .set_mode(
+            &conv.thread_id,
+            ConversationMode::Task {
+                granted: vec![],
+                network: false,
+            },
+        )
+        .await
+        .unwrap();
+    h.svc
+        .send(&conv.thread_id, &text("segunda"), TurnOptions::default())
+        .await
+        .unwrap();
+    until_turn_completed(&mut rx).await;
+    let turn = &sent(&h.record, "turn/start")[1];
+    assert_eq!(turn["sandboxPolicy"]["type"], "workspaceWrite");
+    let note = note_of(turn).expect("mode announced");
+    assert!(
+        note.contains("Modo Tarefa") && note.ends_with("</aura-mode>"),
+        "{note}"
+    );
+    assert_eq!(turn["input"][0]["text"], "segunda", "user text stays first");
+
+    h.svc
+        .send(&conv.thread_id, &text("terceira"), TurnOptions::default())
+        .await
+        .unwrap();
+    until_turn_completed(&mut rx).await;
+    assert_eq!(
+        note_of(&sent(&h.record, "turn/start")[2]),
+        None,
+        "announced once"
+    );
+
+    h.svc.set_language(UiLanguage::En);
+    h.svc
+        .set_mode(&conv.thread_id, ConversationMode::Plan)
+        .await
+        .unwrap();
+    h.svc
+        .send(&conv.thread_id, &text("quarta"), TurnOptions::default())
+        .await
+        .unwrap();
+    until_turn_completed(&mut rx).await;
+    let turn = &sent(&h.record, "turn/start")[3];
+    assert_eq!(turn["sandboxPolicy"]["type"], "readOnly");
+    assert!(note_of(turn).unwrap().contains("Plan mode"));
+
+    let transcript = h.svc.open(&conv.thread_id).await.unwrap();
+    let users: Vec<&str> = transcript
+        .iter()
+        .filter(|m| m.role == "user")
+        .map(|m| m.text.as_str())
+        .collect();
+    assert_eq!(users, ["primeira", "segunda", "terceira", "quarta"]);
 }

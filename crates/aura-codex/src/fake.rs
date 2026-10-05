@@ -236,6 +236,14 @@ async fn handle(
             }
             responder.ok(json!({}));
         }
+        "thread/unarchive" => {
+            let id = str_param("threadId");
+            let mut w = world.lock().await;
+            if let Some(t) = w.threads.iter_mut().find(|t| t["id"] == id) {
+                t["archived"] = json!(false);
+            }
+            responder.ok(json!({}));
+        }
         "thread/delete" => {
             let id = str_param("threadId");
             let mut w = world.lock().await;

@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "f21357b2fec3f2afffbd53dde2f7a6558d4ab2ae"
+  },
+  "blockers": [],
+  "effort_id": "014-modo-no-meio-da-conversa",
+  "inputs": {
+    "contract": {
+      "fingerprint": "d307254b8aad1411342b48d9f3fb5e4b8e9690a1c26be5818f3ce9a130587b2d",
+      "path": "specs/014-modo-no-meio-da-conversa/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

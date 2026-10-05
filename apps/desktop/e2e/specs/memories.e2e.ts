@@ -61,8 +61,9 @@ describe("Memories (QA-026)", () => {
     expect(second).toContain("QA fact alpha");
     expect(second).not.toContain("QA fact beta");
 
-    await browser.execute(() => { window.confirm = () => true; });
+    // Asked inside the app (no browser confirm dialog).
     await (await $("button=Forget everything")).click();
+    await (await $("button=Confirm")).click();
     await $("p=Nothing remembered yet.").waitForDisplayed({ timeout: 10_000 });
     expect(existsSync(dir)).toBe(false);
     const third = await instructions(providerId);

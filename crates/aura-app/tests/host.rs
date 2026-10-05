@@ -883,6 +883,97 @@ async fn skills_settings_list_origins_toggle_and_edit_aura_skills() {
     );
 }
 
+#[tokio::test]
+async fn attach_skill_adds_one_skill_chip_and_rejects_disabled() {
+    // 015 AC-003: choosing a skill in the `/` menu becomes a Chip, not `$name` text.
+    let e = env().await;
+    e.host
+        .create_skill("revisar-contrato", "Revisa contratos", "Leia com calma.")
+        .unwrap();
+    let chip = e
+        .host
+        .attach_skill("draft", "revisar-contrato")
+        .await
+        .unwrap();
+    assert_eq!(serde_json::to_value(chip.kind).unwrap(), "skill");
+    assert_eq!(chip.label, "revisar-contrato");
+    let payload = serde_json::to_value(&chip.payload).unwrap();
+    assert_eq!(payload["name"], "revisar-contrato");
+    assert!(
+        payload["path"].as_str().unwrap().ends_with("SKILL.md"),
+        "{payload}"
+    );
+    e.host
+        .attach_skill("draft", "revisar-contrato")
+        .await
+        .unwrap();
+    assert_eq!(e.host.tray("draft").len(), 1, "same skill twice: one chip");
+
+    let path = e
+        .host
+        .skills_catalog()
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|s| s.name == "revisar-contrato")
+        .unwrap()
+        .path;
+    e.host.set_skill_enabled(&path, false).await.unwrap();
+    assert_eq!(
+        e.host
+            .attach_skill("t2", "revisar-contrato")
+            .await
+            .unwrap_err()
+            .code,
+        "skill"
+    );
+    assert_eq!(
+        e.host
+            .attach_skill("t2", "nao-existe")
+            .await
+            .unwrap_err()
+            .code,
+        "skill"
+    );
+}
+
+#[test]
+fn start_model_keeps_defaults_with_their_provider() {
+    use aura_app::host::start_model;
+    let plan = "aura-chatgpt-plan";
+    // The Settings default lists ChatGPT-plan models: never sent to a BYOK provider.
+    assert_eq!(
+        start_model(plan, None, Some("gpt-6-luna"), None),
+        Some("gpt-6-luna".into())
+    );
+    assert_eq!(
+        start_model("aura-groq", None, Some("gpt-6-luna"), None),
+        None
+    );
+    // The picker choice always wins.
+    assert_eq!(
+        start_model("aura-groq", Some("llama-4"), Some("gpt-6-luna"), None),
+        Some("llama-4".into())
+    );
+    // An app profile beats the global default; its BYOK model is `aura-<id>::<model>`.
+    assert_eq!(
+        start_model(plan, None, Some("gpt-6-luna"), Some("gpt-6.1-sol")),
+        Some("gpt-6.1-sol".into())
+    );
+    assert_eq!(
+        start_model("aura-groq", None, None, Some("aura-groq::llama-4")),
+        Some("llama-4".into())
+    );
+    assert_eq!(
+        start_model(plan, None, Some("gpt-6-luna"), Some("aura-groq::llama-4")),
+        Some("gpt-6-luna".into())
+    );
+    assert_eq!(
+        start_model("aura-groq", None, None, Some("gpt-6.1-sol")),
+        None
+    );
+}
+
 #[test]
 fn mcp_status_reports_startup_errors_from_the_app_server() {
     // Shape captured from the pinned app-server (rust-v0.159.0) with one

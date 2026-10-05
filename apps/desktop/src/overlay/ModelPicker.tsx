@@ -4,11 +4,12 @@
 import { ChevronDown } from "lucide-react";
 import { useT } from "../i18n";
 import { cx } from "../ui/primitives";
+import { useApp } from "../state/app";
 import { MenuLabel, MenuOption, PopoverPanel, usePopover } from "../ui/Popover";
 import { CHATGPT_PLAN, modelCapabilities, useSession, type ModeKey, type ModelCapabilities } from "./session";
 
 const MODES: ModeKey[] = ["chat", "task", "plan"];
-const EFFORT_KEYS = ["none", "minimal", "low", "medium", "high", "xhigh"] as const;
+const EFFORT_KEYS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
 
 function effortLabel(t: ReturnType<typeof useT>, effort: string): string {
   return (EFFORT_KEYS as readonly string[]).includes(effort) ? t(`picker.effort.${effort as (typeof EFFORT_KEYS)[number]}`) : effort;
@@ -30,7 +31,11 @@ export function ModelPicker() {
       ? s.models.map((m) => ({ id: m.id, name: m.displayName }))
       : (provider?.models ?? []).map((m) => ({ id: m.id, name: m.displayName ?? m.id }));
   const providerName = s.provider === CHATGPT_PLAN ? "ChatGPT" : (provider?.name ?? s.provider);
-  const modelName = models.find((m) => m.id === s.model)?.name ?? t("general.defaultModel");
+  const settingsDefault = useApp((a) => a.settings?.defaultModel ?? null);
+  // "Default" names the model it stands for: the Settings default (ChatGPT plan) or the plan's own default.
+  const effective =
+    s.model ?? (s.provider === CHATGPT_PLAN ? (settingsDefault ?? s.models.find((m) => m.isDefault)?.id ?? null) : null);
+  const modelName = models.find((m) => m.id === effective)?.name ?? t("general.defaultModel");
   const locked = s.threadId !== null;
   const caps = modelCapabilities(s, s.model);
 
@@ -94,12 +99,57 @@ export function ModelPicker() {
         <MenuLabel>{t("picker.mode")}</MenuLabel>
         <div role="menu" aria-label={t("picker.mode")}>
           {MODES.map((m) => (
-            <MenuOption key={m} selected={m === s.mode} hint={t(`mode.${m}.desc`)} onSelect={() => void s.setMode(m)}>
+            <MenuOption key={m} selected={m === s.mode} hint={t(`mode.${m}.desc`)} onSelect={() => m !== s.mode && void s.setMode(m)}>
               {t(`mode.${m}`)}
             </MenuOption>
           ))}
         </div>
         <span className="sr-only">{providerName}</span>
+      </PopoverPanel>
+    </>
+  );
+}
+
+/** Mode always visible in the compact Overlay (015 AC-007): Task stands out. */
+export function ModeBadge() {
+  const t = useT();
+  const mode = useSession((s) => s.mode);
+  const setMode = useSession((s) => s.setMode);
+  const pop = usePopover();
+  const name = t(`mode.${mode}`);
+  return (
+    <>
+      <button
+        ref={pop.anchor}
+        type="button"
+        onClick={pop.toggle}
+        aria-expanded={pop.open}
+        aria-label={t("mode.badge", { mode: name })}
+        title={t(`mode.${mode}.desc`)}
+        className={cx(
+          "flex h-5 shrink-0 items-center gap-0.5 rounded-full border px-1.5 text-[11px] hover:bg-hover",
+          mode === "task" ? "border-warning/60 text-warning" : mode === "plan" ? "border-accent/50 text-accent" : "border-line text-muted",
+        )}
+      >
+        {name}
+        <ChevronDown size={11} aria-hidden />
+      </button>
+      <PopoverPanel pop={pop} label={t("picker.mode")} grow className="w-64 max-w-[calc(100vw-16px)]">
+        <div role="menu" aria-label={t("picker.mode")}>
+          {MODES.map((m) => (
+            <MenuOption
+              key={m}
+              selected={m === mode}
+              hint={t(`mode.${m}.desc`)}
+              onSelect={() => {
+                pop.setOpen(false);
+                if (m !== mode) void setMode(m);
+              }}
+            >
+              {t(`mode.${m}`)}
+            </MenuOption>
+          ))}
+        </div>
       </PopoverPanel>
     </>
   );

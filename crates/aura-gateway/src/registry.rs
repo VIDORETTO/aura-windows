@@ -93,6 +93,13 @@ pub struct ModelSpec {
     /// Entered or corrected by the user (003 AC-013); discovery keeps it.
     #[serde(default)]
     pub manual: bool,
+    /// Reasoning efforts the model accepts, lowest first (013); empty =
+    /// low/medium/high when it reasons.
+    #[serde(default)]
+    pub efforts: Vec<String>,
+    /// Effort used when the user picks none.
+    #[serde(default)]
+    pub default_effort: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -394,6 +401,24 @@ impl<'a> ProviderRegistry<'a> {
             .filter(|n| !n.is_empty());
         spec.manual = true;
         spec.estimated = false;
+        // Efforts from the known set, in its order, without repeats (013).
+        if spec
+            .efforts
+            .iter()
+            .any(|e| !aura_core::model_catalog::is_effort(e))
+        {
+            return Err(RegistryError::Invalid("efforts"));
+        }
+        spec.efforts = aura_core::model_catalog::EFFORTS
+            .iter()
+            .filter(|e| spec.efforts.iter().any(|x| x == *e))
+            .map(|e| e.to_string())
+            .collect();
+        if let Some(d) = &spec.default_effort
+            && !spec.efforts.contains(d)
+        {
+            return Err(RegistryError::Invalid("defaultEffort"));
+        }
         let mut p = self.get(id)?.ok_or(RegistryError::NotFound)?;
         match p.models.iter_mut().find(|m| m.id == spec.id) {
             Some(existing) => *existing = spec,
@@ -544,6 +569,8 @@ mod tests {
             supports_reasoning: false,
             estimated: true,
             manual: false,
+            efforts: vec![],
+            default_effort: None,
         };
         let saved = reg
             .save_model(
@@ -576,6 +603,44 @@ mod tests {
             reg.save_model(&p.id, spec("  ", false)),
             Err(RegistryError::Invalid("modelId"))
         ));
+        // 013 AC-003: efforts accepted by a manual model, ordered, with a
+        // default among them.
+        let saved = reg
+            .save_model(
+                &p.id,
+                ModelSpec {
+                    supports_reasoning: true,
+                    efforts: vec!["max".into(), "low".into(), "high".into(), "low".into()],
+                    default_effort: Some("high".into()),
+                    ..spec("qa-reasoner", false)
+                },
+            )
+            .unwrap();
+        let m = saved.models.iter().find(|m| m.id == "qa-reasoner").unwrap();
+        assert_eq!(m.efforts, ["low", "high", "max"]);
+        assert_eq!(m.default_effort.as_deref(), Some("high"));
+        assert!(matches!(
+            reg.save_model(
+                &p.id,
+                ModelSpec {
+                    efforts: vec!["ultra".into()],
+                    ..spec("x", false)
+                }
+            ),
+            Err(RegistryError::Invalid("efforts"))
+        ));
+        assert!(matches!(
+            reg.save_model(
+                &p.id,
+                ModelSpec {
+                    efforts: vec!["low".into()],
+                    default_effort: Some("high".into()),
+                    ..spec("x", false)
+                }
+            ),
+            Err(RegistryError::Invalid("defaultEffort"))
+        ));
+        reg.remove_model(&p.id, "qa-reasoner").unwrap();
         let left = reg.remove_model(&p.id, "my-model:7b").unwrap();
         assert_eq!(
             left.models

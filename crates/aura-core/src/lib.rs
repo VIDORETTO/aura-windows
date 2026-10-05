@@ -9,6 +9,7 @@ pub mod events;
 pub mod gesture;
 pub mod jsonrpc;
 pub mod logging;
+pub mod model_catalog;
 pub mod placement;
 pub mod release;
 pub mod secret;

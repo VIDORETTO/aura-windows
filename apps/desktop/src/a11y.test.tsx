@@ -18,9 +18,9 @@ describe("accessibility", () => {
     await freshApp({ signedIn: true });
     const user = userEvent.setup();
     const { container } = render(<OverlayApp />);
-    await screen.findByRole("textbox");
+    await screen.findByRole("combobox");
     expect(await audit(container)).toEqual([]);
-    await user.type(screen.getByRole("textbox"), "/aprovar{Enter}");
+    await user.type(screen.getByRole("combobox"), "/aprovar{Enter}");
     await screen.findByRole("group", { name: "Executar comando" });
     expect(await audit(container)).toEqual([]);
   });

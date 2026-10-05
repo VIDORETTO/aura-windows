@@ -14,7 +14,7 @@ function buffered(mode: CaptureMode | undefined): number {
 }
 
 /**
- * "@últimos minutos": the user attaches the last N minutes of the recent
+ * "@recente": the user attaches the last N minutes of the recent
  * buffer — screen keyframes, audio transcript (Microphone, System, Both) or
  * both of the same interval (004 AC-014, 005 AC-007/009).
  */

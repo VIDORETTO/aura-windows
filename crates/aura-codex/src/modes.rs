@@ -71,6 +71,40 @@ fn mode_instructions(mode: &ConversationMode, lang: UiLanguage) -> &'static str 
     }
 }
 
+/// Marker of the per-turn mode announcement (014): stripped from transcripts.
+pub const MODE_NOTE_OPEN: &str = "<aura-mode>";
+pub const MODE_NOTE_CLOSE: &str = "</aura-mode>";
+
+/// Announces a mode chosen in the middle of a conversation. The developer
+/// instructions of a thread are fixed when it starts, so the new mode is
+/// stated in the turn and overrides the earlier one.
+pub fn mode_change_note(mode: &ConversationMode, lang: UiLanguage) -> String {
+    let lead = match lang {
+        UiLanguage::PtBr => {
+            "Mudança de modo pedida pelo usuário: a partir desta mensagem vale o modo abaixo, que substitui a instrução de modo anterior."
+        }
+        UiLanguage::En => {
+            "Mode change requested by the user: from this message on the mode below applies and replaces the earlier mode instruction."
+        }
+    };
+    format!(
+        "{MODE_NOTE_OPEN}{lead} {}{MODE_NOTE_CLOSE}",
+        mode_instructions(mode, lang)
+    )
+}
+
+/// Removes mode announcements from a user message (transcripts).
+pub fn strip_mode_notes(text: &str) -> String {
+    let mut out = text.to_string();
+    while let Some(start) = out.find(MODE_NOTE_OPEN) {
+        let Some(end) = out[start..].find(MODE_NOTE_CLOSE) else {
+            break;
+        };
+        out.replace_range(start..start + end + MODE_NOTE_CLOSE.len(), "");
+    }
+    out.trim().to_string()
+}
+
 /// Layers, in order: mode, personal instructions, app profile, conversation extras.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct InstructionLayers {
@@ -196,6 +230,13 @@ mod tests {
              Perfil VS Code: Responda com código TypeScript\n\n\
              Nesta conversa: Foque em Excel"
         );
+    }
+
+    #[test]
+    fn persona_asks_for_web_search_on_live_data() {
+        // 015 AC-010: news, results, prices and scores change; search instead of guessing.
+        assert!(persona(UiLanguage::PtBr).contains("use a busca na web"));
+        assert!(persona(UiLanguage::En).contains("use web search"));
     }
 
     #[test]

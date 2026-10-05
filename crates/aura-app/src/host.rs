@@ -64,6 +64,29 @@ pub use aura_core::placement::{OverlayMode, SavedPlacement};
 
 pub const CHATGPT_PLAN_ROUTE: &str = "chatgpt-plan";
 
+/// Model of a new conversation: the picker's choice, else the app profile's
+/// default, else the Settings default — each only for its own provider. The
+/// Settings default lists ChatGPT-plan models; a profile's BYOK model is
+/// stored as `aura-<provider>::<model>` (a bare id is a plan model).
+pub fn start_model(
+    provider: &str,
+    requested: Option<&str>,
+    settings_default: Option<&str>,
+    profile_default: Option<&str>,
+) -> Option<String> {
+    let plan = format!("aura-{CHATGPT_PLAN_ROUTE}");
+    if let Some(m) = requested {
+        return Some(m.to_string());
+    }
+    let from_profile = profile_default.and_then(|v| match v.split_once("::") {
+        Some((p, m)) if p.starts_with("aura-") => (p == provider).then_some(m),
+        _ => (provider == plan).then_some(v),
+    });
+    from_profile
+        .or_else(|| settings_default.filter(|_| provider == plan))
+        .map(str::to_string)
+}
+
 /// How the host runs the Codex app-server.
 #[derive(Clone)]
 pub enum CodexRuntime {
@@ -689,6 +712,11 @@ impl Host {
 
     /// Settings that configure running services (memories, cloud ASR).
     fn apply_runtime_settings(&self, s: &Settings) {
+        // Texts Aura adds to turns (mode announcements) follow the UI language.
+        self.codex.set_language(match s.language {
+            aura_core::settings::Language::PtBr => aura_codex::modes::UiLanguage::PtBr,
+            aura_core::settings::Language::En => aura_codex::modes::UiLanguage::En,
+        });
         self.capture.set_devices(
             s.microphone_device_id.clone(),
             s.system_audio_device_id.clone(),
@@ -1079,21 +1107,22 @@ impl Host {
         if opts.personal_instructions.is_empty() {
             opts.personal_instructions = s.personal_instructions.clone();
         }
-        if opts.model.is_none() {
-            opts.model = s.default_model.clone();
-        }
         // App profile of the app the Overlay was opened over (009 TK-004).
-        if opts.profile.is_none()
-            && let Some(app) = self.platform.foreground.current()
+        let mut profile_model = None;
+        if let Some(app) = self.platform.foreground.current()
             && let Some(p) = self.profiles.for_app(&app)
         {
-            if !p.instructions.trim().is_empty() {
+            if opts.profile.is_none() && !p.instructions.trim().is_empty() {
                 opts.profile = Some((p.name.clone(), p.instructions.clone()));
             }
-            if opts.model.is_none() {
-                opts.model = p.default_model.clone();
-            }
+            profile_model = p.default_model.clone();
         }
+        opts.model = start_model(
+            &opts.provider,
+            opts.model.as_deref(),
+            s.default_model.as_deref(),
+            profile_model.as_deref(),
+        );
         opts.language = match s.language {
             aura_core::settings::Language::PtBr => aura_codex::modes::UiLanguage::PtBr,
             aura_core::settings::Language::En => aura_codex::modes::UiLanguage::En,
@@ -1189,6 +1218,10 @@ impl Host {
 
     pub async fn archive(&self, thread_id: &str) -> HostResult<()> {
         Ok(self.codex.archive(thread_id).await?)
+    }
+
+    pub async fn unarchive(&self, thread_id: &str) -> HostResult<()> {
+        Ok(self.codex.unarchive(thread_id).await?)
     }
 
     pub async fn delete_conversation(&self, thread_id: &str) -> HostResult<()> {
@@ -1310,6 +1343,32 @@ impl Host {
         let mut trays = self.trays.lock().unwrap();
         let t = trays.entry(tray.to_string()).or_default();
         Ok(t.add(chip)?.clone())
+    }
+
+    /// Skill chosen in the `/` menu (015): a Chip the turn turns into `$name`.
+    pub async fn attach_skill(&self, tray: &str, name: &str) -> HostResult<ContextChip> {
+        let skill = self
+            .skills_catalog()
+            .await?
+            .into_iter()
+            .find(|s| s.name == name && s.enabled)
+            .ok_or_else(|| HostError::new("skill", format!("skill indisponível: {name}")))?;
+        let existing = self
+            .tray(tray)
+            .into_iter()
+            .find(|c| matches!(&c.payload, ChipPayload::Skill { name: n, .. } if n == name));
+        if let Some(chip) = existing {
+            return Ok(chip);
+        }
+        let chip = ContextChip::new(
+            ChipKind::Skill,
+            skill.name.clone(),
+            ChipPayload::Skill {
+                name: skill.name,
+                path: skill.path,
+            },
+        );
+        self.add_chip(tray, chip)
     }
 
     /// User-initiated screen capture into a chip (Ctrl+Shift+S, `@tela`).

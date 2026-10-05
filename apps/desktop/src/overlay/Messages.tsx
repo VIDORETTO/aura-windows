@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
+import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Hammer, Pencil, RotateCcw, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api } from "../ipc/commands";
 import type { Approval, Block, Thread, ToolItem } from "../state/conversation";
@@ -60,13 +60,34 @@ function SpeakButton({ text }: { text: string }) {
   );
 }
 
-const Assistant = memo(function Assistant({ text, streaming }: { text: string; streaming: boolean }) {
+const ACTION = "inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg";
+
+/** Last answer of a finished turn: try again, or redo in Task mode (015 AC-008). */
+function RetryActions() {
+  const t = useT();
+  const mode = useSession((s) => s.mode);
+  const retryLast = useSession((s) => s.retryLast);
+  return (
+    <>
+      <button type="button" className={ACTION} onClick={() => void retryLast()}>
+        <RotateCcw size={12} /> {t("message.retry")}
+      </button>
+      {mode !== "task" && (
+        <button type="button" className={ACTION} title={t("mode.task.desc")} onClick={() => void retryLast("task")}>
+          <Hammer size={12} /> {t("message.redoTask")}
+        </button>
+      )}
+    </>
+  );
+}
+
+const Assistant = memo(function Assistant({ text, streaming, last = false }: { text: string; streaming: boolean; last?: boolean }) {
   const t = useT();
   return (
     <div className="group" data-answer>
       <Markdown text={text} streaming={streaming} />
       {!streaming && text && (
-        <div className="mt-1 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
+        <div className={cx("mt-1 flex flex-wrap gap-1 transition-opacity focus-within:opacity-100", !last && "opacity-0 group-hover:opacity-100")}>
           <CopyButton text={text} />
           <SpeakButton text={text} />
           <button
@@ -77,6 +98,7 @@ const Assistant = memo(function Assistant({ text, streaming }: { text: string; s
           >
             <CornerDownLeft size={12} /> {t("common.insert")}
           </button>
+          {last && <RetryActions />}
         </div>
       )}
     </div>
@@ -133,7 +155,7 @@ function ApprovalCard({ approval, resolved }: { approval: Approval; resolved?: s
         <AlertTriangle size={14} className="text-warning" /> {title}
       </div>
       {approval.command && <pre className="selectable mt-1.5 overflow-x-auto rounded bg-hover px-2 py-1 font-mono text-[12px]">{approval.command}</pre>}
-      {approval.cwd && <div className="mt-1 text-xs text-muted">{t("approval.in", { cwd: approval.cwd })}</div>}
+      {approval.cwd && approval.cwd !== "." && <div className="mt-1 text-xs text-muted">{t("approval.in", { cwd: approval.cwd })}</div>}
       {approval.reason && <div className="mt-1 text-[13px]">{approval.reason}</div>}
       {approval.changes.length > 0 && (
         <ul className="mt-1 text-xs">
@@ -145,7 +167,9 @@ function ApprovalCard({ approval, resolved }: { approval: Approval; resolved?: s
         </ul>
       )}
       {resolved ? (
-        <div className="mt-2 text-xs text-muted">{t("approval.resolved")}</div>
+        <div className={cx("mt-2 text-xs", resolved === "decline" ? "text-danger" : resolved.startsWith("accept") ? "text-success" : "text-muted")}>
+          {t(resolved === "accept" ? "approval.accepted" : resolved === "acceptForSession" ? "approval.acceptedSession" : resolved === "decline" ? "approval.declined" : "approval.resolved")}
+        </div>
       ) : (
         <div className="mt-2 flex flex-wrap gap-1.5">
           <Button size="sm" variant="primary" onClick={() => void respond("accept")}>
@@ -256,19 +280,28 @@ function PlanPanel({ plan }: { plan: NonNullable<Thread["plan"]> }) {
   );
 }
 
-function BlockView({ block }: { block: Block }) {
+function UserMessage({ block }: { block: Extract<Block, { type: "user" }> }) {
+  const t = useT();
+  const shown = block.display ?? block.text;
+  return (
+    <div className="group flex flex-col items-end gap-1">
+      {block.chips.length > 0 && <ChipList chips={block.chips} />}
+      {shown && <div className="selectable max-w-[85%] whitespace-pre-wrap rounded-lg rounded-br-sm bg-accent/12 px-3 py-1.5">{shown}</div>}
+      {shown && (
+        <button type="button" className={cx(ACTION, "opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100")} onClick={() => useSession.getState().setCompose(shown)}>
+          <Pencil size={12} /> {t("message.edit")}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function BlockView({ block, last }: { block: Block; last: boolean }) {
   switch (block.type) {
     case "user":
-      return (
-        <div className="flex flex-col items-end gap-1">
-          {block.chips.length > 0 && <ChipList chips={block.chips} />}
-          {(block.display ?? block.text) && (
-            <div className="selectable max-w-[85%] whitespace-pre-wrap rounded-lg rounded-br-sm bg-accent/12 px-3 py-1.5">{block.display ?? block.text}</div>
-          )}
-        </div>
-      );
+      return <UserMessage block={block} />;
     case "assistant":
-      return <Assistant text={block.text} streaming={block.streaming} />;
+      return <Assistant text={block.text} streaming={block.streaming} last={last} />;
     case "reasoning":
       return <details className="text-[12px] text-muted"><summary className="cursor-pointer">…</summary><p className="selectable whitespace-pre-wrap">{block.text}</p></details>;
     case "tool":
@@ -292,6 +325,8 @@ function BlockView({ block }: { block: Block }) {
       return <ErrorCard error={block.error} />;
     case "compaction":
       return <CompactionDivider />;
+    case "mode":
+      return <ModeDivider mode={block.mode} />;
     case "input":
       return <UserInputCard requestId={block.requestId} source={block.source} prompt={block.prompt} autoResolveMs={block.autoResolveMs} resolved={block.resolved} />;
   }
@@ -302,6 +337,7 @@ export function MessageList({ thread }: { thread: Thread }) {
   const ref = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
   const consents = useApp((s) => s.consents);
+  const lastAnswer = thread.running ? undefined : [...thread.blocks].reverse().find((b) => b.type === "assistant" || b.type === "user");
   useLayoutEffect(() => {
     const el = ref.current;
     if (el && stick.current) el.scrollTop = el.scrollHeight;
@@ -318,7 +354,7 @@ export function MessageList({ thread }: { thread: Thread }) {
       }}
     >
       {thread.blocks.map((b) => (
-        <BlockView key={b.type === "tool" ? b.item.id : b.type === "approval" ? b.approval.requestId : b.type === "input" ? b.requestId : b.id} block={b} />
+        <BlockView key={b.type === "tool" ? b.item.id : b.type === "approval" ? b.approval.requestId : b.type === "input" ? b.requestId : b.id} block={b} last={b === lastAnswer} />
       ))}
       {thread.plan && thread.plan.steps.length > 0 && <PlanPanel plan={thread.plan} />}
       {consents.map((c) => (
@@ -329,6 +365,18 @@ export function MessageList({ thread }: { thread: Thread }) {
           <Loader2 size={13} className="animate-spin" />
         </div>
       )}
+    </div>
+  );
+}
+
+function ModeDivider({ mode }: { mode: "chat" | "task" | "plan" }) {
+  const t = useT();
+  const label = t("mode.changed", { mode: t(`mode.${mode}`) });
+  return (
+    <div role="separator" aria-label={label} className="flex items-center gap-2 text-[11px] text-muted">
+      <span className="h-px flex-1 bg-line" />
+      <span title={t(`mode.${mode}.desc`)}>{label}</span>
+      <span className="h-px flex-1 bg-line" />
     </div>
   );
 }

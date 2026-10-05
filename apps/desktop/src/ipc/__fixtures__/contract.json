@@ -481,6 +481,7 @@
     "defaultModel": null,
     "disabledSkills": [],
     "doubleTapCtrl": false,
+    "effortPresets": {},
     "globalVoiceShortcut": "Ctrl+Alt+Space",
     "hideOnBlur": false,
     "invokeShortcut": "Ctrl+Shift+Space",

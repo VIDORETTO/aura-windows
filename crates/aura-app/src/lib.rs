@@ -28,6 +28,7 @@ pub mod speech;
 pub mod tokens;
 pub mod tools;
 pub mod voice;
+pub mod webview;
 
 pub use error::{HostError, HostResult};
 pub use host::{CodexRuntime, Host, HostConfig};

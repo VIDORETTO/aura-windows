@@ -7,6 +7,8 @@ import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { useConversation } from "../state/conversation";
 import { CHATGPT_PLAN, useSession } from "./session";
+import { PopoverPanel, usePopover } from "../ui/Popover";
+import { Button } from "../ui/primitives";
 
 const MANAGE_USAGE_URL = "https://chatgpt.com/settings/usage";
 
@@ -47,6 +49,7 @@ export function StatusBar() {
   const usage = useConversation((c) => (s.threadId ? c.threads[s.threadId]?.tokens : null));
   const pct = usage?.window ? Math.min(100, Math.round((usage.used / usage.window) * 100)) : null;
   const provider = s.providers.find((p) => `aura-${p.id}` === s.provider);
+  const confirm = usePopover();
   return (
     <div data-tauri-drag-region className="flex h-7 shrink-0 items-center gap-3 px-4 pb-1 text-[11px] text-muted">
       {s.provider === CHATGPT_PLAN ? (
@@ -69,11 +72,13 @@ export function StatusBar() {
       <StatusBadges />
       {pct !== null && (
         <button
+          ref={confirm.anchor}
           type="button"
           className="flex shrink-0 items-center gap-1.5 rounded px-1 hover:bg-hover hover:text-fg"
           title={t("header.compactHint")}
           aria-label={t("header.context", { pct })}
-          onClick={() => void s.compact()}
+          aria-expanded={confirm.open}
+          onClick={confirm.toggle}
         >
           <span className="h-1 w-12 overflow-hidden rounded-full bg-hover">
             <span className={pct > 85 ? "block h-full bg-warning" : "block h-full bg-accent"} style={{ width: `${pct}%` }} />
@@ -81,6 +86,26 @@ export function StatusBar() {
           <span className="tabular-nums">{pct}%</span>
         </button>
       )}
+      {/* Compaction asks first (015 AC-009). */}
+      <PopoverPanel pop={confirm} label={t("context.compactConfirm")} align="end" className="w-64">
+        <p className="px-1 text-[13px] font-medium text-fg">{t("context.compactConfirm")}</p>
+        <p className="px-1 pt-0.5 text-[11px] text-muted">{t("context.compactConfirm.desc")}</p>
+        <div className="mt-2 flex justify-end gap-1.5">
+          <Button size="sm" variant="ghost" onClick={() => confirm.setOpen(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => {
+              confirm.setOpen(false);
+              void s.compact();
+            }}
+          >
+            {t("context.compactAction")}
+          </Button>
+        </div>
+      </PopoverPanel>
     </div>
   );
 }

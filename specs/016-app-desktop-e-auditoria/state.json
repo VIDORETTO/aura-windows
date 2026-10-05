@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "f21357b2fec3f2afffbd53dde2f7a6558d4ab2ae"
+  },
+  "blockers": [],
+  "effort_id": "016-app-desktop-e-auditoria",
+  "inputs": {
+    "contract": {
+      "fingerprint": "cfba888b48bd9431c68e9588b0b80439c7009bc7fa19210e0a4af2eef46f542f",
+      "path": "specs/016-app-desktop-e-auditoria/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

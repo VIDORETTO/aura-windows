@@ -62,6 +62,7 @@ export const api = {
   conversationRename: (threadId: string, name: string) => call<void>("conversation_rename", { threadId, name }),
   conversationPin: (threadId: string, pinned: boolean) => call<void>("conversation_pin", { threadId, pinned }),
   conversationArchive: (threadId: string) => call<void>("conversation_archive", { threadId }),
+  conversationUnarchive: (threadId: string) => call<void>("conversation_unarchive", { threadId }),
   conversationDelete: (threadId: string) => call<void>("conversation_delete", { threadId }),
   conversationCloseEphemeral: (threadId: string) => call<void>("conversation_close_ephemeral", { threadId }),
   conversationRespond: (requestId: string, decision: T.ApprovalDecision) =>
@@ -75,6 +76,7 @@ export const api = {
   captureScreen: (tray: string, windowOnly = false) => call<T.ContextChip>("capture_screen", { tray, windowOnly }),
   contextAttachRecent: (tray: string, threadId: string | null, clip: T.RecentClip) =>
     call<T.ContextChip>("context_attach_recent", { tray, threadId, clip }),
+  contextAttachSkill: (tray: string, name: string) => call<T.ContextChip>("context_attach_skill", { tray, name }),
   captureSelection: (tray: string, explicit = false) => call<T.ContextChip | null>("capture_selection", { tray, explicit }),
   attachFile: (tray: string, threadId: string | null, path: string) =>
     call<[T.AttachmentInfo, T.ContextChip]>("attach_file", { tray, threadId, path }),

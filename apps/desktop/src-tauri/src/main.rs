@@ -6,6 +6,7 @@ mod commands;
 mod overlay;
 #[cfg(windows)]
 mod shortcuts;
+mod webview_guard;
 #[cfg(all(windows, not(feature = "demo")))]
 mod win_platform;
 
@@ -392,6 +393,7 @@ fn main() {
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .plugin(webview_guard::plugin())
         .setup(setup)
         .invoke_handler(tauri::generate_handler![
             commands::settings_get,
@@ -432,6 +434,7 @@ fn main() {
             commands::conversation_pin,
             commands::conversation_archive,
             commands::conversation_delete,
+            commands::conversation_unarchive,
             commands::conversation_close_ephemeral,
             commands::conversation_respond,
             commands::models_list,
@@ -441,6 +444,7 @@ fn main() {
             commands::capture_screen,
             commands::capture_selection,
             commands::context_attach_recent,
+            commands::context_attach_skill,
             commands::attach_file,
             commands::attach_clipboard_image,
             commands::attachments_list,

@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "f21357b2fec3f2afffbd53dde2f7a6558d4ab2ae"
+  },
+  "blockers": [],
+  "effort_id": "013-modelos-e-esforco",
+  "inputs": {
+    "contract": {
+      "fingerprint": "516a9ee7798f1c36e0a9393498a17aee69c815c820a270aa51137da9062df297",
+      "path": "specs/013-modelos-e-esforco/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

@@ -1,6 +1,6 @@
 import { AppWindow, Bot, Info, Keyboard, KeyRound, Mic, Puzzle, Settings2, Shield, Stethoscope } from "lucide-react";
 import { ProfilesSection } from "./Profiles";
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { inTauri } from "../ipc/bridge";
 import { useT, type MessageKey } from "../i18n";
 import { Toasts } from "../ui/Toasts";
@@ -43,6 +43,11 @@ export function pageFromHash(hash: string): string {
 export function SettingsApp() {
   const t = useT();
   const [page, setPage] = useState(() => pageFromHash(window.location.hash));
+  const main = useRef<HTMLElement>(null);
+  // Each page opens at its top (it used to keep the previous page's scroll).
+  useEffect(() => {
+    if (main.current) main.current.scrollTop = 0;
+  }, [page]);
 
   useEffect(() => {
     document.body.classList.add("settings");
@@ -78,7 +83,7 @@ export function SettingsApp() {
           </a>
         ))}
       </nav>
-      <main className="min-w-0 flex-1 overflow-y-auto">
+      <main ref={main} className="min-w-0 flex-1 overflow-y-auto">
         <div className="mx-auto flex max-w-3xl flex-col gap-4 p-6">
           <Current />
         </div>

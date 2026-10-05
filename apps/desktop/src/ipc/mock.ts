@@ -42,6 +42,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   ttsCloudConsent: [],
   autoRead: false,
   accentColor: null,
+  effortPresets: {},
 };
 
 const PRESETS: T.Preset[] = [
@@ -71,6 +72,8 @@ function preset(id: string, name: string, wire: T.Wire, baseUrl: string, credent
 const MODELS: T.ModelInfo[] = [
   { id: "gpt-5.5", displayName: "GPT-5.5", efforts: ["low", "medium", "high"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: true },
   { id: "gpt-5.5-mini", displayName: "GPT-5.5 mini", efforts: ["low", "medium"], defaultEffort: "low", inputModalities: ["text", "image"], isDefault: false },
+  // Added by Aura's catalog when the plan list omits it (013).
+  { id: "gpt-6.1-sol", displayName: "GPT-6.1 Sol", efforts: ["low", "medium", "high", "xhigh", "max"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: false },
 ];
 
 // A 1×1 PNG so image chips have a preview in the browser.
@@ -166,6 +169,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       if (patch.opacity !== undefined && (patch.opacity < 0.5 || patch.opacity > 1)) throw { code: "settings", message: "opacidade fora do intervalo" };
       if (patch.accentColor && !/^#[0-9a-fA-F]{6}$/.test(patch.accentColor)) throw { code: "settings", message: "cor inválida" };
       if (patch.accentColor) patch = { ...patch, accentColor: patch.accentColor.toLowerCase() };
+      if (patch.effortPresets) patch = { ...patch, effortPresets: Object.fromEntries(Object.entries(patch.effortPresets as Record<string, Record<string, string | null>>).map(([k, v]) => [k, Object.fromEntries(Object.entries(v).filter(([, e]) => e))]).filter(([, v]) => Object.keys(v as object).length > 0)) };
       state.settings = { ...state.settings, ...patch };
       host({ channel: "settings", event: state.settings });
       return state.settings;
@@ -296,6 +300,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     conversation_history: ({ query }) => {
       // Offset cursors, newest first, like the app-server pages.
       const all = state.history
+        .filter((h) => !!h.archived === !!query?.archived)
         .filter((h) => !query?.search || h.title.toLowerCase().includes(String(query.search).toLowerCase()))
         .sort((a, b) => b.updatedAt - a.updatedAt);
       const start = Number(query?.cursor ?? 0);
@@ -311,6 +316,9 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     conversation_pin: ({ threadId, pinned }) => {
       state.history = state.history.map((h) => (h.id === threadId ? { ...h, pinned } : h));
+    },
+    conversation_unarchive: ({ threadId }) => {
+      state.history = state.history.map((h) => (h.id === threadId ? { ...h, archived: false } : h));
     },
     conversation_archive: ({ threadId }) => {
       state.history = state.history.map((h) => (h.id === threadId ? { ...h, archived: true } : h));
@@ -352,6 +360,16 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       const what = [clip.screen ? "tela" : null, clip.audio ? { mic: "microfone", system: "áudio do sistema", both: "microfone + sistema" }[clip.audio as string] : null].filter(Boolean).join(" + ");
       const chip: T.ContextChip = { id: `chip_${++state.seq}`, kind: clip.screen ? "clip" : "audio", label: `Últimos ${clip.minutes} min · ${what}`, previewPath: clip.screen ? PIXEL : null, payload: { type: "text", text: "…" }, tokenEstimate: 3000, blockedReason: null };
       state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);
+      return chip;
+    },
+    context_attach_skill: ({ tray, name }) => {
+      const known = state.skills.find((s) => s.manifest.name === name) ? `aura/${name}/SKILL.md` : name === "skill-creator" ? "system/skill-creator/SKILL.md" : null;
+      if (!known || state.disabledSkills.includes(known)) throw { code: "skill", message: `skill indisponível: ${name}` };
+      const list = state.trays.get(tray) ?? [];
+      const existing = list.find((c) => c.payload.type === "skill" && c.payload.name === name);
+      if (existing) return existing;
+      const chip: T.ContextChip = { id: `chip_${++state.seq}`, kind: "skill", label: String(name), previewPath: null, payload: { type: "skill", name: String(name), path: known }, tokenEstimate: 0, blockedReason: null };
+      state.trays.set(tray, [...list, chip]);
       return chip;
     },
     capture_selection: ({ tray }) => {

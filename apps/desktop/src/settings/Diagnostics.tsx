@@ -1,3 +1,4 @@
+import { ConfirmButton } from "../ui/ConfirmButton";
 import { useEffect, useState } from "react";
 import { AuraLogo } from "../ui/AuraLogo";
 import { api, errorMessage } from "../ipc/commands";
@@ -96,7 +97,7 @@ export function DiagnosticsSection() {
             </Row>
             <Row label={t("diagnostics.dataDir")}><span className="selectable font-mono text-[12px]">{d.dataDir}</span></Row>
             <Row label={t("settings.providers")}><span className="text-[13px]">{d.providers}</span></Row>
-            <Row label={t("extensions.mcp")}><span className="text-[13px]">{d.mcpServers}</span></Row>
+            <Row label={t("diagnostics.mcpConfigured")}><span className="text-[13px]">{d.mcpServers}</span></Row>
           </>
         )}
       </Section>
@@ -124,25 +125,26 @@ export function DiagnosticsSection() {
         </Row>
       </Section>
       <Section title={t("diagnostics.erase")}>
-        <Row label={t("diagnostics.eraseConfirm")}>
-          <Button
-            variant="danger"
-            onClick={() => {
-              if (window.confirm(t("diagnostics.eraseConfirm"))) void api.eraseAllData();
-            }}
-          >
+        <Row label={t("diagnostics.eraseHint")}>
+          <ConfirmButton size="md" question={t("diagnostics.eraseConfirm")} onConfirm={() => void api.eraseAllData()}>
             {t("diagnostics.erase")}
-          </Button>
+          </ConfirmButton>
         </Row>
       </Section>
     </>
   );
 }
 
+const REPO_URL = "https://github.com/VIDORETTO/aura-windows";
+
 export function AboutSection() {
   const t = useT();
   const [update, setUpdate] = useState<UpdateCheck | null>(null);
   const [pct, setPct] = useState<number | null>(null);
+  const [version, setVersion] = useState<string | null>(null);
+  useEffect(() => {
+    void api.diagnostics().then((d) => setVersion(d.version)).catch(() => undefined);
+  }, []);
   const check = async () => {
     try {
       setUpdate(await checkForUpdate());
@@ -156,7 +158,12 @@ export function AboutSection() {
         <AuraLogo className="h-14 w-14" />
         <div>
           <p className="text-sm">{t("about.tagline")}</p>
+          {version && <p className="text-xs text-muted">{t("about.version", { version })}</p>}
           <p className="text-xs text-muted">{t("about.license")}</p>
+          <p className="mt-1 flex gap-3 text-xs">
+            <button type="button" className="text-accent hover:underline" onClick={() => void api.openExternal(REPO_URL)}>{t("about.repo")}</button>
+            <button type="button" className="text-accent hover:underline" onClick={() => void api.openExternal(`${REPO_URL}/releases`)}>{t("about.releases")}</button>
+          </p>
         </div>
       </div>
       <Row label={t("updates.title")} hint={update?.kind === "none" ? t("updates.none") : update?.kind === "available" ? t("updates.available", { version: update.version }) : update?.kind === "unsupported" ? t("updates.unsupported") : update?.kind === "notConfigured" ? t("updates.notConfigured") : pct !== null ? `${pct}%` : undefined}>

@@ -3,8 +3,18 @@ import { api } from "../ipc/commands";
 import { useT } from "../i18n";
 import { useApp } from "../state/app";
 import { Badge, Button, Row, Section } from "../ui/primitives";
+import { EffortPresetsSection } from "./EffortPresets";
 
 export function AccountSection() {
+  return (
+    <>
+      <AccountCard />
+      <EffortPresetsSection />
+    </>
+  );
+}
+
+function AccountCard() {
   const t = useT();
   const auth = useApp((s) => s.auth);
   const login = useApp((s) => s.login);

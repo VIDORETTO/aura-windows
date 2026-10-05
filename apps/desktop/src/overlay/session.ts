@@ -42,6 +42,18 @@ interface Session {
   /** Enabled quick command names (unknown `/words` are sent as typed). */
   quickNames: string[];
   sending: boolean;
+  /** Message typed with Enter while an answer runs; sent when the turn ends (015). */
+  queued: string | null;
+  queue: (text: string) => void;
+  cancelQueue: () => void;
+  /** Sends the queued message, if any (called when the turn ends). */
+  flushQueue: () => Promise<void>;
+  /** Resends the last request, optionally in another mode first (015). */
+  retryLast: (mode?: ModeKey) => Promise<void>;
+  /** Text the input bar should take (message "Edit"); `n` changes on each request. */
+  compose: { text: string; n: number } | null;
+  setCompose: (text: string) => void;
+  attachSkill: (name: string) => Promise<void>;
   /** Profile of the app in front (badge, defaults). */
   profile: import("../ipc/types").AppProfile | null;
   applyProfile: () => Promise<void>;
@@ -96,17 +108,24 @@ export const useSession = create<Session>((set, get) => ({
   providers: [],
   quickNames: [],
   sending: false,
+  queued: null,
+  compose: null,
   profile: null,
 
   tray: () => get().threadId ?? DRAFT,
 
   setMode: async (mode) => {
-    set({ mode });
+    const previous = get().mode;
+    // Each mode has its own remembered effort for this model (013).
+    set((s) => ({ mode, effort: presetEffort({ ...s, mode }) }));
     const id = get().threadId;
     if (id) {
       try {
         await api.conversationSetMode(id, modeValue(mode, get().granted));
+        // Visible in the conversation; the agent is told on the next turn (014).
+        if (mode !== previous) useConversation.getState().addModeChange(id, mode);
       } catch (e) {
+        set({ mode: previous });
         report(e);
       }
     }
@@ -122,9 +141,12 @@ export const useSession = create<Session>((set, get) => ({
     if (id) await api.conversationCompact(id).catch(report);
   },
 
-  setProvider: (provider, model) => set((s) => ({ provider, model, effort: keepEffort({ ...s, provider, model }) })),
-  setModel: (model) => set((s) => ({ model, effort: keepEffort({ ...s, model }) })),
-  setEffort: (effort) => set({ effort }),
+  setProvider: (provider, model) => set((s) => ({ provider, model, effort: presetEffort({ ...s, provider, model }) ?? keepEffort({ ...s, provider, model }) })),
+  setModel: (model) => set((s) => ({ model, effort: presetEffort({ ...s, model }) ?? keepEffort({ ...s, model }) })),
+  setEffort: (effort) => {
+    set({ effort });
+    void rememberEffort(get(), effort);
+  },
 
   setOverlayMode: (overlayMode) => {
     if (get().overlayMode === overlayMode) return;
@@ -269,6 +291,39 @@ export const useSession = create<Session>((set, get) => ({
     }
   },
 
+  queue: (text) => {
+    if (text.trim()) set({ queued: text.trim() });
+  },
+
+  cancelQueue: () => set({ queued: null }),
+
+  flushQueue: async () => {
+    const text = get().queued;
+    if (!text) return;
+    set({ queued: null });
+    if (!(await get().send(text))) set({ queued: text });
+  },
+
+  retryLast: async (mode) => {
+    const id = get().threadId;
+    const blocks = id ? (useConversation.getState().threads[id]?.blocks ?? []) : [];
+    const last = [...blocks].reverse().find((b) => b.type === "user");
+    if (!last || last.type !== "user" || !last.text.trim()) return;
+    if (mode && mode !== get().mode) await get().setMode(mode);
+    await get().send(last.text);
+  },
+
+  setCompose: (text) => set((s) => ({ compose: { text, n: (s.compose?.n ?? 0) + 1 } })),
+
+  attachSkill: async (name) => {
+    try {
+      await api.contextAttachSkill(get().tray(), name);
+      await get().refreshChips();
+    } catch (e) {
+      report(e);
+    }
+  },
+
   steer: async (text) => {
     const id = get().threadId;
     if (!id || !text.trim()) return;
@@ -288,7 +343,7 @@ export const useSession = create<Session>((set, get) => ({
   newConversation: async (ephemeral = false) => {
     const { threadId, ephemeral: wasEphemeral } = get();
     if (threadId && wasEphemeral) await api.conversationCloseEphemeral(threadId).catch(() => undefined);
-    set({ threadId: null, ephemeral, chips: [], historyOpen: false, mode: "chat", granted: [] });
+    set({ threadId: null, ephemeral, chips: [], historyOpen: false, mode: "chat", granted: [], queued: null });
     useConversation.getState().setActive(null);
     get().setOverlayMode("compact");
     await get().refreshChips();
@@ -358,12 +413,40 @@ export function modelCapabilities(s: Pick<Session, "provider" | "models" | "prov
   // Chat Completions only carries `reasoning_effort` for providers that accept it.
   const carriesEffort = provider.wire !== "chat" || provider.quirks.reasoningEffort;
   return {
-    efforts: spec.supportsReasoning && carriesEffort ? PROVIDER_EFFORTS : [],
-    defaultEffort: null,
+    efforts: carriesEffort ? (spec.efforts?.length ? spec.efforts : spec.supportsReasoning ? PROVIDER_EFFORTS : []) : [],
+    defaultEffort: spec.defaultEffort ?? null,
     images: spec.supportsImages,
     tools: spec.supportsTools,
     reasoning: spec.supportsReasoning,
   };
+}
+
+/** Key of a model in `Settings.effortPresets` (013). */
+export function effortKey(provider: string, model: string | null): string {
+  return `${provider}::${model ?? "default"}`;
+}
+
+/** Effort remembered for this provider, model and mode, if the model accepts it. */
+function presetEffort(s: Pick<Session, "provider" | "model" | "models" | "providers" | "mode">): string | null {
+  const saved = useApp.getState().settings?.effortPresets?.[effortKey(s.provider, s.model)]?.[s.mode] ?? null;
+  return saved && modelCapabilities(s, s.model)?.efforts.includes(saved) ? saved : null;
+}
+
+/** Saves the picker choice as this model's effort in the current mode. */
+async function rememberEffort(s: Pick<Session, "provider" | "model" | "mode">, effort: string | null) {
+  const settings = useApp.getState().settings;
+  if (!settings) return;
+  const key = effortKey(s.provider, s.model);
+  const presets = { ...(settings.effortPresets ?? {}) };
+  const entry = { ...(presets[key] ?? {}), [s.mode]: effort };
+  if (!effort) delete entry[s.mode];
+  if (Object.values(entry).some(Boolean)) presets[key] = entry;
+  else delete presets[key];
+  try {
+    useApp.getState().setSettings(await api.settingsUpdate({ effortPresets: presets }));
+  } catch (e) {
+    report(e);
+  }
 }
 
 /** The chosen effort survives a model change only when the new model supports it. */

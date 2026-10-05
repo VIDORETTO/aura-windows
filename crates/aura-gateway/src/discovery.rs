@@ -107,6 +107,26 @@ pub fn parse_models(body: &Value) -> Vec<ModelSpec> {
             });
             let (images_est, tools_est, reasoning_est) = estimate_capabilities(&id);
             let estimated = modalities.is_none() || params.is_none();
+            if let Some(k) = aura_core::model_catalog::known_model(&id) {
+                // Known model (013): exact efforts and limits.
+                return Some(ModelSpec {
+                    display_name: m["display_name"]
+                        .as_str()
+                        .or(m["name"].as_str())
+                        .map(str::to_string)
+                        .or_else(|| Some(k.display_name.to_string())),
+                    context_window: Some(k.context_window),
+                    max_output: Some(k.max_output),
+                    supports_images: k.images,
+                    supports_tools: k.tools,
+                    supports_reasoning: true,
+                    estimated: false,
+                    manual: false,
+                    efforts: k.efforts.iter().map(|e| e.to_string()).collect(),
+                    default_effort: Some(k.default_effort.to_string()),
+                    id,
+                });
+            }
             Some(ModelSpec {
                 display_name: m["display_name"]
                     .as_str()
@@ -136,6 +156,8 @@ pub fn parse_models(body: &Value) -> Vec<ModelSpec> {
                     .unwrap_or(reasoning_est),
                 estimated,
                 manual: false,
+                efforts: Vec::new(),
+                default_effort: None,
                 id,
             })
         })
@@ -199,6 +221,30 @@ mod tests {
         assert!(!m[0].supports_images && m[0].supports_tools && !m[0].estimated);
         assert_eq!(m[0].context_window, Some(32000));
         assert!(m[1].supports_images && !m[1].supports_tools);
+    }
+
+    #[test]
+    fn known_models_get_their_efforts_and_limits() {
+        // 013 AC-001.
+        let m = parse_models(
+            &json!({"data": [{"id": "gpt-6.1-sol"}, {"id": "openai/gpt-6.1-sol"}, {"id": "llama3"}]}),
+        );
+        for sol in &m[..2] {
+            assert_eq!(sol.display_name.as_deref(), Some("GPT-6.1 Sol"));
+            assert_eq!(
+                (sol.context_window, sol.max_output),
+                (Some(1_050_000), Some(128_000))
+            );
+            assert!(
+                sol.supports_images
+                    && sol.supports_tools
+                    && sol.supports_reasoning
+                    && !sol.estimated
+            );
+            assert_eq!(sol.efforts, ["low", "medium", "high", "xhigh", "max"]);
+            assert_eq!(sol.default_effort.as_deref(), Some("medium"));
+        }
+        assert!(m[2].efforts.is_empty() && m[2].default_effort.is_none());
     }
 
     #[test]

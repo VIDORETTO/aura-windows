@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows11 WebView2 154 production SHA256 548552A18E5AA23FBF17EA03DF3ADE90E4C8FF47A87A3ECF364FB2CE37395736; codex-app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/mode-switch.e2e.ts": "369fdc0cde3bd56b483533cd946fe1a8dba6108e404a9dcc8c38f8155ab23a1b",
+    "apps/desktop/src/overlay/Messages.tsx": "1806f4d71519781342d96c364722573f26972dcf9adadc3d6aedaea0aa218221",
+    "apps/desktop/src/overlay/session.ts": "f140308cbbf83ea693be6bfdcc74966723a1adf796ea5f581fd2bd23e08d56e8",
+    "crates/aura-app/src/host.rs": "dbf415f0a954d976fb5bf9a998a3344323ca728b9ab05b6842877b48e670ed0e",
+    "crates/aura-codex/src/modes.rs": "d3a9b3866191ec05f55fdad4cac9a7af7a2d660423dd49a0b64926fe499b92be",
+    "crates/aura-codex/src/service.rs": "76eef272303c6824a08dbc4c48c1dd7d04d95000cfbbc8fc60857a15ecdb548b",
+    "specs/014-modo-no-meio-da-conversa/change.md": "5aad4be932fb8dab647c2117d862d270fb59768fd62e8831081837a024edd49e"
+  },
+  "input_paths": [
+    "crates/aura-codex/src/modes.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/Messages.tsx",
+    "apps/desktop/e2e/specs/mode-switch.e2e.ts",
+    "specs/014-modo-no-meio-da-conversa/change.md"
+  ],
+  "limitations": "Model behaviour under the note not evaluated (loopback upstream); the sandbox policy per turn remains the enforcement.",
+  "observations": "Turn 2 carried the Task mode note, turn 3 none, turn 4 the Plan mode note; start-time 'Chat mode' developer instruction still present (cause confirmed); reopened transcript shows only the user texts.",
+  "procedure": "Service red/green against the fake app-server (turn/start params and transcript); React red/green (divider, no duplicate); native red on the previous release and green with the real pinned app-server and a loopback model: Chat start, switch to Task and Plan mid-conversation, upstream requests inspected, conversation reopened; regressions model-efforts and compact.",
+  "result": "passed",
+  "tested_revision": "local:7bd268e26cf80c328ef4d001630cf78affb762f85c78d167e9cfd844964f501f",
+  "ticket": null,
+  "timestamp": "2026-10-04T22:09:18+00:00"
+}

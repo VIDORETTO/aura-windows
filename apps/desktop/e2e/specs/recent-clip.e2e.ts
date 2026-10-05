@@ -66,7 +66,7 @@ describe("Recent buffer clip (QA-033)", () => {
       await browser.keys("Escape");
 
       await (await $('button[aria-label="Add context"]')).click();
-      await (await $('//li[@role="option"][contains(., "@last minutes")]')).click();
+      await (await $('//*[@role="option"][contains(., "@recent")]')).click();
       const dialog = await $('[role="dialog"][aria-label="Attach recent buffer"]');
       await dialog.waitForDisplayed({ timeout: 10_000 });
       const minutes = await dialog.$('input[aria-label="Last minutes"]');

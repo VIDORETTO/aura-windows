@@ -51,8 +51,44 @@ and [Semantic Versioning](https://semver.org/).
 - Selection is refreshed when returning to the Overlay (no hide/show needed);
   user-chosen accent color (presets, RGB picker, hex) for the whole UI (effort 012).
 - Native E2E specs for every audit finding (`apps/desktop/e2e/specs`).
+- GPT-6.1 Sol (`gpt-6.1-sol`, efforts low…max, 1,050,000 context) in the
+  ChatGPT plan list and in model discovery of compatible providers; `max`
+  reasoning effort (effort 013).
+- Reasoning effort per model and mode (Chat, Task, Plan): remembered from the
+  Overlay picker and editable in Settings › Account & models.
+- Manual provider models declare their accepted efforts and default effort.
+- Switching Chat/Task/Plan mid-conversation now reaches the agent: a divider in
+  the conversation and a one-time mode note on the next turn (the thread's
+  start-time instructions used to keep the first mode) (effort 014).
+- Input bar (effort 015): `/` does something (commands, quick commands, Skills)
+  and `@` adds context, in labelled sections; both follow the caret and filter
+  without accents. Choosing a Skill adds a Skill chip (no `$name` text). A typed
+  quick command shows its argument and text source. Enter during an answer
+  queues the message (Ctrl+Enter still steers). The compact Overlay shows the
+  mode. Messages offer Try again, Redo in Task mode and Edit. The context meter
+  asks before compacting. The Persona asks for web search on live data.
+- Opt-in real app-server test: Task mode denies writes outside the workspace and
+  asks for approval on escalation.
+- Archived conversations: an "Archived" filter in History with Unarchive
+  (`thread/unarchive`); About shows the version and links (effort 016).
 
 ### Changed
+- Desktop, not web page (effort 016): the right-click menu keeps only editing
+  actions (no Save as/Print/Back/Reload/Inspect; none on empty space) and browser
+  shortcuts (F5, Ctrl+P, Ctrl+S, Alt+←, Ctrl+F) are off in release builds;
+  destructive actions confirm inside the app instead of the browser's dialog.
+- History "Load more" no longer skips conversations created in the same second
+  as the last row (whole-second app-server cursor).
+- The Settings default model applies only to the ChatGPT plan and an app
+  profile's model wins over it; the picker names the effective model.
+- `@` items are single typable words; quick command previews show `‹inglês›`
+  instead of raw placeholders; Settings pages open at the top; the effort table
+  fits its card; approvals say Accepted/Declined; duplicated rows removed.
+- Input bar: Enter on a message ending in `@word` sends it (it used to capture
+  the screen); a bare `/` is never sent; Esc closes the menu without erasing the
+  text; built-in commands follow the interface language and `/tela` left the
+  menu (still accepted when typed). The window button "Compactar" is now
+  "Recolher"/"Collapse" so it no longer reads like compacting the conversation.
 - Aura starts in the tray with a notification (001 AC-001); launching it again,
   the shortcut or the tray opens the Overlay. `Esc` never hides the Overlay.
 - `iniciar-aura.bat` builds the speech worker with the local engines.

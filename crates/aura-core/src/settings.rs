@@ -80,6 +80,20 @@ pub struct Settings {
     pub auto_read: bool,
     /// Accent color `#rrggbb` chosen by the user (012); None = Aura's default.
     pub accent_color: Option<String>,
+    /// Reasoning effort per `provider::model` and mode (013).
+    pub effort_presets: std::collections::BTreeMap<String, ModeEfforts>,
+}
+
+/// Effort chosen for one model in each conversation mode (013).
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
+pub struct ModeEfforts {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub chat: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub task: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub plan: Option<String>,
 }
 
 impl Default for Settings {
@@ -116,6 +130,7 @@ impl Default for Settings {
             tts_cloud_consent: Vec::new(),
             auto_read: false,
             accent_color: None,
+            effort_presets: Default::default(),
         }
     }
 }
@@ -180,6 +195,8 @@ pub struct SettingsPatch {
         skip_serializing_if = "Option::is_none"
     )]
     pub accent_color: Option<Option<String>>,
+    /// Replaces every preset (the UI sends the whole map).
+    pub effort_presets: Option<std::collections::BTreeMap<String, ModeEfforts>>,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -360,6 +377,26 @@ impl Settings {
         }
         if let Some(v) = patch.auto_read {
             next.auto_read = v;
+        }
+        if let Some(map) = &patch.effort_presets {
+            let ok = map.len() <= 500
+                && map.iter().all(|(k, e)| {
+                    !k.is_empty()
+                        && k.chars().count() <= 300
+                        && [&e.chat, &e.task, &e.plan]
+                            .iter()
+                            .all(|v| v.as_deref().is_none_or(crate::model_catalog::is_effort))
+                });
+            if !ok {
+                return Err(SettingsError::OutOfRange {
+                    field: "effortPresets",
+                });
+            }
+            next.effort_presets = map
+                .iter()
+                .filter(|(_, e)| e.chat.is_some() || e.task.is_some() || e.plan.is_some())
+                .map(|(k, e)| (k.clone(), e.clone()))
+                .collect();
         }
         if let Some(v) = &patch.accent_color {
             next.accent_color = match v {
@@ -712,6 +749,45 @@ mod tests {
             })
             .unwrap();
         assert_eq!(next.opacity, 0.5);
+    }
+
+    #[test]
+    fn effort_presets_per_model_and_mode() {
+        // 013 AC-002: provider::model → effort per mode; null clears a mode.
+        let s = Settings::default();
+        assert!(s.effort_presets.is_empty());
+        let patch = |v: serde_json::Value| -> SettingsPatch {
+            serde_json::from_value(serde_json::json!({ "effortPresets": v })).unwrap()
+        };
+        let next = s
+            .apply(&patch(serde_json::json!({
+                "aura-qa::qa-reasoner": {"chat": "low", "task": "max"},
+                "aura-chatgpt-plan::gpt-6.1-sol": {"plan": "xhigh", "chat": null}
+            })))
+            .unwrap();
+        let qa = &next.effort_presets["aura-qa::qa-reasoner"];
+        assert_eq!(
+            (qa.chat.as_deref(), qa.task.as_deref(), qa.plan.as_deref()),
+            (Some("low"), Some("max"), None)
+        );
+        assert_eq!(
+            next.effort_presets["aura-chatgpt-plan::gpt-6.1-sol"]
+                .plan
+                .as_deref(),
+            Some("xhigh")
+        );
+        assert_eq!(
+            next.apply(&patch(serde_json::json!({"a::b": {"chat": "ultra"}})))
+                .unwrap_err(),
+            SettingsError::OutOfRange {
+                field: "effortPresets"
+            }
+        );
+        // Entries without any effort are dropped.
+        let cleared = next
+            .apply(&patch(serde_json::json!({"aura-qa::qa-reasoner": {}})))
+            .unwrap();
+        assert!(cleared.effort_presets.is_empty());
     }
 
     #[test]

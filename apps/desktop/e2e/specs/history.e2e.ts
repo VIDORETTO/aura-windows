@@ -115,5 +115,10 @@ describe("History paging (QA-016)", () => {
     const total = await count();
     console.log("Native history rows after Load more", total);
     expect(total).toBeGreaterThan(50);
+    // Every conversation is reachable, including those created in the same
+    // second as the last row of the first page (whole-second cursor).
+    const text = await panel.getText();
+    const missing = Array.from({ length: 55 }, (_, i) => `QA page ${String(i + 1).padStart(3, "0")}`).filter((t) => !text.includes(t));
+    expect(missing).toEqual([]);
   });
 });

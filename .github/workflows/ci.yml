@@ -120,5 +120,5 @@ jobs:
       # Only the demo-build journeys: the other specs drive the production app
       # with local resources (VB-Cable, speech models, loopback providers).
       - name: E2E
-        run: pnpm install && pnpm test --spec ./specs/overlay.e2e.ts --spec ./specs/settings.e2e.ts
+        run: pnpm install && pnpm test --spec ./specs/overlay.e2e.ts --spec ./specs/settings.e2e.ts --spec ./specs/composer.e2e.ts
         working-directory: apps/desktop/e2e

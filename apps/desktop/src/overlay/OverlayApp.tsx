@@ -169,6 +169,17 @@ export function OverlayApp() {
     [],
   );
 
+  // A message queued during the answer goes out when the turn ends (015 AC-006).
+  useEffect(
+    () =>
+      useConversation.subscribe((s, prev) => {
+        const id = useSession.getState().threadId;
+        if (!id || !prev.threads[id]?.running || s.threads[id]?.running !== false) return;
+        if (useSession.getState().queued) void useSession.getState().flushQueue();
+      }),
+    [],
+  );
+
   const wasRunning = useRef(false);
   useEffect(() => {
     if (wasRunning.current && !running && thread && (session.minibar || document.hidden)) {
@@ -311,6 +322,7 @@ export function OverlayApp() {
                       <div className="mt-1 flex flex-wrap justify-center gap-3 text-[12px] text-muted">
                         <span><Kbd>Ctrl+Shift+S</Kbd> {t("empty.tip1").replace("Ctrl+Shift+S", "").trim()}</span>
                         <span><Kbd>/</Kbd> {t("empty.tip2").replace("/", "").trim()}</span>
+                        <span><Kbd>@</Kbd> {t("empty.tip4").replace("@", "").trim()}</span>
                         <span>{t("empty.tip3")}</span>
                       </div>
                       {consents.map((c) => (

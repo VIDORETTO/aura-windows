@@ -4,7 +4,7 @@ import { api } from "../ipc/commands";
 import { useT } from "../i18n";
 import { IconButton } from "../ui/primitives";
 import { AppearanceButton } from "./Appearance";
-import { ModelPicker } from "./ModelPicker";
+import { ModeBadge, ModelPicker } from "./ModelPicker";
 import { StatusBadges } from "./StatusBar";
 import { useSession } from "./session";
 
@@ -34,11 +34,14 @@ export function Header({ compact, subtitle }: { compact: boolean; subtitle?: str
         Aura
       </span>
       {compact ? (
-        subtitle && (
-          <span data-tauri-drag-region className="min-w-0 truncate text-[11px] text-muted" title={subtitle}>
-            · {subtitle}
-          </span>
-        )
+        <>
+          <ModeBadge />
+          {subtitle && (
+            <span data-tauri-drag-region className="min-w-0 truncate text-[11px] text-muted" title={subtitle}>
+              · {subtitle}
+            </span>
+          )}
+        </>
       ) : (
         <>
           <ModelPicker />

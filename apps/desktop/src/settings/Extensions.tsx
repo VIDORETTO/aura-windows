@@ -1,3 +1,4 @@
+import { quickHint, templatePreview } from "../overlay/composer";
 import { Pencil, Server, Sparkles, Trash2, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
@@ -433,9 +434,17 @@ function QuickCommands() {
           <Zap size={14} className="text-muted" />
           <div className="min-w-0 flex-1">
             <div className="text-sm font-medium">/{q.name} {q.builtin && <Badge>{t("extensions.quick.builtin")}</Badge>}</div>
-            <div className="truncate text-xs text-muted">{q.template.replace(/\n/g, " ")}</div>
+            <div className="truncate text-xs text-muted" title={q.template}>
+              {templatePreview(q.template)}
+              <QuickSources template={q.template} />
+            </div>
           </div>
           <Switch label={q.name} checked={q.enabled} onChange={async (v) => setList(await api.quickToggle(q.name, v))} />
+          {!q.builtin && (
+            <Button size="sm" variant="ghost" aria-label={t("common.edit")} onClick={() => { setName(q.name); setTemplate(q.template); }}>
+              <Pencil size={13} />
+            </Button>
+          )}
           {!q.builtin && (
             <Button size="sm" variant="danger" aria-label={t("common.delete")} onClick={async () => setList(await api.quickDelete(q.name))}>
               <Trash2 size={13} />
@@ -473,4 +482,12 @@ export function ExtensionsSection() {
       <QuickCommands />
     </>
   );
+}
+
+/** Where a quick command takes its text from, in words (no raw placeholders). */
+function QuickSources({ template }: { template: string }) {
+  const t = useT();
+  const h = quickHint(template);
+  const parts = [h.source && t(h.source === "selection" ? "quick.hint.selection" : "quick.hint.typed"), h.screen && t("quick.hint.screen")].filter(Boolean);
+  return parts.length ? <span className="opacity-80"> · {parts.join(" · ")}</span> : null;
 }

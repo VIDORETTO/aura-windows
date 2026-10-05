@@ -33,7 +33,7 @@ describe("Manual provider model (QA-021)", () => {
     const tested = await browser.execute(async (pid) => (window as any).__TAURI_INTERNALS__.invoke("providers_test", { id: pid }), id);
     console.log("Native provider after re-test", JSON.stringify({ status: (tested as any).status, lastError: (tested as any).lastError, models: (tested as any).models }));
     expect((tested as any).status).toBe("unverified");
-    expect((tested as any).models).toEqual([{ id: "qa-manual-model", displayName: "QA Manual", contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false, manual: true }]);
+    expect((tested as any).models).toEqual([{ id: "qa-manual-model", displayName: "QA Manual", contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false, manual: true, efforts: [], defaultEffort: null }]);
 
     await browser.switchToWindow(overlay);
     await browser.refresh();

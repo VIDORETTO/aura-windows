@@ -44,7 +44,9 @@ export type Block =
   | { type: "plan"; id: string; text: string }
   | { type: "input"; requestId: string; source: string; prompt: unknown; autoResolveMs: number | null; resolved?: string }
   | { type: "error"; id: string; error: TurnError }
-  | { type: "compaction"; id: string };
+  | { type: "compaction"; id: string }
+  /** The user switched Chat/Task/Plan in the middle of the conversation (014). */
+  | { type: "mode"; id: string; mode: "chat" | "task" | "plan" };
 
 export interface Thread {
   id: string;
@@ -220,6 +222,7 @@ interface Store extends ConvState {
   activeId: string | null;
   setActive: (id: string | null) => void;
   addUserMessage: (threadId: string, text: string, chips: ContextChip[], display?: string) => void;
+  addModeChange: (threadId: string, mode: "chat" | "task" | "plan") => void;
   loadTranscript: (threadId: string, messages: { role: string; text: string }[]) => void;
   markApproval: (requestId: string, how: string) => void;
   apply: (ev: ConversationEvent) => void;
@@ -241,6 +244,12 @@ export const useConversation = create<Store>((set, get) => ({
       const t = s.threads[threadId] ?? emptyThread(threadId);
       const block: Block = { type: "user", id: `u_${now()}_${t.blocks.length}`, text, chips, display };
       return { threads: { ...s.threads, [threadId]: { ...t, blocks: [...t.blocks, block], running: true } } };
+    }),
+  addModeChange: (threadId, mode) =>
+    set((s) => {
+      const t = s.threads[threadId] ?? emptyThread(threadId);
+      const block: Block = { type: "mode", id: `mode_${now()}_${t.blocks.length}`, mode };
+      return { threads: { ...s.threads, [threadId]: { ...t, blocks: [...t.blocks, block] } } };
     }),
   loadTranscript: (threadId, messages) =>
     set((s) => ({

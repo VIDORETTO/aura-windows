@@ -46,6 +46,14 @@ export interface Settings {
   autoRead: boolean;
   /** Accent color `#rrggbb` (null = Aura's default). */
   accentColor: string | null;
+  /** Reasoning effort per `provider::model` and mode (013). */
+  effortPresets: Record<string, ModeEfforts>;
+}
+
+export interface ModeEfforts {
+  chat?: string | null;
+  task?: string | null;
+  plan?: string | null;
 }
 
 export interface SpeechVoice {
@@ -223,6 +231,9 @@ export interface ModelSpec {
   estimated: boolean;
   /** Entered or corrected by the user; discovery keeps it (absent = false). */
   manual?: boolean;
+  /** Reasoning efforts the model accepts (013); empty = low/medium/high. */
+  efforts?: string[];
+  defaultEffort?: string | null;
 }
 
 export interface Provider {

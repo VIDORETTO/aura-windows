@@ -132,12 +132,17 @@ struct ThreadCtx {
     meta: ConversationMeta,
     mode: ConversationMode,
     ephemeral: bool,
+    /// Mode the agent was last told about (thread start or a previous
+    /// announcement); None after a restart, when it is not known (014).
+    announced: Option<&'static str>,
 }
 
 struct Shared {
     threads: Mutex<HashMap<String, ThreadCtx>>,
     active_turns: Mutex<HashMap<String, String>>,
     loaded: Mutex<HashSet<String>>,
+    /// Interface language, for texts Aura adds to turns (014).
+    language: std::sync::RwLock<UiLanguage>,
 }
 
 pub struct CodexService {
@@ -199,6 +204,7 @@ impl CodexService {
                 threads: Mutex::new(HashMap::new()),
                 active_turns: Mutex::new(HashMap::new()),
                 loaded: Mutex::new(HashSet::new()),
+                language: std::sync::RwLock::new(UiLanguage::PtBr),
             }),
             store,
             workspaces_root,
@@ -368,6 +374,7 @@ impl CodexService {
 
     /// Starts a conversation (AC-007, AC-017, AC-024, AC-025).
     pub async fn start(&self, opts: StartOptions) -> Result<StartedConversation, ServiceError> {
+        self.set_language(opts.language);
         let uuid = uuid::Uuid::new_v4().to_string();
         let workspace = if opts.ephemeral {
             self.workspaces_root.join("_ephemeral").join(&uuid)
@@ -434,6 +441,7 @@ impl CodexService {
             thread_id.clone(),
             ThreadCtx {
                 meta,
+                announced: Some(opts.mode.key()),
                 mode: opts.mode,
                 ephemeral: opts.ephemeral,
             },
@@ -463,6 +471,7 @@ impl CodexService {
                 meta: meta.clone(),
                 mode: mode.clone(),
                 ephemeral: false,
+                announced: None,
             },
         );
         Ok((meta, mode, false))
@@ -514,7 +523,26 @@ impl CodexService {
         self.ensure_loaded(&peer, thread_id).await?;
         let mut params = turn_overrides(&mode, &meta.workspace_path);
         params["threadId"] = json!(thread_id);
-        params["input"] = Value::Array(inputs.iter().map(input_json).collect());
+        let mut input: Vec<Value> = inputs.iter().map(input_json).collect();
+        // Mode changed since the agent was last told (014): say so after the
+        // user's own input.
+        let announce = {
+            let mut threads = self.shared.threads.lock().await;
+            match threads.get_mut(thread_id) {
+                Some(ctx) if ctx.announced != Some(mode.key()) => {
+                    ctx.announced = Some(mode.key());
+                    true
+                }
+                _ => false,
+            }
+        };
+        if announce {
+            let lang = *self.shared.language.read().unwrap();
+            input.push(input_json(&TurnInput::Text {
+                text: crate::modes::mode_change_note(&mode, lang),
+            }));
+        }
+        params["input"] = Value::Array(input);
         if let Some(m) = opts.model {
             params["model"] = json!(m);
         }
@@ -597,6 +625,11 @@ impl CodexService {
     }
 
     /// Changes the mode of an existing conversation (applied from the next turn).
+    /// Language of the texts Aura adds to turns (mode announcements).
+    pub fn set_language(&self, lang: UiLanguage) {
+        *self.shared.language.write().unwrap() = lang;
+    }
+
     pub async fn set_mode(
         &self,
         thread_id: &str,
@@ -610,12 +643,15 @@ impl CodexService {
         if !ephemeral {
             ConversationsRepo::new(&self.store).upsert(&meta)?;
         }
-        self.shared.threads.lock().await.insert(
+        let mut threads = self.shared.threads.lock().await;
+        let announced = threads.get(thread_id).and_then(|t| t.announced);
+        threads.insert(
             thread_id.to_string(),
             ThreadCtx {
                 meta,
                 mode,
                 ephemeral,
+                announced,
             },
         );
         Ok(())
@@ -631,7 +667,7 @@ impl CodexService {
             params["searchTerm"] = json!(s);
         }
         if let Some(c) = q.cursor {
-            params["cursor"] = json!(c);
+            params["cursor"] = json!(page_cursor(&c));
         }
         let result = peer.request("thread/list", params).await?;
         let mut items: Vec<ConversationSummary> = result["data"]
@@ -690,6 +726,7 @@ impl CodexService {
                                     .join("\n")
                             })
                             .unwrap_or_default();
+                        let text = crate::modes::strip_mode_notes(&text);
                         out.push(TranscriptMessage {
                             role: "user".into(),
                             text,
@@ -729,6 +766,13 @@ impl CodexService {
     pub async fn archive(&self, thread_id: &str) -> Result<(), ServiceError> {
         let peer = self.peer().await?;
         peer.request("thread/archive", json!({"threadId": thread_id}))
+            .await?;
+        Ok(())
+    }
+
+    pub async fn unarchive(&self, thread_id: &str) -> Result<(), ServiceError> {
+        let peer = self.peer().await?;
+        peer.request("thread/unarchive", json!({"threadId": thread_id}))
             .await?;
         Ok(())
     }
@@ -823,4 +867,27 @@ fn remove_dir_or_queue(repo: &ConversationsRepo<'_>, path: &Path) -> Result<(), 
         repo.queue_deletion(path)?;
     }
     Ok(())
+}
+
+/// Cursor for the next History page. The pinned app-server pages by
+/// `updatedAt` with a whole-second RFC 3339 cursor and a strict "older than",
+/// so conversations sharing the last item's second were never listed. Asking
+/// from the end of that second re-reads them; the UI drops ids it already has.
+pub fn page_cursor(cursor: &str) -> String {
+    let b = cursor.as_bytes();
+    let whole_second = b.len() == 20
+        && b[19] == b'Z'
+        && b[10] == b'T'
+        && b.iter().enumerate().all(|(i, c)| match i {
+            4 | 7 => *c == b'-',
+            10 => *c == b'T',
+            13 | 16 => *c == b':',
+            19 => *c == b'Z',
+            _ => c.is_ascii_digit(),
+        });
+    if whole_second {
+        format!("{}.999Z", &cursor[..19])
+    } else {
+        cursor.to_string()
+    }
 }

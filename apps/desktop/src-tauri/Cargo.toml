@@ -43,6 +43,9 @@ tauri-plugin-process = "2"
 aura-win.workspace = true
 aura-capture = { workspace = true, features = ["store"] }
 aura-audio = { workspace = true, features = ["store"] }
+# Same versions Tauri/wry use: native context menu and browser keys (webview_guard).
+webview2-com = "0.39"
+windows = "0.62"
 
 [features]
 # Enables loopback-only authorization for native E2E cancellation tests.
