@@ -48,3 +48,22 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-030 | Base de conhecimento local (pastas indexadas com citações) consultada pelo agente (Msty Knowledge Stacks, Jan) | CAND-007 | P2 | candidate | — |
 | CAND-031 | Conectores (Gmail, Calendário, Drive, Microsoft 365) como servidores MCP pré-configurados com OAuth | CAND-008 | P2 | candidate | — |
 | CAND-032 | Exportar conversa (Markdown/PDF) e copiar resposta como texto formatado | CAND-002 | P3 | candidate | — |
+| CAND-033 | Preparo em três velocidades (⚡ uma frase · 🧭 grill-me · ▶ sem preparo): cartões, "Entendi assim" e Skill `aura-preparo`, reutilizável por Reunião, Ensaio, Ditado, Perfis, Projetos, Agendados e Conectores | CAND-008 | P0 | candidate | — |
+| CAND-034 | Configurar com IA em tudo: `settings_describe/propose/apply/undo`, cartão antes→depois com Desfazer, "Pedir à IA" na busca, `/configurar` e onboarding "conte como trabalha" | CAND-033 | P0 | candidate | — |
+| CAND-035 | Motor de Reunião opt-in: sessão, transcrição contínua (Você/Eles), biblioteca com FTS5, "esqueci de iniciar" a partir do Buffer recente (absorve CAND-016 e o núcleo de CAND-026) | CAND-005, CAND-006 | P0 | candidate | — |
+| CAND-036 | Painel ao vivo da Reunião: ações sob demanda (Perdi o fio, Resumo, O que respondo?, Termo, Marcar), notas do usuário, níveis de ajuda, detecção suave de reunião (Fireflies Live Assist, Cluely, Granola) | CAND-033, CAND-035 | P0 | candidate | — |
+| CAND-037 | Pós-reunião: Receitas (Antes/Durante/Depois), notas melhoradas, ações com origem citada, e-mail, "sem resposta", promessas, agente executa em modo Tarefa (Granola, Otter, Fathom) | CAND-036 | P0 | candidate | — |
+| CAND-038 | Consentimento e privacidade de reunião: aviso aos participantes, áudio apagado ao encerrar, modo só local, redação de dados pessoais, registro do que foi enviado | CAND-035 | P0 | candidate | — |
+| CAND-039 | Pergunte sobre minhas reuniões (`meeting_search`) e Projetos com reuniões, arquivos e instruções (Fireflies AskFred, Read, Granola Spaces; une CAND-027/030) | CAND-037 | P1 | candidate | — |
+| CAND-040 | Legendas e tradução ao vivo; sugerir resposta em outro idioma | CAND-036 | P1 | candidate | — |
+| CAND-041 | Briefing antes da reunião e resumo diário a partir do calendário (Granola Briefs, Fireflies Meeting Prep) | CAND-031, CAND-037 | P1 | candidate | — |
+| CAND-042 | Ensaio por voz: entrevista, vendas, apresentação e negociação com personas e feedback (Final Round, Sensei, Yoodli, Gong) | CAND-033, CAND-006 | P1 | candidate | — |
+| CAND-043 | Quem falou: diarização e nomes dos participantes (spike de motor e licença antes de prometer) | CAND-035 | P1 | candidate | — |
+| CAND-044 | Áudio por aplicativo (process loopback) e supressão de eco para transcrição limpa | CAND-005 | P1 | candidate | — |
+| CAND-045 | Coaching de fala privado: ritmo, muletas, tempo de fala, perguntas (Yoodli, Read, Verve) | CAND-035 | P2 | candidate | — |
+| CAND-046 | Modo Estudo (aula/vídeo): notas, glossário, flashcards e quiz | CAND-035 | P2 | candidate | — |
+| CAND-047 | Compromissos e promessas entre reuniões, com envelhecimento e lembretes | CAND-037 | P2 | candidate | — |
+| CAND-048 | Hábitos locais viram sugestões de configuração (sempre como proposta) | CAND-034 | P2 | candidate | — |
+| CAND-049 | Aura como servidor MCP/API local somente leitura (notas e reuniões) para outras ferramentas (Granola API/MCP) | CAND-039 | P3 | candidate | — |
+
+> Revisão 2026-10-05: CAND-033…049 vêm de `docs/project/plano-reuniao-e-configuracao-assistida.md` e `docs/research/competitors-ao-vivo.md`. CAND-016 passa a ser coberto por CAND-035/036/037; CAND-025, 028, 030 e 031 ganham prioridade como habilitadores (ditado inteligente, sugestões contextuais, base de conhecimento, conectores). Nada aqui é esforço até passar pelo fluxo Hybrid.
