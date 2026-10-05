@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-033, CAND-034. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Padrão de preparo (⚡ uma frase, 🧭 grill-me, ▶ sem preparo) e assistente que configura o Aura por conversa, com antes → depois e Desfazer.
 
-Nota: Base: core-skills e ferramentas MCP de escrita do esforço 017.
+Nota: Base: core-skills e ferramentas MCP de escrita do esforço 017. **Feito (05/10):** `settings_describe/propose/apply/undo`, Skills `aura-configurar` e `aura-preparo`, `/configurar`, `/preparo`, "Pedir à IA" na busca. **Falta:** cartão "Entendi assim" editável na UI, onboarding "conte como trabalha", Janelas excluídas e Perfis de app por IA, desfazer persistente entre sessões.
 
 ## Contrato de comportamento
 

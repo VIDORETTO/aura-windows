@@ -103,6 +103,10 @@ async fn handshake_list_and_call() {
             "skill_save",
             "quick_command_save",
             "mcp_server_save",
+            "settings_describe",
+            "settings_propose",
+            "settings_apply",
+            "settings_undo",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

@@ -4,6 +4,7 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { messages, useT, type MessageKey } from "../i18n";
+import { api } from "../ipc/commands";
 import { useApp } from "../state/app";
 import { cx } from "../ui/primitives";
 import { normalize } from "../overlay/composer";
@@ -57,6 +58,15 @@ export function SettingsSearch({
     listRef.current?.querySelector(`[aria-selected="true"]`)?.scrollIntoView?.({ block: "nearest" });
   }, [active]);
 
+  // The last option hands the query to the agent ("Configurar com IA", 022).
+  const total = results.length + 1;
+  const askAi = () => {
+    const request = query.trim();
+    if (!request) return;
+    void api.agentTask(t("settings.ai.prompt", { request }), "task");
+    setQuery("");
+  };
+
   const open = (r: SearchEntry) => {
     onOpen(r.page, r.text);
     setQuery("");
@@ -72,21 +82,24 @@ export function SettingsSearch({
           role="combobox"
           aria-expanded={query.trim() !== ""}
           aria-controls={listId}
-          aria-activedescendant={results.length ? `${listId}-${active}` : undefined}
+          aria-activedescendant={query.trim() ? `${listId}-${active}` : undefined}
           aria-label={t("settings.search")}
           placeholder={t("settings.search.placeholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "ArrowDown" && results.length) {
+            if (e.key === "ArrowDown" && query.trim()) {
               e.preventDefault();
-              setActive((a) => (a + 1) % results.length);
-            } else if (e.key === "ArrowUp" && results.length) {
+              setActive((a) => (a + 1) % total);
+            } else if (e.key === "ArrowUp" && query.trim()) {
               e.preventDefault();
-              setActive((a) => (a - 1 + results.length) % results.length);
+              setActive((a) => (a - 1 + total) % total);
             } else if (e.key === "Enter" && results[active]) {
               e.preventDefault();
               open(results[active]);
+            } else if (e.key === "Enter" && query.trim() && active === results.length) {
+              e.preventDefault();
+              askAi();
             } else if (e.key === "Escape" && query) {
               e.preventDefault();
               e.stopPropagation();
@@ -121,6 +134,20 @@ export function SettingsSearch({
               <div className="text-[10px] uppercase tracking-wide text-muted">{pageName(r.page)}</div>
             </li>
           ))}
+          <li
+            id={`${listId}-${results.length}`}
+            role="option"
+            aria-selected={active === results.length}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              askAi();
+            }}
+            onMouseEnter={() => setActive(results.length)}
+            className={cx("cursor-pointer rounded-md px-2 py-1.5", active === results.length && "bg-hover")}
+          >
+            <div className="text-[12px] leading-snug">{t("settings.search.askAi")}</div>
+            <div className="line-clamp-1 text-[10px] text-muted">{query.trim()}</div>
+          </li>
         </ul>
       )}
     </div>

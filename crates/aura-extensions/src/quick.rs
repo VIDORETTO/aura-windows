@@ -119,6 +119,11 @@ pub fn builtins() -> Vec<QuickCommand> {
             "{tela}Leia o e-mail ou a conversa que está na tela e escreva um rascunho de resposta no mesmo idioma, pronto para colar. Tom: {args:cordial}. Responda só com o texto da resposta.\n\n{texto}",
         ),
         b(
+            "configurar",
+            "$aura-configurar Quero configurar o Aura: {texto}",
+        ),
+        b("preparo", "$aura-preparo Quero me preparar para: {texto}"),
+        b(
             "parei",
             "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}",
         ),
@@ -420,7 +425,7 @@ mod tests {
     #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 12);
+        assert_eq!(repo.list().unwrap().len(), 14);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

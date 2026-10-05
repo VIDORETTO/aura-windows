@@ -25,6 +25,7 @@ pub mod platform;
 pub mod privacy;
 pub mod profiles;
 pub mod recorder;
+pub mod settings_assistant;
 pub mod speech;
 pub mod tokens;
 pub mod tools;

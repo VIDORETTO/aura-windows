@@ -2634,3 +2634,77 @@ async fn yolo_needs_the_typed_confirmation() {
         .unwrap();
     assert!(next.yolo && next.hide_on_blur);
 }
+
+#[tokio::test]
+async fn agent_configures_settings_with_diff_and_undo() {
+    // 022 AC-002.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-set".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    let before = e.host.settings();
+
+    // Proposing shows the diff and saves nothing.
+    let out = call(
+        "settings_propose",
+        json!({"changes": {"opacity": 0.7, "hideFromCapture": false}}),
+    )
+    .await;
+    let v: serde_json::Value = serde_json::from_str(&text(&out)).unwrap();
+    assert_eq!(v["ok"], true);
+    let flagged: Vec<_> = v["changes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|c| c["widens_exposure"] == true)
+        .map(|c| c["key"].as_str().unwrap().to_string())
+        .collect();
+    assert_eq!(flagged, ["hideFromCapture"]);
+    assert_eq!(e.host.settings(), before);
+
+    // Applying changes them; undo restores exactly the previous values.
+    let out = call(
+        "settings_apply",
+        json!({"changes": {"opacity": 0.7, "autoRead": true}}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert_eq!(e.host.settings().opacity, 0.7);
+    assert!(e.host.settings().auto_read);
+    let out = call("settings_undo", json!({})).await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert_eq!(e.host.settings(), before);
+    assert!(call("settings_undo", json!({})).await.is_error);
+
+    // Out of reach: YOLO and shortcuts; invalid values are explained.
+    for bad in [
+        json!({"yolo": true}),
+        json!({"invokeShortcut": "Ctrl+Q"}),
+        json!({"opacity": 0.1}),
+    ] {
+        assert!(
+            call("settings_apply", json!({"changes": bad}))
+                .await
+                .is_error
+        );
+    }
+    assert!(!e.host.settings().yolo);
+    assert_eq!(e.host.settings(), before);
+}

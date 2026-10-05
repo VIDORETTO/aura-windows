@@ -30,5 +30,6 @@
   "specs/017-modelos-gpt6-extensoes-agenticas/verification.md": "f5e9a03d8894a198c128a58e9de20355a0aff196aac65bf74b30d6b054413746",
   "specs/018-modo-yolo/verification.md": "a038497049d61bb3f9e516704122c7dd4d3d15d43e879fed0cdccac3e3d967e3",
   "specs/019-dia-a-dia-texto/verification.md": "c0139b81af71ff8c06e128a1208db46ebdefa003403d08c744236c8f1975cf82",
-  "specs/021-ocultacao-e-transmissao/verification.md": "135d1affc7648b76a6760226b0a1a15f9b38468ab76f0efff698950901bc25c0"
+  "specs/021-ocultacao-e-transmissao/verification.md": "135d1affc7648b76a6760226b0a1a15f9b38468ab76f0efff698950901bc25c0",
+  "specs/022-preparo-e-configurar-com-ia/verification.md": "5ca5d66e1479a239441036ca03c3194edd25260a7ae1ad645f62d1de70999eb2"
 }

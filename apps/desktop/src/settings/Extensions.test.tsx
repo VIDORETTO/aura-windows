@@ -1,5 +1,7 @@
 // 017: search, bulk on/off, MCP editing and "Create with AI" in Extensions;
 // the global Settings search.
+import { vi } from "vitest";
+import { api } from "../ipc/commands";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { freshApp } from "../test/harness";
@@ -104,13 +106,27 @@ describe("Settings search (017 AC-008)", () => {
     const results = screen.getByRole("listbox", { name: "Resultados da busca" });
     const options = within(results).getAllByRole("option");
     expect(options.length).toBeGreaterThan(0);
-    expect(options.every((o) => /Voz|Privacidade|Atalhos/.test(o.textContent ?? ""))).toBe(true);
+    // Every result belongs to a page; the last option is "Pedir à IA" (022).
+    expect(options.slice(0, -1).every((o) => /Voz|Privacidade|Atalhos/.test(o.textContent ?? ""))).toBe(true);
+    expect(options.at(-1)).toHaveTextContent("Pedir à IA para configurar");
     const voice = options.find((o) => o.textContent?.endsWith("Voz"))!;
     await user.click(voice);
     await waitFor(() => expect(window.location.hash).toBe("#/settings/voice"));
     expect(screen.getByRole("link", { name: "Voz" })).toHaveAttribute("aria-current", "page");
     await user.type(box, "xyzw");
     expect(within(screen.getByRole("listbox", { name: "Resultados da busca" })).getByText("Nada encontrado")).toBeInTheDocument();
+  });
+
+  it("hands an unfound request to the agent with the configure skill (022 AC-003)", async () => {
+    await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/general";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    const spy = vi.spyOn(api, "agentTask").mockResolvedValue(undefined);
+    const box = screen.getByRole("combobox", { name: "Buscar configurações" });
+    await user.type(box, "deixa tudo mais discreto{ArrowDown}{Enter}");
+    expect(spy).toHaveBeenCalledWith("$aura-configurar Quero configurar o Aura: deixa tudo mais discreto", "task");
+    expect(box).toHaveValue("");
   });
 
   it("indexes page texts without placeholders and ranks word starts first", () => {

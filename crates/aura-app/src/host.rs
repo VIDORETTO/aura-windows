@@ -167,6 +167,42 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn settings_describe(&self) -> serde_json::Value {
+        crate::settings_assistant::describe(&self.settings())
+    }
+
+    fn settings_propose(&self, changes: &serde_json::Value) -> serde_json::Value {
+        crate::settings_assistant::propose(&self.settings(), changes)
+            .0
+            .to_json()
+    }
+
+    fn settings_apply(&self, changes: &serde_json::Value) -> Result<serde_json::Value, String> {
+        let (proposal, patch) = crate::settings_assistant::propose(&self.settings(), changes);
+        let Some(patch) = patch else {
+            return Err(proposal.errors.join("; "));
+        };
+        if proposal.changes.is_empty() {
+            return Ok(proposal.to_json());
+        }
+        self.update_settings(patch).map_err(|e| e.message)?;
+        self.settings_undo
+            .lock()
+            .unwrap()
+            .push(crate::settings_assistant::inverse(&proposal));
+        Ok(proposal.to_json())
+    }
+
+    fn settings_undo(&self) -> Result<serde_json::Value, String> {
+        let Some(inverse) = self.settings_undo.lock().unwrap().pop() else {
+            return Err("não há mudança da IA para desfazer".into());
+        };
+        let patch: aura_core::settings::SettingsPatch =
+            serde_json::from_value(inverse.clone()).map_err(|e| e.to_string())?;
+        self.update_settings(patch).map_err(|e| e.message)?;
+        Ok(inverse)
+    }
+
     fn save_mcp_server(&self, spec: McpServerSpec) -> Result<(), String> {
         // Keeps the secrets already in the vault when the server exists.
         self.save_mcp_server(spec, vec![], None)
@@ -343,6 +379,8 @@ pub struct Host {
     store: Store,
     vault: Arc<Vault>,
     settings: RwLock<Settings>,
+    /// Inverse patches of the settings the agent changed (022), newest last.
+    settings_undo: Mutex<Vec<serde_json::Value>>,
     policy: Arc<RwLock<Policy>>,
     grants: Arc<RwLock<Grants>>,
     privacy: PrivacyRepo,
@@ -717,6 +755,7 @@ impl Host {
             store,
             vault,
             settings: RwLock::new(settings),
+            settings_undo: Mutex::new(Vec::new()),
             policy,
             grants,
             privacy,
@@ -2094,6 +2133,8 @@ impl Host {
                 "golpe" => "quick.template.scam",
                 "responder" => "quick.template.reply",
                 "parei" => "quick.template.resume",
+                "configurar" => "quick.template.configure",
+                "preparo" => "quick.template.prepare",
                 _ => continue,
             };
             command.template = crate::localization::text(language, key).into();

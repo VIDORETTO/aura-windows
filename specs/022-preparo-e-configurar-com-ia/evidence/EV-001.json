@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/settings_assistant.rs": "12432bca922902f6aa0df180b4b40f37b3891fae2858b8cba4f9b51efd337a8c",
+    "specs/022-preparo-e-configurar-com-ia/change.md": "dee31b61d34840f321fa6d2aa64dd7bb326254b2d432e2794dd4dd815804f3de"
+  },
+  "input_paths": [
+    "crates/aura-app/src/settings_assistant.rs",
+    "specs/022-preparo-e-configurar-com-ia/change.md"
+  ],
+  "limitations": "Janelas excluídas ainda não são configuráveis pelo agente; app-server real não exercitou as ferramentas novas",
+  "observations": "propose não grava; apply muda; undo restaura; yolo, atalhos e valores inválidos recusados; exposição ampliada sinalizada",
+  "procedure": "cargo test -p aura-app (settings_assistant + agent_configures_settings_with_diff_and_undo), -p aura-mcp",
+  "result": "passed",
+  "tested_revision": "local:70b2d525f7b4bfbba0b7ba9ce93f650fa3663aee1e58a601bfd382f942754efb",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:13:16+00:00"
+}

@@ -12,7 +12,8 @@ use aura_capture::{CaptureOutcome, capture_with_policy};
 use aura_extensions::mcp_config::{ApprovalMode, EnvValue, McpServerSpec, Transport};
 use aura_mcp::tools::{
     ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, EXTENSIONS_LIST, MCP_SERVER_SAVE,
-    QUICK_COMMAND_SAVE, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SKILL_SAVE,
+    QUICK_COMMAND_SAVE, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY,
+    SETTINGS_DESCRIBE, SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
 };
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
@@ -77,6 +78,11 @@ pub trait ExtensionsAccess: Send + Sync {
     ) -> Result<(), String>;
     fn save_quick_command(&self, name: &str, template: &str, replace: bool) -> Result<(), String>;
     fn save_mcp_server(&self, spec: McpServerSpec) -> Result<(), String>;
+    /// "Configurar com IA" (022): read, validate, apply and undo settings.
+    fn settings_describe(&self) -> Value;
+    fn settings_propose(&self, changes: &Value) -> Value;
+    fn settings_apply(&self, changes: &Value) -> Result<Value, String>;
+    fn settings_undo(&self) -> Result<Value, String>;
 }
 
 /// Filled once the host exists (it owns the tools' MCP router).
@@ -586,6 +592,20 @@ impl HostTools {
                     Err(e) => invalid(e),
                 }
             }
+            SETTINGS_DESCRIBE => ToolOutput::text(ext.settings_describe().to_string()),
+            SETTINGS_PROPOSE => {
+                ToolOutput::text(ext.settings_propose(&args["changes"]).to_string())
+            }
+            SETTINGS_APPLY => match ext.settings_apply(&args["changes"]) {
+                Ok(v) => ToolOutput::text(format!(
+                    "Configurações aplicadas. O usuário pode desfazer com settings_undo ou em Configurações. {v}"
+                )),
+                Err(e) => invalid(e),
+            },
+            SETTINGS_UNDO => match ext.settings_undo() {
+                Ok(v) => ToolOutput::text(format!("Última mudança desfeita: {v}")),
+                Err(e) => invalid(e),
+            },
             other => {
                 ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
             }
@@ -603,7 +623,8 @@ impl ToolHandler for HostTools {
                 SCREEN_RECENT => self.screen_recent(args, ctx).await,
                 AUDIO_RECENT => self.audio_recent(args, ctx).await,
                 ATTACHMENT_READ => self.attachment_read(args, ctx).await,
-                EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE => {
+                EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE
+                | SETTINGS_DESCRIBE | SETTINGS_PROPOSE | SETTINGS_APPLY | SETTINGS_UNDO => {
                     self.extensions_tool(tool, args).await
                 }
                 other => {

@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-003"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/core-skills": "0b54d4c76c56925d82a4ee2bb0f36124a50c232bfb2a34cf5dc722354bcce2b9",
+    "specs/022-preparo-e-configurar-com-ia/change.md": "dee31b61d34840f321fa6d2aa64dd7bb326254b2d432e2794dd4dd815804f3de"
+  },
+  "input_paths": [
+    "crates/aura-app/core-skills",
+    "specs/022-preparo-e-configurar-com-ia/change.md"
+  ],
+  "limitations": "Cartão 'Entendi assim' editável, onboarding 'conte como trabalha' e comportamento real do agente com as skills não verificados",
+  "observations": "Skills e entradas existem e chamam o agente; busca envia $aura-configurar em modo Tarefa",
+  "procedure": "Skills internas aura-preparo e aura-configurar instaladas; /configurar, /preparo e \"Pedir à IA\" na busca (vitest + cargo test)",
+  "result": "partial",
+  "tested_revision": "local:e07d48b4f514c1b4662f68f3e10134ad6f0a1720a7f6b16e75610d4a392f3a71",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:13:16+00:00"
+}
