@@ -116,6 +116,8 @@ async fn handshake_list_and_call() {
             "meeting_search",
             "meeting_get",
             "meeting_brief_save",
+            "recipe_list",
+            "recipe_save",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

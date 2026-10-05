@@ -518,6 +518,7 @@ fn main() {
             commands::region_open,
             commands::region_commit,
             commands::region_copy_text,
+            commands::recipes_list,
             commands::meeting_brief,
             commands::meeting_set_brief,
             commands::meeting_active,

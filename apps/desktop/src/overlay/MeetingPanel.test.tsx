@@ -86,4 +86,38 @@ describe("meeting panel", () => {
     await user.click(screen.getByRole("button", { name: "Apagar reunião" }));
     await waitFor(() => expect(screen.queryByText("Reuniões salvas")).toBeNull());
   });
+
+  it("the Recipe chosen is sent as the meeting kind; creating one goes to the agent", async () => {
+    await freshApp({ signedIn: true });
+    const start = vi.spyOn(api, "meetingStart");
+    const task = vi.spyOn(api, "agentTask").mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    const select = await screen.findByLabelText("Tipo de reunião (Receita)");
+    await screen.findByRole("option", { name: "1:1" });
+    await user.selectOptions(select, "um-a-um");
+    await user.click(screen.getByRole("button", { name: /Começar sem preparo/ }));
+    expect(start).toHaveBeenCalledWith("Reunião", "um-a-um", "");
+    await screen.findByRole("timer");
+    await user.click(screen.getByRole("button", { name: "Encerrar" }));
+    await user.click(await screen.findByRole("button", { name: "Criar uma Receita com IA" }));
+    expect(task.mock.calls.at(-1)![0]).toContain("$aura-criar-receita");
+  });
+
+  it("minutes are made by the agent in Task mode, citing the minutes", async () => {
+    await freshApp({ signedIn: true });
+    const task = vi.spyOn(api, "agentTask").mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    await user.click(await screen.findByRole("button", { name: "Salvar como reunião" }));
+    await act(async () => {
+      useApp.setState({ meetingRevision: useApp.getState().meetingRevision + 1 });
+    });
+    await user.click(await screen.findByRole("button", { name: /Reunião · / }));
+    await user.click(await screen.findByRole("button", { name: "Gerar ata (agente)" }));
+    const [text, mode] = task.mock.calls.at(-1)!;
+    expect(mode).toBe("task");
+    expect(text).toMatch(/meeting_get com meeting_id=m1/);
+    expect(text).toContain("[mm:ss]");
+  });
 });

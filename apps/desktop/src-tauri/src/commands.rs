@@ -427,6 +427,11 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
 // ---------------------------------------------------------------- meetings
 
 #[tauri::command]
+pub fn recipes_list(s: State<'_, AppState>) -> R<Vec<aura_app::recipes::Recipe>> {
+    Ok(s.host.recipes_list()?)
+}
+
+#[tauri::command]
 pub fn meeting_brief(s: State<'_, AppState>) -> Option<String> {
     s.host.meeting_brief()
 }

@@ -512,6 +512,14 @@
       }
     }
   },
+  "recipe": {
+    "builtin": true,
+    "description": "Conversa individual com chefe, par ou liderado.",
+    "helpLevel": "onDemand",
+    "id": "um-a-um",
+    "name": "1:1",
+    "notesTemplate": "Como foi (humor e temas) · Feedback dado e recebido · Compromissos de cada lado (dono e prazo) · Assuntos para a próxima 1:1"
+  },
   "settings": {
     "accentColor": null,
     "appServerIdleMinutes": 15,

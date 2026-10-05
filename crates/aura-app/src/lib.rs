@@ -26,6 +26,7 @@ pub mod paths;
 pub mod platform;
 pub mod privacy;
 pub mod profiles;
+pub mod recipes;
 pub mod recorder;
 pub mod reminders;
 pub mod settings_assistant;

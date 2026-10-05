@@ -167,6 +167,35 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn recipe_list(&self) -> serde_json::Value {
+        serde_json::json!(self.recipes_list().unwrap_or_default().iter().map(|r| serde_json::json!({
+            "id": r.id, "name": r.name, "description": r.description, "notes_template": r.notes_template,
+            "help_level": r.help_level, "builtin": r.builtin,
+        })).collect::<Vec<_>>())
+    }
+
+    fn recipe_save(
+        &self,
+        id: &str,
+        name: &str,
+        description: &str,
+        notes_template: &str,
+        help_level: &str,
+        replace: bool,
+    ) -> Result<(), String> {
+        let recipe = crate::recipes::Recipe {
+            id: id.into(),
+            name: name.into(),
+            description: description.into(),
+            notes_template: notes_template.into(),
+            help_level: help_level.into(),
+            builtin: false,
+        };
+        self.recipes
+            .save(&recipe, replace)
+            .map_err(|e| e.to_string())
+    }
+
     fn meeting_brief_save(&self, briefing: &str) -> Result<(), String> {
         self.meeting_set_brief(briefing).map_err(|e| e.message)
     }
@@ -202,8 +231,13 @@ impl crate::tools::ExtensionsAccess for Host {
         };
         let m = self.meetings.repo().get(id).map_err(|e| e.to_string())?;
         let lines = self.meeting_utterances(id).map_err(|e| e.message)?;
+        let recipe = self
+            .recipes
+            .get(&m.kind)
+            .ok()
+            .map(|r| serde_json::json!({"name": r.name, "notes_template": r.notes_template}));
         Ok(serde_json::json!({
-            "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status,
+            "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status, "recipe": recipe,
             "transcript": lines.iter().map(|u| format!(
                 "[{:02}:{:02}] {}: {}", u.t0 / 60_000, (u.t0 / 1000) % 60,
                 if u.speaker == "you" { "Você" } else { "Eles" }, u.text)).collect::<Vec<_>>(),
@@ -500,6 +534,7 @@ pub struct Host {
     /// Inverse patches of the settings the agent changed (022), newest last.
     settings_undo: Mutex<Vec<serde_json::Value>>,
     reminders: crate::reminders::RemindersRepo,
+    recipes: crate::recipes::RecipesRepo,
     notes: crate::notes::NotesRepo,
     clock: Arc<dyn crate::reminders::Clock>,
     policy: Arc<RwLock<Policy>>,
@@ -892,6 +927,7 @@ impl Host {
             settings: RwLock::new(settings),
             settings_undo: Mutex::new(Vec::new()),
             reminders: crate::reminders::RemindersRepo::new(store_for_notes.clone()),
+            recipes: crate::recipes::RecipesRepo::new(store_for_notes.clone()),
             notes: crate::notes::NotesRepo::new(store_for_notes.clone()),
             clock: Arc::new(crate::reminders::SystemClock),
             policy,
@@ -987,6 +1023,12 @@ impl Host {
     }
 
     // ------------------------------------------------------------ meetings
+
+    pub fn recipes_list(&self) -> HostResult<Vec<crate::recipes::Recipe>> {
+        self.recipes
+            .list()
+            .map_err(|e| HostError::new("recipe", e.to_string()))
+    }
 
     /// Briefing prepared by the agent (`meeting_brief_save`); starting a
     /// Meeting without text uses it.

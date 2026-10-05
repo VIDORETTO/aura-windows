@@ -421,6 +421,10 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     attachments_list: () => [],
     insert_into_app: () => true,
+    recipes_list: () => [
+      { id: "um-a-um", name: "1:1", description: "Conversa individual", notesTemplate: "Como foi · Compromissos", helpLevel: "onDemand", builtin: true },
+      { id: "decisao", name: "Reunião de decisão", description: "Escolher entre opções", notesTemplate: "Decisão · Riscos", helpLevel: "balanced", builtin: true },
+    ],
     meeting_brief: () => state.meetingBrief,
     meeting_set_brief: ({ text }) => {
       state.meetingBrief = String(text || "") || null;

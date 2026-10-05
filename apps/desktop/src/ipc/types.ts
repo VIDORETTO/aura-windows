@@ -106,6 +106,15 @@ export interface MeetingHit {
   text: string;
 }
 
+export interface Recipe {
+  id: string;
+  name: string;
+  description: string;
+  notesTemplate: string;
+  helpLevel: "silent" | "onDemand" | "balanced" | "active";
+  builtin: boolean;
+}
+
 export interface HidingStatus {
   window: string;
   hidden: boolean;

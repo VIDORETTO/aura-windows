@@ -4,7 +4,7 @@
 import { Mic, Pause, Play, Square, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
-import type { Meeting, Utterance } from "../ipc/types";
+import type { Meeting, Recipe, Utterance } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { useApp } from "../state/app";
 import { Button, IconButton, Select, TextArea, cx } from "../ui/primitives";
@@ -31,7 +31,7 @@ function Transcript({ lines }: { lines: Utterance[] }) {
 }
 
 /** Opens a conversation with the agent about a meeting (it reads it with `meeting_get`). */
-const ask = (key: MessageKey, t: ReturnType<typeof useT>, vars: Record<string, string>) => void api.agentTask(t(key, vars), "chat");
+const ask = (key: MessageKey, t: ReturnType<typeof useT>, vars: Record<string, string>, mode: "chat" | "task" = "chat") => void api.agentTask(t(key, vars), mode);
 
 export function MeetingPanel() {
   const t = useT();
@@ -41,6 +41,8 @@ export function MeetingPanel() {
   const [brief, setBrief] = useState("");
   const [sentence, setSentence] = useState("");
   const [minutes, setMinutes] = useState(15);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [kind, setKind] = useState("other");
   const [viewing, setViewing] = useState<Meeting | null>(null);
   const [lines, setLines] = useState<Utterance[]>([]);
   const [paused, setPaused] = useState(false);
@@ -51,6 +53,7 @@ export function MeetingPanel() {
     void (async () => {
       const [a, list, b] = await Promise.all([api.meetingActive(), api.meetingsList(), api.meetingBrief()]);
       setActive(a);
+      setRecipes(await api.recipesList());
       setPast(list.filter((m) => m.status !== "active"));
       if (b) setBrief(b);
       const shown = a ?? viewing;
@@ -66,7 +69,7 @@ export function MeetingPanel() {
 
   const start = (withBrief: string) =>
     void api
-      .meetingStart(t("meeting.untitled"), "other", withBrief)
+      .meetingStart(t("meeting.untitled"), kind, withBrief)
       .then(() => setBrief(""))
       .catch(fail);
 
@@ -119,6 +122,7 @@ export function MeetingPanel() {
         <div className="flex flex-wrap gap-1 border-t border-line p-2">
           <Button size="sm" onClick={() => ask("meeting.prompt.after", t, { id })}>{t("meeting.action.after")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.email", t, { id })}>{t("meeting.action.email")}</Button>
+          <Button size="sm" onClick={() => ask("meeting.prompt.minutes", t, { id }, "task")}>{t("meeting.action.minutes")}</Button>
           <IconButton label={t("meeting.delete")} onClick={() => void api.meetingDelete(id).then(() => setViewing(null)).catch(fail)}>
             <Trash2 size={14} />
           </IconButton>
@@ -139,6 +143,15 @@ export function MeetingPanel() {
           <Button variant="primary" size="sm" onClick={() => start(brief)}>{t("meeting.start")}</Button>
         </section>
       )}
+
+      <section className="flex flex-col gap-1.5">
+        <label htmlFor="meeting-recipe" className="text-[12px] font-medium">{t("meeting.recipe")}</label>
+        <Select id="meeting-recipe" value={kind} onChange={(e) => setKind(e.target.value)} title={recipes.find((r) => r.id === kind)?.description}>
+          <option value="other">{t("meeting.recipe.none")}</option>
+          {recipes.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+        </Select>
+        <button type="button" className="self-start text-[11px] text-muted underline-offset-2 hover:text-fg hover:underline" onClick={() => ask("meeting.prompt.recipe", t, {})}>{t("meeting.recipe.create")}</button>
+      </section>
 
       <section className="flex flex-col gap-1.5" aria-label={t("meeting.prepare")}>
         <label htmlFor="meeting-sentence" className="text-[12px] font-medium">⚡ {t("meeting.quick")}</label>

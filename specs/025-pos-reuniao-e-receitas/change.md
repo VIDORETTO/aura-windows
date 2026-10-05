@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-037. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Notas melhoradas por Receita, ações com origem citada, e-mail e agente que executa o trabalho.
 
-Nota: Depende de 024.
+Nota: Depende de 024. **Feito (05/10):** 8 Receitas embutidas + Receitas do usuário (migração 0012), `recipe_list`/`recipe_save` (aprovação), Skill `aura-criar-receita`, seletor de Receita no painel, `meeting_get` com a Receita, ações Resumo e ações / E-mail / Gerar ata (agente em modo Tarefa) com minuto citado. **Falta:** verificar citações, clicar na citação para abrir o trecho, notas melhoradas combinando as notas do usuário, debrief de 30 s, painel de promessas.
 
 ## Contrato de comportamento
 

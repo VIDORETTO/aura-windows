@@ -13,8 +13,9 @@ use aura_extensions::mcp_config::{ApprovalMode, EnvValue, McpServerSpec, Transpo
 use aura_mcp::tools::{
     ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, CLOCK_NOW, EXTENSIONS_LIST, MCP_SERVER_SAVE,
     MEETING_BRIEF_SAVE, MEETING_GET, MEETING_SEARCH, NOTE_SAVE, NOTE_SEARCH, QUICK_COMMAND_SAVE,
-    REMINDER_CREATE, REMINDER_DELETE, REMINDER_LIST, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT,
-    SETTINGS_APPLY, SETTINGS_DESCRIBE, SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
+    RECIPE_LIST, RECIPE_SAVE, REMINDER_CREATE, REMINDER_DELETE, REMINDER_LIST, SCREEN_CAPTURE,
+    SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE, SETTINGS_PROPOSE, SETTINGS_UNDO,
+    SKILL_SAVE,
 };
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
@@ -88,6 +89,17 @@ pub trait ExtensionsAccess: Send + Sync {
     fn meeting_search(&self, query: &str, meeting: Option<&str>) -> Result<Value, String>;
     fn meeting_get(&self, id: Option<&str>) -> Result<Value, String>;
     fn meeting_brief_save(&self, briefing: &str) -> Result<(), String>;
+    /// Recipes (025).
+    fn recipe_list(&self) -> Value;
+    fn recipe_save(
+        &self,
+        id: &str,
+        name: &str,
+        description: &str,
+        notes_template: &str,
+        help_level: &str,
+        replace: bool,
+    ) -> Result<(), String>;
     /// Reminders and notes (020).
     fn clock_now(&self) -> String;
     fn reminder_create(
@@ -615,6 +627,21 @@ impl HostTools {
                 Ok(v) => ToolOutput::text(v.to_string()),
                 Err(e) => invalid(e),
             },
+            RECIPE_LIST => ToolOutput::text(ext.recipe_list().to_string()),
+            RECIPE_SAVE => match ext.recipe_save(
+                &text("id"),
+                &text("name"),
+                &text("description"),
+                &text("notes_template"),
+                args["help_level"].as_str().unwrap_or("onDemand"),
+                replace,
+            ) {
+                Ok(()) => ToolOutput::text(format!(
+                    "Receita \"{}\" salva. O usuário a escolhe ao preparar uma reunião.",
+                    text("name")
+                )),
+                Err(e) => invalid(e),
+            },
             MEETING_BRIEF_SAVE => match ext.meeting_brief_save(&text("briefing")) {
                 Ok(()) => ToolOutput::text(
                     "Briefing guardado. O usuário revisa e aperta Começar no painel Reunião; você não inicia a reunião.",
@@ -685,10 +712,9 @@ impl ToolHandler for HostTools {
                 ATTACHMENT_READ => self.attachment_read(args, ctx).await,
                 EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE
                 | SETTINGS_DESCRIBE | SETTINGS_PROPOSE | SETTINGS_APPLY | SETTINGS_UNDO
-                | CLOCK_NOW | MEETING_SEARCH | MEETING_GET | MEETING_BRIEF_SAVE
-                | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE | NOTE_SEARCH => {
-                    self.extensions_tool(tool, args).await
-                }
+                | CLOCK_NOW | MEETING_SEARCH | MEETING_GET | MEETING_BRIEF_SAVE | RECIPE_LIST
+                | RECIPE_SAVE | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE
+                | NOTE_SEARCH => self.extensions_tool(tool, args).await,
                 other => {
                     ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
                 }

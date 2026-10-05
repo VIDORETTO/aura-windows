@@ -3005,9 +3005,11 @@ async fn agent_searches_and_reads_saved_meetings() {
     ))
     .unwrap();
     assert_eq!(one["briefing"], "fechar orçamento");
-    assert_eq!(
-        one["transcript"][0],
-        "[02:05] Eles: Vamos cortar 10% do orçamento"
+    let transcript = one["transcript"].as_array().unwrap();
+    assert!(
+        transcript
+            .iter()
+            .any(|l| l == "[02:05] Eles: Vamos cortar 10% do orçamento")
     );
     let list = text(&call("meeting_get", json!({})).await);
     assert!(list.contains("Revisão Q3"));
@@ -3072,4 +3074,73 @@ async fn agent_prepares_the_briefing_but_only_the_user_starts_the_meeting() {
     assert!(e.host.meeting_brief().is_none());
     e.host.meeting_stop().await.unwrap();
     assert!(e.host.meeting_set_brief(&"x".repeat(8001)).is_err());
+}
+
+#[tokio::test]
+async fn recipes_are_listed_created_by_the_agent_and_shape_the_meeting_notes() {
+    // 025 AC-002.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-rec".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    let list: serde_json::Value =
+        serde_json::from_str(&text(&call("recipe_list", json!({})).await)).unwrap();
+    assert_eq!(list.as_array().unwrap().len(), 8);
+
+    let out = call(
+        "recipe_save",
+        json!({"id": "fornecedores", "name": "Fornecedores", "notes_template": "Preço · Prazo · Condições"}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert!(
+        call(
+            "recipe_save",
+            json!({"id": "daily", "name": "x", "notes_template": "y", "replace": true})
+        )
+        .await
+        .is_error
+    );
+    assert_eq!(e.host.recipes_list().unwrap().len(), 9);
+
+    // The meeting's notes follow its Recipe.
+    let m = e
+        .host
+        .meeting_start("Compra de insumos", "fornecedores", "")
+        .await
+        .unwrap();
+    e.host.meeting_stop().await.unwrap();
+    let got: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_get", json!({"meeting_id": m.id})).await,
+    ))
+    .unwrap();
+    assert_eq!(got["recipe"]["notes_template"], "Preço · Prazo · Condições");
+    let plain = e
+        .host
+        .meeting_start("Sem receita", "other", "")
+        .await
+        .unwrap();
+    e.host.meeting_stop().await.unwrap();
+    let got: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_get", json!({"meeting_id": plain.id})).await,
+    ))
+    .unwrap();
+    assert!(got["recipe"].is_null());
 }

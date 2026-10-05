@@ -27,6 +27,8 @@ pub const NOTE_SEARCH: &str = "note_search";
 pub const MEETING_SEARCH: &str = "meeting_search";
 pub const MEETING_GET: &str = "meeting_get";
 pub const MEETING_BRIEF_SAVE: &str = "meeting_brief_save";
+pub const RECIPE_LIST: &str = "recipe_list";
+pub const RECIPE_SAVE: &str = "recipe_save";
 pub const SETTINGS_DESCRIBE: &str = "settings_describe";
 pub const SETTINGS_PROPOSE: &str = "settings_propose";
 pub const SETTINGS_APPLY: &str = "settings_apply";
@@ -34,7 +36,8 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 8] = [
+pub const WRITE_TOOLS: [&str; 9] = [
+    RECIPE_SAVE,
     MEETING_BRIEF_SAVE,
     REMINDER_CREATE,
     REMINDER_DELETE,
@@ -273,6 +276,27 @@ pub fn all() -> Vec<ToolDef> {
                 "briefing": {"type": "string", "maxLength": 8000}},
                 "required": ["briefing"], "additionalProperties": false}),
             annotations: writes("Salvar briefing da reunião"),
+        },
+        ToolDef {
+            name: RECIPE_LIST.into(),
+            description: "List meeting Recipes (id, name, description, notes_template, help_level, builtin). Call before creating one to avoid duplicates."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Receitas de reunião"),
+        },
+        ToolDef {
+            name: RECIPE_SAVE.into(),
+            description: "Create (or, with replace=true, rewrite) a meeting Recipe: how notes are organized for a kind of meeting. id: lowercase letters, digits, hyphens. notes_template: the sections to fill, separated by ' · '. help_level: silent, onDemand, balanced or active. Built-in Recipes cannot be changed. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "id": {"type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 40},
+                "name": {"type": "string"},
+                "description": {"type": "string"},
+                "notes_template": {"type": "string"},
+                "help_level": {"type": "string", "enum": ["silent", "onDemand", "balanced", "active"], "default": "onDemand"},
+                "replace": {"type": "boolean", "default": false}},
+                "required": ["id", "name", "notes_template"], "additionalProperties": false}),
+            annotations: writes("Salvar Receita"),
         },
     ]
 }

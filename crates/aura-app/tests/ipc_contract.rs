@@ -280,6 +280,7 @@ fn build() -> Value {
             speaker: "you".into(),
             text: "Sim, com corte de 10%".into(),
         },
+        "recipe": aura_app::recipes::builtins().into_iter().next(),
         "chip": chip,
         "attachmentChip": attachment_chip,
         "mcpServers": [mcp, http],
