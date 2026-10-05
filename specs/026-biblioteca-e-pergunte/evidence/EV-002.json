@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/src/projects.rs": "4d85f6fe798e7d0e438f7589704b5f88a33810906c177fff8bb6f9e814087917",
+    "specs/026-biblioteca-e-pergunte/change.md": "d19770acce75e1a06599d58108948db58ca7aa10fd8cf214592bec085495810f"
+  },
+  "input_paths": [
+    "crates/aura-app/src/projects.rs",
+    "specs/026-biblioteca-e-pergunte/change.md"
+  ],
+  "limitations": "Sem filtro por pessoa (depende de diarização); memória restrita ao projeto e arquivos do projeto não implementados",
+  "observations": "Projetos (nome único + instruções), reunião movida ao projeto, busca limitada ao projeto, meeting_get devolve as instruções do projeto; painel cria projeto e move reunião",
+  "procedure": "cargo test -p aura-app (projects_*, meeting search); vitest MeetingPanel (projetos)",
+  "result": "partial",
+  "tested_revision": "local:22415b2b1050a8ddcd9239dc6e98a008c9ea34c3cbfb2ab3dc5432d43e360330",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:04:45+00:00"
+}

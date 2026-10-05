@@ -431,6 +431,15 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     action_delete: ({ id }) => {
       state.actionList = state.actionList.filter((a) => a.id !== id);
     },
+    projects_list: () => state.projectList,
+    project_add: ({ name }) => {
+      const p: T.Project = { id: `p${state.projectList.length + 1}`, name: String(name), instructions: "" };
+      state.projectList = [...state.projectList, p];
+      return p;
+    },
+    meeting_move: ({ id, project }) => {
+      state.meetingList = state.meetingList.map((m) => (m.id === id ? { ...m, projectId: (project as string | null) ?? null } : m));
+    },
     recipes_list: () => [
       { id: "um-a-um", name: "1:1", description: "Conversa individual", notesTemplate: "Como foi · Compromissos", helpLevel: "onDemand", builtin: true },
       { id: "decisao", name: "Reunião de decisão", description: "Escolher entre opções", notesTemplate: "Decisão · Riscos", helpLevel: "balanced", builtin: true },
@@ -442,7 +451,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     meeting_active: () => state.meetingNow,
     meeting_start: ({ title, kind, briefing }) => {
-      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: String(kind), briefing: String(briefing || state.meetingBrief || ""), origin: "live", status: "active", startedAt: Date.now(), endedAt: null };
+      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: String(kind), briefing: String(briefing || state.meetingBrief || ""), origin: "live", status: "active", startedAt: Date.now(), endedAt: null, projectId: null };
       state.meetingNow = m;
       state.meetingList = [m, ...state.meetingList];
       state.meetingBrief = null;
@@ -465,7 +474,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       return m;
     },
     meeting_from_buffer: ({ title }) => {
-      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: "other", briefing: "", origin: "buffer", status: "ended", startedAt: Date.now() - 600000, endedAt: Date.now() };
+      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: "other", briefing: "", origin: "buffer", status: "ended", startedAt: Date.now() - 600000, endedAt: Date.now(), projectId: null };
       state.meetingList = [m, ...state.meetingList];
       host({ channel: "meeting", event: { id: m.id, status: "ended" } });
       return m;
@@ -794,6 +803,7 @@ export class MockState {
   ];
   mcp: T.McpServerSpec[] = [];
   actionList: T.Action[] = [];
+  projectList: T.Project[] = [];
   meetingNow: T.Meeting | null = null;
   meetingList: T.Meeting[] = [];
   meetingBrief: string | null = null;

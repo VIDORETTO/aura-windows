@@ -126,6 +126,9 @@ async fn handshake_list_and_call() {
             "action_save",
             "action_list",
             "action_done",
+            "project_list",
+            "project_save",
+            "meeting_set_project",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

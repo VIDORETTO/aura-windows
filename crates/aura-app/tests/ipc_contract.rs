@@ -263,6 +263,7 @@ fn build() -> Value {
             status: "ended".into(),
             started_at: 1_000_000,
             ended_at: Some(2_000_000),
+            project_id: Some("p1".into()),
         },
         "utterance": aura_app::meeting::Utterance {
             id: 1,

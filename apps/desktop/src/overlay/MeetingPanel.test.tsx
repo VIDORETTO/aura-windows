@@ -159,4 +159,21 @@ describe("meeting panel", () => {
     await waitFor(() => expect(within(section).queryByText(/enviar a proposta/)).toBeNull());
     expect(bridge.state.actionList.find((a) => a.id === "a1")?.status).toBe("done");
   });
+
+  it("projects group meetings: create one and move a saved meeting into it", async () => {
+    await freshApp({ signedIn: true });
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    await user.type(await screen.findByRole("textbox", { name: "Novo projeto" }), "Reforma da loja");
+    await user.click(screen.getByRole("button", { name: "Criar" }));
+    expect(await screen.findByText("Reforma da loja")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Salvar como reunião" }));
+    await act(async () => {
+      useApp.setState({ meetingRevision: useApp.getState().meetingRevision + 1 });
+    });
+    await user.click(await screen.findByRole("button", { name: /Reunião · / }));
+    const select = await screen.findByLabelText("Projeto");
+    await user.selectOptions(select, "p1");
+    expect(select).toHaveValue("p1");
+  });
 });

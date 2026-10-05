@@ -4,7 +4,7 @@
 import { Mic, Pause, Play, Square, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
-import type { Action, Meeting, Recipe, Utterance } from "../ipc/types";
+import type { Action, Meeting, Project, Recipe, Utterance } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { useApp } from "../state/app";
 import { Button, IconButton, Select, TextArea, cx } from "../ui/primitives";
@@ -45,6 +45,8 @@ export function MeetingPanel() {
   const [minutes, setMinutes] = useState(15);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [newProject, setNewProject] = useState("");
   const [kind, setKind] = useState("other");
   const [viewing, setViewing] = useState<Meeting | null>(null);
   const [lines, setLines] = useState<Utterance[]>([]);
@@ -59,6 +61,7 @@ export function MeetingPanel() {
       setActive(a);
       setRecipes(await api.recipesList());
       setActions(await api.actionsList("open"));
+      setProjects(await api.projectsList());
       setPast(list.filter((m) => m.status !== "active"));
       if (b) setBrief(b);
       const shown = a ?? viewing;
@@ -140,6 +143,21 @@ export function MeetingPanel() {
           <button type="button" className="text-[12px] text-muted hover:text-fg" onClick={() => setViewing(null)}>← {t("meeting.back")}</button>
           <span className="min-w-0 flex-1 truncate text-right text-[13px] font-medium">{viewing.title}</span>
         </div>
+        <div className="flex items-center gap-1.5 border-b border-line px-3 py-1.5 text-[12px]">
+          <label htmlFor="meeting-project" className="text-muted">{t("meeting.project")}</label>
+          <Select
+            id="meeting-project"
+            className="h-7 min-w-0 flex-1 text-[12px]"
+            value={viewing.projectId ?? ""}
+            onChange={(e) => {
+              const project = e.target.value || null;
+              void api.meetingMove(id, project).then(() => setViewing({ ...viewing, projectId: project })).catch(fail);
+            }}
+          >
+            <option value="">{t("meeting.project.none")}</option>
+            {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+          </Select>
+        </div>
         <div className="min-h-0 flex-1 overflow-y-auto">
           <Transcript lines={lines} />
         </div>
@@ -210,6 +228,28 @@ export function MeetingPanel() {
           <Button size="sm" onClick={() => void api.meetingFromBuffer(t("meeting.untitled"), minutes).catch(fail)}>{t("meeting.forgot.save")}</Button>
         </div>
         <p className="text-[11px] leading-snug text-muted">{t("meeting.forgot.hint")}</p>
+      </section>
+
+      <section className="flex flex-col gap-1.5" aria-label={t("meeting.projects")}>
+        <span className="text-[12px] font-medium">{t("meeting.projects")}</span>
+        {projects.length > 0 && <p className="text-[11px] text-muted">{projects.map((p) => p.name).join(" · ")}</p>}
+        <form
+          className="flex gap-1.5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newProject.trim()) return;
+            void api.projectAdd(newProject.trim()).then((p) => { setProjects((l) => [...l, p]); setNewProject(""); }).catch(fail);
+          }}
+        >
+          <input
+            aria-label={t("meeting.project.new")}
+            placeholder={t("meeting.project.new")}
+            value={newProject}
+            onChange={(e) => setNewProject(e.target.value)}
+            className="h-7 min-w-0 flex-1 rounded-md border border-line bg-surface-strong px-2 text-[12px] outline-none focus:border-accent"
+          />
+          <Button size="sm" type="submit" disabled={!newProject.trim()}>{t("meeting.project.add")}</Button>
+        </form>
       </section>
 
       {actions.length > 0 && (

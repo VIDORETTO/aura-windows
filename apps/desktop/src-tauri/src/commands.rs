@@ -454,6 +454,21 @@ pub fn action_delete(s: State<'_, AppState>, id: String) -> R<()> {
 }
 
 #[tauri::command]
+pub fn projects_list(s: State<'_, AppState>) -> R<Vec<aura_app::projects::Project>> {
+    Ok(s.host.projects_list()?)
+}
+
+#[tauri::command]
+pub fn project_add(s: State<'_, AppState>, name: String) -> R<aura_app::projects::Project> {
+    Ok(s.host.project_add(&name, "")?)
+}
+
+#[tauri::command]
+pub fn meeting_move(s: State<'_, AppState>, id: String, project: Option<String>) -> R<()> {
+    Ok(s.host.meeting_move(&id, project.as_deref())?)
+}
+
+#[tauri::command]
 pub fn recipes_list(s: State<'_, AppState>) -> R<Vec<aura_app::recipes::Recipe>> {
     Ok(s.host.recipes_list()?)
 }

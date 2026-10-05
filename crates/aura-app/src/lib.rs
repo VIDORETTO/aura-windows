@@ -28,6 +28,7 @@ pub mod pii;
 pub mod platform;
 pub mod privacy;
 pub mod profiles;
+pub mod projects;
 pub mod recipes;
 pub mod recorder;
 pub mod reminders;

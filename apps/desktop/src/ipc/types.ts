@@ -91,6 +91,7 @@ export interface Meeting {
   status: "active" | "ended" | "interrupted";
   startedAt: number;
   endedAt: number | null;
+  projectId: string | null;
 }
 
 export interface Utterance {
@@ -125,6 +126,12 @@ export interface Action {
   t0: number | null;
   createdAt: number;
   overdue: boolean;
+}
+
+export interface Project {
+  id: string;
+  name: string;
+  instructions: string;
 }
 
 export interface Recipe {

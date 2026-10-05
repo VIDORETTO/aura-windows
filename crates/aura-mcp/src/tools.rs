@@ -32,6 +32,9 @@ pub const RECIPE_SAVE: &str = "recipe_save";
 pub const ACTION_SAVE: &str = "action_save";
 pub const ACTION_LIST: &str = "action_list";
 pub const ACTION_DONE: &str = "action_done";
+pub const PROJECT_LIST: &str = "project_list";
+pub const PROJECT_SAVE: &str = "project_save";
+pub const MEETING_SET_PROJECT: &str = "meeting_set_project";
 pub const OPEN_WINDOWS: &str = "open_windows";
 pub const EXCLUSION_LIST: &str = "exclusion_list";
 pub const EXCLUSION_ADD: &str = "exclusion_add";
@@ -44,7 +47,9 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 13] = [
+pub const WRITE_TOOLS: [&str; 15] = [
+    PROJECT_SAVE,
+    MEETING_SET_PROJECT,
     ACTION_SAVE,
     ACTION_DONE,
     EXCLUSION_ADD,
@@ -267,7 +272,8 @@ pub fn all() -> Vec<ToolDef> {
                 .into(),
             input_schema: json!({"type": "object", "properties": {
                 "query": {"type": "string"},
-                "meeting_id": {"type": "string", "description": "Limit the search to one meeting."}},
+                "meeting_id": {"type": "string", "description": "Limit the search to one meeting."},
+                "project_id": {"type": "string", "description": "Limit the search to the meetings of one project."}},
                 "required": ["query"], "additionalProperties": false}),
             annotations: read_only("Buscar nas reuniões"),
         },
@@ -387,6 +393,34 @@ pub fn all() -> Vec<ToolDef> {
                 "done": {"type": "boolean", "default": true}},
                 "required": ["id"], "additionalProperties": false}),
             annotations: writes("Atualizar compromisso"),
+        },
+        ToolDef {
+            name: PROJECT_LIST.into(),
+            description: "List the user's projects (id, name, instructions). A project groups meetings; its instructions apply when working on them."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Projetos"),
+        },
+        ToolDef {
+            name: PROJECT_SAVE.into(),
+            description: "Create a project (name, instructions up to 4000 chars) or, with id from project_list, update it. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "id": {"type": "string"},
+                "name": {"type": "string"},
+                "instructions": {"type": "string", "maxLength": 4000}},
+                "required": ["name"], "additionalProperties": false}),
+            annotations: writes("Salvar projeto"),
+        },
+        ToolDef {
+            name: MEETING_SET_PROJECT.into(),
+            description: "Put a saved meeting in a project (project_id from project_list) or take it out (omit project_id). The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "meeting_id": {"type": "string"},
+                "project_id": {"type": "string"}},
+                "required": ["meeting_id"], "additionalProperties": false}),
+            annotations: writes("Mover reunião para projeto"),
         },
     ]
 }

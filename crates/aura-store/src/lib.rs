@@ -71,6 +71,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
     ),
     ("0012_recipes", include_str!("migrations/0012_recipes.sql")),
     ("0013_actions", include_str!("migrations/0013_actions.sql")),
+    (
+        "0014_projects",
+        include_str!("migrations/0014_projects.sql"),
+    ),
 ];
 
 /// Shared handle to the database. Cloning is cheap.

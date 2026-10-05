@@ -323,12 +323,65 @@ impl crate::tools::ExtensionsAccess for Host {
         self.meeting_set_brief(briefing).map_err(|e| e.message)
     }
 
+    fn project_list(&self) -> serde_json::Value {
+        let list = self
+            .meetings
+            .repo()
+            .store_for_projects()
+            .list()
+            .unwrap_or_default();
+        serde_json::json!(
+            list.iter()
+                .map(|p| serde_json::json!({
+                    "id": p.id, "name": p.name, "instructions": p.instructions,
+                }))
+                .collect::<Vec<_>>()
+        )
+    }
+
+    fn project_save(
+        &self,
+        id: Option<&str>,
+        name: &str,
+        instructions: &str,
+    ) -> Result<serde_json::Value, String> {
+        let p = self
+            .meetings
+            .repo()
+            .store_for_projects()
+            .save(id, name, instructions)
+            .map_err(|e| e.to_string())?;
+        Ok(serde_json::json!({"id": p.id, "name": p.name}))
+    }
+
+    fn meeting_set_project(&self, meeting_id: &str, project: Option<&str>) -> Result<(), String> {
+        if let Some(p) = project {
+            self.meetings
+                .repo()
+                .store_for_projects()
+                .get(p)
+                .map_err(|e| e.to_string())?;
+        }
+        self.meetings
+            .repo()
+            .set_project(meeting_id, project)
+            .map_err(|e| e.to_string())
+    }
+
     fn meeting_search(
         &self,
         query: &str,
         meeting: Option<&str>,
+        project: Option<&str>,
     ) -> Result<serde_json::Value, String> {
-        let hits = Host::meeting_search(self, query, meeting).map_err(|e| e.message)?;
+        let hits = match project {
+            Some(p) => self
+                .meetings
+                .repo()
+                .search_project(query, p, 30)
+                .map_err(|e| e.to_string())?,
+            None => Host::meeting_search(self, query, meeting).map_err(|e| e.message)?,
+        };
         Ok(serde_json::json!(
             hits.iter()
                 .map(|h| serde_json::json!({
@@ -354,6 +407,14 @@ impl crate::tools::ExtensionsAccess for Host {
         };
         let m = self.meetings.repo().get(id).map_err(|e| e.to_string())?;
         let lines = self.meeting_utterances(id).map_err(|e| e.message)?;
+        let project = m.project_id.as_deref().and_then(|p| {
+            self.meetings
+                .repo()
+                .store_for_projects()
+                .get(p)
+                .ok()
+                .map(|p| serde_json::json!({"name": p.name, "instructions": p.instructions}))
+        });
         let recipe = self
             .recipes
             .get(&m.kind)
@@ -361,6 +422,7 @@ impl crate::tools::ExtensionsAccess for Host {
             .map(|r| serde_json::json!({"name": r.name, "notes_template": r.notes_template}));
         Ok(serde_json::json!({
             "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status, "recipe": recipe,
+            "project": project,
             "transcript": lines.iter().map(|u| format!(
                 "[{:02}:{:02}] {}: {}", u.t0 / 60_000, (u.t0 / 1000) % 60,
                 match u.speaker.as_str() { "you" => "Você", "note" => "Nota do usuário", _ => "Eles" }, self.for_model(&u.text))).collect::<Vec<_>>(),
@@ -1188,6 +1250,31 @@ impl Host {
         self.actions
             .delete(id)
             .map_err(|e| HostError::new("not_found", e.to_string()))
+    }
+
+    pub fn projects_list(&self) -> HostResult<Vec<crate::projects::Project>> {
+        self.meetings
+            .repo()
+            .store_for_projects()
+            .list()
+            .map_err(|e| HostError::new("project", e.to_string()))
+    }
+
+    pub fn project_add(
+        &self,
+        name: &str,
+        instructions: &str,
+    ) -> HostResult<crate::projects::Project> {
+        self.meetings
+            .repo()
+            .store_for_projects()
+            .save(None, name, instructions)
+            .map_err(|e| HostError::new("invalid", e.to_string()))
+    }
+
+    pub fn meeting_move(&self, meeting_id: &str, project: Option<&str>) -> HostResult<()> {
+        crate::tools::ExtensionsAccess::meeting_set_project(self, meeting_id, project)
+            .map_err(|e| HostError::new("invalid", e))
     }
 
     pub fn recipes_list(&self) -> HostResult<Vec<crate::recipes::Recipe>> {

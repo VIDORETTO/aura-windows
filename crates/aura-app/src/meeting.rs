@@ -81,6 +81,7 @@ pub struct Meeting {
     pub status: String,
     pub started_at: i64,
     pub ended_at: Option<i64>,
+    pub project_id: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -122,10 +123,12 @@ fn meeting_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Meeting> {
         status: r.get(5)?,
         started_at: r.get(6)?,
         ended_at: r.get(7)?,
+        project_id: r.get(8)?,
     })
 }
 
-const MEETING_COLS: &str = "id, title, kind, briefing, origin, status, started_at, ended_at";
+const MEETING_COLS: &str =
+    "id, title, kind, briefing, origin, status, started_at, ended_at, project_id";
 
 impl MeetingRepo {
     pub fn new(store: Store) -> Self {
@@ -155,6 +158,11 @@ impl MeetingRepo {
             Ok(())
         })?;
         self.get(&id)
+    }
+
+    /// The projects repository over the same database.
+    pub fn store_for_projects(&self) -> crate::projects::ProjectsRepo {
+        crate::projects::ProjectsRepo::new(self.store.clone())
     }
 
     pub fn get(&self, id: &str) -> Result<Meeting, MeetingError> {
@@ -192,6 +200,20 @@ impl MeetingRepo {
             Ok(())
         })?;
         Ok(())
+    }
+
+    pub fn set_project(&self, id: &str, project: Option<&str>) -> Result<(), MeetingError> {
+        let n = self.store.with_conn(|c| {
+            Ok(c.execute(
+                "UPDATE meetings SET project_id = ?2 WHERE id = ?1",
+                params![id, project],
+            )?)
+        })?;
+        if n == 0 {
+            Err(MeetingError::NotFound)
+        } else {
+            Ok(())
+        }
     }
 
     pub fn set_briefing(&self, id: &str, briefing: &str) -> Result<(), MeetingError> {
@@ -300,6 +322,29 @@ impl MeetingRepo {
                 .collect::<Result<Vec<_>, _>>()?;
             Ok(rows)
         })?)
+    }
+
+    /// Like [`Self::search`], limited to the meetings of one project.
+    pub fn search_project(
+        &self,
+        query: &str,
+        project: &str,
+        limit: usize,
+    ) -> Result<Vec<Hit>, MeetingError> {
+        let ids: Vec<String> = self.store.with_conn(|c| {
+            let mut st = c.prepare("SELECT id FROM meetings WHERE project_id = ?1")?;
+            let rows = st
+                .query_map(params![project], |r| r.get(0))?
+                .collect::<Result<Vec<String>, _>>()?;
+            Ok(rows)
+        })?;
+        let mut hits = Vec::new();
+        for id in ids {
+            hits.extend(self.search(query, Some(&id), limit)?);
+        }
+        hits.sort_by(|a, b| b.started_at.cmp(&a.started_at).then(a.t0.cmp(&b.t0)));
+        hits.truncate(limit);
+        Ok(hits)
     }
 
     /// Utterances matching every word of `query` (accent-insensitive), newest
@@ -723,6 +768,49 @@ mod tests {
         assert_eq!(svc.repo().list(10).unwrap()[0].id, m.id);
         svc.repo().delete(&m.id).unwrap();
         assert!(svc.repo().utterances(&m.id).unwrap().is_empty(), "cascade");
+    }
+
+    #[tokio::test]
+    async fn projects_group_meetings_for_search() {
+        let (svc, _) = service(vec![line(
+            Speaker::Them,
+            T0 + 5_000,
+            "Fechar o orçamento da reforma",
+        )]);
+        let a = svc.start("Reunião A", "other", "", T0).unwrap();
+        svc.stop(T0 + 10_000).await.unwrap();
+        assert_eq!(svc.repo().get(&a.id).unwrap().project_id, None);
+        // The project row must exist (foreign key): create it through the same store.
+        let p = svc
+            .repo()
+            .store_for_projects()
+            .save(None, "Reforma", "tom informal")
+            .unwrap();
+        svc.repo().set_project(&a.id, Some(&p.id)).unwrap();
+        assert_eq!(
+            svc.repo().get(&a.id).unwrap().project_id.as_deref(),
+            Some(p.id.as_str())
+        );
+        assert_eq!(
+            svc.repo()
+                .search_project("orcamento", &p.id, 5)
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(
+            svc.repo()
+                .search_project("orcamento", "outro", 5)
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(
+            svc.repo().set_project("nope", None),
+            Err(MeetingError::NotFound)
+        );
+        // Deleting the project keeps the meeting, unlinked.
+        svc.repo().store_for_projects().delete(&p.id).unwrap();
+        assert_eq!(svc.repo().get(&a.id).unwrap().project_id, None);
     }
 
     #[test]

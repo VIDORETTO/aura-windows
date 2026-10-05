@@ -3378,3 +3378,118 @@ async fn commitments_age_and_the_agent_can_list_what_is_owed() {
     // The UI sees the same list, with the overdue flag.
     assert_eq!(e.host.actions_list(Some("open"), None).unwrap().len(), 1);
 }
+
+#[tokio::test]
+async fn projects_group_meetings_and_the_agent_reads_their_instructions() {
+    // 039: projects with instructions; search limited to a project.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-proj".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    let out = call(
+        "project_save",
+        json!({"name": "Reforma da loja", "instructions": "Valores em reais; tom informal"}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert!(
+        call("project_save", json!({"name": "reforma da LOJA"}))
+            .await
+            .is_error,
+        "names are unique"
+    );
+    let list: serde_json::Value =
+        serde_json::from_str(&text(&call("project_list", json!({})).await)).unwrap();
+    let pid = list[0]["id"].as_str().unwrap().to_string();
+
+    let m = e
+        .host
+        .meeting_start("Orçamento", "other", "")
+        .await
+        .unwrap();
+    e.host.meeting_stop().await.unwrap();
+    e.host
+        .meetings_repo()
+        .store_utterances_for_tests(
+            &m.id,
+            &[(5_000, 6_000, "them", "Fechamos o orçamento da obra")],
+        )
+        .unwrap();
+    let other = e.host.meeting_start("Outra", "other", "").await.unwrap();
+    e.host.meeting_stop().await.unwrap();
+    e.host
+        .meetings_repo()
+        .store_utterances_for_tests(
+            &other.id,
+            &[(5_000, 6_000, "them", "O orçamento do marketing")],
+        )
+        .unwrap();
+
+    assert!(
+        call(
+            "meeting_set_project",
+            json!({"meeting_id": m.id, "project_id": "nope"})
+        )
+        .await
+        .is_error
+    );
+    assert!(
+        !call(
+            "meeting_set_project",
+            json!({"meeting_id": m.id, "project_id": pid})
+        )
+        .await
+        .is_error
+    );
+    let all: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_search", json!({"query": "orcamento"})).await,
+    ))
+    .unwrap();
+    assert_eq!(all.as_array().unwrap().len(), 2);
+    let only: serde_json::Value = serde_json::from_str(&text(
+        &call(
+            "meeting_search",
+            json!({"query": "orcamento", "project_id": pid}),
+        )
+        .await,
+    ))
+    .unwrap();
+    assert_eq!(only.as_array().unwrap().len(), 1);
+    assert_eq!(only[0]["title"], "Orçamento");
+    let got: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_get", json!({"meeting_id": m.id})).await,
+    ))
+    .unwrap();
+    assert_eq!(
+        got["project"]["instructions"],
+        "Valores em reais; tom informal"
+    );
+    // The UI flow works too.
+    assert_eq!(e.host.projects_list().unwrap().len(), 1);
+    e.host.meeting_move(&m.id, None).unwrap();
+    assert!(
+        e.host
+            .meetings_repo()
+            .get(&m.id)
+            .unwrap()
+            .project_id
+            .is_none()
+    );
+}

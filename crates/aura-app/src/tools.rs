@@ -18,6 +18,7 @@ use aura_mcp::tools::{
     SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE,
     SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
 };
+use aura_mcp::tools::{MEETING_SET_PROJECT, PROJECT_LIST, PROJECT_SAVE};
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
     AccessRequest, Decision, DenyReason, Grants, Policy, Requester, Source, Target, decide,
@@ -87,7 +88,21 @@ pub trait ExtensionsAccess: Send + Sync {
     fn settings_apply(&self, changes: &Value) -> Result<Value, String>;
     fn settings_undo(&self) -> Result<Value, String>;
     /// Saved meetings (023).
-    fn meeting_search(&self, query: &str, meeting: Option<&str>) -> Result<Value, String>;
+    fn meeting_search(
+        &self,
+        query: &str,
+        meeting: Option<&str>,
+        project: Option<&str>,
+    ) -> Result<Value, String>;
+    /// Projects (039).
+    fn project_list(&self) -> Value;
+    fn project_save(
+        &self,
+        id: Option<&str>,
+        name: &str,
+        instructions: &str,
+    ) -> Result<Value, String>;
+    fn meeting_set_project(&self, meeting_id: &str, project: Option<&str>) -> Result<(), String>;
     fn meeting_get(&self, id: Option<&str>) -> Result<Value, String>;
     fn meeting_brief_save(&self, briefing: &str) -> Result<(), String>;
     /// Privacy exclusions and app profiles (022): `open_windows`,
@@ -637,8 +652,26 @@ impl HostTools {
                     Err(e) => invalid(e),
                 }
             }
-            MEETING_SEARCH => match ext.meeting_search(&text("query"), args["meeting_id"].as_str())
-            {
+            PROJECT_LIST => ToolOutput::text(ext.project_list().to_string()),
+            PROJECT_SAVE => match ext.project_save(
+                args["id"].as_str(),
+                &text("name"),
+                args["instructions"].as_str().unwrap_or_default(),
+            ) {
+                Ok(v) => ToolOutput::text(format!("Projeto salvo: {v}")),
+                Err(e) => invalid(e),
+            },
+            MEETING_SET_PROJECT => {
+                match ext.meeting_set_project(&text("meeting_id"), args["project_id"].as_str()) {
+                    Ok(()) => ToolOutput::text("Reunião atualizada."),
+                    Err(e) => invalid(e),
+                }
+            }
+            MEETING_SEARCH => match ext.meeting_search(
+                &text("query"),
+                args["meeting_id"].as_str(),
+                args["project_id"].as_str(),
+            ) {
                 Ok(v) => ToolOutput::text(v.to_string()),
                 Err(e) => invalid(e),
             },
@@ -757,6 +790,9 @@ impl ToolHandler for HostTools {
                 | RECIPE_SAVE | ACTION_SAVE | ACTION_LIST | ACTION_DONE | OPEN_WINDOWS
                 | EXCLUSION_LIST | EXCLUSION_ADD | PROFILE_LIST | PROFILE_SAVE
                 | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE | NOTE_SEARCH => {
+                    self.extensions_tool(tool, args).await
+                }
+                PROJECT_LIST | PROJECT_SAVE | MEETING_SET_PROJECT => {
                     self.extensions_tool(tool, args).await
                 }
                 other => {
