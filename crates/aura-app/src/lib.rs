@@ -8,6 +8,7 @@
 //! OS specifics arrive through [`platform::Platform`] (built from `aura-win`
 //! on Windows, fakes elsewhere), so the whole host runs in Linux CI.
 
+pub mod actions;
 pub mod attachments;
 pub mod consent;
 pub mod core_skills;

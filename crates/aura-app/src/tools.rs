@@ -11,11 +11,12 @@ use aura_capture::source::{CaptureError, Target as CapTarget, read_screen_text};
 use aura_capture::{CaptureOutcome, capture_with_policy};
 use aura_extensions::mcp_config::{ApprovalMode, EnvValue, McpServerSpec, Transport};
 use aura_mcp::tools::{
-    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, CLOCK_NOW, EXCLUSION_ADD, EXCLUSION_LIST,
-    EXTENSIONS_LIST, MCP_SERVER_SAVE, MEETING_BRIEF_SAVE, MEETING_GET, MEETING_SEARCH, NOTE_SAVE,
-    NOTE_SEARCH, OPEN_WINDOWS, PROFILE_LIST, PROFILE_SAVE, QUICK_COMMAND_SAVE, RECIPE_LIST,
-    RECIPE_SAVE, REMINDER_CREATE, REMINDER_DELETE, REMINDER_LIST, SCREEN_CAPTURE, SCREEN_RECENT,
-    SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE, SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
+    ACTION_DONE, ACTION_LIST, ACTION_SAVE, ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT,
+    CLOCK_NOW, EXCLUSION_ADD, EXCLUSION_LIST, EXTENSIONS_LIST, MCP_SERVER_SAVE, MEETING_BRIEF_SAVE,
+    MEETING_GET, MEETING_SEARCH, NOTE_SAVE, NOTE_SEARCH, OPEN_WINDOWS, PROFILE_LIST, PROFILE_SAVE,
+    QUICK_COMMAND_SAVE, RECIPE_LIST, RECIPE_SAVE, REMINDER_CREATE, REMINDER_DELETE, REMINDER_LIST,
+    SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE,
+    SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
 };
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
@@ -92,6 +93,17 @@ pub trait ExtensionsAccess: Send + Sync {
     /// Privacy exclusions and app profiles (022): `open_windows`,
     /// `exclusion_list|add`, `profile_list|save`.
     fn config_tool(&self, tool: &str, args: &Value) -> Result<Value, String>;
+    /// Commitments (047).
+    fn action_save(
+        &self,
+        meeting_id: Option<&str>,
+        text: &str,
+        owner: &str,
+        due: Option<&str>,
+        minute: Option<&str>,
+    ) -> Result<Value, String>;
+    fn action_list(&self, status: Option<&str>, owner: Option<&str>) -> Value;
+    fn action_done(&self, id: &str, done: bool) -> Result<(), String>;
     /// Recipes (025).
     fn recipe_list(&self) -> Value;
     fn recipe_save(
@@ -636,6 +648,26 @@ impl HostTools {
                     Err(e) => invalid(e),
                 }
             }
+            ACTION_SAVE => match ext.action_save(
+                args["meeting_id"].as_str(),
+                &text("text"),
+                args["owner"].as_str().unwrap_or("you"),
+                args["due"].as_str(),
+                args["minute"].as_str(),
+            ) {
+                Ok(v) => ToolOutput::text(format!("Compromisso salvo: {v}")),
+                Err(e) => invalid(e),
+            },
+            ACTION_LIST => ToolOutput::text(
+                ext.action_list(args["status"].as_str(), args["owner"].as_str())
+                    .to_string(),
+            ),
+            ACTION_DONE => {
+                match ext.action_done(&text("id"), args["done"].as_bool().unwrap_or(true)) {
+                    Ok(()) => ToolOutput::text("Compromisso atualizado."),
+                    Err(e) => invalid(e),
+                }
+            }
             RECIPE_LIST => ToolOutput::text(ext.recipe_list().to_string()),
             RECIPE_SAVE => match ext.recipe_save(
                 &text("id"),
@@ -722,9 +754,11 @@ impl ToolHandler for HostTools {
                 EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE
                 | SETTINGS_DESCRIBE | SETTINGS_PROPOSE | SETTINGS_APPLY | SETTINGS_UNDO
                 | CLOCK_NOW | MEETING_SEARCH | MEETING_GET | MEETING_BRIEF_SAVE | RECIPE_LIST
-                | RECIPE_SAVE | OPEN_WINDOWS | EXCLUSION_LIST | EXCLUSION_ADD | PROFILE_LIST
-                | PROFILE_SAVE | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE
-                | NOTE_SEARCH => self.extensions_tool(tool, args).await,
+                | RECIPE_SAVE | ACTION_SAVE | ACTION_LIST | ACTION_DONE | OPEN_WINDOWS
+                | EXCLUSION_LIST | EXCLUSION_ADD | PROFILE_LIST | PROFILE_SAVE
+                | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE | NOTE_SEARCH => {
+                    self.extensions_tool(tool, args).await
+                }
                 other => {
                     ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
                 }

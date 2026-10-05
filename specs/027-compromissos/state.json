@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "3509414cc931660e0a94546fa9da4002abf43542"
+  },
+  "blockers": [],
+  "effort_id": "027-compromissos",
+  "inputs": {
+    "contract": {
+      "fingerprint": "7d975d1e81f48bac10bb525b31c21ffaf23a626c7f76a694dd8d0b64d0188d40",
+      "path": "specs/027-compromissos/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

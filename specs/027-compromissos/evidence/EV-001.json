@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/actions.rs": "3cd681acf10e47f9b7ddf1e21d8142b4b6d6a03cb84384b73f74d65a17c1367e",
+    "specs/027-compromissos/change.md": "9bb791c1dd3367c403269ec2f9c64a4e197ab5606eed8163fe30feaa89a2d5af"
+  },
+  "input_paths": [
+    "crates/aura-app/src/actions.rs",
+    "specs/027-compromissos/change.md"
+  ],
+  "limitations": "Lembrete automático de atrasados e conectores não implementados",
+  "observations": "action_save/list/done com dono, prazo validado no calendário, minuto de origem e atraso; painel Reunião lista e dá baixa; ação 'Promessas' pede ao agente os compromissos com minuto",
+  "procedure": "cargo test -p aura-app (actions, commitments_age_and_the_agent_can_list_what_is_owed); vitest MeetingPanel",
+  "result": "passed",
+  "tested_revision": "local:613fd16f6566036d4a6afe7b6c38109b2ef6f3914072242e1609114cbe18e532",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:01:45+00:00"
+}

@@ -4,7 +4,7 @@
 import { Mic, Pause, Play, Square, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
-import type { Meeting, Recipe, Utterance } from "../ipc/types";
+import type { Action, Meeting, Recipe, Utterance } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { useApp } from "../state/app";
 import { Button, IconButton, Select, TextArea, cx } from "../ui/primitives";
@@ -44,6 +44,7 @@ export function MeetingPanel() {
   const [sentence, setSentence] = useState("");
   const [minutes, setMinutes] = useState(15);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [actions, setActions] = useState<Action[]>([]);
   const [kind, setKind] = useState("other");
   const [viewing, setViewing] = useState<Meeting | null>(null);
   const [lines, setLines] = useState<Utterance[]>([]);
@@ -57,6 +58,7 @@ export function MeetingPanel() {
       const [a, list, b] = await Promise.all([api.meetingActive(), api.meetingsList(), api.meetingBrief()]);
       setActive(a);
       setRecipes(await api.recipesList());
+      setActions(await api.actionsList("open"));
       setPast(list.filter((m) => m.status !== "active"));
       if (b) setBrief(b);
       const shown = a ?? viewing;
@@ -143,6 +145,7 @@ export function MeetingPanel() {
         </div>
         <div className="flex flex-wrap gap-1 border-t border-line p-2">
           <Button size="sm" onClick={() => ask("meeting.prompt.after", t, { id })}>{t("meeting.action.after")}</Button>
+          <Button size="sm" onClick={() => ask("meeting.prompt.promises", t, { id })}>{t("meeting.action.promises")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.email", t, { id })}>{t("meeting.action.email")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.minutes", t, { id }, "task")}>{t("meeting.action.minutes")}</Button>
           <IconButton label={t("meeting.delete")} onClick={() => void api.meetingDelete(id).then(() => setViewing(null)).catch(fail)}>
@@ -208,6 +211,26 @@ export function MeetingPanel() {
         </div>
         <p className="text-[11px] leading-snug text-muted">{t("meeting.forgot.hint")}</p>
       </section>
+
+      {actions.length > 0 && (
+        <section className="flex flex-col gap-1" aria-label={t("meeting.commitments")}>
+          <span className="text-[12px] font-medium">{t("meeting.commitments")}</span>
+          {actions.map((a) => (
+            <label key={a.id} className="flex items-start gap-1.5 text-[12px]">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={false}
+                onChange={() => void api.actionDone(a.id, true).then(() => setActions((l) => l.filter((x) => x.id !== a.id))).catch(fail)}
+              />
+              <span className="min-w-0">
+                <span className="text-muted">{a.owner === "you" ? t("meeting.owner.you") : t("meeting.owner.them")}:</span> {a.text}
+                {a.due && <span className={cx("ml-1 text-[11px]", a.overdue ? "text-danger" : "text-muted")}>· {a.overdue ? t("meeting.overdue", { date: a.due }) : a.due}</span>}
+              </span>
+            </label>
+          ))}
+        </section>
+      )}
 
       {past.length > 0 && (
         <section className="flex flex-col gap-0.5" aria-label={t("meeting.saved")}>

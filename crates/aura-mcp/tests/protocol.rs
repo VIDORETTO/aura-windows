@@ -123,6 +123,9 @@ async fn handshake_list_and_call() {
             "exclusion_add",
             "profile_list",
             "profile_save",
+            "action_save",
+            "action_list",
+            "action_done",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

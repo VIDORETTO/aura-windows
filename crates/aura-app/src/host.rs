@@ -252,6 +252,44 @@ impl crate::tools::ExtensionsAccess for Host {
         }
     }
 
+    fn action_save(
+        &self,
+        meeting_id: Option<&str>,
+        text: &str,
+        owner: &str,
+        due: Option<&str>,
+        minute: Option<&str>,
+    ) -> Result<serde_json::Value, String> {
+        // "mm:ss" → ms since the meeting started.
+        let t0 = minute.and_then(|m| {
+            let (mm, ss) = m.trim().split_once(':')?;
+            Some((mm.parse::<i64>().ok()? * 60 + ss.parse::<i64>().ok()?) * 1000)
+        });
+        let a = self
+            .actions
+            .add(meeting_id, text, owner, due, t0, self.clock.now())
+            .map_err(|e| e.to_string())?;
+        Ok(serde_json::json!({"id": a.id, "text": a.text, "owner": a.owner, "due": a.due}))
+    }
+
+    fn action_list(&self, status: Option<&str>, owner: Option<&str>) -> serde_json::Value {
+        let items = self.actions_list(status, owner).unwrap_or_default();
+        serde_json::json!(
+            items
+                .iter()
+                .map(|(a, late)| serde_json::json!({
+                    "id": a.id, "text": a.text, "owner": a.owner, "due": a.due, "status": a.status,
+                    "overdue": late, "meeting_id": a.meeting_id,
+                    "minute": a.t0.map(|t| format!("{:02}:{:02}", t / 60_000, (t / 1000) % 60)),
+                }))
+                .collect::<Vec<_>>()
+        )
+    }
+
+    fn action_done(&self, id: &str, done: bool) -> Result<(), String> {
+        self.action_set_done(id, done).map_err(|e| e.message)
+    }
+
     fn recipe_list(&self) -> serde_json::Value {
         serde_json::json!(self.recipes_list().unwrap_or_default().iter().map(|r| serde_json::json!({
             "id": r.id, "name": r.name, "description": r.description, "notes_template": r.notes_template,
@@ -621,6 +659,7 @@ pub struct Host {
     settings_undo: Mutex<Vec<serde_json::Value>>,
     reminders: crate::reminders::RemindersRepo,
     recipes: crate::recipes::RecipesRepo,
+    actions: crate::actions::ActionsRepo,
     notes: crate::notes::NotesRepo,
     clock: Arc<dyn crate::reminders::Clock>,
     policy: Arc<RwLock<Policy>>,
@@ -1014,6 +1053,7 @@ impl Host {
             settings_undo: Mutex::new(Vec::new()),
             reminders: crate::reminders::RemindersRepo::new(store_for_notes.clone()),
             recipes: crate::recipes::RecipesRepo::new(store_for_notes.clone()),
+            actions: crate::actions::ActionsRepo::new(store_for_notes.clone()),
             notes: crate::notes::NotesRepo::new(store_for_notes.clone()),
             clock: Arc::new(crate::reminders::SystemClock),
             policy,
@@ -1109,6 +1149,46 @@ impl Host {
     }
 
     // ------------------------------------------------------------ meetings
+
+    /// Today as `YYYY-MM-DD` in the user's time zone.
+    fn today(&self) -> String {
+        crate::reminders::format_local(self.clock.now(), self.clock.utc_offset_secs())
+            .chars()
+            .take(10)
+            .collect()
+    }
+
+    /// Commitments, open first (047). Each carries whether it is overdue.
+    pub fn actions_list(
+        &self,
+        status: Option<&str>,
+        owner: Option<&str>,
+    ) -> HostResult<Vec<(crate::actions::Action, bool)>> {
+        let today = self.today();
+        let list = self
+            .actions
+            .list(status, owner)
+            .map_err(|e| HostError::new("invalid", e.to_string()))?;
+        Ok(list
+            .into_iter()
+            .map(|a| {
+                let late = a.overdue(&today);
+                (a, late)
+            })
+            .collect())
+    }
+
+    pub fn action_set_done(&self, id: &str, done: bool) -> HostResult<()> {
+        self.actions
+            .set_done(id, done)
+            .map_err(|e| HostError::new("not_found", e.to_string()))
+    }
+
+    pub fn action_delete(&self, id: &str) -> HostResult<()> {
+        self.actions
+            .delete(id)
+            .map_err(|e| HostError::new("not_found", e.to_string()))
+    }
 
     pub fn recipes_list(&self) -> HostResult<Vec<crate::recipes::Recipe>> {
         self.recipes

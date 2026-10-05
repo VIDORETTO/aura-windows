@@ -83,6 +83,9 @@ export const api = {
   attachClipboardImage: (tray: string, threadId: string | null, mime: string, data: string) =>
     call<[T.AttachmentInfo, T.ContextChip]>("attach_clipboard_image", { tray, threadId, mime, data }),
   attachmentsList: (threadId: string) => call<T.AttachmentInfo[]>("attachments_list", { threadId }),
+  actionsList: (status?: "open" | "done") => call<T.Action[]>("actions_list", { status }),
+  actionDone: (id: string, done: boolean) => call<void>("action_done", { id, done }),
+  actionDelete: (id: string) => call<void>("action_delete", { id }),
   recipesList: () => call<T.Recipe[]>("recipes_list"),
   meetingBrief: () => call<string | null>("meeting_brief"),
   meetingSetBrief: (text: string) => call<void>("meeting_set_brief", { text }),

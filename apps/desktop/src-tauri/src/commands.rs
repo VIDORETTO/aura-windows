@@ -426,6 +426,33 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
 
 // ---------------------------------------------------------------- meetings
 
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ActionView {
+    #[serde(flatten)]
+    pub action: aura_app::actions::Action,
+    pub overdue: bool,
+}
+
+#[tauri::command]
+pub fn actions_list(s: State<'_, AppState>, status: Option<String>) -> R<Vec<ActionView>> {
+    Ok(s.host
+        .actions_list(status.as_deref(), None)?
+        .into_iter()
+        .map(|(action, overdue)| ActionView { action, overdue })
+        .collect())
+}
+
+#[tauri::command]
+pub fn action_done(s: State<'_, AppState>, id: String, done: bool) -> R<()> {
+    Ok(s.host.action_set_done(&id, done)?)
+}
+
+#[tauri::command]
+pub fn action_delete(s: State<'_, AppState>, id: String) -> R<()> {
+    Ok(s.host.action_delete(&id)?)
+}
+
 #[tauri::command]
 pub fn recipes_list(s: State<'_, AppState>) -> R<Vec<aura_app::recipes::Recipe>> {
     Ok(s.host.recipes_list()?)

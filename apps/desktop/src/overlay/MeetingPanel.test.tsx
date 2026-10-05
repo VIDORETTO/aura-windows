@@ -142,4 +142,21 @@ describe("meeting panel", () => {
     expect(await screen.findByText("★")).toBeInTheDocument();
     expect(screen.getAllByText("Nota:")).toHaveLength(2);
   });
+
+  it("open commitments show who owes what and what is overdue, and can be checked off", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    bridge.state.actionList = [
+      { id: "a1", meetingId: "m1", text: "enviar a proposta", owner: "you", due: "2000-01-01", status: "open", t0: 750000, createdAt: 1, overdue: true },
+      { id: "a2", meetingId: "m1", text: "Bruno manda o contrato", owner: "them", due: null, status: "open", t0: null, createdAt: 2, overdue: false },
+    ];
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    const section = await screen.findByLabelText("Compromissos");
+    expect(within(section).getByText(/enviar a proposta/)).toBeInTheDocument();
+    expect(within(section).getByText(/atrasado desde 2000-01-01/)).toBeInTheDocument();
+    expect(within(section).getByText("Prometido a mim:")).toBeInTheDocument();
+    await user.click(within(section).getAllByRole("checkbox")[0]);
+    await waitFor(() => expect(within(section).queryByText(/enviar a proposta/)).toBeNull());
+    expect(bridge.state.actionList.find((a) => a.id === "a1")?.status).toBe("done");
+  });
 });

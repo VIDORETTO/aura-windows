@@ -29,6 +29,9 @@ pub const MEETING_GET: &str = "meeting_get";
 pub const MEETING_BRIEF_SAVE: &str = "meeting_brief_save";
 pub const RECIPE_LIST: &str = "recipe_list";
 pub const RECIPE_SAVE: &str = "recipe_save";
+pub const ACTION_SAVE: &str = "action_save";
+pub const ACTION_LIST: &str = "action_list";
+pub const ACTION_DONE: &str = "action_done";
 pub const OPEN_WINDOWS: &str = "open_windows";
 pub const EXCLUSION_LIST: &str = "exclusion_list";
 pub const EXCLUSION_ADD: &str = "exclusion_add";
@@ -41,7 +44,9 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 11] = [
+pub const WRITE_TOOLS: [&str; 13] = [
+    ACTION_SAVE,
+    ACTION_DONE,
     EXCLUSION_ADD,
     PROFILE_SAVE,
     RECIPE_SAVE,
@@ -349,6 +354,39 @@ pub fn all() -> Vec<ToolDef> {
                 "default_mode": {"type": "string", "enum": ["chat", "task", "plan"]}},
                 "required": ["name", "process"], "additionalProperties": false}),
             annotations: writes("Salvar perfil de aplicativo"),
+        },
+        ToolDef {
+            name: ACTION_SAVE.into(),
+            description: "Save a commitment taken from a meeting: what, who owns it (owner=you when the user owes it, owner=them when someone promised the user), optional due date YYYY-MM-DD, the meeting_id and the minute 'mm:ss' it came from. Never invent commitments: save only what was said. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "text": {"type": "string"},
+                "owner": {"type": "string", "enum": ["you", "them"], "default": "you"},
+                "due": {"type": "string", "description": "YYYY-MM-DD"},
+                "meeting_id": {"type": "string"},
+                "minute": {"type": "string", "description": "mm:ss in the meeting"}},
+                "required": ["text"], "additionalProperties": false}),
+            annotations: writes("Salvar compromisso"),
+        },
+        ToolDef {
+            name: ACTION_LIST.into(),
+            description: "List commitments (promises): status open or done, owner you (the user owes) or them (owed to the user). Open ones come by due date with overdue=true when late. Use it to answer 'what do I owe?' and 'what did they promise me?'."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "status": {"type": "string", "enum": ["open", "done"]},
+                "owner": {"type": "string", "enum": ["you", "them"]}},
+                "additionalProperties": false}),
+            annotations: read_only("Compromissos"),
+        },
+        ToolDef {
+            name: ACTION_DONE.into(),
+            description: "Mark a commitment done (done=true, default) or open again (done=false). The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "id": {"type": "string"},
+                "done": {"type": "boolean", "default": true}},
+                "required": ["id"], "additionalProperties": false}),
+            annotations: writes("Atualizar compromisso"),
         },
     ]
 }

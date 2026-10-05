@@ -113,6 +113,20 @@ export interface MeetingHit {
   text: string;
 }
 
+/** A commitment taken from a meeting (047). */
+export interface Action {
+  id: string;
+  meetingId: string | null;
+  text: string;
+  /** `you` owes it; `them` promised it to the user. */
+  owner: "you" | "them";
+  due: string | null;
+  status: "open" | "done";
+  t0: number | null;
+  createdAt: number;
+  overdue: boolean;
+}
+
 export interface Recipe {
   id: string;
   name: string;

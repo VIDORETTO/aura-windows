@@ -424,6 +424,13 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     attachments_list: () => [],
     insert_into_app: () => true,
+    actions_list: () => state.actionList.filter((a) => a.status === "open"),
+    action_done: ({ id, done }) => {
+      state.actionList = state.actionList.map((a) => (a.id === id ? { ...a, status: done ? "done" : "open" } : a));
+    },
+    action_delete: ({ id }) => {
+      state.actionList = state.actionList.filter((a) => a.id !== id);
+    },
     recipes_list: () => [
       { id: "um-a-um", name: "1:1", description: "Conversa individual", notesTemplate: "Como foi · Compromissos", helpLevel: "onDemand", builtin: true },
       { id: "decisao", name: "Reunião de decisão", description: "Escolher entre opções", notesTemplate: "Decisão · Riscos", helpLevel: "balanced", builtin: true },
@@ -786,6 +793,7 @@ export class MockState {
     { name: "parei", template: "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}", builtin: true, enabled: true },
   ];
   mcp: T.McpServerSpec[] = [];
+  actionList: T.Action[] = [];
   meetingNow: T.Meeting | null = null;
   meetingList: T.Meeting[] = [];
   meetingBrief: string | null = null;

@@ -3306,3 +3306,75 @@ async fn agent_adds_exclusions_and_profiles_but_cannot_remove_them() {
             .is_error
     );
 }
+
+#[tokio::test]
+async fn commitments_age_and_the_agent_can_list_what_is_owed() {
+    // 047: promises from meetings with owner, due date and source minute.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-act".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    let late = call(
+        "action_save",
+        json!({"text": "enviar a proposta", "owner": "you", "due": "2000-01-01", "minute": "12:31"}),
+    )
+    .await;
+    assert!(!late.is_error, "{}", text(&late));
+    assert!(
+        !call(
+            "action_save",
+            json!({"text": "Bruno manda o contrato", "owner": "them", "due": "2999-12-31"})
+        )
+        .await
+        .is_error
+    );
+    assert!(
+        call("action_save", json!({"text": "x", "due": "amanhã"}))
+            .await
+            .is_error
+    );
+    assert!(
+        call("action_save", json!({"text": "x", "owner": "ana"}))
+            .await
+            .is_error
+    );
+
+    let mine: serde_json::Value = serde_json::from_str(&text(
+        &call("action_list", json!({"status": "open", "owner": "you"})).await,
+    ))
+    .unwrap();
+    assert_eq!(mine.as_array().unwrap().len(), 1);
+    assert_eq!(mine[0]["overdue"], true);
+    assert_eq!(mine[0]["minute"], "12:31");
+    let theirs: serde_json::Value =
+        serde_json::from_str(&text(&call("action_list", json!({"owner": "them"})).await)).unwrap();
+    assert_eq!(theirs[0]["overdue"], false);
+
+    let id = mine[0]["id"].as_str().unwrap().to_string();
+    assert!(!call("action_done", json!({"id": id})).await.is_error);
+    let open: serde_json::Value = serde_json::from_str(&text(
+        &call("action_list", json!({"status": "open", "owner": "you"})).await,
+    ))
+    .unwrap();
+    assert!(open.as_array().unwrap().is_empty());
+    assert!(call("action_done", json!({"id": "nope"})).await.is_error);
+    // The UI sees the same list, with the overdue flag.
+    assert_eq!(e.host.actions_list(Some("open"), None).unwrap().len(), 1);
+}
