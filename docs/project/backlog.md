@@ -28,7 +28,6 @@
 | `CAND-041` | Briefing antes da reunião e resumo diário a partir do calendário (Granola Briefs, Fireflies Meeting Prep) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-043` | Quem falou: diarização e nomes dos participantes (spike de motor e licença antes de prometer) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-044` | Áudio por aplicativo (process loopback) e supressão de eco para transcrição limpa | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-048` | Hábitos locais viram sugestões de configuração (sempre como proposta) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-049` | Aura como servidor MCP/API local somente leitura (notas e reuniões) para outras ferramentas (Granola API/MCP) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-051` | Modo Código/Prova técnica com tutor em níveis (dica, abordagem, solução) a partir da tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-053` | Widget compacto fixo, sempre visível | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -72,3 +71,4 @@
 | `032-supressao-de-eco` | Change: Supressão de eco na transcrição da reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `033-palavras-vigiadas` | Change: Palavras vigiadas na reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `034-lembretes-e-notas-na-ui` | Change: Página de lembretes e notas | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `035-habitos-em-sugestoes` | Change: Hábitos viram sugestões | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

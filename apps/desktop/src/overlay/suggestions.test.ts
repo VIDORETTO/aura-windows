@@ -16,6 +16,11 @@ describe("suggestions by app (028)", () => {
     expect(ids("WINWORD.EXE")).toContain("doc");
   });
 
+  it("a habit goes first, is not repeated and the list stays at four", () => {
+    expect(suggestionsFor("calc.exe", "", ["traduzir"]).map((s) => s.id)).toEqual(["habit:traduzir", "summarize", "help", "meeting"]);
+    expect(suggestionsFor("chrome.exe", "", ["golpe", "traduzir"]).map((s) => s.id)).toEqual(["habit:traduzir", "summarize", "scam", "doc"]);
+  });
+
   it("anything else gets the generic three and never more than four", () => {
     expect(ids("calc.exe")).toEqual(["summarize", "help", "meeting"]);
     expect(ids("")).toEqual(["summarize", "help", "meeting"]);

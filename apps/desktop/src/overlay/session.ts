@@ -8,6 +8,7 @@ import { decodeProfileModel, PLAN_PROVIDER } from "../lib/profileModel";
 import { useApp } from "../state/app";
 import { useConversation } from "../state/conversation";
 import { translate } from "../i18n";
+import { recordHabit } from "./habits";
 
 export const DRAFT = "draft";
 export const CHATGPT_PLAN = PLAN_PROVIDER;
@@ -279,6 +280,7 @@ export const useSession = create<Session>((set, get) => ({
           text = rest.join(" ");
           if (!text) return true;
         } else if (s.quickNames.includes(cmd)) {
+          void api.previousApp().then((app) => recordHabit(app?.processName, cmd)).catch(() => undefined);
           const exp = await api.quickExpand(s.tray(), text, "");
           text = exp.promptText;
           display = exp.display;

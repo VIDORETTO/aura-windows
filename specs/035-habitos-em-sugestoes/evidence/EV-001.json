@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/habits.ts": "7ca8c7b1e4d9c04ac39bf8cfce0a4033c65794e7649a847852bc2c3c5bf3791c",
+    "specs/035-habitos-em-sugestoes/change.md": "c262a4fe7d8f4ec18d0637828b33f1d6ca34dd0d320b9c14e77651b8c00c0ef1"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/habits.ts",
+    "specs/035-habitos-em-sugestoes/change.md"
+  ],
+  "limitations": "Guardado em localStorage da webview (some se limparem dados do navegador); comando é registrado ao enviar, sem teste ponta a ponta com o app anterior real do Windows",
+  "observations": "231 testes de UI passam; contagem por app, ordenação, limite e limpeza testados",
+  "procedure": "pnpm -C apps/desktop test (habits.test.ts, suggestions.test.ts) e typecheck",
+  "result": "passed",
+  "tested_revision": "local:c2d39c9bee5f41549b9583a071d523531e6658a682a1451d974c3c7628ed1b6c",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:59:17+00:00"
+}

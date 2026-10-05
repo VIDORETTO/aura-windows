@@ -18,6 +18,7 @@ import { percent } from "../lib/format";
 import { Header } from "./Header";
 import { HistoryPanel } from "./HistoryPanel";
 import { MeetingPanel } from "./MeetingPanel";
+import { topHabits } from "./habits";
 import { suggestionsFor, type Suggestion } from "./suggestions";
 import { InputBar } from "./InputBar";
 import { ConsentCard, MessageList } from "./Messages";
@@ -359,9 +360,9 @@ export function OverlayApp() {
                         <span>{t("empty.tip3")}</span>
                       </div>
                       <div className="mt-2 flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("suggest.title")}>
-                        {suggestionsFor(previous?.processName, previous?.title).map((sg) => (
+                        {suggestionsFor(previous?.processName, previous?.title, topHabits(previous?.processName)).map((sg) => (
                           <Button key={sg.id} size="sm" onClick={() => void runSuggestion(sg)}>
-                            {t(sg.label as never)}
+                            {sg.text ?? t(sg.label as never)}
                           </Button>
                         ))}
                       </div>

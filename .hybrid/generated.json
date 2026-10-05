@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "93edefbe03e0b42ed0333457b8e70b03d5794889ce518ee46a1449ddcba3a7d4",
+  "docs/project/backlog.md": "9b64fea1267b7d34a0be1f6bf1e6fdf59a295fc8e3887986bd9a60cff88af0da",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -44,5 +44,6 @@
   "specs/031-sugestoes-na-tela-vazia/verification.md": "7cd9c47ef4c817ed45de9318078eacff96b6f7e838f786a675a93b04dceb50e1",
   "specs/032-supressao-de-eco/verification.md": "8481425bec59073c73eb6ea92ae245331bc68c90b08864bcdb4007d7dbd1c48f",
   "specs/033-palavras-vigiadas/verification.md": "426dac72f08b044438a90c2a1b64e19548ef053ccc74904916ae445dad46481d",
-  "specs/034-lembretes-e-notas-na-ui/verification.md": "a1431f326b8a377afd539945400bc6e243b5c693016c00e31ce2b6df1a119649"
+  "specs/034-lembretes-e-notas-na-ui/verification.md": "a1431f326b8a377afd539945400bc6e243b5c693016c00e31ce2b6df1a119649",
+  "specs/035-habitos-em-sugestoes/verification.md": "a949d262abd0136394bfc1427b80c69b46822928d70c15c2160a78b8ca8b1ef8"
 }

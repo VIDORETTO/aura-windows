@@ -7,6 +7,7 @@ import type { NoteItem, ReminderItem } from "../ipc/types";
 import { useT } from "../i18n";
 import { exactTime } from "../lib/format";
 import { useApp } from "../state/app";
+import { clearHabits } from "../overlay/habits";
 import { Button, Section, TextField } from "../ui/primitives";
 
 const fail = (e: unknown) => useApp.getState().notify("error", errorMessage(e));
@@ -76,6 +77,16 @@ export function PersonalSection() {
       <Reminders />
       <Notes kind="note" title={t("personal.notes")} />
       <Notes kind="saved" title={t("personal.saved")} />
+      <Section title={t("personal.habits")} description={t("personal.habits.hint")}>
+        <Button
+          onClick={() => {
+            clearHabits();
+            useApp.getState().notify("info", t("personal.habits.cleared"));
+          }}
+        >
+          {t("personal.habits.clear")}
+        </Button>
+      </Section>
     </>
   );
 }

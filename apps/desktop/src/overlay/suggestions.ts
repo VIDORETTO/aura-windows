@@ -10,13 +10,23 @@ export interface Suggestion {
   id: string;
   /** i18n key of the label. */
   label: string;
+  /** Literal label (a habit shows its command), used instead of `label`. */
+  text?: string;
   action: SuggestionAction;
 }
 
 const has = (s: string, ...needles: string[]) => needles.some((n) => s.includes(n));
 
 /** Up to four suggestions for `processName` and window `title`. */
-export function suggestionsFor(processName: string | null | undefined, title: string | null | undefined): Suggestion[] {
+export function suggestionsFor(processName: string | null | undefined, title: string | null | undefined, habits: string[] = []): Suggestion[] {
+  const base = byApp(processName, title);
+  const mine: Suggestion[] = habits
+    .filter((c) => !base.some((b) => b.action.kind === "send" && b.action.text === `/${c}`))
+    .map((c) => ({ id: `habit:${c}`, label: "", text: `/${c}`, action: { kind: "send", text: `/${c}`, screen: false } }));
+  return [...mine, ...base].slice(0, 4);
+}
+
+function byApp(processName: string | null | undefined, title: string | null | undefined): Suggestion[] {
   const p = (processName ?? "").toLowerCase();
   const ti = (title ?? "").toLowerCase();
   const meeting: Suggestion = { id: "meeting", label: "suggest.meeting", action: { kind: "meeting" } };

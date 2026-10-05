@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "53d972be48d2d8b9c9d1d32b4c490fd1950eb978"
+  },
+  "blockers": [],
+  "effort_id": "035-habitos-em-sugestoes",
+  "inputs": {
+    "contract": {
+      "fingerprint": "b7f19e13a8d0dabab778b48d657b0c7a2afe1bd376ff0921322d1107d8363fff",
+      "path": "specs/035-habitos-em-sugestoes/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}
