@@ -66,6 +66,15 @@ Tudo abaixo foi implementado e testado no Linux (lógica, host e interface com b
 | 2 | Iniciar uma Reunião sem escolher dispositivo e tocar áudio só no fone (não padrão) | A fala aparece como "Eles" (a Reunião ouve todas as saídas) |
 | 3 | Plugar um fone novo **durante** a gravação | Limite conhecido: só entra após reiniciar a captura |
 
+## 032–035 — Eco, palavras vigiadas, lembretes e hábitos
+
+| # | Passo | Esperado |
+| --- | --- | --- |
+| 1 | Reunião com alto-falantes (sem fone), alguém fala no vídeo | A fala aparece só como "Eles"; o microfone não duplica como "Você" |
+| 2 | Configurações › Privacidade › "Palavras para vigiar": `preço`; na reunião, dizer ou tocar a palavra | Aviso no Overlay com o trecho e o tempo; nada aparece fora do Overlay |
+| 3 | Configurações › Lembretes e notas, depois de `/lembrar` e ⭐ em uma resposta | Aparecem listados; "Apagar" remove (comandos Tauri novos: validar no shell) |
+| 4 | Rodar `/traduzir` três vezes no mesmo app e abrir o Overlay vazio nele | "/traduzir" é a primeira sugestão; "Esquecer hábitos" a remove |
+
 ## Itens que dependem do ASR local
 
 Compilar o worker com `--features engines` (HANDOFF §7) e repetir 023-2 com o modelo local; sem isso, usar a transcrição na nuvem (BYOK) e anotar a diferença de latência.

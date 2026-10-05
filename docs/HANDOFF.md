@@ -255,7 +255,7 @@ Os 42 achados de `docs/qa/auditoria-e2e-2026-10-02.md` foram tratados no esforç
 
 ## 6.2 Funções novas (05/10/2026) — só validadas no Linux
 
-Esforços 019–026 (Dia a Dia, ocultação/transmissão, Preparo + Configurar com IA, Reunião). Lógica, host e UI passaram nos testes; **nada foi executado no Windows**. Roteiro: `docs/qa/roteiro-funcoes-novas.md`. Pendências que exigem Windows: afinidade real das janelas e apps de transmissão (AnyDesk/RDP), toasts, OCR de região, colar/Ctrl+Z, voz offline, transcrição contínua com modelo local, janela própria `meeting` e mini-menu na seleção (não implementados). O backlog (`docs/project/backlog.md`) lista os candidatos ainda não promovidos (Fases 2 e 3 do plano).
+Esforços 019–026 (Dia a Dia, ocultação/transmissão, Preparo + Configurar com IA, Reunião). Lógica, host e UI passaram nos testes; **nada foi executado no Windows**. Roteiro: `docs/qa/roteiro-funcoes-novas.md`. Pendências que exigem Windows: afinidade real das janelas e apps de transmissão (AnyDesk/RDP), toasts, OCR de região, colar/Ctrl+Z, voz offline, transcrição contínua com modelo local, janela própria `meeting` e mini-menu na seleção (não implementados). Esforços 027–035 acrescentaram compromissos, coaching, habilidades do dia a dia, instruções agendadas, sugestões e hábitos por app, "Todas as saídas" de áudio, supressão de eco (heurística de texto), palavras vigiadas na Reunião e a página Configurações › Lembretes e notas (comandos Tauri novos só compilam no Windows). O backlog (`docs/project/backlog.md`) lista os candidatos ainda não promovidos (Fases 2 e 3 do plano).
 
 ## 7. Fila de trabalho restante
 

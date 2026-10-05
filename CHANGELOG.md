@@ -17,6 +17,10 @@ and [Semantic Versioning](https://semver.org/).
 - Everyday commands: `/formal`, `/curto`, `/amigavel`, `/golpe`, `/responder`,
   `/parei`, `/colar`, `/ler`, `/texto`, `/lembrar`, `/anota`, `/notas`, `/salvos`;
   "Replace selection" with undo; reminders with Windows notifications.
+- Meetings: echo suppression (your mic hearing the other side through speakers),
+  watched words that raise a notice in the Overlay, and "All outputs" audio capture.
+- Settings › Reminders and notes: list, search and delete; habits per app put your
+  most-used commands first on the empty Overlay (local, clearable).
 - Broadcast mode (no Windows notifications) and "Test hiding" in Settings.
 
 ### Added
