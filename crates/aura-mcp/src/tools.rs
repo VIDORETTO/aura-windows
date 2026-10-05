@@ -18,6 +18,12 @@ pub const EXTENSIONS_LIST: &str = "extensions_list";
 pub const SKILL_SAVE: &str = "skill_save";
 pub const QUICK_COMMAND_SAVE: &str = "quick_command_save";
 pub const MCP_SERVER_SAVE: &str = "mcp_server_save";
+pub const CLOCK_NOW: &str = "clock_now";
+pub const REMINDER_CREATE: &str = "reminder_create";
+pub const REMINDER_LIST: &str = "reminder_list";
+pub const REMINDER_DELETE: &str = "reminder_delete";
+pub const NOTE_SAVE: &str = "note_save";
+pub const NOTE_SEARCH: &str = "note_search";
 pub const SETTINGS_DESCRIBE: &str = "settings_describe";
 pub const SETTINGS_PROPOSE: &str = "settings_propose";
 pub const SETTINGS_APPLY: &str = "settings_apply";
@@ -25,7 +31,9 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 5] = [
+pub const WRITE_TOOLS: [&str; 7] = [
+    REMINDER_CREATE,
+    REMINDER_DELETE,
     SKILL_SAVE,
     QUICK_COMMAND_SAVE,
     MCP_SERVER_SAVE,
@@ -181,6 +189,58 @@ pub fn all() -> Vec<ToolDef> {
                 .into(),
             input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
             annotations: writes("Desfazer configuração"),
+        },
+        ToolDef {
+            name: CLOCK_NOW.into(),
+            description: "Current local date and time with the user's UTC offset (RFC 3339). Call before creating a reminder from a relative or clock time such as 'at 3 pm' or 'tomorrow'."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Data e hora"),
+        },
+        ToolDef {
+            name: REMINDER_CREATE.into(),
+            description: "Create a reminder that shows a Windows notification. Give either delay_minutes or at (local time 'YYYY-MM-DDTHH:MM', or RFC 3339). repeat: none, daily, weekdays or weekly. text: what to remind, in the user's language. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "text": {"type": "string", "maxLength": 500},
+                "at": {"type": "string"},
+                "delay_minutes": {"type": "integer", "minimum": 1},
+                "repeat": {"type": "string", "enum": ["none", "daily", "weekdays", "weekly"], "default": "none"}},
+                "required": ["text"], "additionalProperties": false}),
+            annotations: writes("Criar lembrete"),
+        },
+        ToolDef {
+            name: REMINDER_LIST.into(),
+            description: "List the user's active reminders (id, text, due time, repeat).".into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Lembretes"),
+        },
+        ToolDef {
+            name: REMINDER_DELETE.into(),
+            description: "Delete an active reminder by id (from reminder_list). The user approves the call.".into(),
+            input_schema: json!({"type": "object", "properties": {"id": {"type": "string"}},
+                "required": ["id"], "additionalProperties": false}),
+            annotations: writes("Apagar lembrete"),
+        },
+        ToolDef {
+            name: NOTE_SAVE.into(),
+            description: "Save a quick note the user dictated or typed ('anota: …') or, with kind=saved, an answer the user wants to keep. Keep the user's own words; do not add content."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "text": {"type": "string"},
+                "kind": {"type": "string", "enum": ["note", "saved"], "default": "note"}},
+                "required": ["text"], "additionalProperties": false}),
+            annotations: writes("Salvar nota"),
+        },
+        ToolDef {
+            name: NOTE_SEARCH.into(),
+            description: "Search the user's notes (kind=note) or saved answers (kind=saved), newest first. Every word of query must appear; empty query lists the latest."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "query": {"type": "string"},
+                "kind": {"type": "string", "enum": ["note", "saved"], "default": "note"}},
+                "additionalProperties": false}),
+            annotations: read_only("Buscar notas"),
         },
     ]
 }

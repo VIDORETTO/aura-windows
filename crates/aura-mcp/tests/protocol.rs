@@ -107,6 +107,12 @@ async fn handshake_list_and_call() {
             "settings_propose",
             "settings_apply",
             "settings_undo",
+            "clock_now",
+            "reminder_create",
+            "reminder_list",
+            "reminder_delete",
+            "note_save",
+            "note_search",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

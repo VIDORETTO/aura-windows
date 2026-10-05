@@ -2708,3 +2708,96 @@ async fn agent_configures_settings_with_diff_and_undo() {
     assert!(!e.host.settings().yolo);
     assert_eq!(e.host.settings(), before);
 }
+
+#[tokio::test]
+async fn reminders_and_notes_through_agent_tools() {
+    // 020 AC-002/AC-003.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-rem".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    let mut events = e.host.subscribe();
+
+    // The model can read the local clock.
+    assert!(text(&call("clock_now", json!({})).await).contains('T'));
+
+    let out = call(
+        "reminder_create",
+        json!({"text": "ligar para o João", "delay_minutes": 5}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    // Not due yet, then due: the Overlay is told once.
+    assert_eq!(e.host.tick_reminders(), 0);
+    let later = aura_store::now_secs() + 6 * 60;
+    assert_eq!(e.host.tick_reminders_at(later, 0), 1);
+    assert_eq!(e.host.tick_reminders_at(later + 60, 0), 0);
+    until(
+        &mut events,
+        |ev| matches!(ev, HostEvent::Reminder { text, .. } if text == "ligar para o João"),
+    )
+    .await;
+
+    // Bad input is explained.
+    assert!(call("reminder_create", json!({"text": "x"})).await.is_error);
+    assert!(
+        call("reminder_create", json!({"text": "x", "at": "ontem"}))
+            .await
+            .is_error
+    );
+
+    let listed = call(
+        "reminder_create",
+        json!({"text": "pagar o aluguel", "delay_minutes": 60, "repeat": "weekly"}),
+    )
+    .await;
+    assert!(!listed.is_error);
+    let v: serde_json::Value =
+        serde_json::from_str(&text(&call("reminder_list", json!({})).await)).unwrap();
+    let id = v[0]["id"].as_str().unwrap().to_string();
+    assert_eq!(v[0]["repeat"], "weekly");
+    assert!(!call("reminder_delete", json!({"id": id})).await.is_error);
+    assert_eq!(text(&call("reminder_list", json!({})).await), "[]");
+
+    // Notes: save and find by words, saved answers are a separate list.
+    assert!(
+        !call("note_save", json!({"text": "renovar o seguro em março"}))
+            .await
+            .is_error
+    );
+    assert!(
+        !call(
+            "note_save",
+            json!({"text": "receita de bolo", "kind": "saved"})
+        )
+        .await
+        .is_error
+    );
+    let hits = text(&call("note_search", json!({"query": "seguro marco"})).await);
+    assert!(hits.contains("renovar o seguro"));
+    assert_eq!(
+        text(&call("note_search", json!({"query": "bolo"})).await),
+        "[]"
+    );
+    assert!(
+        text(&call("note_search", json!({"query": "bolo", "kind": "saved"})).await)
+            .contains("bolo")
+    );
+}

@@ -201,6 +201,10 @@ fn build() -> Value {
                 mode: "task".into(),
             },
             HostEvent::ExtensionsChanged {},
+            HostEvent::Reminder {
+                id: "r1".into(),
+                text: "Ligar para o João".into(),
+            },
         ])
         .collect();
 

@@ -662,4 +662,5 @@ export type HostEvent =
   | { channel: "openConversation"; event: { threadId: string } }
   | { channel: "agentTask"; event: { text: string; mode: ConversationMode["mode"] } }
   | { channel: "extensionsChanged"; event: Record<string, never> }
+  | { channel: "reminder"; event: { id: string; text: string } }
   | { channel: "settings"; event: Settings };

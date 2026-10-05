@@ -156,6 +156,12 @@ export const useApp = create<AppStore>((set, get) => ({
       case "agentTask":
         set((s) => ({ agentRequest: { ...e.event, seq: (s.agentRequest?.seq ?? 0) + 1 } }));
         break;
+      case "reminder":
+        // One toast: the Overlay window shows it, Settings/region windows do not.
+        if (!/^#\/(settings|region)/.test(window.location.hash)) {
+          void api.notify("Aura", e.event.text).catch(() => {});
+        }
+        break;
       case "extensionsChanged":
         set((s) => ({ extensionsRevision: s.extensionsRevision + 1 }));
         break;

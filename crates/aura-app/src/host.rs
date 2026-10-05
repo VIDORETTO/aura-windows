@@ -167,6 +167,69 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn clock_now(&self) -> String {
+        crate::reminders::format_local(self.clock.now(), self.clock.utc_offset_secs())
+    }
+
+    fn reminder_create(
+        &self,
+        text: &str,
+        at: Option<&str>,
+        delay_minutes: Option<i64>,
+        repeat: &str,
+    ) -> Result<serde_json::Value, String> {
+        use crate::reminders::{Repeat, parse_time};
+        let (now, offset) = (self.clock.now(), self.clock.utc_offset_secs());
+        let due = match (at, delay_minutes) {
+            (Some(at), _) => parse_time(at, offset).map_err(|e| e.to_string())?,
+            (None, Some(m)) if m >= 1 => now + m * 60,
+            _ => return Err("informe at ou delay_minutes".into()),
+        };
+        let r = self
+            .reminders
+            .create(
+                text,
+                due,
+                Repeat::parse(repeat).map_err(|e| e.to_string())?,
+                now,
+            )
+            .map_err(|e| e.to_string())?;
+        Ok(serde_json::json!({
+            "id": r.id, "text": r.text, "due": crate::reminders::format_local(r.due_at, offset), "repeat": r.repeat,
+        }))
+    }
+
+    fn reminder_list(&self) -> serde_json::Value {
+        let offset = self.clock.utc_offset_secs();
+        let items = self.reminders.list().unwrap_or_default();
+        serde_json::json!(items.iter().map(|r| serde_json::json!({
+            "id": r.id, "text": r.text, "due": crate::reminders::format_local(r.due_at, offset), "repeat": r.repeat,
+        })).collect::<Vec<_>>())
+    }
+
+    fn reminder_delete(&self, id: &str) -> Result<(), String> {
+        self.reminders.delete(id).map_err(|e| e.to_string())
+    }
+
+    fn note_save(&self, kind: &str, text: &str) -> Result<serde_json::Value, String> {
+        let n = self
+            .notes
+            .add(kind, text, self.clock.now())
+            .map_err(|e| e.to_string())?;
+        Ok(serde_json::json!({"id": n.id, "kind": n.kind}))
+    }
+
+    fn note_search(&self, kind: &str, query: &str) -> Result<serde_json::Value, String> {
+        let hits = self
+            .notes
+            .search(kind, query, 20)
+            .map_err(|e| e.to_string())?;
+        let offset = self.clock.utc_offset_secs();
+        Ok(serde_json::json!(hits.iter().map(|n| serde_json::json!({
+            "id": n.id, "text": n.text, "at": crate::reminders::format_local(n.created_at, offset),
+        })).collect::<Vec<_>>()))
+    }
+
     fn settings_describe(&self) -> serde_json::Value {
         crate::settings_assistant::describe(&self.settings())
     }
@@ -381,6 +444,9 @@ pub struct Host {
     settings: RwLock<Settings>,
     /// Inverse patches of the settings the agent changed (022), newest last.
     settings_undo: Mutex<Vec<serde_json::Value>>,
+    reminders: crate::reminders::RemindersRepo,
+    notes: crate::notes::NotesRepo,
+    clock: Arc<dyn crate::reminders::Clock>,
     policy: Arc<RwLock<Policy>>,
     grants: Arc<RwLock<Grants>>,
     privacy: PrivacyRepo,
@@ -749,6 +815,7 @@ impl Host {
         let quick = QuickCommandsRepo::new(store.clone())?;
 
         let store_for_profiles = store.clone();
+        let store_for_notes = store.clone();
         let host = Arc::new(Host {
             paths: cfg.paths,
             platform: cfg.platform,
@@ -756,6 +823,9 @@ impl Host {
             vault,
             settings: RwLock::new(settings),
             settings_undo: Mutex::new(Vec::new()),
+            reminders: crate::reminders::RemindersRepo::new(store_for_notes.clone()),
+            notes: crate::notes::NotesRepo::new(store_for_notes.clone()),
+            clock: Arc::new(crate::reminders::SystemClock),
             policy,
             grants,
             privacy,
@@ -788,6 +858,15 @@ impl Host {
         host.apply_runtime_settings(&host.settings());
         host.spawn_forwarders();
         host.reconcile_capture();
+        // Reminders (020): check every 15 s; stops when the host is dropped.
+        let weak_host = Arc::downgrade(&host);
+        host.rt.spawn(async move {
+            loop {
+                tokio::time::sleep(std::time::Duration::from_secs(15)).await;
+                let Some(h) = weak_host.upgrade() else { break };
+                h.tick_reminders();
+            }
+        });
         Ok(host)
     }
 
@@ -832,6 +911,22 @@ impl Host {
 
     pub fn settings(&self) -> Settings {
         self.settings.read().unwrap().clone()
+    }
+
+    /// Fires the reminders due at `now` (the timer calls it every few seconds).
+    pub fn tick_reminders_at(&self, now: i64, offset: i32) -> usize {
+        let due = self.reminders.fire_due(now, offset).unwrap_or_default();
+        for r in &due {
+            let _ = self.events.send(HostEvent::Reminder {
+                id: r.id.clone(),
+                text: r.text.clone(),
+            });
+        }
+        due.len()
+    }
+
+    pub fn tick_reminders(&self) -> usize {
+        self.tick_reminders_at(self.clock.now(), self.clock.utc_offset_secs())
     }
 
     pub fn update_settings(&self, patch: SettingsPatch) -> HostResult<Settings> {
@@ -2133,6 +2228,9 @@ impl Host {
                 "golpe" => "quick.template.scam",
                 "responder" => "quick.template.reply",
                 "parei" => "quick.template.resume",
+                "lembrar" => "quick.template.remind",
+                "anota" => "quick.template.note",
+                "notas" => "quick.template.notes",
                 "configurar" => "quick.template.configure",
                 "preparo" => "quick.template.prepare",
                 _ => continue,

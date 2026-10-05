@@ -364,6 +364,13 @@
     {
       "channel": "extensionsChanged",
       "event": {}
+    },
+    {
+      "channel": "reminder",
+      "event": {
+        "id": "r1",
+        "text": "Ligar para o João"
+      }
     }
   ],
   "mcpServers": [

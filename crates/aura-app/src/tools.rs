@@ -11,9 +11,10 @@ use aura_capture::source::{CaptureError, Target as CapTarget, read_screen_text};
 use aura_capture::{CaptureOutcome, capture_with_policy};
 use aura_extensions::mcp_config::{ApprovalMode, EnvValue, McpServerSpec, Transport};
 use aura_mcp::tools::{
-    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, EXTENSIONS_LIST, MCP_SERVER_SAVE,
-    QUICK_COMMAND_SAVE, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY,
-    SETTINGS_DESCRIBE, SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
+    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, CLOCK_NOW, EXTENSIONS_LIST, MCP_SERVER_SAVE,
+    NOTE_SAVE, NOTE_SEARCH, QUICK_COMMAND_SAVE, REMINDER_CREATE, REMINDER_DELETE, REMINDER_LIST,
+    SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE,
+    SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
 };
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
@@ -83,6 +84,19 @@ pub trait ExtensionsAccess: Send + Sync {
     fn settings_propose(&self, changes: &Value) -> Value;
     fn settings_apply(&self, changes: &Value) -> Result<Value, String>;
     fn settings_undo(&self) -> Result<Value, String>;
+    /// Reminders and notes (020).
+    fn clock_now(&self) -> String;
+    fn reminder_create(
+        &self,
+        text: &str,
+        at: Option<&str>,
+        delay_minutes: Option<i64>,
+        repeat: &str,
+    ) -> Result<Value, String>;
+    fn reminder_list(&self) -> Value;
+    fn reminder_delete(&self, id: &str) -> Result<(), String>;
+    fn note_save(&self, kind: &str, text: &str) -> Result<Value, String>;
+    fn note_search(&self, kind: &str, query: &str) -> Result<Value, String>;
 }
 
 /// Filled once the host exists (it owns the tools' MCP router).
@@ -592,6 +606,33 @@ impl HostTools {
                     Err(e) => invalid(e),
                 }
             }
+            CLOCK_NOW => ToolOutput::text(ext.clock_now()),
+            REMINDER_CREATE => match ext.reminder_create(
+                &text("text"),
+                args["at"].as_str(),
+                args["delay_minutes"].as_i64(),
+                args["repeat"].as_str().unwrap_or("none"),
+            ) {
+                Ok(v) => ToolOutput::text(format!("Lembrete criado: {v}")),
+                Err(e) => invalid(e),
+            },
+            REMINDER_LIST => ToolOutput::text(ext.reminder_list().to_string()),
+            REMINDER_DELETE => match ext.reminder_delete(&text("id")) {
+                Ok(()) => ToolOutput::text("Lembrete apagado."),
+                Err(e) => invalid(e),
+            },
+            NOTE_SAVE => {
+                match ext.note_save(args["kind"].as_str().unwrap_or("note"), &text("text")) {
+                    Ok(v) => ToolOutput::text(format!("Salvo: {v}")),
+                    Err(e) => invalid(e),
+                }
+            }
+            NOTE_SEARCH => {
+                match ext.note_search(args["kind"].as_str().unwrap_or("note"), &text("query")) {
+                    Ok(v) => ToolOutput::text(v.to_string()),
+                    Err(e) => invalid(e),
+                }
+            }
             SETTINGS_DESCRIBE => ToolOutput::text(ext.settings_describe().to_string()),
             SETTINGS_PROPOSE => {
                 ToolOutput::text(ext.settings_propose(&args["changes"]).to_string())
@@ -624,9 +665,9 @@ impl ToolHandler for HostTools {
                 AUDIO_RECENT => self.audio_recent(args, ctx).await,
                 ATTACHMENT_READ => self.attachment_read(args, ctx).await,
                 EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE
-                | SETTINGS_DESCRIBE | SETTINGS_PROPOSE | SETTINGS_APPLY | SETTINGS_UNDO => {
-                    self.extensions_tool(tool, args).await
-                }
+                | SETTINGS_DESCRIBE | SETTINGS_PROPOSE | SETTINGS_APPLY | SETTINGS_UNDO
+                | CLOCK_NOW | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE
+                | NOTE_SEARCH => self.extensions_tool(tool, args).await,
                 other => {
                     ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
                 }

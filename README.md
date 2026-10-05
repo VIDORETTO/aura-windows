@@ -215,6 +215,10 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/formal` · `/curto` · `/amigavel` | Reescreve a seleção no tom pedido |
 | `/golpe` | Analisa se uma mensagem, e-mail, link ou boleto parece golpe |
 | `/responder [tom]` | Anexa a tela e escreve um rascunho de resposta |
+| `/lembrar <o quê e quando>` | Cria um lembrete com notificação do Windows (únicos ou recorrentes) |
+| `/anota <texto>` · `/notas <busca>` | Guarda e procura anotações rápidas |
+| `/configurar <pedido>` | A IA configura o Aura por você, mostrando antes → depois |
+| `/preparo <assunto>` | A IA entrevista você (⚡ uma frase ou 🧭 grill-me) antes de uma tarefa |
 | `/parei` | Resume o que você fazia nos últimos minutos (precisa do buffer de tela) |
 | `/traduzir <idioma>` | Traduz (padrão: inglês) |
 | `/reescrever` | Reescreve com mais clareza |

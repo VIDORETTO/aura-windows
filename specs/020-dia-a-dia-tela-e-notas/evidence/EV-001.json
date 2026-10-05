@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-002",
+    "AC-003"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/notes.rs": "43d5952f9e9135793996369f5c0c25ef55455959f7ea7672065421635b4912df",
+    "crates/aura-app/src/reminders.rs": "27933a22b86596966068f0061ccf5767c28c610e98dc48c8e6c7754adf713d8b",
+    "specs/020-dia-a-dia-tela-e-notas/change.md": "192220e18bd6abf3685fb3c2a9acff8672eb43f51e982b1477585a06a61d8300"
+  },
+  "input_paths": [
+    "crates/aura-app/src/reminders.rs",
+    "crates/aura-app/src/notes.rs",
+    "specs/020-dia-a-dia-tela-e-notas/change.md"
+  ],
+  "limitations": "Toast real do Windows, persistência após reiniciar o Aura (só SQLite testado em memória), tela de lista/estrela em Salvos e ditado global para 'anota' não verificados; AC-001 (OCR de região) não iniciado",
+  "observations": "Lembretes únicos e recorrentes (diário, dias úteis, semanal) disparam uma vez e pulam ocorrências perdidas; evento chega à UI que chama notify; notas e salvos pesquisáveis sem acento; ferramentas MCP criadas",
+  "procedure": "cargo test -p aura-app (reminders, notes, reminders_and_notes_through_agent_tools); pnpm -C apps/desktop test",
+  "result": "partial",
+  "tested_revision": "local:7131c2afdb472998fe4b16269483ba9b86fac48822e220e82bb94490eb491cb7",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:17:48+00:00"
+}

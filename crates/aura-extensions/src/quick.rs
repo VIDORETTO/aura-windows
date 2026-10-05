@@ -119,6 +119,18 @@ pub fn builtins() -> Vec<QuickCommand> {
             "{tela}Leia o e-mail ou a conversa que está na tela e escreva um rascunho de resposta no mesmo idioma, pronto para colar. Tom: {args:cordial}. Responda só com o texto da resposta.\n\n{texto}",
         ),
         b(
+            "lembrar",
+            "Crie um lembrete com as ferramentas clock_now e reminder_create. Pedido do usuário: {texto}",
+        ),
+        b(
+            "anota",
+            "Guarde esta nota com a ferramenta note_save, com as palavras do usuário e sem acrescentar nada, e confirme em uma linha: {texto}",
+        ),
+        b(
+            "notas",
+            "Procure nas minhas notas com a ferramenta note_search (consulta: {texto}) e liste o que achar, da mais recente para a mais antiga.",
+        ),
+        b(
             "configurar",
             "$aura-configurar Quero configurar o Aura: {texto}",
         ),
@@ -425,7 +437,7 @@ mod tests {
     #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 14);
+        assert_eq!(repo.list().unwrap().len(), 17);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

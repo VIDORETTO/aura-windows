@@ -57,6 +57,11 @@ pub enum HostEvent {
     },
     /// Skills, quick commands or MCP servers changed (e.g. by the agent).
     ExtensionsChanged {},
+    /// A reminder is due (020): the Overlay shows a Windows notification.
+    Reminder {
+        id: String,
+        text: String,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

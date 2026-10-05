@@ -61,6 +61,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0009_access_thumbs",
         include_str!("migrations/0009_access_thumbs.sql"),
     ),
+    (
+        "0010_reminders_notes",
+        include_str!("migrations/0010_reminders_notes.sql"),
+    ),
 ];
 
 /// Shared handle to the database. Cloning is cheap.
