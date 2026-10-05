@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/meeting.rs": "3d1124be656f11f289c4ac092913eac34437893bcb834ecbe05eb582f5b14a8c",
+    "specs/032-supressao-de-eco/change.md": "6e9fe673a9f5922f26e519bc9e33e1d31626df6e8203f7c28dbcb9d717c68871"
+  },
+  "input_paths": [
+    "crates/aura-app/src/meeting.rs",
+    "specs/032-supressao-de-eco/change.md"
+  ],
+  "limitations": "Heurística textual; só validada com falas sintéticas. Sem cancelamento acústico real nem áudio por aplicativo (CAND-044 segue aberto)",
+  "observations": "the_echo_of_the_other_side_in_the_microphone_is_dropped e demais testes de meeting passam; clippy -D warnings limpo",
+  "procedure": "cargo test -p aura-app --lib meeting",
+  "result": "passed",
+  "tested_revision": "local:ad777878de0a6f2569f0d1b31764d00f90ca8031b6f4839e51fb52f9d35f2590",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:20:26+00:00"
+}

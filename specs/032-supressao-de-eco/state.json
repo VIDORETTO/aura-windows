@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "9eacc5f076a7a12be194a36892db0ae1aea5a5bb"
+  },
+  "blockers": [],
+  "effort_id": "032-supressao-de-eco",
+  "inputs": {
+    "contract": {
+      "fingerprint": "4be1d0a0b22bab43b6404eb85d4781ab14414cbebeaf71a8530f4194bf4ad4ce",
+      "path": "specs/032-supressao-de-eco/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

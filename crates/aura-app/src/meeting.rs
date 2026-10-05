@@ -408,12 +408,49 @@ pub struct MeetingService {
     active: Mutex<Option<Active>>,
 }
 
+/// Words of a line, lowercase, for comparing an echo with its source.
+fn tokens(text: &str) -> std::collections::HashSet<String> {
+    text.split(|c: char| !c.is_alphanumeric())
+        .filter(|w| w.chars().count() > 1)
+        .map(|w| w.to_lowercase())
+        .collect()
+}
+
+/// With speakers instead of a headset the microphone hears the other side
+/// again: a "you" line that is (almost) the same words as a "them" line
+/// within 4 s is the echo of it and is dropped (044).
+pub fn drop_echo(lines: Vec<SourceLine>) -> Vec<SourceLine> {
+    let them: Vec<(i64, std::collections::HashSet<String>)> = lines
+        .iter()
+        .filter(|l| l.speaker == Speaker::Them)
+        .map(|l| (l.start_ms, tokens(&l.text)))
+        .collect();
+    lines
+        .into_iter()
+        .filter(|l| {
+            if l.speaker != Speaker::You {
+                return true;
+            }
+            let mine = tokens(&l.text);
+            if mine.len() < 3 {
+                return true;
+            }
+            !them.iter().any(|(t, theirs)| {
+                (l.start_ms - t).abs() <= 4_000 && {
+                    let common = mine.intersection(theirs).count() as f32;
+                    common / mine.len() as f32 >= 0.7
+                }
+            })
+        })
+        .collect()
+}
+
 fn to_rows(
     lines: Vec<SourceLine>,
     started_ms: i64,
     from_ms: i64,
 ) -> Vec<(i64, i64, Speaker, String)> {
-    let mut lines: Vec<_> = lines
+    let mut lines: Vec<_> = drop_echo(lines)
         .into_iter()
         .filter(|l| l.start_ms >= from_ms && !l.text.trim().is_empty())
         .collect();
@@ -692,6 +729,38 @@ mod tests {
         assert_eq!(order, [("them", 5_000), ("note", 8_000), ("note", 9_000)]);
         // Notes are searchable like speech.
         assert_eq!(svc.repo().search("prazo", None, 5).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn the_echo_of_the_other_side_in_the_microphone_is_dropped() {
+        let lines = vec![
+            line(Speaker::Them, 10_000, "Podemos fechar o orçamento hoje"),
+            // The speakers leak into the mic: same words, a moment later.
+            line(Speaker::You, 11_500, "podemos fechar o orçamento hoje"),
+            // Really spoken by the user, even if close in time.
+            line(
+                Speaker::You,
+                12_000,
+                "Sim, fecho com corte de dez por cento",
+            ),
+            // Same words but much later: the user repeating on purpose.
+            line(Speaker::You, 30_000, "Podemos fechar o orçamento hoje"),
+            // Too short to judge.
+            line(Speaker::You, 10_500, "Sim"),
+        ];
+        let kept: Vec<_> = drop_echo(lines)
+            .into_iter()
+            .map(|l| (l.start_ms, l.speaker))
+            .collect();
+        assert_eq!(
+            kept,
+            [
+                (10_000, Speaker::Them),
+                (12_000, Speaker::You),
+                (30_000, Speaker::You),
+                (10_500, Speaker::You),
+            ]
+        );
     }
 
     #[tokio::test]

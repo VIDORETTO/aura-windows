@@ -70,3 +70,4 @@
 | `029-habilidades-do-dia-a-dia` | Change: Habilidades do dia a dia: Ensaio, Estudo, Carreira, Documentos e Ajuda agora | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `030-instrucoes-agendadas` | Change: Instruções agendadas (primeira fatia dos agentes agendados) | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `031-sugestoes-na-tela-vazia` | Change: Sugestões na tela vazia e detecção suave de reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `032-supressao-de-eco` | Change: Supressão de eco na transcrição da reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

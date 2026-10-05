@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "8f322aedffecc2bec6a2f1d890c15cef0e4cd74e18cdfd4bb248814c2aec6eaf",
+  "docs/project/backlog.md": "44b86e737838f905ce86e2e96c66a1bd871ece23912e0ccb4e810194f3688de7",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -41,5 +41,6 @@
   "specs/028-coaching-de-fala/verification.md": "a4645d977d56e831b46f337a4285a8a9d075d09dd27f47933dbc55fa639bbb77",
   "specs/029-habilidades-do-dia-a-dia/verification.md": "7981298c504134e76ee2dfbaabcf503cc232ba372e59c525eae78a5e9625b356",
   "specs/030-instrucoes-agendadas/verification.md": "1d0ded751bca9d243ea12d54f7fabc4fd476026ebd3e48eb12133fd893bc6ea6",
-  "specs/031-sugestoes-na-tela-vazia/verification.md": "7cd9c47ef4c817ed45de9318078eacff96b6f7e838f786a675a93b04dceb50e1"
+  "specs/031-sugestoes-na-tela-vazia/verification.md": "7cd9c47ef4c817ed45de9318078eacff96b6f7e838f786a675a93b04dceb50e1",
+  "specs/032-supressao-de-eco/verification.md": "8481425bec59073c73eb6ea92ae245331bc68c90b08864bcdb4007d7dbd1c48f"
 }
