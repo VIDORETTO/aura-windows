@@ -1406,6 +1406,21 @@ impl Host {
     pub async fn meeting_poll(&self) {
         match self.meetings.poll(now_ms()).await {
             Ok(new) if !new.is_empty() => {
+                let words = self.settings().meeting_watch_words;
+                for u in new.iter().filter(|u| u.speaker != "note") {
+                    if let Some(w) = crate::meeting::watch_hits(&words, &u.text).first() {
+                        let secs = u.t0 / 1000;
+                        let _ = self.events.send(HostEvent::Notice {
+                            level: "info".into(),
+                            message: format!(
+                                "“{w}” foi dita aos {:02}:{:02}: {}",
+                                secs / 60,
+                                secs % 60,
+                                u.text
+                            ),
+                        });
+                    }
+                }
                 if let Some(m) = self.meetings.active() {
                     let _ = self.events.send(HostEvent::Meeting {
                         id: m.id,

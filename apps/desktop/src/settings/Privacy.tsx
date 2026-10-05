@@ -5,7 +5,7 @@ import type { AccessLogEntry, AgentPermission, CaptureMode, PrivacyView, Source,
 import { useT } from "../i18n";
 import { exactTime } from "../lib/format";
 import { useApp } from "../state/app";
-import { Badge, Button, Row, Section, Select, Switch, TextField } from "../ui/primitives";
+import { Badge, Button, Row, Section, Select, Switch, TextArea, TextField } from "../ui/primitives";
 import { RecordingsSection } from "./Recordings";
 import { updateSettings as update } from "./General";
 
@@ -281,6 +281,8 @@ function RetentionSection() {
 function MeetingPrivacySection() {
   const t = useT();
   const settings = useApp((s) => s.settings);
+  const [words, setWords] = useState("");
+  useEffect(() => setWords((settings?.meetingWatchWords ?? []).join("\n")), [settings?.meetingWatchWords]);
   if (!settings) return null;
   return (
     <Section title={t("privacy.meetings")} description={t("privacy.meetings.hint")}>
@@ -290,6 +292,17 @@ function MeetingPrivacySection() {
       <Row label={t("privacy.meetings.redact")} hint={t("privacy.meetings.redact.hint")}>
         <Switch label={t("privacy.meetings.redact")} checked={settings.meetingRedactPii} onChange={(v) => void update({ meetingRedactPii: v })} />
       </Row>
+      <div className="py-2">
+        <div className="mb-1 text-sm">{t("privacy.meetings.watch")}</div>
+        <TextArea
+          rows={2}
+          aria-label={t("privacy.meetings.watch")}
+          placeholder={t("privacy.meetings.watch.hint")}
+          value={words}
+          onChange={(e) => setWords(e.target.value)}
+          onBlur={() => void update({ meetingWatchWords: words.split(/[\n,]/).map((w) => w.trim()).filter(Boolean) })}
+        />
+      </div>
     </Section>
   );
 }

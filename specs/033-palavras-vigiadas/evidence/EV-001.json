@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/meeting.rs": "3e620dfb7781ed5c5a8758ff78fc923fab85c56582490999c6c62f5c4556a932",
+    "specs/033-palavras-vigiadas/change.md": "5d0d2564cb364bfaa3bc1eab4a5ce426e5614708134860fa47fd2d62a56f5986"
+  },
+  "input_paths": [
+    "crates/aura-app/src/meeting.rs",
+    "specs/033-palavras-vigiadas/change.md"
+  ],
+  "limitations": "Aviso via Notice do Overlay (sem teste de ponta a ponta do poll com ASR real); respeita o Modo transmissão só porque fica dentro do Overlay",
+  "observations": "watch_hits, validação de settings e UI testadas; contrato dourado regenerado; 225 testes de UI passam",
+  "procedure": "cargo test -p aura-core -p aura-app; pnpm -C apps/desktop test e typecheck; clippy -D warnings",
+  "result": "passed",
+  "tested_revision": "local:0cd93b2b0012cf5e7f8be866b0120e95abc14effd7309c2d1843132e9efa1f79",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:55:49+00:00"
+}

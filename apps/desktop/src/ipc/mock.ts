@@ -48,6 +48,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   meetingKeepAudio: false,
   broadcastMode: false,
   meetingRedactPii: false,
+  meetingWatchWords: [],
 };
 
 const PRESETS: T.Preset[] = [

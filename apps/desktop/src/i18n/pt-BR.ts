@@ -144,6 +144,8 @@ export const ptBR = {
   "privacy.meetings.hint": "A Reunião só começa quando você aperta Começar. Por padrão, só o texto fica guardado.",
   "privacy.meetings.keepAudio": "Guardar o áudio depois da reunião",
   "privacy.meetings.keepAudio.hint": "Desligado: o áudio é apagado ao encerrar e ficam só a transcrição e as notas.",
+  "privacy.meetings.watch": "Palavras para vigiar na reunião",
+  "privacy.meetings.watch.hint": "Uma por linha (ex.: nome do cliente, prazo). O Aura avisa no Overlay quando alguém disser.",
   "privacy.meetings.redact": "Ocultar dados pessoais do modelo",
   "privacy.meetings.redact.hint": "Troca CPF, CNPJ, cartões, e-mails e telefones por [CPF], [CARTÃO]… antes de o agente ler a reunião.",
   "meeting.notice.copy": "Copiar aviso aos participantes",

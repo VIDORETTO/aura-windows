@@ -33,7 +33,6 @@
 | `CAND-051` | Modo Código/Prova técnica com tutor em níveis (dica, abordagem, solução) a partir da tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-053` | Widget compacto fixo, sempre visível | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-054` | Clipes de áudio/tela com legenda para compartilhar (Fathom) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-055` | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-056` | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-069` | Histórico da área de transferência e snippets, opt-in e sem dados de gerenciadores de senha | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-070` | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -71,3 +70,4 @@
 | `030-instrucoes-agendadas` | Change: Instruções agendadas (primeira fatia dos agentes agendados) | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `031-sugestoes-na-tela-vazia` | Change: Sugestões na tela vazia e detecção suave de reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `032-supressao-de-eco` | Change: Supressão de eco na transcrição da reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `033-palavras-vigiadas` | Change: Palavras vigiadas na reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

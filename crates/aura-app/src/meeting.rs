@@ -445,6 +445,28 @@ pub fn drop_echo(lines: Vec<SourceLine>) -> Vec<SourceLine> {
         .collect()
 }
 
+/// Which watched words were said in `text` (whole words, no accents or case).
+pub fn watch_hits<'a>(words: &'a [String], text: &str) -> Vec<&'a str> {
+    let said: std::collections::HashSet<String> = crate::notes::fold(text)
+        .split(|c: char| !c.is_alphanumeric())
+        .map(str::to_string)
+        .collect();
+    let folded = crate::notes::fold(text);
+    words
+        .iter()
+        .filter(|w| {
+            let f = crate::notes::fold(w.trim());
+            !f.is_empty()
+                && if f.contains(' ') {
+                    folded.contains(&f)
+                } else {
+                    said.contains(&f)
+                }
+        })
+        .map(String::as_str)
+        .collect()
+}
+
 fn to_rows(
     lines: Vec<SourceLine>,
     started_ms: i64,
@@ -729,6 +751,18 @@ mod tests {
         assert_eq!(order, [("them", 5_000), ("note", 8_000), ("note", 9_000)]);
         // Notes are searchable like speech.
         assert_eq!(svc.repo().search("prazo", None, 5).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn watched_words_match_whole_words_without_accents_or_case() {
+        let w: Vec<String> = ["preço", "prazo final", "ok"].map(String::from).into();
+        assert_eq!(watch_hits(&w, "Qual o PRECO? Não cabe."), ["preço"]);
+        assert_eq!(
+            watch_hits(&w, "o Prazo final é sexta, ok"),
+            ["prazo final", "ok"]
+        );
+        assert!(watch_hits(&w, "precoce e okay").is_empty());
+        assert!(watch_hits(&[], "preço").is_empty());
     }
 
     #[test]

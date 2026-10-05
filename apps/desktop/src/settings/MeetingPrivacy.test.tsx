@@ -19,4 +19,15 @@ describe("meeting privacy", () => {
     await user.click(redact);
     expect(useApp.getState().settings).toMatchObject({ meetingKeepAudio: true, meetingRedactPii: true });
   });
+
+  it("watched words are saved one per line", async () => {
+    await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/privacy";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    const box = await screen.findByRole("textbox", { name: "Palavras para vigiar na reunião" });
+    await user.type(box, "preço{enter}prazo final");
+    await user.tab();
+    expect(useApp.getState().settings?.meetingWatchWords).toEqual(["preço", "prazo final"]);
+  });
 });

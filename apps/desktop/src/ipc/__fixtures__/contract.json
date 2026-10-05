@@ -542,6 +542,7 @@
     "language": "ptBr",
     "meetingKeepAudio": false,
     "meetingRedactPii": false,
+    "meetingWatchWords": [],
     "memories": false,
     "microphoneDeviceId": null,
     "onboarded": false,

@@ -58,6 +58,8 @@ export interface Settings {
   broadcastMode: boolean;
   /** Mask CPF, cards, e-mails and phones before the model reads a Meeting. */
   meetingRedactPii: boolean;
+  /** Words that raise a notice when said during a Meeting (055). */
+  meetingWatchWords: string[];
 }
 
 export interface ModeEfforts {

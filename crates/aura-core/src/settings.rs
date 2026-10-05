@@ -96,6 +96,8 @@ pub struct Settings {
     pub broadcast_mode: bool,
     /// Mask CPF, cards, e-mails and phones before the model reads a Meeting.
     pub meeting_redact_pii: bool,
+    /// Words that raise a notice in the Overlay when said during a Meeting (055).
+    pub meeting_watch_words: Vec<String>,
 }
 
 /// Words that confirm turning YOLO on (018), in any case.
@@ -159,6 +161,7 @@ impl Default for Settings {
             meeting_keep_audio: false,
             broadcast_mode: false,
             meeting_redact_pii: false,
+            meeting_watch_words: Vec::new(),
         }
     }
 }
@@ -229,6 +232,7 @@ pub struct SettingsPatch {
     pub meeting_keep_audio: Option<bool>,
     pub broadcast_mode: Option<bool>,
     pub meeting_redact_pii: Option<bool>,
+    pub meeting_watch_words: Option<Vec<String>>,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -299,6 +303,19 @@ impl Settings {
         }
         if let Some(v) = patch.meeting_keep_audio {
             next.meeting_keep_audio = v;
+        }
+        if let Some(v) = &patch.meeting_watch_words {
+            let cleaned: Vec<String> = v
+                .iter()
+                .map(|w| w.trim().to_string())
+                .filter(|w| !w.is_empty())
+                .collect();
+            if cleaned.len() > 50 || cleaned.iter().any(|w| w.chars().count() > 64) {
+                return Err(SettingsError::OutOfRange {
+                    field: "meetingWatchWords",
+                });
+            }
+            next.meeting_watch_words = cleaned;
         }
         if let Some(v) = patch.meeting_redact_pii {
             next.meeting_redact_pii = v;
@@ -736,6 +753,24 @@ mod voice_settings_tests {
                 }
             );
         }
+    }
+
+    #[test]
+    fn watch_words_are_trimmed_and_limited() {
+        let s = Settings::default();
+        let p = SettingsPatch {
+            meeting_watch_words: Some(vec![" preço ".into(), "".into(), "prazo".into()]),
+            ..Default::default()
+        };
+        assert_eq!(
+            s.apply(&p).unwrap().meeting_watch_words,
+            vec!["preço".to_string(), "prazo".to_string()]
+        );
+        let long = SettingsPatch {
+            meeting_watch_words: Some(vec!["x".repeat(65)]),
+            ..Default::default()
+        };
+        assert!(s.apply(&long).is_err());
     }
 
     #[test]

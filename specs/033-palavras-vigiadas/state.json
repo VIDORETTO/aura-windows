@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "f065b74aeb4ca2b5cc830f79c60ac8da8cd05640"
+  },
+  "blockers": [],
+  "effort_id": "033-palavras-vigiadas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "373009e9d1969396dfe5540c3c2f11cacae1f0e83ef6af121bbdcfa1184c19f4",
+      "path": "specs/033-palavras-vigiadas/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

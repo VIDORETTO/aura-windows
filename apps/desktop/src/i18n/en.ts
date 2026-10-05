@@ -144,6 +144,8 @@ export const en: Record<MessageKey, string> = {
   "privacy.meetings.hint": "A Meeting only starts when you press Start. By default only the text is kept.",
   "privacy.meetings.keepAudio": "Keep the audio after the meeting",
   "privacy.meetings.keepAudio.hint": "Off: the audio is erased when it ends and only the transcript and notes stay.",
+  "privacy.meetings.watch": "Words to watch in a meeting",
+  "privacy.meetings.watch.hint": "One per line (e.g. client name, deadline). Aura notifies you in the Overlay when someone says one.",
   "privacy.meetings.redact": "Hide personal data from the model",
   "privacy.meetings.redact.hint": "Replaces CPF, CNPJ, cards, e-mails and phone numbers with [CPF], [CARD]… before the agent reads the meeting.",
   "meeting.notice.copy": "Copy notice for participants",

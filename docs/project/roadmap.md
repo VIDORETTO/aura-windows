@@ -70,7 +70,7 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-052 | Carreira: currículo sob medida, carta, banco de perguntas e histórias STAR | CAND-033 | P2 | promoted | 029-habilidades-do-dia-a-dia |
 | CAND-053 | Widget compacto fixo, sempre visível | CAND-001 | P2 | candidate | — |
 | CAND-054 | Clipes de áudio/tela com legenda para compartilhar (Fathom) | CAND-035 | P3 | candidate | — |
-| CAND-055 | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | CAND-036 | P3 | candidate | — |
+| CAND-055 | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | CAND-036 | P3 | promoted | 033-palavras-vigiadas |
 | CAND-056 | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | CAND-005 | P3 | candidate | — |
 | CAND-057 | Modo Transmissão e "Testar ocultação": silenciar notificações ao compartilhar e verificar a ocultação por WGC, DXGI e GDI (a opção de ocultar já existe) | CAND-001 | P1 | promoted | 021-ocultacao-e-transmissao |
 | CAND-058 | Menu na seleção (Corrigir, Mais formal, Mais curto, Resumir, Traduzir, Explicar) com resultado que substitui a seleção, antes→depois e Desfazer (absorve CAND-020) | CAND-009 | P0 | promoted | 019-dia-a-dia-texto |

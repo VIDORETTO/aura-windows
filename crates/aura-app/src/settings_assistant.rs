@@ -54,6 +54,10 @@ pub const EDITABLE: &[(&str, &str)] = &[
         "Mask CPF, cards, e-mails and phone numbers before the model reads a meeting.",
     ),
     (
+        "meetingWatchWords",
+        "Words that raise a notice in the Overlay when said during a meeting (e.g. a client name, \"prazo\").",
+    ),
+    (
         "broadcastMode",
         "Broadcast mode: no Windows notifications from Aura while the user shares the screen; messages stay inside the Overlay.",
     ),
