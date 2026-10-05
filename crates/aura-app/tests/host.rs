@@ -2191,6 +2191,61 @@ async fn region_text_goes_to_the_clipboard_without_a_chip() {
 }
 
 #[tokio::test]
+async fn quick_command_result_replaces_the_selection_and_can_be_undone() {
+    // 019 AC-002.
+    let e = env().await;
+    assert!(
+        e.host.replace_selection("x").is_err(),
+        "nothing selected yet"
+    );
+    *e.fg.selection.lock().unwrap() = Some("tava muito ruim o texto".into());
+    e.host.capture_selection("draft", true).unwrap();
+    assert_eq!(
+        e.host.replace_target().as_deref(),
+        Some("tava muito ruim o texto")
+    );
+    // The target survives a quick command that inlines the selection.
+    let original = e.host.replace_selection("O texto estava ruim.").unwrap();
+    assert_eq!(original, "tava muito ruim o texto");
+    assert_eq!(
+        e.fg.pasted.lock().unwrap().last().unwrap(),
+        "O texto estava ruim."
+    );
+    assert!(e.host.replace_selection("  ").is_err());
+    assert!(e.host.undo_replace());
+    assert_eq!(*e.fg.undone.lock().unwrap(), 1);
+    assert!(!e.host.undo_replace(), "only once");
+}
+
+#[tokio::test]
+async fn paste_as_uses_the_clipboard_only_for_that_command() {
+    // 019 AC-003.
+    let e = env().await;
+    let err = e
+        .host
+        .expand_quick_command("draft", "/colar tabela", "")
+        .await;
+    assert!(err.is_err(), "empty clipboard is explained");
+    *e.fg.clipboard.lock().unwrap() = Some("maçã, pera e uva".into());
+    let exp = e
+        .host
+        .expand_quick_command("draft", "/colar tabela", "")
+        .await
+        .unwrap();
+    assert!(exp.prompt_text.contains("formato: tabela"));
+    assert!(exp.prompt_text.ends_with("maçã, pera e uva"));
+    // /corrigir keeps ignoring the clipboard.
+    *e.fg.selection.lock().unwrap() = Some("oi tudo bem".into());
+    e.host.capture_selection("draft", true).unwrap();
+    let other = e
+        .host
+        .expand_quick_command("draft", "/corrigir", "")
+        .await
+        .unwrap();
+    assert!(!other.prompt_text.contains("maçã"));
+}
+
+#[tokio::test]
 async fn mcp_status_and_workspace_files() {
     let e = env().await;
     let conv = e

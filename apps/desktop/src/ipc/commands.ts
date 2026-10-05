@@ -83,6 +83,9 @@ export const api = {
   attachClipboardImage: (tray: string, threadId: string | null, mime: string, data: string) =>
     call<[T.AttachmentInfo, T.ContextChip]>("attach_clipboard_image", { tray, threadId, mime, data }),
   attachmentsList: (threadId: string) => call<T.AttachmentInfo[]>("attachments_list", { threadId }),
+  replaceTarget: () => call<string | null>("replace_target"),
+  replaceSelection: (text: string) => call<string>("replace_selection", { text }),
+  undoReplace: () => call<boolean>("undo_replace"),
   insertIntoApp: (text: string) => call<boolean>("insert_into_app", { text }),
 
   // quick commands

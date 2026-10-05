@@ -5,6 +5,7 @@ import { api, errorCode, errorMessage } from "../ipc/commands";
 import { inTauri } from "../ipc/bridge";
 import type { QuickCommand, SkillEntry } from "../ipc/types";
 import { useT } from "../i18n";
+import { readSelectionAloud } from "../lib/speech";
 import { useApp } from "../state/app";
 import { IconButton, cx } from "../ui/primitives";
 import { Floating } from "../ui/floating";
@@ -165,6 +166,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     const builtins: MenuItem[] = [
       { id: "plano", label: `/${plan}`, aliases: ["plano", "plan"], hint: t("mode.plan.desc"), insert: `/${plan} `, section: "commands" },
       { id: "copiar-texto", label: `/${t("command.copyText.name")}`, aliases: ["texto", "copiar-texto", "copytext"], hint: t("command.copyText.hint"), insert: "", run: () => void api.regionOpen("copy"), section: "commands" },
+      { id: "ler", label: `/${t("command.read.name")}`, aliases: ["ler", "read"], hint: t("command.read.hint"), insert: "", run: () => void readSelectionAloud().then((ok) => !ok && useApp.getState().notify("info", t("command.read.none"))), section: "commands" },
       { id: "compactar", label: `/${compactName}`, aliases: ["compactar", "compact"], hint: t("command.compact.hint"), insert: `/${compactName}`, section: "commands" },
     ];
     const cmds: MenuItem[] = quick

@@ -64,3 +64,11 @@ export async function answerSpeechConsent(accept: boolean): Promise<void> {
     useApp.getState().notify("error", errorMessage(e));
   }
 }
+
+/** Reads the text selected in the previous app aloud (019 "Ler seleção"). */
+export async function readSelectionAloud(): Promise<boolean> {
+  const text = (await api.replaceTarget().catch(() => null))?.trim();
+  if (!text) return false;
+  await speakText(text);
+  return true;
+}

@@ -4,7 +4,9 @@
 //! Placeholders:
 //! - `{selecao}` — the selection chip text, falling back to the typed text;
 //! - `{texto}` — the typed text only;
-//! - `{args}` / `{args:padrão}` — the first word after the command.
+//! - `{args}` / `{args:padrão}` — the first word after the command;
+//! - `{area}` — the clipboard text (`/colar`); the host reads the clipboard
+//!   only when the command uses it.
 
 use aura_store::{Store, StoreError};
 use rusqlite::params;
@@ -27,6 +29,8 @@ pub struct QuickContext {
     pub typed: String,
     /// Screen or attachment chips are present (the model gets them anyway).
     pub has_chips: bool,
+    /// Clipboard text, read only for commands that use `{area}`.
+    pub clipboard: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -48,6 +52,8 @@ pub enum QuickError {
     Disabled(String),
     #[error("selecione um texto, anexe algo ou digite o conteúdo depois do comando")]
     NoInput,
+    #[error("a área de transferência está vazia: copie um texto primeiro")]
+    EmptyClipboard,
     #[error("nome inválido: use letras minúsculas, números e hífens")]
     BadName,
     #[error("o modelo está vazio")]
@@ -68,6 +74,8 @@ impl From<StoreError> for QuickError {
 
 /// Marker for commands that attach the screen.
 const SCREEN_MARK: &str = "{tela}";
+/// Marker for commands that read the clipboard.
+pub const AREA_MARK: &str = "{area}";
 
 pub fn builtins() -> Vec<QuickCommand> {
     let b = |name: &str, template: &str| QuickCommand {
@@ -131,6 +139,10 @@ pub fn builtins() -> Vec<QuickCommand> {
             "Procure nas minhas notas com a ferramenta note_search (consulta: {texto}) e liste o que achar, da mais recente para a mais antiga.",
         ),
         b(
+            "colar",
+            "Converta o texto abaixo para este formato: {args:lista com marcadores}. Responda só com o resultado, pronto para colar.\n\n{area}",
+        ),
+        b(
             "configurar",
             "$aura-configurar Quero configurar o Aura: {texto}",
         ),
@@ -176,6 +188,15 @@ pub fn expand(cmd: &QuickCommand, tail: &str, ctx: &QuickContext) -> Result<Expa
         .filter(|s| !s.is_empty());
     let needs_screen = cmd.template.contains(SCREEN_MARK);
 
+    let needs_clipboard = cmd.template.contains(AREA_MARK);
+    let clipboard = ctx
+        .clipboard
+        .as_deref()
+        .map(str::trim)
+        .filter(|s| !s.is_empty());
+    if needs_clipboard && clipboard.is_none() {
+        return Err(QuickError::EmptyClipboard);
+    }
     let needs_input = cmd.template.contains("{selecao}");
     let input = selection
         .map(str::to_string)
@@ -186,6 +207,7 @@ pub fn expand(cmd: &QuickCommand, tail: &str, ctx: &QuickContext) -> Result<Expa
 
     let mut out = cmd.template.replace(SCREEN_MARK, "");
     out = out.replace("{selecao}", input.as_deref().unwrap_or(""));
+    out = out.replace(AREA_MARK, clipboard.unwrap_or(""));
     out = out.replace("{texto}", &typed);
     // {args:default}
     while let Some(start) = out.find("{args") {
@@ -358,6 +380,7 @@ mod tests {
             selection: Some("oi chefe".into()),
             typed: "ignorado".into(),
             has_chips: false,
+            ..Default::default()
         };
         assert_eq!(
             expand(&c, "", &with_sel).unwrap().prompt_text,
@@ -435,9 +458,36 @@ mod tests {
     }
 
     #[test]
+    fn paste_as_reads_the_clipboard_only_when_asked() {
+        let ctx = QuickContext {
+            clipboard: Some("a, b e c\n".into()),
+            ..Default::default()
+        };
+        let e = expand(&cmd("colar"), "tabela", &ctx).unwrap();
+        assert!(e.prompt_text.contains("formato: tabela"));
+        assert!(e.prompt_text.ends_with("a, b e c"));
+        assert_eq!(
+            expand(&cmd("colar"), "", &QuickContext::default()),
+            Err(QuickError::EmptyClipboard)
+        );
+        // Commands without {area} never need or use the clipboard.
+        let c = QuickContext {
+            clipboard: Some("segredo".into()),
+            selection: Some("texto".into()),
+            ..Default::default()
+        };
+        assert!(
+            !expand(&cmd("curto"), "", &c)
+                .unwrap()
+                .prompt_text
+                .contains("segredo")
+        );
+    }
+
+    #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 17);
+        assert_eq!(repo.list().unwrap().len(), 18);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

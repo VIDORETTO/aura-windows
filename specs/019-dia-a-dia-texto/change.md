@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-058, CAND-060, CAND-061, CAND-064, CAND-065, CAND-067. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Funções simples sobre o texto selecionado e a tela, sem configuração: reescrever, checar golpe, responder, retomar o que fazia, colar em outro formato e ler em voz alta.
 
-Nota: Feito: comandos embutidos (quick.rs, host.rs, i18n, mock) com testes. Falta: mini-menu flutuante (shell Tauri, só valida no Windows), Substituir com antes → depois, Ler seleção, Colar como.
+Nota: **Feito (05/10):** comandos embutidos (`/formal`, `/curto`, `/amigavel`, `/golpe`, `/responder`, `/parei`, `/colar`, `/ler`), "Substituir seleção" com antes → depois e Desfazer, leitura da seleção. **Falta:** mini-menu flutuante com atalho próprio (janela do shell, só valida no Windows), expirar o alvo da substituição ao trocar de conversa, validação real no Windows.
 
 ## Contrato de comportamento
 

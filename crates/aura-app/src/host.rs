@@ -474,6 +474,10 @@ pub struct Host {
     /// Text of the last selection chip (012): a chip removed by the user is
     /// not re-added automatically while the selection stays the same.
     last_selection: Mutex<Option<String>>,
+    /// Text a quick command was applied to; "Substituir seleção" replaces it (019).
+    replace_target: Mutex<Option<String>>,
+    /// A replacement that can still be undone.
+    replaced: Mutex<bool>,
     /// Frozen screens waiting for a region selection (token → frame).
     frozen: Mutex<HashMap<String, aura_capture::frame::Frame>>,
     /// Runtime captured at start: sync methods are called from threads without
@@ -848,6 +852,8 @@ impl Host {
             disk: cfg.disk.clone(),
             audio_tests: Mutex::new(HashMap::new()),
             last_selection: Mutex::new(None),
+            replace_target: Mutex::new(None),
+            replaced: Mutex::new(false),
             frozen: Mutex::new(HashMap::new()),
             profiles: crate::profiles::ProfilesRepo::new(store_for_profiles),
             rt: tokio::runtime::Handle::current(),
@@ -2058,6 +2064,7 @@ impl Host {
             let _ = t.remove(&c.id);
         }
         *last = Some(text.clone());
+        *self.replace_target.lock().unwrap() = Some(text.clone());
         let preview: String = text.chars().take(40).collect();
         let chip = ContextChip::new(
             ChipKind::Selection,
@@ -2247,6 +2254,41 @@ impl Host {
             .unwrap_or_default()
     }
 
+    /// The text "Substituir seleção" would replace (shown as the "before").
+    pub fn replace_target(&self) -> Option<String> {
+        self.replace_target.lock().unwrap().clone()
+    }
+
+    /// Replaces the selection of the previous app with `text` (019). Returns
+    /// the original text. Fails without a remembered selection.
+    pub fn replace_selection(&self, text: &str) -> HostResult<String> {
+        let original = self.replace_target().ok_or_else(|| {
+            HostError::new("no_selection", "não há texto selecionado para substituir")
+        })?;
+        if text.trim().is_empty() {
+            return Err(HostError::new("invalid", "texto vazio"));
+        }
+        if let Some(app) = self.platform.foreground.current() {
+            self.platform.foreground.restore(&app);
+        }
+        if !self.platform.foreground.paste(text) {
+            return Err(HostError::new("paste", "não consegui colar no app"));
+        }
+        *self.replaced.lock().unwrap() = true;
+        Ok(original)
+    }
+
+    /// Takes back the last replacement (Ctrl+Z in the app).
+    pub fn undo_replace(&self) -> bool {
+        if !std::mem::take(&mut *self.replaced.lock().unwrap()) {
+            return false;
+        }
+        if let Some(app) = self.platform.foreground.current() {
+            self.platform.foreground.restore(&app);
+        }
+        self.platform.foreground.undo()
+    }
+
     /// Dictated or typed text into the previous app (006 "inserir no app").
     pub fn insert_into_app(&self, text: &str) -> bool {
         if let Some(app) = self.platform.foreground.current() {
@@ -2277,6 +2319,7 @@ impl Host {
                 "lembrar" => "quick.template.remind",
                 "anota" => "quick.template.note",
                 "notas" => "quick.template.notes",
+                "colar" => "quick.template.pasteas",
                 "configurar" => "quick.template.configure",
                 "preparo" => "quick.template.prepare",
                 _ => continue,
@@ -2325,6 +2368,7 @@ impl Host {
             selection,
             typed: typed.to_string(),
             has_chips: chips.iter().any(|c| c.kind != ChipKind::Selection),
+            clipboard: None,
         };
         let (name, tail) = aura_extensions::quick::parse_invocation(input)
             .ok_or_else(|| aura_extensions::quick::QuickError::Unknown(input.into()))?;
@@ -2333,13 +2377,23 @@ impl Host {
             .into_iter()
             .find(|c| c.name == name)
             .ok_or_else(|| aura_extensions::quick::QuickError::Unknown(name.into()))?;
+        // The clipboard is read only for commands that ask for it (`/colar`).
+        let ctx = if command.template.contains(aura_extensions::quick::AREA_MARK) {
+            QuickContext {
+                clipboard: self.platform.foreground.clipboard_text(),
+                ..ctx
+            }
+        } else {
+            ctx
+        };
         let exp = aura_extensions::quick::expand(&command, tail, &ctx)?;
         if exp.needs_screen && !chips.iter().any(|c| c.kind == ChipKind::Screen) {
             self.capture_screen(tray, false).await?;
         }
         // The selection is inlined in the prompt; don't send it twice. It may
         // come back on the next return to the Overlay.
-        if ctx.selection.is_some() {
+        if let Some(selected) = &ctx.selection {
+            *self.replace_target.lock().unwrap() = Some(selected.clone());
             *self.last_selection.lock().unwrap() = None;
             let mut trays = self.trays.lock().unwrap();
             if let Some(t) = trays.get_mut(tray) {

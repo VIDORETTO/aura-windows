@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64 (colar/desfazer falsos)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Messages.tsx": "476f76d2667091cff760a07501ae962d72afa8484e994c46a6ba0262dabc793a",
+    "crates/aura-app/src/host.rs": "c0399a2b8a5226f2388dddf0f538f8eeae5ffc6cddcecc29da766fe4ab38bc0a",
+    "specs/019-dia-a-dia-texto/change.md": "c4231ab64a6879955b8470117f1a59aa2c87fba9e10f168907d029b9fb233991"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "apps/desktop/src/overlay/Messages.tsx",
+    "specs/019-dia-a-dia-texto/change.md"
+  ],
+  "limitations": "Mini-menu flutuante com atalho próprio (janela do shell) não implementado; colar e Ctrl+Z reais em apps do Windows não verificados; o alvo da substituição não expira ao trocar de conversa",
+  "observations": "Substituir seleção cola o texto novo, devolve o original, mostra antes→depois e desfaz uma vez (Ctrl+Z); botão some sem seleção",
+  "procedure": "cargo test -p aura-app quick_command_result_replaces...; vitest Replace.test.tsx",
+  "result": "partial",
+  "tested_revision": "local:4a350fccef00b5f7b5e426e829139495c7f246014d91a729d0a0ef08304cabc3",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:24:10+00:00"
+}

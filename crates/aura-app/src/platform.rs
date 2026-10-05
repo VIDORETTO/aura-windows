@@ -24,6 +24,14 @@ pub trait Foreground: Send + Sync {
     fn selection(&self, max_chars: usize) -> Option<String>;
     /// Pastes text into the focused control of the foreground app.
     fn paste(&self, text: &str) -> bool;
+    /// Text on the clipboard (only read for `/colar`).
+    fn clipboard_text(&self) -> Option<String> {
+        None
+    }
+    /// Undo in the foreground app (Ctrl+Z), to take back a replacement.
+    fn undo(&self) -> bool {
+        false
+    }
     /// Puts text on the clipboard ("copy text from the screen", 020).
     fn set_clipboard(&self, _text: &str) -> bool {
         false
@@ -64,6 +72,7 @@ pub struct FakeForeground {
     pub selection: Mutex<Option<String>>,
     pub pasted: Mutex<Vec<String>>,
     pub clipboard: Mutex<Option<String>>,
+    pub undone: Mutex<u32>,
 }
 
 impl Foreground for FakeForeground {
@@ -81,6 +90,13 @@ impl Foreground for FakeForeground {
     }
     fn paste(&self, text: &str) -> bool {
         self.pasted.lock().unwrap().push(text.to_string());
+        true
+    }
+    fn clipboard_text(&self) -> Option<String> {
+        self.clipboard.lock().unwrap().clone()
+    }
+    fn undo(&self) -> bool {
+        *self.undone.lock().unwrap() += 1;
         true
     }
     fn set_clipboard(&self, text: &str) -> bool {
@@ -127,6 +143,7 @@ impl Platform {
             selection: Mutex::new(None),
             pasted: Mutex::new(Vec::new()),
             clipboard: Mutex::new(None),
+            undone: Mutex::new(0),
         });
         let platform = Self {
             credentials: Arc::new(MemoryCredentialStore::default()),

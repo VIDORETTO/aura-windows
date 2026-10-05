@@ -60,6 +60,14 @@ impl Foreground for WinForeground {
         aura_win::input::paste_text(text)
     }
 
+    fn clipboard_text(&self) -> Option<String> {
+        aura_win::input::clipboard_text()
+    }
+
+    fn undo(&self) -> bool {
+        aura_win::input::send_ctrl(b'Z')
+    }
+
     fn set_clipboard(&self, text: &str) -> bool {
         aura_win::input::set_clipboard_text(text)
     }

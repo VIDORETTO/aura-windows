@@ -1,6 +1,6 @@
-import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Hammer, Pencil, RotateCcw, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
+import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Hammer, Pencil, Replace, RotateCcw, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { api } from "../ipc/commands";
+import { api, errorMessage } from "../ipc/commands";
 import type { Approval, Block, Thread, ToolItem } from "../state/conversation";
 import { useConversation } from "../state/conversation";
 import type { ConsentRequest, TurnError } from "../ipc/types";
@@ -81,6 +81,37 @@ function RetryActions() {
   );
 }
 
+/** "Substituir seleção" with the before → after preview, then "Desfazer" (019). */
+function ReplaceButton({ text }: { text: string }) {
+  const t = useT();
+  const [target, setTarget] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+  useEffect(() => {
+    void api.replaceTarget().then(setTarget).catch(() => setTarget(null));
+  }, []);
+  if (!target) return null;
+  const clip = (s: string) => (s.length > 80 ? `${s.slice(0, 80)}…` : s);
+  return (
+    <button
+      type="button"
+      title={`${t("replace.before")}: ${clip(target)}\n${t("replace.after")}: ${clip(text)}`}
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg"
+      onClick={() => {
+        if (done) {
+          void api.undoReplace().then(() => setDone(false));
+        } else {
+          void api
+            .replaceSelection(text)
+            .then(() => setDone(true))
+            .catch((e) => useApp.getState().notify("error", errorMessage(e)));
+        }
+      }}
+    >
+      <Replace size={12} /> {done ? t("replace.undo") : t("replace.do")}
+    </button>
+  );
+}
+
 const Assistant = memo(function Assistant({ text, streaming, last = false }: { text: string; streaming: boolean; last?: boolean }) {
   const t = useT();
   return (
@@ -98,6 +129,7 @@ const Assistant = memo(function Assistant({ text, streaming, last = false }: { t
           >
             <CornerDownLeft size={12} /> {t("common.insert")}
           </button>
+          {last && <ReplaceButton text={text} />}
           {last && <RetryActions />}
         </div>
       )}

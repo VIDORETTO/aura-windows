@@ -424,6 +424,23 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
     s.host.insert_into_app(&text)
 }
 
+/// The text "Substituir seleção" would replace (019).
+#[tauri::command]
+pub fn replace_target(s: State<'_, AppState>) -> Option<String> {
+    s.host.replace_target()
+}
+
+/// Replaces the previous app's selection with `text`; returns the original.
+#[tauri::command]
+pub fn replace_selection(s: State<'_, AppState>, text: String) -> R<String> {
+    Ok(s.host.replace_selection(&text)?)
+}
+
+#[tauri::command]
+pub fn undo_replace(s: State<'_, AppState>) -> bool {
+    s.host.undo_replace()
+}
+
 // ---------------------------------------------------------- quick commands
 
 #[tauri::command]

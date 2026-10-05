@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-extensions/src/quick.rs": "50001aebc7e641143e49ef6df05a67f6b4f5f30e620da11fe3322d1f800c9b2b",
+    "specs/019-dia-a-dia-texto/change.md": "c4231ab64a6879955b8470117f1a59aa2c87fba9e10f168907d029b9fb233991"
+  },
+  "input_paths": [
+    "crates/aura-extensions/src/quick.rs",
+    "specs/019-dia-a-dia-texto/change.md"
+  ],
+  "limitations": "Voz offline, clipboard e colagem reais do Windows não verificados; 'Colar como' não cola sozinho (usa Inserir no app)",
+  "observations": "/colar lê a área de transferência só nesse comando e explica quando está vazia; /ler fala a seleção lembrada",
+  "procedure": "cargo test -p aura-extensions -p aura-app (colar); vitest speech.test.ts",
+  "result": "partial",
+  "tested_revision": "local:36b4855b64c580a836c9d618bd95d21a84ad5646ed80f3806d33e5f2e4d45b97",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:24:10+00:00"
+}
