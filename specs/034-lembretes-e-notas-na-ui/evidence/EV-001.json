@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/settings/Personal.tsx": "675d74f24e7e6c27d36e8645de785125169ab099eaa0a6032c17fed92b1c0689",
+    "specs/034-lembretes-e-notas-na-ui/change.md": "d0a34e553e97b20decadbeda9126a1bd8c7db01308e7af57750b18080ee3682b"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/Personal.tsx",
+    "specs/034-lembretes-e-notas-na-ui/change.md"
+  ],
+  "limitations": "Comandos Tauri (apps/desktop/src-tauri) não compilam no Linux (falta gtk): só validados no Windows; sem edição de lembretes",
+  "observations": "Host lista/apaga e erra em id inexistente; UI lista, busca e apaga; 227 testes de UI passam",
+  "procedure": "cargo test -p aura-app --test host the_reminders; pnpm -C apps/desktop test e typecheck; clippy -D warnings",
+  "result": "passed",
+  "tested_revision": "local:818f6023e50dfe3ea8886d9de9a69a582a76ba81617e70f45be8150740f3350b",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:58:05+00:00"
+}

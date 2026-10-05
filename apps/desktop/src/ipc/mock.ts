@@ -489,7 +489,20 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     meeting_search: () => [],
     capture_hiding_check: () => [{ window: "overlay", hidden: state.settings.hideFromCapture }],
-    note_add: () => undefined,
+    note_add: ({ kind, text }) => {
+      state.noteList = [{ id: `n${state.noteList.length + 1}`, kind: kind as "note" | "saved", text: String(text), createdAt: Math.floor(Date.now() / 1000) }, ...state.noteList];
+      return undefined;
+    },
+    reminders_all: () => state.reminderList,
+    reminder_remove: ({ id }) => {
+      state.reminderList = state.reminderList.filter((r) => r.id !== id);
+      return undefined;
+    },
+    notes_all: ({ kind, query }) => state.noteList.filter((n) => n.kind === kind && n.text.toLowerCase().includes(String(query).toLowerCase())),
+    note_remove: ({ id }) => {
+      state.noteList = state.noteList.filter((n) => n.id !== id);
+      return undefined;
+    },
     replace_target: () => state.replaceTarget,
     replace_selection: () => state.replaceTarget ?? "",
     undo_replace: () => true,
@@ -816,6 +829,8 @@ export class MockState {
   meetingNow: T.Meeting | null = null;
   meetingList: T.Meeting[] = [];
   meetingBrief: string | null = null;
+  reminderList: T.ReminderItem[] = [];
+  noteList: T.NoteItem[] = [];
   meetingLines: Record<string, T.Utterance[]> = {};
   /** Selected text a quick command was applied to (019). */
   replaceTarget: string | null = null;

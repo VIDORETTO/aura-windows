@@ -71,3 +71,4 @@
 | `031-sugestoes-na-tela-vazia` | Change: Sugestões na tela vazia e detecção suave de reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `032-supressao-de-eco` | Change: Supressão de eco na transcrição da reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `033-palavras-vigiadas` | Change: Palavras vigiadas na reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `034-lembretes-e-notas-na-ui` | Change: Página de lembretes e notas | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

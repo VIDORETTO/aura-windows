@@ -2893,6 +2893,22 @@ async fn reminders_and_notes_through_agent_tools() {
 }
 
 #[tokio::test]
+async fn the_reminders_and_notes_page_lists_and_deletes() {
+    let e = env().await;
+    e.host.note_add("note", "ideia do projeto azul").unwrap();
+    e.host.note_add("saved", "resposta sobre impostos").unwrap();
+    let notes = e.host.notes_all("note", "").unwrap();
+    assert_eq!(notes.len(), 1);
+    assert!(e.host.notes_all("note", "impostos").unwrap().is_empty());
+    assert_eq!(e.host.notes_all("saved", "IMPOSTOS").unwrap().len(), 1);
+    e.host.note_remove(&notes[0].id).unwrap();
+    assert!(e.host.notes_all("note", "").unwrap().is_empty());
+    assert!(e.host.note_remove(&notes[0].id).is_err());
+    assert!(e.host.reminders_all().unwrap().is_empty());
+    assert!(e.host.reminder_remove("nope").is_err());
+}
+
+#[tokio::test]
 async fn meeting_is_opt_in_and_records_audio_only_while_it_runs() {
     // 023 AC-001.
     let e = env().await;

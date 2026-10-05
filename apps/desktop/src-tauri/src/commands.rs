@@ -589,6 +589,30 @@ pub fn note_add(s: State<'_, AppState>, kind: String, text: String) -> R<()> {
     Ok(s.host.note_add(&kind, &text)?)
 }
 
+#[tauri::command]
+pub fn reminders_all(s: State<'_, AppState>) -> R<Vec<aura_app::reminders::Reminder>> {
+    Ok(s.host.reminders_all()?)
+}
+
+#[tauri::command]
+pub fn reminder_remove(s: State<'_, AppState>, id: String) -> R<()> {
+    Ok(s.host.reminder_remove(&id)?)
+}
+
+#[tauri::command]
+pub fn notes_all(
+    s: State<'_, AppState>,
+    kind: String,
+    query: String,
+) -> R<Vec<aura_app::notes::Note>> {
+    Ok(s.host.notes_all(&kind, &query)?)
+}
+
+#[tauri::command]
+pub fn note_remove(s: State<'_, AppState>, id: String) -> R<()> {
+    Ok(s.host.note_remove(&id)?)
+}
+
 /// The text "Substituir seleção" would replace (019).
 #[tauri::command]
 pub fn replace_target(s: State<'_, AppState>) -> Option<String> {

@@ -96,6 +96,22 @@ export interface Meeting {
   projectId: string | null;
 }
 
+export interface ReminderItem {
+  id: string;
+  text: string;
+  dueAt: number;
+  repeat: string;
+  /** Instruction the agent runs when due, if any. */
+  prompt: string | null;
+}
+
+export interface NoteItem {
+  id: string;
+  kind: "note" | "saved";
+  text: string;
+  createdAt: number;
+}
+
 export interface Utterance {
   id: number;
   meetingId: string;

@@ -2878,6 +2878,32 @@ impl Host {
             .map_err(|e| HostError::new("invalid", e.to_string()))
     }
 
+    /// Pending reminders, soonest first (the "Lembretes e notas" page).
+    pub fn reminders_all(&self) -> HostResult<Vec<crate::reminders::Reminder>> {
+        self.reminders
+            .list()
+            .map_err(|e| HostError::new("invalid", e.to_string()))
+    }
+
+    pub fn reminder_remove(&self, id: &str) -> HostResult<()> {
+        self.reminders
+            .delete(id)
+            .map_err(|e| HostError::new("not_found", e.to_string()))
+    }
+
+    /// Notes or starred answers (`kind`), newest first, filtered by `query`.
+    pub fn notes_all(&self, kind: &str, query: &str) -> HostResult<Vec<crate::notes::Note>> {
+        self.notes
+            .search(kind, query, 200)
+            .map_err(|e| HostError::new("invalid", e.to_string()))
+    }
+
+    pub fn note_remove(&self, id: &str) -> HostResult<()> {
+        self.notes
+            .delete(id)
+            .map_err(|e| HostError::new("not_found", e.to_string()))
+    }
+
     /// The text "Substituir seleção" would replace (shown as the "before").
     pub fn replace_target(&self) -> Option<String> {
         self.replace_target.lock().unwrap().clone()

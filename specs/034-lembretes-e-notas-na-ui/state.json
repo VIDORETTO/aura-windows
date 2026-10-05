@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "fb113a9c7b4d5ca91d6c0ed614257b56117be873"
+  },
+  "blockers": [],
+  "effort_id": "034-lembretes-e-notas-na-ui",
+  "inputs": {
+    "contract": {
+      "fingerprint": "cc82c0598720237bc4dc7b7a1f7072fb3b80817293346577b753044ea5104535",
+      "path": "specs/034-lembretes-e-notas-na-ui/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

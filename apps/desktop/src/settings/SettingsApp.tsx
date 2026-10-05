@@ -1,4 +1,4 @@
-import { AppWindow, Bot, Info, Keyboard, KeyRound, Mic, Puzzle, Settings2, Shield, Stethoscope } from "lucide-react";
+import { AppWindow, Bot, Info, NotebookPen, Keyboard, KeyRound, Mic, Puzzle, Settings2, Shield, Stethoscope } from "lucide-react";
 import { ProfilesSection } from "./Profiles";
 import { useEffect, useRef, useState, type ComponentType } from "react";
 import { inTauri } from "../ipc/bridge";
@@ -10,6 +10,7 @@ import { AboutSection, DiagnosticsSection } from "./Diagnostics";
 import { AccountSection } from "./Account";
 import { ExtensionsSection } from "./Extensions";
 import { GeneralSection } from "./General";
+import { PersonalSection } from "./Personal";
 import { PrivacySection } from "./Privacy";
 import { ProvidersSection } from "./Providers";
 import { ShortcutsSection } from "./Shortcuts";
@@ -28,6 +29,7 @@ export const PAGES: Page[] = [
   { id: "account", label: "settings.account", icon: Bot, Component: AccountSection },
   { id: "providers", label: "settings.providers", icon: KeyRound, Component: ProvidersSection },
   { id: "privacy", label: "settings.privacy", icon: Shield, Component: PrivacySection },
+  { id: "personal", label: "settings.personal", icon: NotebookPen, Component: PersonalSection },
   { id: "voice", label: "settings.voice", icon: Mic, Component: VoiceSection },
   { id: "extensions", label: "settings.extensions", icon: Puzzle, Component: ExtensionsSection },
   { id: "profiles", label: "settings.profiles", icon: AppWindow, Component: ProfilesSection },
