@@ -48,13 +48,13 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-030 | Base de conhecimento local (pastas indexadas com citações) consultada pelo agente (Msty Knowledge Stacks, Jan) | CAND-007 | P2 | candidate | — |
 | CAND-031 | Conectores (Gmail, Calendário, Drive, Microsoft 365) como servidores MCP pré-configurados com OAuth | CAND-008 | P2 | candidate | — |
 | CAND-032 | Exportar conversa (Markdown/PDF) e copiar resposta como texto formatado | CAND-002 | P3 | candidate | — |
-| CAND-033 | Preparo em três velocidades (⚡ uma frase · 🧭 grill-me · ▶ sem preparo): cartões, "Entendi assim" e Skill `aura-preparo`, reutilizável por Reunião, Ensaio, Ditado, Perfis, Projetos, Agendados e Conectores | CAND-008 | P0 | candidate | — |
-| CAND-034 | Configurar com IA em tudo: `settings_describe/propose/apply/undo`, cartão antes→depois com Desfazer, "Pedir à IA" na busca, `/configurar` e onboarding "conte como trabalha" | CAND-033 | P0 | candidate | — |
-| CAND-035 | Motor de Reunião opt-in: sessão, transcrição contínua (Você/Eles), biblioteca com FTS5, "esqueci de iniciar" a partir do Buffer recente (absorve CAND-016 e o núcleo de CAND-026) | CAND-005, CAND-006 | P0 | candidate | — |
-| CAND-036 | Painel ao vivo da Reunião: ações sob demanda (Perdi o fio, Resumo, O que respondo?, Termo, Marcar), notas do usuário, níveis de ajuda, detecção suave de reunião (Fireflies Live Assist, Cluely, Granola) | CAND-033, CAND-035 | P0 | candidate | — |
-| CAND-037 | Pós-reunião: Receitas (Antes/Durante/Depois), notas melhoradas, ações com origem citada, e-mail, "sem resposta", promessas, agente executa em modo Tarefa (Granola, Otter, Fathom) | CAND-036 | P0 | candidate | — |
-| CAND-038 | Consentimento e privacidade de reunião: aviso aos participantes, áudio apagado ao encerrar, modo só local, redação de dados pessoais, registro do que foi enviado | CAND-035 | P0 | candidate | — |
-| CAND-039 | Pergunte sobre minhas reuniões (`meeting_search`) e Projetos com reuniões, arquivos e instruções (Fireflies AskFred, Read, Granola Spaces; une CAND-027/030) | CAND-037 | P1 | candidate | — |
+| CAND-033 | Preparo em três velocidades (⚡ uma frase · 🧭 grill-me · ▶ sem preparo): cartões, "Entendi assim" e Skill `aura-preparo`, reutilizável por Reunião, Ensaio, Ditado, Perfis, Projetos, Agendados e Conectores | CAND-008 | P0 | promoted | 022-preparo-e-configurar-com-ia |
+| CAND-034 | Configurar com IA em tudo: `settings_describe/propose/apply/undo`, cartão antes→depois com Desfazer, "Pedir à IA" na busca, `/configurar` e onboarding "conte como trabalha" | CAND-033 | P0 | promoted | 022-preparo-e-configurar-com-ia |
+| CAND-035 | Motor de Reunião opt-in: sessão, transcrição contínua (Você/Eles), biblioteca com FTS5, "esqueci de iniciar" a partir do Buffer recente (absorve CAND-016 e o núcleo de CAND-026) | CAND-005, CAND-006 | P0 | promoted | 023-motor-de-reuniao |
+| CAND-036 | Painel ao vivo da Reunião: ações sob demanda (Perdi o fio, Resumo, O que respondo?, Termo, Marcar), notas do usuário, níveis de ajuda, detecção suave de reunião (Fireflies Live Assist, Cluely, Granola) | CAND-033, CAND-035 | P0 | promoted | 024-reuniao-painel-ao-vivo |
+| CAND-037 | Pós-reunião: Receitas (Antes/Durante/Depois), notas melhoradas, ações com origem citada, e-mail, "sem resposta", promessas, agente executa em modo Tarefa (Granola, Otter, Fathom) | CAND-036 | P0 | promoted | 025-pos-reuniao-e-receitas |
+| CAND-038 | Consentimento e privacidade de reunião: aviso aos participantes, áudio apagado ao encerrar, modo só local, redação de dados pessoais, registro do que foi enviado | CAND-035 | P0 | promoted | 023-motor-de-reuniao |
+| CAND-039 | Pergunte sobre minhas reuniões (`meeting_search`) e Projetos com reuniões, arquivos e instruções (Fireflies AskFred, Read, Granola Spaces; une CAND-027/030) | CAND-037 | P1 | promoted | 026-biblioteca-e-pergunte |
 | CAND-040 | Legendas e tradução ao vivo; sugerir resposta em outro idioma | CAND-036 | P1 | candidate | — |
 | CAND-041 | Briefing antes da reunião e resumo diário a partir do calendário (Granola Briefs, Fireflies Meeting Prep) | CAND-031, CAND-037 | P1 | candidate | — |
 | CAND-042 | Ensaio por voz: entrevista, vendas, apresentação e negociação com personas e feedback (Final Round, Sensei, Yoodli, Gong) | CAND-033, CAND-006 | P1 | candidate | — |
@@ -72,18 +72,18 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-054 | Clipes de áudio/tela com legenda para compartilhar (Fathom) | CAND-035 | P3 | candidate | — |
 | CAND-055 | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | CAND-036 | P3 | candidate | — |
 | CAND-056 | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | CAND-005 | P3 | candidate | — |
-| CAND-057 | Modo Transmissão e "Testar ocultação": silenciar notificações ao compartilhar e verificar a ocultação por WGC, DXGI e GDI (a opção de ocultar já existe) | CAND-001 | P1 | candidate | — |
-| CAND-058 | Menu na seleção (Corrigir, Mais formal, Mais curto, Resumir, Traduzir, Explicar) com resultado que substitui a seleção, antes→depois e Desfazer (absorve CAND-020) | CAND-009 | P0 | candidate | — |
-| CAND-059 | Copiar texto da tela ou de uma imagem por região (OCR), com tradução opcional | CAND-004 | P0 | candidate | — |
-| CAND-060 | "Isso é golpe?": análise de mensagem, e-mail, link ou boleto selecionado, em linguagem simples | CAND-009 | P0 | candidate | — |
-| CAND-061 | "Responder isto": rascunho de resposta ao e-mail/conversa na tela, no tom do usuário, inserido no campo | CAND-009 | P1 | candidate | — |
-| CAND-062 | Lembretes por conversa ("me lembra às 15h…", recorrentes) com notificação nativa | CAND-017 | P1 | candidate | — |
-| CAND-063 | Anotação rápida por voz ou texto numa caixa de entrada pesquisável | CAND-011 | P1 | candidate | — |
-| CAND-064 | "Onde eu parei?": resumo do que o usuário fazia nos últimos minutos, via buffer de tela | CAND-004 | P1 | candidate | — |
-| CAND-065 | "Colar como…": converter a área de transferência (texto limpo, lista, tabela, resumo, tradução) | CAND-058 | P2 | candidate | — |
+| CAND-057 | Modo Transmissão e "Testar ocultação": silenciar notificações ao compartilhar e verificar a ocultação por WGC, DXGI e GDI (a opção de ocultar já existe) | CAND-001 | P1 | promoted | 021-ocultacao-e-transmissao |
+| CAND-058 | Menu na seleção (Corrigir, Mais formal, Mais curto, Resumir, Traduzir, Explicar) com resultado que substitui a seleção, antes→depois e Desfazer (absorve CAND-020) | CAND-009 | P0 | promoted | 019-dia-a-dia-texto |
+| CAND-059 | Copiar texto da tela ou de uma imagem por região (OCR), com tradução opcional | CAND-004 | P0 | promoted | 020-dia-a-dia-tela-e-notas |
+| CAND-060 | "Isso é golpe?": análise de mensagem, e-mail, link ou boleto selecionado, em linguagem simples | CAND-009 | P0 | promoted | 019-dia-a-dia-texto |
+| CAND-061 | "Responder isto": rascunho de resposta ao e-mail/conversa na tela, no tom do usuário, inserido no campo | CAND-009 | P1 | promoted | 019-dia-a-dia-texto |
+| CAND-062 | Lembretes por conversa ("me lembra às 15h…", recorrentes) com notificação nativa | CAND-017 | P1 | promoted | 020-dia-a-dia-tela-e-notas |
+| CAND-063 | Anotação rápida por voz ou texto numa caixa de entrada pesquisável | CAND-011 | P1 | promoted | 020-dia-a-dia-tela-e-notas |
+| CAND-064 | "Onde eu parei?": resumo do que o usuário fazia nos últimos minutos, via buffer de tela | CAND-004 | P1 | promoted | 019-dia-a-dia-texto |
+| CAND-065 | "Colar como…": converter a área de transferência (texto limpo, lista, tabela, resumo, tradução) | CAND-058 | P2 | promoted | 019-dia-a-dia-texto |
 | CAND-066 | Entender documentos (contrato, boleto, bula, termos) com riscos e prazos destacados | CAND-007 | P2 | candidate | — |
-| CAND-067 | Ler a seleção em voz alta | CAND-009 | P2 | candidate | — |
-| CAND-068 | Salvos: guardar respostas e textos prontos numa lista pesquisável | CAND-002 | P2 | candidate | — |
+| CAND-067 | Ler a seleção em voz alta | CAND-009 | P2 | promoted | 019-dia-a-dia-texto |
+| CAND-068 | Salvos: guardar respostas e textos prontos numa lista pesquisável | CAND-002 | P2 | promoted | 020-dia-a-dia-tela-e-notas |
 | CAND-069 | Histórico da área de transferência e snippets, opt-in e sem dados de gerenciadores de senha | CAND-058 | P3 | candidate | — |
 | CAND-070 | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | CAND-002 | P3 | candidate | — |
 | CAND-071 | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | CAND-004 | P3 | candidate | — |

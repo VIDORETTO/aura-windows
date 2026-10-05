@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-core/src/settings.rs": "3255a44bde14a920b8f3057828fdb966db6ed8d0129d3f6d2ae652a51fdbb68d",
+    "specs/021-ocultacao-e-transmissao/change.md": "422803d2373759188177cb1fb75e1a2c67b79b991b2cdbc9e6897993daeb08bd"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "specs/021-ocultacao-e-transmissao/change.md"
+  ],
+  "limitations": "Afinidade da janela e apps reais (Meet, Teams, Discord, AnyDesk, OBS) não verificados: exigem Windows",
+  "observations": "Opção hideFromCapture testada em lógica e UI; WDA aplicado só no shell Windows",
+  "procedure": "cargo test -p aura-core (padrão ligado, patch, configurações antigas); typecheck e testes de UI",
+  "result": "partial",
+  "tested_revision": "local:0ed65de67fb7d88c2a33a53a28bc0a7f807f727bf7620a16b66822419a54e20e",
+  "ticket": null,
+  "timestamp": "2026-10-05T16:28:10+00:00"
+}

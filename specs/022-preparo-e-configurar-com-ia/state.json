@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "926f07ca7ce97c07aba77601291810f8ad9058ab"
+  },
+  "blockers": [],
+  "effort_id": "022-preparo-e-configurar-com-ia",
+  "inputs": {
+    "contract": {
+      "fingerprint": "1ce53a4dc69720f5f052f1e7f75684d5b42a1ab079086ebfa7ecd584303046eb",
+      "path": "specs/022-preparo-e-configurar-com-ia/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

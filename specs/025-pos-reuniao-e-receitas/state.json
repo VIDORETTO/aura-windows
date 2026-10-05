@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "926f07ca7ce97c07aba77601291810f8ad9058ab"
+  },
+  "blockers": [],
+  "effort_id": "025-pos-reuniao-e-receitas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "2e505fce7177dbc79e8149260bf08e4103b81477670dec31fe035665e695bbb8",
+      "path": "specs/025-pos-reuniao-e-receitas/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

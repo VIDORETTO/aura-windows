@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "926f07ca7ce97c07aba77601291810f8ad9058ab"
+  },
+  "blockers": [],
+  "effort_id": "026-biblioteca-e-pergunte",
+  "inputs": {
+    "contract": {
+      "fingerprint": "d0433c5aa0988f806019197e80d848034ef953a6b8a54729b0dab992ef2b902b",
+      "path": "specs/026-biblioteca-e-pergunte/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

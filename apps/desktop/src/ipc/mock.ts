@@ -93,7 +93,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
   const emit = (event: string, payload: unknown) => listeners.get(event)?.forEach((h) => h(payload));
   const host = (e: T.HostEvent) => emit(HOST_EVENT, e);
   const localizedQuick = () => {
-    const keys: Record<string, MessageKey> = { tldr: "quick.template.tldr", traduzir: "quick.template.translate", reescrever: "quick.template.rewrite", explicar: "quick.template.explain", corrigir: "quick.template.correct", "resumir-tela": "quick.template.screen" };
+    const keys: Record<string, MessageKey> = { tldr: "quick.template.tldr", traduzir: "quick.template.translate", reescrever: "quick.template.rewrite", explicar: "quick.template.explain", corrigir: "quick.template.correct", "resumir-tela": "quick.template.screen", formal: "quick.template.formal", curto: "quick.template.short", amigavel: "quick.template.friendly", golpe: "quick.template.scam", responder: "quick.template.reply", parei: "quick.template.resume" };
     const table = state.settings.language === "en" ? en : ptBR;
     return state.quick.map((q) => q.builtin && keys[q.name] ? { ...q, template: table[keys[q.name]] } : q);
   };
@@ -717,6 +717,12 @@ export class MockState {
     { name: "explicar", template: "Explique de forma simples e objetiva:\n\n{selecao}", builtin: true, enabled: true },
     { name: "corrigir", template: "Corrija ortografia e gramática:\n\n{selecao}", builtin: true, enabled: true },
     { name: "resumir-tela", template: "{tela}Resuma o que está na tela.\n\n{texto}", builtin: true, enabled: true },
+    { name: "formal", template: "Reescreva em tom formal e profissional, mantendo o sentido e o idioma. Responda só com o texto:\n\n{selecao}", builtin: true, enabled: true },
+    { name: "curto", template: "Reescreva de forma mais curta e direta, sem perder o essencial. Responda só com o texto:\n\n{selecao}", builtin: true, enabled: true },
+    { name: "amigavel", template: "Reescreva em tom amigável e natural, mantendo o sentido e o idioma. Responda só com o texto:\n\n{selecao}", builtin: true, enabled: true },
+    { name: "golpe", template: "Analise se o conteúdo abaixo parece golpe, phishing ou fraude (WhatsApp, e-mail, SMS, link, boleto, Pix, falsa central). Responda em linguagem simples, nesta ordem: 1) Veredito: Parece golpe, Suspeito ou Parece seguro, com o motivo principal; 2) Sinais encontrados; 3) O que fazer agora; 4) Como confirmar com segurança pelo canal oficial. Não peça nem repita senhas, códigos ou dados pessoais. Se não der para ter certeza, diga isso.\n\n{selecao}", builtin: true, enabled: true },
+    { name: "responder", template: "{tela}Leia o e-mail ou a conversa que está na tela e escreva um rascunho de resposta no mesmo idioma, pronto para colar. Tom: {args:cordial}. Responda só com o texto da resposta.\n\n{texto}", builtin: true, enabled: true },
+    { name: "parei", template: "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}", builtin: true, enabled: true },
   ];
   mcp: T.McpServerSpec[] = [];
   recordings: T.Recording[] = [];

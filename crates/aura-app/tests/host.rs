@@ -980,7 +980,7 @@ async fn agent_creates_extensions_through_aura_tools() {
 
     let out = call(
         "quick_command_save",
-        json!({"name": "formal", "template": "Reescreva formal: {texto}"}),
+        json!({"name": "formal-email", "template": "Reescreva formal: {texto}"}),
     )
     .await;
     assert!(!out.is_error, "{}", text(&out));
@@ -989,7 +989,7 @@ async fn agent_creates_extensions_through_aura_tools() {
         .quick_commands()
         .unwrap()
         .into_iter()
-        .find(|q| q.name == "formal")
+        .find(|q| q.name == "formal-email")
         .unwrap();
     assert_eq!(formal.template, "Reescreva formal: {texto}");
     assert!(formal.enabled && !formal.builtin);
@@ -1046,7 +1046,7 @@ async fn agent_creates_extensions_through_aura_tools() {
             .as_array()
             .unwrap()
             .iter()
-            .any(|q| q["name"] == "formal")
+            .any(|q| q["name"] == "formal-email")
     );
     assert_eq!(
         v["mcp_servers"]

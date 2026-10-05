@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "926f07ca7ce97c07aba77601291810f8ad9058ab"
+  },
+  "blockers": [],
+  "effort_id": "020-dia-a-dia-tela-e-notas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "4ef893e73b38cdf12c01c239f1a32705c380967e3f5c964fe97a2ade3c290895",
+      "path": "specs/020-dia-a-dia-tela-e-notas/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "926f07ca7ce97c07aba77601291810f8ad9058ab"
+  },
+  "blockers": [],
+  "effort_id": "024-reuniao-painel-ao-vivo",
+  "inputs": {
+    "contract": {
+      "fingerprint": "8ae43f986a992fd32897379b63161c3ddf590728d82d83fef4f43ea8b51aa8d3",
+      "path": "specs/024-reuniao-painel-ao-vivo/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

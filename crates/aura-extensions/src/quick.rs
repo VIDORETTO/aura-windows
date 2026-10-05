@@ -98,6 +98,30 @@ pub fn builtins() -> Vec<QuickCommand> {
             "resumir-tela",
             "{tela}Resuma o que está na tela e destaque o que parece mais importante.\n\n{texto}",
         ),
+        b(
+            "formal",
+            "Reescreva em tom formal e profissional, mantendo o sentido e o idioma. Responda só com o texto:\n\n{selecao}",
+        ),
+        b(
+            "curto",
+            "Reescreva de forma mais curta e direta, sem perder o essencial. Responda só com o texto:\n\n{selecao}",
+        ),
+        b(
+            "amigavel",
+            "Reescreva em tom amigável e natural, mantendo o sentido e o idioma. Responda só com o texto:\n\n{selecao}",
+        ),
+        b(
+            "golpe",
+            "Analise se o conteúdo abaixo parece golpe, phishing ou fraude (WhatsApp, e-mail, SMS, link, boleto, Pix, falsa central). Responda em linguagem simples, nesta ordem: 1) Veredito: Parece golpe, Suspeito ou Parece seguro, com o motivo principal; 2) Sinais encontrados; 3) O que fazer agora; 4) Como confirmar com segurança pelo canal oficial. Não peça nem repita senhas, códigos ou dados pessoais. Se não der para ter certeza, diga isso.\n\n{selecao}",
+        ),
+        b(
+            "responder",
+            "{tela}Leia o e-mail ou a conversa que está na tela e escreva um rascunho de resposta no mesmo idioma, pronto para colar. Tom: {args:cordial}. Responda só com o texto da resposta.\n\n{texto}",
+        ),
+        b(
+            "parei",
+            "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}",
+        ),
     ]
 }
 
@@ -357,9 +381,46 @@ mod tests {
     }
 
     #[test]
+    fn everyday_commands_expand_with_the_selection() {
+        let ctx = QuickContext {
+            selection: Some("Seu Pix foi bloqueado, clique aqui".into()),
+            ..Default::default()
+        };
+        let scam = expand(&cmd("golpe"), "", &ctx).unwrap();
+        assert!(scam.prompt_text.contains("golpe"));
+        assert!(
+            scam.prompt_text
+                .ends_with("Seu Pix foi bloqueado, clique aqui")
+        );
+        let formal = expand(&cmd("formal"), "", &ctx).unwrap();
+        assert!(formal.prompt_text.starts_with("Reescreva em tom formal"));
+        // No text anywhere: the rewrite commands ask for input.
+        assert_eq!(
+            expand(&cmd("curto"), "", &QuickContext::default()),
+            Err(QuickError::NoInput)
+        );
+    }
+
+    #[test]
+    fn reply_attaches_the_screen_and_takes_a_tone() {
+        let e = expand(&cmd("responder"), "informal", &QuickContext::default()).unwrap();
+        assert!(e.needs_screen);
+        assert!(e.prompt_text.contains("Tom: informal"));
+        let d = expand(&cmd("responder"), "", &QuickContext::default()).unwrap();
+        assert!(d.prompt_text.contains("Tom: cordial"));
+    }
+
+    #[test]
+    fn resume_points_the_agent_at_the_recent_screen() {
+        let e = expand(&cmd("parei"), "", &QuickContext::default()).unwrap();
+        assert!(!e.needs_screen);
+        assert!(e.prompt_text.contains("screen_recent"));
+    }
+
+    #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 6);
+        assert_eq!(repo.list().unwrap().len(), 12);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

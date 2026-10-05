@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "3f6c0d154069a90cc60d7cba3c089fa005c12b642a0acc7854a96e23757ae0fc",
+  "docs/project/backlog.md": "0fa470dd0a47851d23691071e5fb8a72e201c94f8a36353f830bb0fbdcf5e96d",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -28,5 +28,7 @@
   "specs/015-composer-e-conversa/verification.md": "28ed03243612d2a55f04e4558508f9887ac25e65054529403a5115b33b8a03f6",
   "specs/016-app-desktop-e-auditoria/verification.md": "33bc8063d113fb04c7502696853c9b8909a4506406b48761cde2b44e38f5528c",
   "specs/017-modelos-gpt6-extensoes-agenticas/verification.md": "f5e9a03d8894a198c128a58e9de20355a0aff196aac65bf74b30d6b054413746",
-  "specs/018-modo-yolo/verification.md": "a038497049d61bb3f9e516704122c7dd4d3d15d43e879fed0cdccac3e3d967e3"
+  "specs/018-modo-yolo/verification.md": "a038497049d61bb3f9e516704122c7dd4d3d15d43e879fed0cdccac3e3d967e3",
+  "specs/019-dia-a-dia-texto/verification.md": "c0139b81af71ff8c06e128a1208db46ebdefa003403d08c744236c8f1975cf82",
+  "specs/021-ocultacao-e-transmissao/verification.md": "135d1affc7648b76a6760226b0a1a15f9b38468ab76f0efff698950901bc25c0"
 }

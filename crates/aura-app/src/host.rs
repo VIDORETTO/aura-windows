@@ -2088,6 +2088,12 @@ impl Host {
                 "explicar" => "quick.template.explain",
                 "corrigir" => "quick.template.correct",
                 "resumir-tela" => "quick.template.screen",
+                "formal" => "quick.template.formal",
+                "curto" => "quick.template.short",
+                "amigavel" => "quick.template.friendly",
+                "golpe" => "quick.template.scam",
+                "responder" => "quick.template.reply",
+                "parei" => "quick.template.resume",
                 _ => continue,
             };
             command.template = crate::localization::text(language, key).into();

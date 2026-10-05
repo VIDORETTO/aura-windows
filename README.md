@@ -212,6 +212,10 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | Comando | O que faz |
 |---|---|
 | `/tldr` | Resume em até três frases |
+| `/formal` · `/curto` · `/amigavel` | Reescreve a seleção no tom pedido |
+| `/golpe` | Analisa se uma mensagem, e-mail, link ou boleto parece golpe |
+| `/responder [tom]` | Anexa a tela e escreve um rascunho de resposta |
+| `/parei` | Resume o que você fazia nos últimos minutos (precisa do buffer de tela) |
 | `/traduzir <idioma>` | Traduz (padrão: inglês) |
 | `/reescrever` | Reescreve com mais clareza |
 | `/explicar` | Explica de forma simples |
