@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Linux x86_64, jsdom",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/FirstRun.tsx": "08124598fab16b31fba5b1c3524c46abc9f7b019602eb2f65b0de6ae208da0aa",
+    "specs/022-preparo-e-configurar-com-ia/change.md": "a807248ca97ab77257a21278c978fb105a8d1ae63cde9ad7e11483ff78a4861e"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/FirstRun.tsx",
+    "specs/022-preparo-e-configurar-com-ia/change.md"
+  ],
+  "limitations": "Comportamento real do agente com as Skills não verificado; cartão 'Entendi assim' só existe como instrução da Skill e no painel Reunião; desfazer não persiste entre sessões",
+  "observations": "Último passo dos primeiros passos 'Conte como você trabalha' envia a frase (⚡) ou o grill-me (🧭) ao agente com as Skills aura-configurar/aura-preparo; 'Pedir à IA' na busca e /configurar",
+  "procedure": "pnpm -C apps/desktop test (FirstRun.test.tsx, OverlayApp first run, Extensions search Pedir à IA)",
+  "result": "partial",
+  "tested_revision": "local:6b538a60003bfbbd57fca00b5395f2f0bb1351ad4ad99ab4f549608ce7894d2b",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:50:41+00:00"
+}

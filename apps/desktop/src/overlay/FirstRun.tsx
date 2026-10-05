@@ -7,9 +7,9 @@ import type { AgentPermission, ModelView } from "../ipc/types";
 import { useT } from "../i18n";
 import { formatBytes } from "../lib/format";
 import { useApp } from "../state/app";
-import { Button, Kbd, Switch, cx } from "../ui/primitives";
+import { Button, Kbd, Switch, TextArea, cx } from "../ui/primitives";
 
-const STEPS = ["privacy", "shortcut", "voice"] as const;
+const STEPS = ["privacy", "shortcut", "voice", "work"] as const;
 
 export function FirstRun() {
   const t = useT();
@@ -18,6 +18,7 @@ export function FirstRun() {
   const setSettings = useApp((s) => s.setSettings);
   const setPrivacy = useApp((s) => s.setPrivacy);
   const [step, setStep] = useState(0);
+  const [work, setWork] = useState("");
   const [recommended, setRecommended] = useState<ModelView | null>(null);
   useEffect(() => {
     void api.voiceModels().then((m) => setRecommended(m.find((x) => x.recommended) ?? null)).catch(() => undefined);
@@ -80,6 +81,35 @@ export function FirstRun() {
               </Button>
             </div>
           )}
+        </>
+      )}
+      {STEPS[step] === "work" && (
+        <>
+          <p className="text-[13px] text-muted">{t("onboarding.work.body")}</p>
+          <label htmlFor="onboarding-work" className="sr-only">{t("onboarding.work.title")}</label>
+          <TextArea id="onboarding-work" rows={3} value={work} placeholder={t("onboarding.work.placeholder")} onChange={(e) => setWork(e.target.value)} />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              disabled={!work.trim()}
+              onClick={() => {
+                void api.agentTask(t("onboarding.work.prompt", { text: work.trim() }), "task");
+                void finish();
+              }}
+            >
+              {t("onboarding.work.send")}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                void api.agentTask(t("onboarding.work.grill"), "task");
+                void finish();
+              }}
+            >
+              🧭 {t("onboarding.work.grillButton")}
+            </Button>
+          </div>
         </>
       )}
       <div className="flex justify-end gap-2">

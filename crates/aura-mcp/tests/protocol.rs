@@ -118,6 +118,11 @@ async fn handshake_list_and_call() {
             "meeting_brief_save",
             "recipe_list",
             "recipe_save",
+            "open_windows",
+            "exclusion_list",
+            "exclusion_add",
+            "profile_list",
+            "profile_save",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

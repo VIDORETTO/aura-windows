@@ -3236,3 +3236,73 @@ async fn meeting_audio_is_erased_at_the_end_unless_kept_and_pii_is_masked() {
     );
     assert!(!masked.contains("529.982.247-25") && !masked.contains("ana@empresa.com"));
 }
+
+#[tokio::test]
+async fn agent_adds_exclusions_and_profiles_but_cannot_remove_them() {
+    // 022 AC-002: privacy exclusions and app profiles by conversation.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-cfg".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    // The agent sees the open windows (process and title) to pick the right rule.
+    let windows = text(&call("open_windows", json!({})).await);
+    assert!(windows.contains("Code.exe"), "{windows}");
+
+    let before: serde_json::Value =
+        serde_json::from_str(&text(&call("exclusion_list", json!({})).await)).unwrap();
+    let n = before.as_array().unwrap().len();
+    assert!(
+        call("exclusion_add", json!({})).await.is_error,
+        "needs a process or a title"
+    );
+    let out = call("exclusion_add", json!({"process": "KeePass.exe"})).await;
+    assert!(!out.is_error, "{}", text(&out));
+    let after: serde_json::Value =
+        serde_json::from_str(&text(&call("exclusion_list", json!({})).await)).unwrap();
+    assert_eq!(after.as_array().unwrap().len(), n + 1);
+    assert!(after.to_string().contains("KeePass.exe"));
+    // The new rule really blocks that window in the policy.
+    assert!(
+        e.host
+            .privacy()
+            .exclusions
+            .iter()
+            .any(|r| r.process.as_deref() == Some("KeePass.exe") && r.enabled)
+    );
+    // There is no tool to remove or disable one.
+    assert!(call("exclusion_remove", json!({"id": "x"})).await.is_error);
+
+    let out = call(
+        "profile_save",
+        json!({"name": "VS Code", "process": "code.exe", "instructions": "Respostas curtas em TypeScript", "attach_screen": true, "default_mode": "chat"}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    let profiles = text(&call("profile_list", json!({})).await);
+    assert!(
+        profiles.contains("Respostas curtas em TypeScript")
+            && profiles.contains("\"attach_screen\":true")
+    );
+    assert!(
+        call("profile_save", json!({"name": "", "process": "x.exe"}))
+            .await
+            .is_error
+    );
+}

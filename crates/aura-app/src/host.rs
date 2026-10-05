@@ -167,6 +167,91 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn config_tool(
+        &self,
+        tool: &str,
+        args: &serde_json::Value,
+    ) -> Result<serde_json::Value, String> {
+        use aura_mcp::tools::{
+            EXCLUSION_ADD, EXCLUSION_LIST, OPEN_WINDOWS, PROFILE_LIST, PROFILE_SAVE,
+        };
+        let text = |k: &str| {
+            args[k]
+                .as_str()
+                .map(str::trim)
+                .filter(|s| !s.is_empty())
+                .map(str::to_string)
+        };
+        match tool {
+            OPEN_WINDOWS => {
+                let app = self.platform.foreground.current().ok_or("nenhuma janela ativa")?;
+                let area = self
+                    .platform
+                    .foreground
+                    .monitor_area(&app.monitor_id)
+                    .ok_or("monitor não encontrado")?;
+                let own = std::process::id();
+                let windows: Vec<_> = self
+                    .platform
+                    .inventory
+                    .visible_windows(area)
+                    .into_iter()
+                    .filter(|w| w.pid != own)
+                    .take(30)
+                    .map(|w| serde_json::json!({
+                        "process": w.process,
+                        "title": w.title.chars().take(60).collect::<String>(),
+                    }))
+                    .collect();
+                Ok(serde_json::json!(windows))
+            }
+            EXCLUSION_LIST => Ok(serde_json::json!(
+                self.policy.read().unwrap().exclusions.iter().map(|r| serde_json::json!({
+                    "id": r.id, "process": r.process, "title_glob": r.title_glob,
+                    "enabled": r.enabled, "builtin": r.builtin,
+                })).collect::<Vec<_>>()
+            )),
+            EXCLUSION_ADD => {
+                let (process, title_glob) = (text("process"), text("title_glob"));
+                if process.is_none() && title_glob.is_none() {
+                    return Err("informe process e/ou title_glob".into());
+                }
+                let rule = aura_policy::ExclusionRule {
+                    id: String::new(),
+                    process,
+                    title_glob,
+                    class: None,
+                    enabled: true,
+                    builtin: false,
+                };
+                self.upsert_exclusion(rule.clone()).map_err(|e| e.message)?;
+                Ok(serde_json::json!({"process": rule.process, "title_glob": rule.title_glob}))
+            }
+            PROFILE_LIST => Ok(serde_json::json!(
+                self.profiles().map_err(|e| e.message)?.iter().map(|p| serde_json::json!({
+                    "id": p.id, "name": p.name, "process": p.process_pattern, "title_glob": p.title_glob,
+                    "instructions": p.instructions, "attach_screen": p.attach_screen,
+                    "default_mode": p.default_mode,
+                })).collect::<Vec<_>>()
+            )),
+            PROFILE_SAVE => {
+                let profile = crate::profiles::AppProfile {
+                    id: text("id").unwrap_or_default(),
+                    name: text("name").unwrap_or_default(),
+                    process_pattern: text("process").unwrap_or_default(),
+                    title_glob: text("title_glob"),
+                    instructions: args["instructions"].as_str().unwrap_or_default().to_string(),
+                    attach_screen: args["attach_screen"].as_bool().unwrap_or(false),
+                    default_mode: text("default_mode"),
+                    default_model: None,
+                };
+                let saved = self.save_profile(profile).map_err(|e| e.message)?;
+                Ok(serde_json::json!({"id": saved.id, "name": saved.name}))
+            }
+            other => Err(format!("ferramenta desconhecida: {other}")),
+        }
+    }
+
     fn recipe_list(&self) -> serde_json::Value {
         serde_json::json!(self.recipes_list().unwrap_or_default().iter().map(|r| serde_json::json!({
             "id": r.id, "name": r.name, "description": r.description, "notes_template": r.notes_template,

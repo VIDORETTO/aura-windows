@@ -795,6 +795,9 @@ describe("first run", () => {
     expect(screen.getByText("Use o atalho para abrir e fechar o Aura, ou Minimizar para a bandeja. Esc só fecha menus, o histórico e a gravação de voz. O atalho pode ser mudado em Configurações › Atalhos.")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Próximo" }));
     expect(screen.getByText("Fale em vez de digitar")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Próximo" }));
+    // 022: the last step lets the user describe how they work (or skip).
+    expect(screen.getByRole("heading", { name: "Conte como você trabalha" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Concluir" }));
     await waitFor(() => expect(useApp.getState().settings?.onboarded).toBe(true));
     expect(screen.queryByText("Fale em vez de digitar")).not.toBeInTheDocument();

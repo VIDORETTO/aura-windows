@@ -27,3 +27,29 @@
 - Observations: Skills e entradas existem e chamam o agente; busca envia $aura-configurar em modo Tarefa
 - Evidence refs: none
 - Limitations: Cartão 'Entendi assim' editável, onboarding 'conte como trabalha' e comportamento real do agente com as skills não verificados
+
+## EV-003 — passed
+
+- Ticket: `—`
+- Acceptance: `AC-002`
+- Procedure: `cargo test -p aura-app agent_adds_exclusions_and_profiles_but_cannot_remove_them`
+- Execution: `executed`
+- Environment: Linux x86_64
+- Tested revision: `local:eb4930b499130a8d38ef4f056aef19c70b1a3dd76fb6659fcf4a9e882c2b1541`
+- Timestamp: `2026-10-05T17:50:40+00:00`
+- Observations: O agente lista janelas abertas, adiciona exclusão por processo/título (a política passa a bloquear), salva Perfis de app; não há ferramenta para remover exclusões; entradas inválidas são explicadas
+- Evidence refs: none
+- Limitations: none recorded
+
+## EV-004 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-003`
+- Procedure: `pnpm -C apps/desktop test (FirstRun.test.tsx, OverlayApp first run, Extensions search Pedir à IA)`
+- Execution: `executed`
+- Environment: Linux x86_64, jsdom
+- Tested revision: `local:6b538a60003bfbbd57fca00b5395f2f0bb1351ad4ad99ab4f549608ce7894d2b`
+- Timestamp: `2026-10-05T17:50:41+00:00`
+- Observations: Último passo dos primeiros passos 'Conte como você trabalha' envia a frase (⚡) ou o grill-me (🧭) ao agente com as Skills aura-configurar/aura-preparo; 'Pedir à IA' na busca e /configurar
+- Evidence refs: none
+- Limitations: Comportamento real do agente com as Skills não verificado; cartão 'Entendi assim' só existe como instrução da Skill e no painel Reunião; desfazer não persiste entre sessões

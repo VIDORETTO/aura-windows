@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "8c17aa63f7fed8d1aa322079380ce5a3d24d8833765e3da808b7645f8ca1ec84",
+    "specs/022-preparo-e-configurar-com-ia/change.md": "a807248ca97ab77257a21278c978fb105a8d1ae63cde9ad7e11483ff78a4861e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "specs/022-preparo-e-configurar-com-ia/change.md"
+  ],
+  "limitations": "",
+  "observations": "O agente lista janelas abertas, adiciona exclusão por processo/título (a política passa a bloquear), salva Perfis de app; não há ferramenta para remover exclusões; entradas inválidas são explicadas",
+  "procedure": "cargo test -p aura-app agent_adds_exclusions_and_profiles_but_cannot_remove_them",
+  "result": "passed",
+  "tested_revision": "local:eb4930b499130a8d38ef4f056aef19c70b1a3dd76fb6659fcf4a9e882c2b1541",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:50:40+00:00"
+}

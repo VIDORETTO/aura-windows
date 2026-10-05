@@ -29,6 +29,11 @@ pub const MEETING_GET: &str = "meeting_get";
 pub const MEETING_BRIEF_SAVE: &str = "meeting_brief_save";
 pub const RECIPE_LIST: &str = "recipe_list";
 pub const RECIPE_SAVE: &str = "recipe_save";
+pub const OPEN_WINDOWS: &str = "open_windows";
+pub const EXCLUSION_LIST: &str = "exclusion_list";
+pub const EXCLUSION_ADD: &str = "exclusion_add";
+pub const PROFILE_LIST: &str = "profile_list";
+pub const PROFILE_SAVE: &str = "profile_save";
 pub const SETTINGS_DESCRIBE: &str = "settings_describe";
 pub const SETTINGS_PROPOSE: &str = "settings_propose";
 pub const SETTINGS_APPLY: &str = "settings_apply";
@@ -36,7 +41,9 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 9] = [
+pub const WRITE_TOOLS: [&str; 11] = [
+    EXCLUSION_ADD,
+    PROFILE_SAVE,
     RECIPE_SAVE,
     MEETING_BRIEF_SAVE,
     REMINDER_CREATE,
@@ -297,6 +304,51 @@ pub fn all() -> Vec<ToolDef> {
                 "replace": {"type": "boolean", "default": false}},
                 "required": ["id", "name", "notes_template"], "additionalProperties": false}),
             annotations: writes("Salvar Receita"),
+        },
+        ToolDef {
+            name: OPEN_WINDOWS.into(),
+            description: "List the windows currently open on the user's monitor (process name and title, front to back, max 30). Use it to propose privacy exclusions or app profiles for the apps the user names. Titles may contain private data: use them only for the user's request."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Janelas abertas"),
+        },
+        ToolDef {
+            name: EXCLUSION_LIST.into(),
+            description: "List the privacy exclusions: windows Aura never captures nor gives to the agent (id, process, title pattern, enabled, builtin)."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Janelas excluídas"),
+        },
+        ToolDef {
+            name: EXCLUSION_ADD.into(),
+            description: "Add a privacy exclusion so Aura never captures or reads matching windows. Give process (executable name, wildcards * and ?, e.g. 'KeePass.exe') and/or title_glob (e.g. '*Nubank*'); prefer process for a whole app. Only reduces exposure. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "process": {"type": "string"},
+                "title_glob": {"type": "string"}},
+                "additionalProperties": false}),
+            annotations: writes("Excluir janela"),
+        },
+        ToolDef {
+            name: PROFILE_LIST.into(),
+            description: "List app profiles (id, name, process pattern, title pattern, instructions, attach_screen, default mode and model).".into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Perfis de aplicativo"),
+        },
+        ToolDef {
+            name: PROFILE_SAVE.into(),
+            description: "Create or update an app profile applied when that app is in front: instructions (max 4000 chars), whether to attach the screen on open, default mode (chat, task or plan). Pass id from profile_list to update. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "id": {"type": "string"},
+                "name": {"type": "string"},
+                "process": {"type": "string", "description": "Executable pattern, e.g. 'code.exe' or '*chrome*'."},
+                "title_glob": {"type": "string"},
+                "instructions": {"type": "string", "maxLength": 4000},
+                "attach_screen": {"type": "boolean", "default": false},
+                "default_mode": {"type": "string", "enum": ["chat", "task", "plan"]}},
+                "required": ["name", "process"], "additionalProperties": false}),
+            annotations: writes("Salvar perfil de aplicativo"),
         },
     ]
 }
