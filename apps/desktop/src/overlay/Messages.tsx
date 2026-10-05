@@ -1,4 +1,4 @@
-import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Hammer, Pencil, Replace, RotateCcw, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
+import { AlertTriangle, Check, ChevronRight, Copy, CornerDownLeft, Hammer, Pencil, Replace, RotateCcw, Star, Square as StopIcon, Volume2, FileDiff, ListChecks, Loader2, ShieldQuestion, Wrench, X } from "lucide-react";
 import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
 import type { Approval, Block, Thread, ToolItem } from "../state/conversation";
@@ -81,6 +81,27 @@ function RetryActions() {
   );
 }
 
+/** Star: keeps the answer in "Salvos" (020); `/salvos` finds it later. */
+function SaveButton({ text }: { text: string }) {
+  const t = useT();
+  const [saved, setSaved] = useState(false);
+  return (
+    <button
+      type="button"
+      aria-pressed={saved}
+      className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs text-muted hover:bg-hover hover:text-fg"
+      onClick={() =>
+        void api
+          .noteAdd("saved", text)
+          .then(() => setSaved(true))
+          .catch((e) => useApp.getState().notify("error", errorMessage(e)))
+      }
+    >
+      <Star size={12} className={saved ? "fill-current text-warning" : undefined} /> {saved ? t("saved.done") : t("saved.do")}
+    </button>
+  );
+}
+
 /** "Substituir seleção" with the before → after preview, then "Desfazer" (019). */
 function ReplaceButton({ text }: { text: string }) {
   const t = useT();
@@ -130,6 +151,7 @@ const Assistant = memo(function Assistant({ text, streaming, last = false }: { t
             <CornerDownLeft size={12} /> {t("common.insert")}
           </button>
           {last && <ReplaceButton text={text} />}
+          <SaveButton text={text} />
           {last && <RetryActions />}
         </div>
       )}

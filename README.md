@@ -216,6 +216,7 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/golpe` | Analisa se uma mensagem, e-mail, link ou boleto parece golpe |
 | `/responder [tom]` | Anexa a tela e escreve um rascunho de resposta |
 | `/lembrar <o quê e quando>` | Cria um lembrete com notificação do Windows (únicos ou recorrentes) |
+| ⭐ Salvar (em cada resposta) · `/salvos <busca>` | Guarda respostas e textos prontos e os procura depois |
 | `/anota <texto>` · `/notas <busca>` | Guarda e procura anotações rápidas |
 | `/texto` | Arraste sobre uma área da tela e o texto (OCR) vai para a área de transferência |
 | `/colar [formato]` | Converte o texto da área de transferência (lista, tabela, texto limpo, formal…) para você colar |

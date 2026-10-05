@@ -143,6 +143,10 @@ pub fn builtins() -> Vec<QuickCommand> {
             "Converta o texto abaixo para este formato: {args:lista com marcadores}. Responda só com o resultado, pronto para colar.\n\n{area}",
         ),
         b(
+            "salvos",
+            "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.",
+        ),
+        b(
             "configurar",
             "$aura-configurar Quero configurar o Aura: {texto}",
         ),
@@ -487,7 +491,7 @@ mod tests {
     #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 18);
+        assert_eq!(repo.list().unwrap().len(), 19);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

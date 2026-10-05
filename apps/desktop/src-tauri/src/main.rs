@@ -532,6 +532,7 @@ fn main() {
             commands::meeting_delete,
             commands::meeting_search,
             commands::capture_hiding_check,
+            commands::note_add,
             commands::replace_target,
             commands::replace_selection,
             commands::undo_replace,

@@ -2627,6 +2627,14 @@ impl Host {
             .unwrap_or_default()
     }
 
+    /// Saves a note or an answer the user starred (020).
+    pub fn note_add(&self, kind: &str, text: &str) -> HostResult<()> {
+        self.notes
+            .add(kind, text, self.clock.now())
+            .map(|_| ())
+            .map_err(|e| HostError::new("invalid", e.to_string()))
+    }
+
     /// The text "Substituir seleção" would replace (shown as the "before").
     pub fn replace_target(&self) -> Option<String> {
         self.replace_target.lock().unwrap().clone()
@@ -2693,6 +2701,7 @@ impl Host {
                 "anota" => "quick.template.note",
                 "notas" => "quick.template.notes",
                 "colar" => "quick.template.pasteas",
+                "salvos" => "quick.template.saved",
                 "configurar" => "quick.template.configure",
                 "preparo" => "quick.template.prepare",
                 _ => continue,

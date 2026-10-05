@@ -27,3 +27,16 @@
 - Observations: Região congelada recortada, OCR, texto copiado, nenhum Chip criado, token de uso único, região minúscula recusada; seletor em modo cópia e comando /texto na UI
 - Evidence refs: none
 - Limitations: OCR real do Windows, área de transferência real, toast e janela do seletor não verificados (exigem Windows); tradução opcional não implementada
+
+## EV-003 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-003`
+- Procedure: `vitest Save.test.tsx; cargo test -p aura-app (notes)`
+- Execution: `executed`
+- Environment: Linux x86_64
+- Tested revision: `local:327af0fc60be3c835d0c3aba496df7bc66c56341f71042fda5653e37382bd91a`
+- Timestamp: `2026-10-05T17:53:23+00:00`
+- Observations: Estrela em cada resposta salva o texto (kind=saved); /salvos procura com note_search; notas rápidas por /anota e /notas
+- Evidence refs: none
+- Limitations: Sem tela de lista/apagar de notas e lembretes na UI; 'anota' por voz global não verificado

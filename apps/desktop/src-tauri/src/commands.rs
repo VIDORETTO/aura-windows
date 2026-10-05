@@ -537,6 +537,11 @@ pub fn capture_hiding_check(app: AppHandle) -> Vec<HidingStatus> {
     out
 }
 
+#[tauri::command]
+pub fn note_add(s: State<'_, AppState>, kind: String, text: String) -> R<()> {
+    Ok(s.host.note_add(&kind, &text)?)
+}
+
 /// The text "Substituir seleção" would replace (019).
 #[tauri::command]
 pub fn replace_target(s: State<'_, AppState>) -> Option<String> {

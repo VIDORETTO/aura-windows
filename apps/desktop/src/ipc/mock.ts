@@ -96,7 +96,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
   const emit = (event: string, payload: unknown) => listeners.get(event)?.forEach((h) => h(payload));
   const host = (e: T.HostEvent) => emit(HOST_EVENT, e);
   const localizedQuick = () => {
-    const keys: Record<string, MessageKey> = { tldr: "quick.template.tldr", traduzir: "quick.template.translate", reescrever: "quick.template.rewrite", explicar: "quick.template.explain", corrigir: "quick.template.correct", "resumir-tela": "quick.template.screen", formal: "quick.template.formal", curto: "quick.template.short", amigavel: "quick.template.friendly", golpe: "quick.template.scam", responder: "quick.template.reply", parei: "quick.template.resume", lembrar: "quick.template.remind", anota: "quick.template.note", notas: "quick.template.notes", colar: "quick.template.pasteas", configurar: "quick.template.configure", preparo: "quick.template.prepare" };
+    const keys: Record<string, MessageKey> = { tldr: "quick.template.tldr", traduzir: "quick.template.translate", reescrever: "quick.template.rewrite", explicar: "quick.template.explain", corrigir: "quick.template.correct", "resumir-tela": "quick.template.screen", formal: "quick.template.formal", curto: "quick.template.short", amigavel: "quick.template.friendly", golpe: "quick.template.scam", responder: "quick.template.reply", parei: "quick.template.resume", lembrar: "quick.template.remind", anota: "quick.template.note", notas: "quick.template.notes", colar: "quick.template.pasteas", salvos: "quick.template.saved", configurar: "quick.template.configure", preparo: "quick.template.prepare" };
     const table = state.settings.language === "en" ? en : ptBR;
     return state.quick.map((q) => q.builtin && keys[q.name] ? { ...q, template: table[keys[q.name]] } : q);
   };
@@ -470,6 +470,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     meeting_search: () => [],
     capture_hiding_check: () => [{ window: "overlay", hidden: state.settings.hideFromCapture }],
+    note_add: () => undefined,
     replace_target: () => state.replaceTarget,
     replace_selection: () => state.replaceTarget ?? "",
     undo_replace: () => true,
@@ -779,6 +780,7 @@ export class MockState {
     { name: "anota", template: "Guarde esta nota com a ferramenta note_save, com as palavras do usuário e sem acrescentar nada, e confirme em uma linha: {texto}", builtin: true, enabled: true },
     { name: "notas", template: "Procure nas minhas notas com a ferramenta note_search (consulta: {texto}) e liste o que achar, da mais recente para a mais antiga.", builtin: true, enabled: true },
     { name: "colar", template: "Converta o texto abaixo para este formato: {args:lista com marcadores}. Responda só com o resultado, pronto para colar.\n\n{area}", builtin: true, enabled: true },
+    { name: "salvos", template: "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.", builtin: true, enabled: true },
     { name: "configurar", template: "$aura-configurar Quero configurar o Aura: {texto}", builtin: true, enabled: true },
     { name: "preparo", template: "$aura-preparo Quero me preparar para: {texto}", builtin: true, enabled: true },
     { name: "parei", template: "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}", builtin: true, enabled: true },

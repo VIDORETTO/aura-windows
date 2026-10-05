@@ -97,6 +97,7 @@ export const api = {
   meetingDelete: (id: string) => call<void>("meeting_delete", { id }),
   meetingSearch: (query: string, meeting?: string) => call<T.MeetingHit[]>("meeting_search", { query, meeting }),
   captureHidingCheck: () => call<T.HidingStatus[]>("capture_hiding_check"),
+  noteAdd: (kind: "note" | "saved", text: string) => call<void>("note_add", { kind, text }),
   replaceTarget: () => call<string | null>("replace_target"),
   replaceSelection: (text: string) => call<string>("replace_selection", { text }),
   undoReplace: () => call<boolean>("undo_replace"),

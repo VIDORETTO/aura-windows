@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/Messages.tsx": "1c58bfb6d8085d35255497f766b4fba0e81032e10419dff651c78f47b354d5a0",
+    "specs/020-dia-a-dia-tela-e-notas/change.md": "860e4e84f252ff991e54e834d7ccbc94e502dd85fe8ed8b219ae82ceb656ca2b"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Messages.tsx",
+    "specs/020-dia-a-dia-tela-e-notas/change.md"
+  ],
+  "limitations": "Sem tela de lista/apagar de notas e lembretes na UI; 'anota' por voz global não verificado",
+  "observations": "Estrela em cada resposta salva o texto (kind=saved); /salvos procura com note_search; notas rápidas por /anota e /notas",
+  "procedure": "vitest Save.test.tsx; cargo test -p aura-app (notes)",
+  "result": "partial",
+  "tested_revision": "local:327af0fc60be3c835d0c3aba496df7bc66c56341f71042fda5653e37382bd91a",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:53:23+00:00"
+}
