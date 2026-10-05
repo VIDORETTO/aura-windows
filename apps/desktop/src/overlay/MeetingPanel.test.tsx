@@ -128,4 +128,18 @@ describe("meeting panel", () => {
     await user.click(await screen.findByRole("button", { name: "Copiar aviso aos participantes" }));
     expect(await navigator.clipboard.readText()).toContain("assistente de IA");
   });
+
+  it("notes and ★ markers go on the timeline during a meeting", async () => {
+    await freshApp({ signedIn: true });
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    await user.click(await screen.findByRole("button", { name: /Começar sem preparo/ }));
+    const box = await screen.findByRole("textbox", { name: "Anotar (Enter)" });
+    await user.type(box, "perguntar sobre o prazo{Enter}");
+    expect(await screen.findByText("perguntar sobre o prazo")).toBeInTheDocument();
+    expect(box).toHaveValue("");
+    await user.click(screen.getByRole("button", { name: "Marcar momento" }));
+    expect(await screen.findByText("★")).toBeInTheDocument();
+    expect(screen.getAllByText("Nota:")).toHaveLength(2);
+  });
 });

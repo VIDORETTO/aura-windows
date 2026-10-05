@@ -240,7 +240,7 @@ impl crate::tools::ExtensionsAccess for Host {
             "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status, "recipe": recipe,
             "transcript": lines.iter().map(|u| format!(
                 "[{:02}:{:02}] {}: {}", u.t0 / 60_000, (u.t0 / 1000) % 60,
-                if u.speaker == "you" { "Você" } else { "Eles" }, self.for_model(&u.text))).collect::<Vec<_>>(),
+                match u.speaker.as_str() { "you" => "Você", "note" => "Nota do usuário", _ => "Eles" }, self.for_model(&u.text))).collect::<Vec<_>>(),
         }))
     }
 
@@ -511,6 +511,7 @@ fn meeting_err(e: crate::meeting::MeetingError) -> HostError {
     let code = match e {
         E::AlreadyActive => "busy",
         E::NotActive | E::NotFound => "not_found",
+        E::EmptyNote => "invalid",
         E::NothingSaid => "empty",
         E::Source(_) => "asr",
         E::Store(_) => "store",
@@ -1084,6 +1085,19 @@ impl Host {
             status: "active".into(),
         });
         Ok(m)
+    }
+
+    /// A note or ★ marker on the meeting timeline.
+    pub fn meeting_note(&self, text: &str) -> HostResult<crate::meeting::Utterance> {
+        let u = self
+            .meetings
+            .add_note(text, now_ms())
+            .map_err(meeting_err)?;
+        let _ = self.events.send(HostEvent::Meeting {
+            id: u.meeting_id.clone(),
+            status: "updated".into(),
+        });
+        Ok(u)
     }
 
     pub fn meeting_set_paused(&self, paused: bool) -> HostResult<()> {

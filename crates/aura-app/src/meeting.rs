@@ -19,6 +19,8 @@ pub enum MeetingError {
     AlreadyActive,
     #[error("nenhuma reunião em andamento")]
     NotActive,
+    #[error("a nota está vazia")]
+    EmptyNote,
     #[error("reunião não encontrada")]
     NotFound,
     #[error("não há fala nesse período (o buffer de áudio está ligado?)")]
@@ -89,7 +91,7 @@ pub struct Utterance {
     /// Milliseconds since the meeting started.
     pub t0: i64,
     pub t1: i64,
-    /// `you` or `them`.
+    /// `you`, `them`, or `note` (written by the user during the meeting).
     pub speaker: String,
     pub text: String,
 }
@@ -215,6 +217,32 @@ impl MeetingRepo {
         } else {
             Ok(())
         }
+    }
+
+    fn add_utterances_as(
+        &self,
+        id: &str,
+        lines: &[(i64, i64, &str, String)],
+    ) -> Result<Vec<Utterance>, MeetingError> {
+        let mut out = Vec::new();
+        for (t0, t1, who, text) in lines {
+            let row = self.store.with_conn(|c| {
+                c.execute(
+                    "INSERT INTO meeting_utterances(meeting_id, t0, t1, speaker, text) VALUES (?1,?2,?3,?4,?5)",
+                    params![id, t0, t1, who, text],
+                )?;
+                Ok(c.last_insert_rowid())
+            })?;
+            out.push(Utterance {
+                id: row,
+                meeting_id: id.into(),
+                t0: *t0,
+                t1: *t1,
+                speaker: (*who).into(),
+                text: text.clone(),
+            });
+        }
+        Ok(out)
     }
 
     fn add_utterances(
@@ -445,6 +473,25 @@ impl MeetingService {
         Ok(stored)
     }
 
+    /// A note (or ★ marker) the user wrote during the meeting, stored on the
+    /// same timeline as the speech.
+    pub fn add_note(&self, text: &str, now_ms: i64) -> Result<Utterance, MeetingError> {
+        let text = text.trim();
+        if text.is_empty() {
+            return Err(MeetingError::EmptyNote);
+        }
+        let (id, started) = {
+            let g = self.active.lock().unwrap();
+            let a = g.as_ref().ok_or(MeetingError::NotActive)?;
+            (a.id.clone(), a.started_ms)
+        };
+        let t = (now_ms - started).max(0);
+        let mut rows = self
+            .repo
+            .add_utterances_as(&id, &[(t, t, "note", text.to_string())])?;
+        Ok(rows.remove(0))
+    }
+
     /// Ends the meeting after one last poll.
     pub async fn stop(&self, now_ms: i64) -> Result<Meeting, MeetingError> {
         if self.active.lock().unwrap().is_none() {
@@ -575,6 +622,31 @@ mod tests {
             svc.stop(T0 + 50_000).await.unwrap_err(),
             MeetingError::NotActive
         );
+    }
+
+    #[tokio::test]
+    async fn notes_and_markers_share_the_timeline_with_the_speech() {
+        let (svc, _) = service(vec![line(Speaker::Them, T0 + 5_000, "Vamos ao orçamento")]);
+        assert_eq!(svc.add_note("x", T0).unwrap_err(), MeetingError::NotActive);
+        let m = svc.start("x", "other", "", T0).unwrap();
+        let n = svc
+            .add_note("  perguntar sobre o prazo  ", T0 + 8_000)
+            .unwrap();
+        assert_eq!(
+            (n.speaker.as_str(), n.t0, n.text.as_str()),
+            ("note", 8_000, "perguntar sobre o prazo")
+        );
+        assert_eq!(
+            svc.add_note("   ", T0 + 9_000).unwrap_err(),
+            MeetingError::EmptyNote
+        );
+        svc.add_note("★", T0 + 9_000).unwrap();
+        svc.stop(T0 + 20_000).await.unwrap();
+        let all = svc.repo().utterances(&m.id).unwrap();
+        let order: Vec<_> = all.iter().map(|u| (u.speaker.as_str(), u.t0)).collect();
+        assert_eq!(order, [("them", 5_000), ("note", 8_000), ("note", 9_000)]);
+        // Notes are searchable like speech.
+        assert_eq!(svc.repo().search("prazo", None, 5).unwrap().len(), 1);
     }
 
     #[tokio::test]

@@ -441,6 +441,13 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       host({ channel: "meeting", event: { id: m.id, status: "active" } });
       return m;
     },
+    meeting_note: ({ text }) => {
+      const m = state.meetingNow!;
+      const u: T.Utterance = { id: (state.meetingLines[m.id]?.length ?? 0) + 1, meetingId: m.id, t0: Date.now() - m.startedAt, t1: Date.now() - m.startedAt, speaker: "note", text: String(text) };
+      state.meetingLines[m.id] = [...(state.meetingLines[m.id] ?? []), u];
+      host({ channel: "meeting", event: { id: m.id, status: "updated" } });
+      return u;
+    },
     meeting_pause: () => undefined,
     meeting_stop: () => {
       const m = { ...state.meetingNow!, status: "ended" as const, endedAt: Date.now() };

@@ -97,7 +97,8 @@ export interface Utterance {
   /** Milliseconds since the meeting started. */
   t0: number;
   t1: number;
-  speaker: "you" | "them";
+  /** `note` = written by the user during the meeting. */
+  speaker: "you" | "them" | "note";
   text: string;
 }
 

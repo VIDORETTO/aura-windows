@@ -88,6 +88,7 @@ export const api = {
   meetingSetBrief: (text: string) => call<void>("meeting_set_brief", { text }),
   meetingActive: () => call<T.Meeting | null>("meeting_active"),
   meetingStart: (title: string, kind: string, briefing: string) => call<T.Meeting>("meeting_start", { title, kind, briefing }),
+  meetingNote: (text: string) => call<T.Utterance>("meeting_note", { text }),
   meetingPause: (paused: boolean) => call<void>("meeting_pause", { paused }),
   meetingStop: () => call<T.Meeting>("meeting_stop"),
   meetingFromBuffer: (title: string, minutes: number) => call<T.Meeting>("meeting_from_buffer", { title, minutes }),

@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-036. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Janela própria da Reunião com Preparo, ações sob demanda, notas do usuário e marcadores.
 
-Nota: Depende de 022 e 023. **Feito (05/10):** painel Reunião no Overlay (Preparo em 3 velocidades, briefing do agente que espera o Começar, ao vivo com transcrição/pausa/encerrar, "esqueci de iniciar", reuniões salvas), ações como conversa com `meeting_get`, ferramenta `meeting_brief_save`. **Falta:** janela própria `meeting` excluída de capturas (AC-003), notas do usuário e marcadores, termo/sigla, orçamento de 5 s medido.
+Nota: Depende de 022 e 023. **Feito (05/10):** painel Reunião no Overlay (Preparo em 3 velocidades, briefing do agente que espera o Começar, ao vivo com transcrição/pausa/encerrar, "esqueci de iniciar", reuniões salvas), ações como conversa com `meeting_get`, ferramenta `meeting_brief_save`. **Também feito:** notas do usuário e marcadores ★ na linha do tempo. **Falta:** janela própria `meeting` excluída de capturas (AC-003), termo/sigla, orçamento de 5 s medido.
 
 ## Contrato de comportamento
 

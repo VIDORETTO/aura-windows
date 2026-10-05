@@ -1,7 +1,7 @@
 // Meeting panel (024): Preparo in three speeds, the live transcript with
 // on-demand actions, and saved meetings. Nothing here starts on its own.
 
-import { Mic, Pause, Play, Square, Trash2 } from "lucide-react";
+import { Mic, Pause, Play, Square, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
 import type { Meeting, Recipe, Utterance } from "../ipc/types";
@@ -22,7 +22,9 @@ function Transcript({ lines }: { lines: Utterance[] }) {
       {lines.map((u) => (
         <li key={u.id} className="selectable">
           <span className="mr-1.5 font-mono text-[11px] text-muted">{mmss(u.t0)}</span>
-          <span className={cx("mr-1 font-medium", u.speaker === "you" ? "text-accent" : "text-fg")}>{u.speaker === "you" ? t("meeting.you") : t("meeting.them")}:</span>
+          <span className={cx("mr-1 font-medium", u.speaker === "you" ? "text-accent" : u.speaker === "note" ? "text-warning" : "text-fg")}>
+            {u.speaker === "you" ? t("meeting.you") : u.speaker === "note" ? t("meeting.note") : t("meeting.them")}:
+          </span>
           {u.text}
         </li>
       ))}
@@ -46,6 +48,7 @@ export function MeetingPanel() {
   const [viewing, setViewing] = useState<Meeting | null>(null);
   const [lines, setLines] = useState<Utterance[]>([]);
   const [paused, setPaused] = useState(false);
+  const [note, setNote] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const fail = (e: unknown) => useApp.getState().notify("error", errorMessage(e));
 
@@ -99,6 +102,25 @@ export function MeetingPanel() {
         <div className="min-h-0 flex-1 overflow-y-auto">
           <Transcript lines={lines} />
         </div>
+        <form
+          className="flex items-center gap-1 border-t border-line p-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!note.trim()) return;
+            void api.meetingNote(note).then(() => setNote("")).catch(fail);
+          }}
+        >
+          <input
+            aria-label={t("meeting.note.placeholder")}
+            placeholder={t("meeting.note.placeholder")}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="h-7 min-w-0 flex-1 rounded-md border border-line bg-surface-strong px-2 text-[12px] outline-none focus:border-accent"
+          />
+          <IconButton label={t("meeting.mark")} onClick={() => void api.meetingNote("★").catch(fail)}>
+            <Star size={14} />
+          </IconButton>
+        </form>
         <div className="flex flex-wrap gap-1 border-t border-line p-2">
           <Button size="sm" onClick={() => ask("meeting.prompt.catchup", t, { id })}>{t("meeting.action.catchup")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.summary", t, { id })}>{t("meeting.action.summary")}</Button>

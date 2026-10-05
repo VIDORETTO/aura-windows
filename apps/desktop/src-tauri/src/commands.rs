@@ -457,6 +457,11 @@ pub async fn meeting_start(
 }
 
 #[tauri::command]
+pub fn meeting_note(s: State<'_, AppState>, text: String) -> R<aura_app::meeting::Utterance> {
+    Ok(s.host.meeting_note(&text)?)
+}
+
+#[tauri::command]
 pub fn meeting_pause(s: State<'_, AppState>, paused: bool) -> R<()> {
     Ok(s.host.meeting_set_paused(paused)?)
 }

@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/src/meeting.rs": "3ac9bf3a8dd4f749d3a6af9a0795f8c6478ba4b63480a06c180761f857abfeec",
+    "specs/024-reuniao-painel-ao-vivo/change.md": "06d8b313bb8c60345857e41301063d7661a4eb1bf82f1a4eb4f78f0d9236369d"
+  },
+  "input_paths": [
+    "crates/aura-app/src/meeting.rs",
+    "specs/024-reuniao-painel-ao-vivo/change.md"
+  ],
+  "limitations": "Termo/sigla, janela própria e orçamento de 5 s continuam pendentes",
+  "observations": "Notas do usuário e marcadores ★ ficam na mesma linha do tempo da fala, aparecem no painel, são pesquisáveis e o agente as lê como 'Nota do usuário'",
+  "procedure": "cargo test -p aura-app (notes_and_markers_share_the_timeline...); vitest MeetingPanel (notas e ★)",
+  "result": "partial",
+  "tested_revision": "local:e4f84f9b2c8f6f05920976530c0a081435133603180d25bab98be6ec260bedf1",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:47:41+00:00"
+}

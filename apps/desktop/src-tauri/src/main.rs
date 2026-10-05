@@ -523,6 +523,7 @@ fn main() {
             commands::meeting_set_brief,
             commands::meeting_active,
             commands::meeting_start,
+            commands::meeting_note,
             commands::meeting_pause,
             commands::meeting_stop,
             commands::meeting_from_buffer,
