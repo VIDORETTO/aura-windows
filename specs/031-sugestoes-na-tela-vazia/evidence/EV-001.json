@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/suggestions.ts": "2afeffb24637c1bf9bbe4e6b11c9428a0dbb8cc800c760a6a9ff17b044bd837d",
+    "specs/031-sugestoes-na-tela-vazia/change.md": "ad68372ea378aa792ed81e245ec1d6203a48676fff89a2d862aee574e53ffcbc"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/suggestions.ts",
+    "specs/031-sugestoes-na-tela-vazia/change.md"
+  ],
+  "limitations": "Sem detecção por áudio ativo nem aviso fora do Overlay (toast ao entrar numa reunião); regras por nome de processo, a ajustar com uso real",
+  "observations": "Regras por app testadas; clique abre o painel sem iniciar reunião; comandos citados existem",
+  "procedure": "pnpm -C apps/desktop test (suggestions.test.ts, Suggestions.test.tsx)",
+  "result": "passed",
+  "tested_revision": "local:096aeb0fa0d2ed1a8e4710d97e4bac60faec933b4b77cfde752f20a412f9c916",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:18:47+00:00"
+}

@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "ba37e2273b0dc935024b458ec8527d7a36782325"
+  },
+  "blockers": [],
+  "effort_id": "031-sugestoes-na-tela-vazia",
+  "inputs": {
+    "contract": {
+      "fingerprint": "c698d8949806ebf9791f03c227cb38a59b3675960e201b361da8b37fdf2a6888",
+      "path": "specs/031-sugestoes-na-tela-vazia/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

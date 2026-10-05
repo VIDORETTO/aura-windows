@@ -13,11 +13,12 @@ import { WorkPanel } from "./WorkPanel";
 import { Toasts } from "../ui/Toasts";
 import { SpeechConsentDialog } from "../ui/SpeechConsentDialog";
 import { speakText } from "../lib/speech";
-import { Kbd, Progress, cx } from "../ui/primitives";
+import { Button, Kbd, Progress, cx } from "../ui/primitives";
 import { percent } from "../lib/format";
 import { Header } from "./Header";
 import { HistoryPanel } from "./HistoryPanel";
 import { MeetingPanel } from "./MeetingPanel";
+import { suggestionsFor, type Suggestion } from "./suggestions";
 import { InputBar } from "./InputBar";
 import { ConsentCard, MessageList } from "./Messages";
 import { LoginCard, WelcomeModal } from "./Onboarding";
@@ -161,6 +162,14 @@ export function OverlayApp() {
   useEffect(() => {
     if (conversationRequest) void useSession.getState().openConversation(conversationRequest.threadId);
   }, [conversationRequest]);
+
+  // A suggestion on the empty Overlay (028).
+  const runSuggestion = async (sg: Suggestion) => {
+    const s = useSession.getState();
+    if (sg.action.kind === "meeting") return s.toggleMeeting(true);
+    if (sg.action.screen && !s.chips.some((c) => c.kind === "screen")) await s.captureScreen(false);
+    await useSession.getState().send(sg.action.text);
+  };
 
   // "Create with AI" in Settings (017): a new conversation in the requested mode.
   const agentRequest = useApp((s) => s.agentRequest);
@@ -348,6 +357,13 @@ export function OverlayApp() {
                         <span><Kbd>/</Kbd> {t("empty.tip2").replace("/", "").trim()}</span>
                         <span><Kbd>@</Kbd> {t("empty.tip4").replace("@", "").trim()}</span>
                         <span>{t("empty.tip3")}</span>
+                      </div>
+                      <div className="mt-2 flex flex-wrap justify-center gap-1.5" role="group" aria-label={t("suggest.title")}>
+                        {suggestionsFor(previous?.processName, previous?.title).map((sg) => (
+                          <Button key={sg.id} size="sm" onClick={() => void runSuggestion(sg)}>
+                            {t(sg.label as never)}
+                          </Button>
+                        ))}
                       </div>
                       {consents.map((c) => (
                         <ConsentCard key={c.id} request={c} />

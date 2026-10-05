@@ -43,7 +43,7 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-025 | Ditado inteligente em qualquer app: correções no meio da frase, formatação, modo comando ("reescreva mais formal") e snippets (Wispr Flow) | CAND-011 | P1 | candidate | — |
 | CAND-026 | Modo gravação/reunião: transcrição ao vivo, resumo e tarefas em nota salva na conversa, briefing antes da próxima reunião (ChatGPT Record, Granola, Highlight) | CAND-016 | P1 | candidate | — |
 | CAND-027 | Projetos: conversas agrupadas com arquivos e instruções próprias e memória restrita ao projeto (ChatGPT Projects) | CAND-008 | P2 | candidate | — |
-| CAND-028 | Sugestões na tela vazia conforme o app em foco (ex.: "Resumir esta página" no navegador, "Explicar o erro" no VS Code) | CAND-009 | P2 | candidate | — |
+| CAND-028 | Sugestões na tela vazia conforme o app em foco (ex.: "Resumir esta página" no navegador, "Explicar o erro" no VS Code) | CAND-009 | P2 | promoted | 031-sugestoes-na-tela-vazia |
 | CAND-029 | Comparar modelos lado a lado na mesma pergunta (Msty Split Chat) | CAND-003 | P3 | candidate | — |
 | CAND-030 | Base de conhecimento local (pastas indexadas com citações) consultada pelo agente (Msty Knowledge Stacks, Jan) | CAND-007 | P2 | candidate | — |
 | CAND-031 | Conectores (Gmail, Calendário, Drive, Microsoft 365) como servidores MCP pré-configurados com OAuth | CAND-008 | P2 | candidate | — |

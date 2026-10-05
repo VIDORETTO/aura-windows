@@ -20,7 +20,6 @@
 | `CAND-025` | Ditado inteligente em qualquer app: correções no meio da frase, formatação, modo comando ("reescreva mais formal") e snippets (Wispr Flow) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-026` | Modo gravação/reunião: transcrição ao vivo, resumo e tarefas em nota salva na conversa, briefing antes da próxima reunião (ChatGPT Record, Granola, Highlight) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-027` | Projetos: conversas agrupadas com arquivos e instruções próprias e memória restrita ao projeto (ChatGPT Projects) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-028` | Sugestões na tela vazia conforme o app em foco (ex.: "Resumir esta página" no navegador, "Explicar o erro" no VS Code) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-029` | Comparar modelos lado a lado na mesma pergunta (Msty Split Chat) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-030` | Base de conhecimento local (pastas indexadas com citações) consultada pelo agente (Msty Knowledge Stacks, Jan) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-031` | Conectores (Gmail, Calendário, Drive, Microsoft 365) como servidores MCP pré-configurados com OAuth | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -70,3 +69,4 @@
 | `028-coaching-de-fala` | Change: Coaching de fala privado | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `029-habilidades-do-dia-a-dia` | Change: Habilidades do dia a dia: Ensaio, Estudo, Carreira, Documentos e Ajuda agora | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `030-instrucoes-agendadas` | Change: Instruções agendadas (primeira fatia dos agentes agendados) | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `031-sugestoes-na-tela-vazia` | Change: Sugestões na tela vazia e detecção suave de reunião | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
