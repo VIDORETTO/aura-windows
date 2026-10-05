@@ -6,6 +6,20 @@ and [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- Meetings (opt-in): panel in the Overlay with Preparo in three speeds, live
+  transcript, pause/end, notes and ★ markers, "I forgot to start" from the audio
+  buffer, saved meetings, Recipes (8 built-in + yours) and agent actions that cite
+  the minute. Audio is erased when the meeting ends unless you keep it; personal
+  data (CPF, CNPJ, cards, e-mails, phones) can be masked before the model reads it.
+- "Configure with AI": `settings_*`, `exclusion_*`, `profile_*` tools with
+  before → after and undo, "Ask AI" in Settings search, `/configurar`, `/preparo`
+  and a "Tell me how you work" first-run step.
+- Everyday commands: `/formal`, `/curto`, `/amigavel`, `/golpe`, `/responder`,
+  `/parei`, `/colar`, `/ler`, `/texto`, `/lembrar`, `/anota`, `/notas`, `/salvos`;
+  "Replace selection" with undo; reminders with Windows notifications.
+- Broadcast mode (no Windows notifications) and "Test hiding" in Settings.
+
+### Added
 - Setting "Hide from screen sharing and recordings" (Settings › General and the
   Overlay's Appearance menu), on by default: every Aura window stays out of
   screen sharing, recordings and screenshots; turn it off to show Aura in captures.
