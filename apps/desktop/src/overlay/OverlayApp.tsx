@@ -121,6 +121,7 @@ export function OverlayApp() {
     let offHidden: (() => void) | undefined;
     let offNew: (() => void) | undefined;
     let offChips: (() => void) | undefined;
+    let offQuick: (() => void) | undefined;
     void (async () => {
       const { listen } = await import("@tauri-apps/api/event");
       off = await listen<{ previousApp: PreviousApp | null }>("aura://overlay", async (e) => {
@@ -139,8 +140,15 @@ export function OverlayApp() {
         if (s.threadId) await api.trayMove("draft", s.threadId);
         await s.refreshChips();
       });
+      // A command the shell asks to run on the chips just added (e.g. /traduzir).
+      offQuick = await listen<string>("aura://run-quick", async (e) => {
+        const s = useSession.getState();
+        await s.refreshChips();
+        await s.send(e.payload);
+      });
     })();
     return () => {
+      offQuick?.();
       off?.();
       offHidden?.();
       offNew?.();

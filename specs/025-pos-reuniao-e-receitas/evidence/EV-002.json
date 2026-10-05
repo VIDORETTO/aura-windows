@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64, jsdom",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/src/lib/markdown.ts": "603369476fa8877982cbde064271e53fc7dd182eef1cb0ea62dcd110d02458d0",
+    "specs/025-pos-reuniao-e-receitas/change.md": "d22d5721a51b739cfe87cfc90536a5104dbf616b864a971d70d14fcc059ac462"
+  },
+  "input_paths": [
+    "apps/desktop/src/lib/markdown.ts",
+    "specs/025-pos-reuniao-e-receitas/change.md"
+  ],
+  "limitations": "O minuto aponta para a reunião aberta/mais recente (a citação não carrega o id); estado 'sem fonte' para afirmações sem citação não implementado",
+  "observations": "[mm:ss] vira botão fora de blocos de código; clicar abre o painel na reunião e destaca a fala daquele minuto; ação 'Debrief de 30 s' e 'Promessas'",
+  "procedure": "vitest markdown.test.ts (citations) e MeetingPanel (citação abre a reunião no minuto)",
+  "result": "partial",
+  "tested_revision": "local:02f60a0be5d34f3b0ad684f9f789a314efc750cb2574e3ff099c6c104a4f1a9d",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:08:57+00:00"
+}

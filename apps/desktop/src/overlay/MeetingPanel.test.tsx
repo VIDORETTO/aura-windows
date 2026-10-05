@@ -6,6 +6,7 @@ import { api } from "../ipc/commands";
 import { freshApp } from "../test/harness";
 import { useApp } from "../state/app";
 import { MeetingPanel, mmss } from "./MeetingPanel";
+import { useSession } from "./session";
 
 describe("meeting panel", () => {
   it("formats minutes and seconds", () => {
@@ -175,5 +176,23 @@ describe("meeting panel", () => {
     const select = await screen.findByLabelText("Projeto");
     await user.selectOptions(select, "p1");
     expect(select).toHaveValue("p1");
+  });
+
+  it("clicking a citation opens the meeting at that minute", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    bridge.state.meetingList = [{ id: "m1", title: "Revisão", kind: "other", briefing: "", origin: "live", status: "ended", startedAt: 1, endedAt: 2, projectId: null }];
+    bridge.state.meetingLines["m1"] = [
+      { id: 1, meetingId: "m1", t0: 5_000, t1: 6_000, speaker: "them", text: "Bom dia" },
+      { id: 2, meetingId: "m1", t0: 751_000, t1: 752_000, speaker: "them", text: "Cortamos 10%" },
+      { id: 3, meetingId: "m1", t0: 900_000, t1: 901_000, speaker: "you", text: "Fechado" },
+    ];
+    render(<MeetingPanel />);
+    await screen.findByText("Nova reunião");
+    await act(async () => {
+      useSession.getState().showCitation(751_000);
+    });
+    const line = await screen.findByText("Cortamos 10%");
+    await waitFor(() => expect(line.closest("li")).toHaveAttribute("aria-current", "true"));
+    expect(screen.getByText("Bom dia").closest("li")).not.toHaveAttribute("aria-current");
   });
 });

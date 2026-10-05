@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-059, CAND-062, CAND-063, CAND-068. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Copiar texto de uma região da tela, criar lembretes por conversa, guardar anotações rápidas e salvar respostas.
 
-Nota: **Feito (05/10):** lembretes (`clock_now`, `reminder_*`, recorrência, timer de 15 s, evento → notificação) e notas/salvos (`note_save`, `note_search`), comandos `/lembrar`, `/anota`, `/notas`. **Falta:** tradução opcional do texto copiado, validação do OCR e do toast no Windows, telas de lista/apagar e estrela em Salvos na UI, validação do toast no Windows.
+Nota: **Feito (05/10):** lembretes (`clock_now`, `reminder_*`, recorrência, timer de 15 s, evento → notificação) e notas/salvos (`note_save`, `note_search`), comandos `/lembrar`, `/anota`, `/notas`. **Também feito:** `/texto-traduzir` (OCR da região + /traduzir). **Falta:** validação do OCR e do toast no Windows, telas de lista/apagar e estrela em Salvos na UI, validação do toast no Windows.
 
 ## Contrato de comportamento
 

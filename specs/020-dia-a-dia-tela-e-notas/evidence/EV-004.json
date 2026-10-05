@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "8733468baf9fcb32ab74de615641365d62ce25e317ccdebb3614ea6f1222c85d",
+    "specs/020-dia-a-dia-tela-e-notas/change.md": "860e4e84f252ff991e54e834d7ccbc94e502dd85fe8ed8b219ae82ceb656ca2b"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "specs/020-dia-a-dia-tela-e-notas/change.md"
+  ],
+  "limitations": "Fluxo do shell (evento aura://run-quick) e OCR reais exigem Windows",
+  "observations": "/texto-traduzir: OCR da região vira o Chip de seleção e o shell pede /traduzir sobre ele; nada vai à área de transferência",
+  "procedure": "cargo test -p aura-app region_text_becomes_the_selection_chip_for_translate; vitest RegionSelector",
+  "result": "partial",
+  "tested_revision": "local:ca7001ff9c9915ddd321dcfedc4ae6c607d8947e92e4f88211a24debc8287cdd",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:08:58+00:00"
+}

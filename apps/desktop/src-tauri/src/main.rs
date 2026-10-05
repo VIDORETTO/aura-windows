@@ -70,7 +70,7 @@ pub fn open_settings(app: &AppHandle, section: Option<&str>) {
 pub fn open_region_selector(
     app: &AppHandle,
     f: &aura_app::host::FrozenScreen,
-    copy_text: bool,
+    mode: &str,
 ) -> Result<(), aura_app::HostError> {
     overlay::hide(app);
     close_region_selector(app);
@@ -86,7 +86,11 @@ pub fn open_region_selector(
         q(&f.path.to_string_lossy()),
         f.width,
         f.height,
-        if copy_text { "copy" } else { "chip" }
+        if matches!(mode, "copy" | "translate") {
+            mode
+        } else {
+            "chip"
+        }
     );
     let w = WebviewWindowBuilder::new(app, "region", WebviewUrl::App(route.into()))
         .title(text(
@@ -518,6 +522,7 @@ fn main() {
             commands::region_open,
             commands::region_commit,
             commands::region_copy_text,
+            commands::region_translate,
             commands::actions_list,
             commands::action_done,
             commands::action_delete,

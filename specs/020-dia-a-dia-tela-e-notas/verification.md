@@ -40,3 +40,16 @@
 - Observations: Estrela em cada resposta salva o texto (kind=saved); /salvos procura com note_search; notas rápidas por /anota e /notas
 - Evidence refs: none
 - Limitations: Sem tela de lista/apagar de notas e lembretes na UI; 'anota' por voz global não verificado
+
+## EV-004 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-001`
+- Procedure: `cargo test -p aura-app region_text_becomes_the_selection_chip_for_translate; vitest RegionSelector`
+- Execution: `executed`
+- Environment: Linux x86_64
+- Tested revision: `local:ca7001ff9c9915ddd321dcfedc4ae6c607d8947e92e4f88211a24debc8287cdd`
+- Timestamp: `2026-10-05T18:08:58+00:00`
+- Observations: /texto-traduzir: OCR da região vira o Chip de seleção e o shell pede /traduzir sobre ele; nada vai à área de transferência
+- Evidence refs: none
+- Limitations: Fluxo do shell (evento aura://run-quick) e OCR reais exigem Windows

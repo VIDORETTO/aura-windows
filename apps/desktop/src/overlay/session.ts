@@ -34,6 +34,8 @@ interface Session {
   overlayMode: OverlayMode;
   historyOpen: boolean;
   meetingOpen: boolean;
+  /** A citation `[mm:ss]` the user clicked: the Meeting panel jumps to it (025). */
+  citation: { ms: number; seq: number } | null;
   workOpen: boolean;
   /** Compact status pill while an answer runs in the background. */
   minibar: boolean;
@@ -69,6 +71,7 @@ interface Session {
   toggleHistory: (open?: boolean) => void;
   toggleWork: (open?: boolean) => void;
   toggleMeeting: (open?: boolean) => void;
+  showCitation: (ms: number) => void;
   refreshChips: () => Promise<void>;
   removeChip: (id: string) => Promise<void>;
   captureScreen: (windowOnly?: boolean) => Promise<void>;
@@ -105,6 +108,7 @@ export const useSession = create<Session>((set, get) => ({
   overlayMode: "compact",
   historyOpen: false,
   meetingOpen: false,
+  citation: null,
   workOpen: false,
   minibar: false,
   models: [],
@@ -179,6 +183,11 @@ export const useSession = create<Session>((set, get) => ({
     set({ minibar: on });
     if (on) void api.overlaySetMode("compact").catch(() => undefined);
     else if (get().threadId) void api.overlaySetMode(get().overlayMode).catch(() => undefined);
+  },
+
+  showCitation: (ms) => {
+    set((st) => ({ citation: { ms, seq: (st.citation?.seq ?? 0) + 1 } }));
+    get().toggleMeeting(true);
   },
 
   toggleMeeting: (open) => {

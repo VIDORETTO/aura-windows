@@ -978,7 +978,7 @@ pub fn previous_app(s: State<'_, AppState>) -> Option<aura_core::events::Previou
 #[tauri::command]
 pub async fn region_open(app: AppHandle, s: State<'_, AppState>, mode: Option<String>) -> R<()> {
     let frozen = s.host.region_begin().await?;
-    crate::open_region_selector(&app, &frozen, mode.as_deref() == Some("copy"))
+    crate::open_region_selector(&app, &frozen, mode.as_deref().unwrap_or("chip"))
 }
 
 /// OCR of the selected region to the clipboard, with a toast (020).
@@ -1027,6 +1027,23 @@ pub fn region_commit(
     overlay::show(&app);
     let _ = tauri::Emitter::emit_to(&app, overlay::LABEL, "aura://chips-changed", ());
     Ok(chip)
+}
+
+/// OCR of the region as a selection chip, then runs `/traduzir` on it (020).
+#[tauri::command]
+pub fn region_translate(
+    app: AppHandle,
+    s: State<'_, AppState>,
+    token: String,
+    rect: aura_core::placement::Rect,
+    tray: String,
+) -> R<()> {
+    crate::close_region_selector(&app);
+    s.host.region_text_chip(&token, rect, &tray)?;
+    overlay::show(&app);
+    let _ = tauri::Emitter::emit_to(&app, overlay::LABEL, "aura://chips-changed", ());
+    let _ = tauri::Emitter::emit_to(&app, overlay::LABEL, "aura://run-quick", "/traduzir");
+    Ok(())
 }
 
 #[tauri::command]

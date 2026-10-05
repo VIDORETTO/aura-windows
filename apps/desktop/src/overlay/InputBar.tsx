@@ -166,6 +166,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     const builtins: MenuItem[] = [
       { id: "plano", label: `/${plan}`, aliases: ["plano", "plan"], hint: t("mode.plan.desc"), insert: `/${plan} `, section: "commands" },
       { id: "copiar-texto", label: `/${t("command.copyText.name")}`, aliases: ["texto", "copiar-texto", "copytext"], hint: t("command.copyText.hint"), insert: "", run: () => void api.regionOpen("copy"), section: "commands" },
+      { id: "texto-traduzir", label: `/${t("command.translateScreen.name")}`, aliases: ["texto-traduzir", "text-translate"], hint: t("command.translateScreen.hint"), insert: "", run: () => void api.regionOpen("translate"), section: "commands" },
       { id: "ler", label: `/${t("command.read.name")}`, aliases: ["ler", "read"], hint: t("command.read.hint"), insert: "", run: () => void readSelectionAloud().then((ok) => !ok && useApp.getState().notify("info", t("command.read.none"))), section: "commands" },
       { id: "compactar", label: `/${compactName}`, aliases: ["compactar", "compact"], hint: t("command.compact.hint"), insert: `/${compactName}`, section: "commands" },
     ];

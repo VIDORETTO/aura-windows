@@ -28,3 +28,16 @@ describe("markdown", () => {
     expect(html).toContain("<li>x</li>");
   });
 });
+
+describe("citations (025)", () => {
+  it("turns [mm:ss] into buttons outside code, with the time in ms", async () => {
+    const { renderMarkdown } = await import("./markdown");
+    const html = renderMarkdown("Decidiram cortar 10% [12:31]. No código `a[1:05]` fica.\n\n```\nx[03:04]\n```");
+    expect(html).toContain('data-cite="751000"');
+    expect(html).toContain("⏱ 12:31");
+    expect(html).not.toContain('data-cite="65000"');
+    expect(html).not.toContain('data-cite="184000"');
+    // Not a time: left alone.
+    expect(renderMarkdown("lista [1] e [99:99]")).not.toContain("data-cite");
+  });
+});

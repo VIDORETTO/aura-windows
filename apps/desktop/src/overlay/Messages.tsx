@@ -23,6 +23,12 @@ function Markdown({ text, streaming }: { text: string; streaming: boolean }) {
   }, [streaming, text]);
   const html = useMemo(() => renderMarkdown(text, { streaming }), [text, streaming, hl]);
   const onClick = (e: React.MouseEvent) => {
+    const cite = (e.target as HTMLElement).closest("button[data-cite]");
+    if (cite) {
+      e.preventDefault();
+      useSession.getState().showCitation(Number(cite.getAttribute("data-cite")));
+      return;
+    }
     const a = (e.target as HTMLElement).closest("a[data-href]");
     if (a) {
       e.preventDefault();

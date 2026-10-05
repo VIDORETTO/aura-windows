@@ -3493,3 +3493,40 @@ async fn projects_group_meetings_and_the_agent_reads_their_instructions() {
             .is_none()
     );
 }
+
+#[tokio::test]
+async fn region_text_becomes_the_selection_chip_for_translate() {
+    // 020: OCR of a region as the selection chip; /traduzir then runs on it.
+    let e = env().await;
+    let frozen = e.host.region_begin().await.unwrap();
+    let chip = e
+        .host
+        .region_text_chip(
+            &frozen.token,
+            aura_core::placement::Rect::new(10, 10, 100, 50),
+            "draft",
+        )
+        .unwrap();
+    assert_eq!(chip.kind, ChipKind::Selection);
+    let tray = e.host.tray("draft");
+    assert_eq!(tray.len(), 1);
+    // A second region replaces it (one selection chip per tray) and /traduzir uses its text.
+    let again = e.host.region_begin().await.unwrap();
+    e.host
+        .region_text_chip(
+            &again.token,
+            aura_core::placement::Rect::new(0, 0, 50, 50),
+            "draft",
+        )
+        .unwrap();
+    assert_eq!(e.host.tray("draft").len(), 1);
+    let exp = e
+        .host
+        .expand_quick_command("draft", "/traduzir inglês", "")
+        .await
+        .unwrap();
+    assert!(exp.prompt_text.starts_with("Traduza para inglês:"));
+    assert!(exp.prompt_text.len() > "Traduza para inglês:".len() + 2);
+    // Nothing went to the clipboard.
+    assert!(e.fg.clipboard.lock().unwrap().is_none());
+}

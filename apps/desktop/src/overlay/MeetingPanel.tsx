@@ -7,6 +7,7 @@ import { api, errorMessage } from "../ipc/commands";
 import type { Action, Meeting, Project, Recipe, Utterance } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { useApp } from "../state/app";
+import { useSession } from "./session";
 import { Button, IconButton, Select, TextArea, cx } from "../ui/primitives";
 
 export const mmss = (ms: number) => {
@@ -14,13 +15,13 @@ export const mmss = (ms: number) => {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 };
 
-function Transcript({ lines }: { lines: Utterance[] }) {
+function Transcript({ lines, highlight }: { lines: Utterance[]; highlight?: number | null }) {
   const t = useT();
   if (lines.length === 0) return <p className="px-3 py-2 text-[12px] text-muted">{t("meeting.transcript.empty")}</p>;
   return (
     <ol className="flex flex-col gap-1.5 px-3 py-2 text-[12px]" aria-label={t("meeting.transcript")}>
       {lines.map((u) => (
-        <li key={u.id} className="selectable">
+        <li key={u.id} id={`utt-${u.id}`} aria-current={highlight === u.id ? "true" : undefined} className={cx("selectable rounded px-1", highlight === u.id && "bg-hover")}>
           <span className="mr-1.5 font-mono text-[11px] text-muted">{mmss(u.t0)}</span>
           <span className={cx("mr-1 font-medium", u.speaker === "you" ? "text-accent" : u.speaker === "note" ? "text-warning" : "text-fg")}>
             {u.speaker === "you" ? t("meeting.you") : u.speaker === "note" ? t("meeting.note") : t("meeting.them")}:
@@ -52,6 +53,8 @@ export function MeetingPanel() {
   const [lines, setLines] = useState<Utterance[]>([]);
   const [paused, setPaused] = useState(false);
   const [note, setNote] = useState("");
+  const citation = useSession((s) => s.citation);
+  const [highlight, setHighlight] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const fail = (e: unknown) => useApp.getState().notify("error", errorMessage(e));
 
@@ -68,6 +71,23 @@ export function MeetingPanel() {
       setLines(shown ? await api.meetingUtterances(shown.id) : []);
     })().catch(() => undefined);
   }, [revision, viewing]);
+
+  // A clicked citation: show the meeting being viewed (or the latest) at that minute.
+  useEffect(() => {
+    if (!citation) return;
+    void (async () => {
+      const all = await api.meetingsList();
+      const target = active ?? viewing ?? all.find((m) => m.status !== "active") ?? null;
+      if (!target) return;
+      if (!active && viewing?.id !== target.id) setViewing(target);
+      const rows = await api.meetingUtterances(target.id);
+      setLines(rows);
+      const hit = [...rows].reverse().find((u) => u.t0 <= citation.ms) ?? rows[0];
+      setHighlight(hit?.id ?? null);
+      if (hit) setTimeout(() => document.getElementById(`utt-${hit.id}`)?.scrollIntoView?.({ block: "center" }), 0);
+    })().catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [citation?.seq]);
 
   useEffect(() => {
     if (!active) return;
@@ -105,7 +125,7 @@ export function MeetingPanel() {
         </div>
         {active.briefing && <p className="line-clamp-2 border-b border-line px-3 py-1.5 text-[11px] text-muted" title={active.briefing}>{active.briefing}</p>}
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <Transcript lines={lines} />
+          <Transcript lines={lines} highlight={highlight} />
         </div>
         <form
           className="flex items-center gap-1 border-t border-line p-2"
@@ -159,11 +179,12 @@ export function MeetingPanel() {
           </Select>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <Transcript lines={lines} />
+          <Transcript lines={lines} highlight={highlight} />
         </div>
         <div className="flex flex-wrap gap-1 border-t border-line p-2">
           <Button size="sm" onClick={() => ask("meeting.prompt.after", t, { id })}>{t("meeting.action.after")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.promises", t, { id })}>{t("meeting.action.promises")}</Button>
+          <Button size="sm" onClick={() => ask("meeting.prompt.debrief", t, { id })}>{t("meeting.action.debrief")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.email", t, { id })}>{t("meeting.action.email")}</Button>
           <Button size="sm" onClick={() => ask("meeting.prompt.minutes", t, { id }, "task")}>{t("meeting.action.minutes")}</Button>
           <IconButton label={t("meeting.delete")} onClick={() => void api.meetingDelete(id).then(() => setViewing(null)).catch(fail)}>

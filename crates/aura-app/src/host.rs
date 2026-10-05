@@ -2506,6 +2506,22 @@ impl Host {
         token: &str,
         rect: aura_core::placement::Rect,
     ) -> HostResult<String> {
+        let text = self.region_read_text(token, rect)?;
+        if !self.platform.foreground.set_clipboard(&text) {
+            return Err(HostError::new(
+                "clipboard",
+                "não consegui copiar para a área de transferência",
+            ));
+        }
+        Ok(text)
+    }
+
+    /// Crops the frozen screen and reads its text (OCR); the token is used up.
+    fn region_read_text(
+        &self,
+        token: &str,
+        rect: aura_core::placement::Rect,
+    ) -> HostResult<String> {
         let frame = self
             .frozen
             .lock()
@@ -2536,13 +2552,36 @@ impl Host {
         if text.is_empty() {
             return Err(HostError::new("empty", "não encontrei texto nessa região"));
         }
-        if !self.platform.foreground.set_clipboard(&text) {
-            return Err(HostError::new(
-                "clipboard",
-                "não consegui copiar para a área de transferência",
-            ));
-        }
         Ok(text)
+    }
+
+    /// OCR of the selected region as the tray's selection chip, so a quick
+    /// command (`/traduzir`) runs on the text of the screen (020).
+    pub fn region_text_chip(
+        &self,
+        token: &str,
+        rect: aura_core::placement::Rect,
+        tray: &str,
+    ) -> HostResult<ContextChip> {
+        let text = self.region_read_text(token, rect)?;
+        let preview: String = text.chars().take(40).collect();
+        let mut trays = self.trays.lock().unwrap();
+        let t = trays.entry(tray.to_string()).or_default();
+        let old: Vec<String> = t
+            .list()
+            .iter()
+            .filter(|c| c.kind == ChipKind::Selection)
+            .map(|c| c.id.clone())
+            .collect();
+        for id in old {
+            let _ = t.remove(&id);
+        }
+        let chip = ContextChip::new(
+            ChipKind::Selection,
+            format!("❝ {preview}"),
+            ChipPayload::Text { text },
+        );
+        Ok(t.add(chip)?.clone())
     }
 
     pub fn region_cancel(&self, token: &str) {

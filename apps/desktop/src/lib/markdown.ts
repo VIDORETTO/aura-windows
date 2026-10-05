@@ -60,11 +60,28 @@ export function closeOpenFence(md: string): string {
   return fences % 2 === 1 ? `${md}\n\`\`\`` : md;
 }
 
+/** `[12:31]` → ms since the meeting started (citations of the agent, 025). */
+export function citationMs(mm: string, ss: string): number {
+  return (Number(mm) * 60 + Number(ss)) * 1000;
+}
+
+/** Turns `[mm:ss]` outside code blocks into clickable citation buttons. */
+export function linkCitations(html: string): string {
+  return html
+    .split(/(<pre[\s\S]*?<\/pre>|<code[\s\S]*?<\/code>)/)
+    .map((part, i) =>
+      i % 2 === 1
+        ? part
+        : part.replace(/\[(\d{1,3}):([0-5]\d)\]/g, (_m, mm: string, ss: string) => `<button class="cite" data-cite="${citationMs(mm, ss)}">⏱ ${mm.padStart(2, "0")}:${ss}</button>`),
+    )
+    .join("");
+}
+
 export function renderMarkdown(md: string, opts: { streaming?: boolean } = {}): string {
   const source = opts.streaming ? closeOpenFence(md) : md;
   const html = (opts.streaming || !hljs ? plain : highlighted).parse(source, { async: false }) as string;
-  return DOMPurify.sanitize(html, {
-    ALLOWED_ATTR: ["class", "data-href", "data-lang", "title", "colspan", "rowspan", "align"],
+  return DOMPurify.sanitize(linkCitations(html), {
+    ALLOWED_ATTR: ["class", "data-href", "data-lang", "data-cite", "title", "colspan", "rowspan", "align"],
     FORBID_TAGS: ["style", "iframe", "form", "input", "img", "video", "audio", "object", "embed"],
   });
 }
