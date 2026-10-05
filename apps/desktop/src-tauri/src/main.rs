@@ -70,6 +70,7 @@ pub fn open_settings(app: &AppHandle, section: Option<&str>) {
 pub fn open_region_selector(
     app: &AppHandle,
     f: &aura_app::host::FrozenScreen,
+    copy_text: bool,
 ) -> Result<(), aura_app::HostError> {
     overlay::hide(app);
     close_region_selector(app);
@@ -80,11 +81,12 @@ pub fn open_region_selector(
             .replace(' ', "%20")
     };
     let route = format!(
-        "index.html#/region?token={}&path={}&w={}&h={}",
+        "index.html#/region?token={}&path={}&w={}&h={}&mode={}",
         f.token,
         q(&f.path.to_string_lossy()),
         f.width,
-        f.height
+        f.height,
+        if copy_text { "copy" } else { "chip" }
     );
     let w = WebviewWindowBuilder::new(app, "region", WebviewUrl::App(route.into()))
         .title(text(
@@ -515,6 +517,7 @@ fn main() {
             commands::previous_app,
             commands::region_open,
             commands::region_commit,
+            commands::region_copy_text,
             commands::region_cancel,
             commands::overlay_set_mode,
             commands::overlay_hide,

@@ -24,6 +24,10 @@ pub trait Foreground: Send + Sync {
     fn selection(&self, max_chars: usize) -> Option<String>;
     /// Pastes text into the focused control of the foreground app.
     fn paste(&self, text: &str) -> bool;
+    /// Puts text on the clipboard ("copy text from the screen", 020).
+    fn set_clipboard(&self, _text: &str) -> bool {
+        false
+    }
     /// Browser URL of the window when available (UIA address bar).
     fn url_of(&self, _window: u64) -> Option<String> {
         None
@@ -59,6 +63,7 @@ pub struct FakeForeground {
     pub area: Rect,
     pub selection: Mutex<Option<String>>,
     pub pasted: Mutex<Vec<String>>,
+    pub clipboard: Mutex<Option<String>>,
 }
 
 impl Foreground for FakeForeground {
@@ -76,6 +81,10 @@ impl Foreground for FakeForeground {
     }
     fn paste(&self, text: &str) -> bool {
         self.pasted.lock().unwrap().push(text.to_string());
+        true
+    }
+    fn set_clipboard(&self, text: &str) -> bool {
+        *self.clipboard.lock().unwrap() = Some(text.to_string());
         true
     }
 }
@@ -117,6 +126,7 @@ impl Platform {
             area,
             selection: Mutex::new(None),
             pasted: Mutex::new(Vec::new()),
+            clipboard: Mutex::new(None),
         });
         let platform = Self {
             credentials: Arc::new(MemoryCredentialStore::default()),

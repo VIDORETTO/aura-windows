@@ -60,6 +60,10 @@ impl Foreground for WinForeground {
         aura_win::input::paste_text(text)
     }
 
+    fn set_clipboard(&self, text: &str) -> bool {
+        aura_win::input::set_clipboard_text(text)
+    }
+
     fn snapshot(&self) {
         // With Aura itself in front, the focused element is ours: keep what
         // was read from the previous app.

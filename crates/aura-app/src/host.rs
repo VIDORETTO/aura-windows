@@ -1953,6 +1953,52 @@ impl Host {
         self.add_chip(tray, chip)
     }
 
+    /// Reads the text inside `rect` of the frozen screen (OCR) and copies it
+    /// to the clipboard; nothing is attached to the conversation (020).
+    pub fn region_copy_text(
+        &self,
+        token: &str,
+        rect: aura_core::placement::Rect,
+    ) -> HostResult<String> {
+        let frame = self
+            .frozen
+            .lock()
+            .unwrap()
+            .remove(token)
+            .ok_or_else(|| HostError::new("not_found", "seleção expirada"))?;
+        let _ = std::fs::remove_file(
+            self.paths
+                .captures_tmp()
+                .join(format!("frozen-{token}.png")),
+        );
+        if rect.w < 4 || rect.h < 4 {
+            return Err(HostError::new("invalid", "região pequena demais"));
+        }
+        let crop = frame
+            .crop(rect)
+            .ok_or_else(|| HostError::new("invalid", "região fora da tela"))?;
+        let language = match self.settings().language {
+            aura_core::settings::Language::PtBr => "pt-BR",
+            aura_core::settings::Language::En => "en-US",
+        };
+        let text = self
+            .platform
+            .screen_text
+            .ocr(&crop, language)
+            .map_err(|e| HostError::new("ocr", e.to_string()))?;
+        let text = text.trim().to_string();
+        if text.is_empty() {
+            return Err(HostError::new("empty", "não encontrei texto nessa região"));
+        }
+        if !self.platform.foreground.set_clipboard(&text) {
+            return Err(HostError::new(
+                "clipboard",
+                "não consegui copiar para a área de transferência",
+            ));
+        }
+        Ok(text)
+    }
+
     pub fn region_cancel(&self, token: &str) {
         self.frozen.lock().unwrap().remove(token);
         let _ = std::fs::remove_file(

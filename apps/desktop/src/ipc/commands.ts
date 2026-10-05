@@ -159,7 +159,8 @@ export const api = {
   previousApp: () => call<T.PreviousApp | null>("previous_app"),
 
   // region selection
-  regionOpen: () => call<void>("region_open"),
+  regionOpen: (mode: "chip" | "copy" = "chip") => call<void>("region_open", { mode }),
+  regionCopyText: (token: string, rect: { x: number; y: number; w: number; h: number }) => call<void>("region_copy_text", { token, rect }),
   regionCommit: (token: string, rect: { x: number; y: number; w: number; h: number }, tray: string) =>
     call<T.ContextChip>("region_commit", { token, rect, tray }),
   regionCancel: (token: string) => call<void>("region_cancel", { token }),

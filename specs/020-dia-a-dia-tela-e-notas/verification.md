@@ -14,3 +14,16 @@
 - Observations: Lembretes únicos e recorrentes (diário, dias úteis, semanal) disparam uma vez e pulam ocorrências perdidas; evento chega à UI que chama notify; notas e salvos pesquisáveis sem acento; ferramentas MCP criadas
 - Evidence refs: none
 - Limitations: Toast real do Windows, persistência após reiniciar o Aura (só SQLite testado em memória), tela de lista/estrela em Salvos e ditado global para 'anota' não verificados; AC-001 (OCR de região) não iniciado
+
+## EV-002 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-001`
+- Procedure: `cargo test -p aura-app region_text_goes_to_the_clipboard_without_a_chip; vitest RegionSelector`
+- Execution: `executed`
+- Environment: Linux x86_64 (OCR e área de transferência falsos)
+- Tested revision: `local:b1ce01d5eaaf16e5ab93d0b71732220fc29f66cabefe4e6c5492e7e93b5239e0`
+- Timestamp: `2026-10-05T17:20:03+00:00`
+- Observations: Região congelada recortada, OCR, texto copiado, nenhum Chip criado, token de uso único, região minúscula recusada; seletor em modo cópia e comando /texto na UI
+- Evidence refs: none
+- Limitations: OCR real do Windows, área de transferência real, toast e janela do seletor não verificados (exigem Windows); tradução opcional não implementada

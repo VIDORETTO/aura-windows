@@ -10,6 +10,7 @@ describe("region selector", () => {
 
   it("reads the frozen screen from the route", () => {
     const p = parseRegionParams("#/region?token=abc&path=C%3A%2FUsers%2Fa%20b%2Ff.png&w=1920&h=1080");
-    expect(p).toEqual({ token: "abc", path: "C:/Users/a b/f.png", width: 1920, height: 1080 });
+    expect(p).toEqual({ token: "abc", path: "C:/Users/a b/f.png", width: 1920, height: 1080, copy: false });
+    expect(parseRegionParams("#/region?token=abc&path=x&w=10&h=10&mode=copy").copy).toBe(true);
   });
 });

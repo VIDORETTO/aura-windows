@@ -2156,6 +2156,41 @@ async fn region_selection_crops_the_frozen_screen() {
 }
 
 #[tokio::test]
+async fn region_text_goes_to_the_clipboard_without_a_chip() {
+    // 020 AC-001: OCR of the selected region is copied, nothing is attached.
+    let e = env().await;
+    let frozen = e.host.region_begin().await.unwrap();
+    let text = e
+        .host
+        .region_copy_text(
+            &frozen.token,
+            aura_core::placement::Rect::new(10, 10, 100, 50),
+        )
+        .unwrap();
+    assert!(!text.is_empty());
+    assert_eq!(
+        e.fg.clipboard.lock().unwrap().as_deref(),
+        Some(text.as_str())
+    );
+    assert!(!frozen.path.exists(), "frozen screen is deleted after use");
+    assert!(e.host.tray("draft").is_empty());
+    // Single use, and tiny regions are refused.
+    assert!(
+        e.host
+            .region_copy_text(&frozen.token, aura_core::placement::Rect::new(0, 0, 50, 50))
+            .is_err()
+    );
+    let again = e.host.region_begin().await.unwrap();
+    assert_eq!(
+        e.host
+            .region_copy_text(&again.token, aura_core::placement::Rect::new(0, 0, 2, 2))
+            .unwrap_err()
+            .code,
+        "invalid"
+    );
+}
+
+#[tokio::test]
 async fn mcp_status_and_workspace_files() {
     let e = env().await;
     let conv = e

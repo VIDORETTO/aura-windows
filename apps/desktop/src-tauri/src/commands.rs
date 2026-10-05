@@ -799,9 +799,38 @@ pub fn previous_app(s: State<'_, AppState>) -> Option<aura_core::events::Previou
 
 /// Freezes the screen and opens the full-screen region selector over it.
 #[tauri::command]
-pub async fn region_open(app: AppHandle, s: State<'_, AppState>) -> R<()> {
+pub async fn region_open(app: AppHandle, s: State<'_, AppState>, mode: Option<String>) -> R<()> {
     let frozen = s.host.region_begin().await?;
-    crate::open_region_selector(&app, &frozen)
+    crate::open_region_selector(&app, &frozen, mode.as_deref() == Some("copy"))
+}
+
+/// OCR of the selected region to the clipboard, with a toast (020).
+#[tauri::command]
+pub fn region_copy_text(
+    app: AppHandle,
+    s: State<'_, AppState>,
+    token: String,
+    rect: aura_core::placement::Rect,
+) -> R<()> {
+    use tauri_plugin_notification::NotificationExt;
+    crate::close_region_selector(&app);
+    let language = s.host.settings().language;
+    let (title, body) = match s.host.region_copy_text(&token, rect) {
+        Ok(text) => (
+            aura_app::localization::text(language, "native.region.copied").to_string(),
+            text.chars().take(120).collect::<String>(),
+        ),
+        Err(e) => (
+            aura_app::localization::text(language, "native.region.copyFailed").to_string(),
+            e.message,
+        ),
+    };
+    app.notification()
+        .builder()
+        .title(title)
+        .body(body)
+        .show()
+        .map_err(|e| HostError::new("notify", e.to_string()))
 }
 
 #[tauri::command]

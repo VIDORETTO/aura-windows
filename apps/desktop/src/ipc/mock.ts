@@ -398,6 +398,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     profile_active: () => state.profiles.find((p) => p.processPattern.toLowerCase() === "code.exe") ?? null,
     previous_app: () => ({ window: 1, pid: 42, processName: "Code.exe", title: "main.rs — Aura", monitorId: "DISPLAY1" }),
     region_open: () => undefined,
+    region_copy_text: () => undefined,
     region_commit: ({ tray, rect }) => {
       const chip: T.ContextChip = { id: `chip_${++state.seq}`, kind: "region", label: `Região ${rect.w}×${rect.h}`, previewPath: PIXEL, payload: { type: "image", path: PIXEL }, tokenEstimate: 765, blockedReason: null };
       state.trays.set(tray, [...(state.trays.get(tray) ?? []), chip]);

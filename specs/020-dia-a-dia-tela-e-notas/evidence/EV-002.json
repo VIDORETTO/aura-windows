@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64 (OCR e área de transferência falsos)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "bf5566006e42daa46d26327a4ceb1838e25e51faa48950905f92e8911db3e62d",
+    "specs/020-dia-a-dia-tela-e-notas/change.md": "6a7b68e7360b676cad31d62f296fce3d17b9f08a146d59b560bc8d9560f3d921"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "specs/020-dia-a-dia-tela-e-notas/change.md"
+  ],
+  "limitations": "OCR real do Windows, área de transferência real, toast e janela do seletor não verificados (exigem Windows); tradução opcional não implementada",
+  "observations": "Região congelada recortada, OCR, texto copiado, nenhum Chip criado, token de uso único, região minúscula recusada; seletor em modo cópia e comando /texto na UI",
+  "procedure": "cargo test -p aura-app region_text_goes_to_the_clipboard_without_a_chip; vitest RegionSelector",
+  "result": "partial",
+  "tested_revision": "local:b1ce01d5eaaf16e5ab93d0b71732220fc29f66cabefe4e6c5492e7e93b5239e0",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:20:03+00:00"
+}

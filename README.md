@@ -217,6 +217,7 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/responder [tom]` | Anexa a tela e escreve um rascunho de resposta |
 | `/lembrar <o quê e quando>` | Cria um lembrete com notificação do Windows (únicos ou recorrentes) |
 | `/anota <texto>` · `/notas <busca>` | Guarda e procura anotações rápidas |
+| `/texto` | Arraste sobre uma área da tela e o texto (OCR) vai para a área de transferência |
 | `/configurar <pedido>` | A IA configura o Aura por você, mostrando antes → depois |
 | `/preparo <assunto>` | A IA entrevista você (⚡ uma frase ou 🧭 grill-me) antes de uma tarefa |
 | `/parei` | Resume o que você fazia nos últimos minutos (precisa do buffer de tela) |

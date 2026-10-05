@@ -164,6 +164,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     const compactName = t("command.compact.name");
     const builtins: MenuItem[] = [
       { id: "plano", label: `/${plan}`, aliases: ["plano", "plan"], hint: t("mode.plan.desc"), insert: `/${plan} `, section: "commands" },
+      { id: "copiar-texto", label: `/${t("command.copyText.name")}`, aliases: ["texto", "copiar-texto", "copytext"], hint: t("command.copyText.hint"), insert: "", run: () => void api.regionOpen("copy"), section: "commands" },
       { id: "compactar", label: `/${compactName}`, aliases: ["compactar", "compact"], hint: t("command.compact.hint"), insert: `/${compactName}`, section: "commands" },
     ];
     const cmds: MenuItem[] = quick

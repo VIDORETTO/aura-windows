@@ -26,12 +26,12 @@ export function toImageRect(a: { x: number; y: number }, b: { x: number; y: numb
 
 export function parseRegionParams(hash: string) {
   const q = new URLSearchParams(hash.split("?")[1] ?? "");
-  return { token: q.get("token") ?? "", path: q.get("path") ?? "", width: Number(q.get("w") ?? 0), height: Number(q.get("h") ?? 0) };
+  return { token: q.get("token") ?? "", path: q.get("path") ?? "", width: Number(q.get("w") ?? 0), height: Number(q.get("h") ?? 0), copy: q.get("mode") === "copy" };
 }
 
 export function RegionSelector() {
   const t = useT();
-  const { token, path, width, height } = parseRegionParams(window.location.hash);
+  const { token, path, width, height, copy } = parseRegionParams(window.location.hash);
   const img = useRef<HTMLImageElement>(null);
   const [start, setStart] = useState<{ x: number; y: number } | null>(null);
   const [end, setEnd] = useState<{ x: number; y: number } | null>(null);
@@ -46,7 +46,8 @@ export function RegionSelector() {
     const r = rect();
     if (!r || r.w < 4 || r.h < 4) return;
     try {
-      await api.regionCommit(token, r, DRAFT);
+      if (copy) await api.regionCopyText(token, r);
+      else await api.regionCommit(token, r, DRAFT);
     } catch (e) {
       useApp.getState().notify("error", errorMessage(e));
     }
@@ -68,7 +69,7 @@ export function RegionSelector() {
   const sel = start && end ? { left: Math.min(start.x, end.x), top: Math.min(start.y, end.y), width: Math.abs(end.x - start.x), height: Math.abs(end.y - start.y) } : null;
 
   return (
-    <div className="fixed inset-0 cursor-crosshair select-none bg-black" role="application" aria-label={t("region.hint")}>
+    <div className="fixed inset-0 cursor-crosshair select-none bg-black" role="application" aria-label={t(copy ? "region.copyHint" : "region.hint")}>
       <img
         ref={img}
         src={previewSrc(path)}
@@ -85,7 +86,7 @@ export function RegionSelector() {
       />
       <div className="pointer-events-none absolute inset-0 bg-black/40" style={sel ? { clipPath: `polygon(0 0,100% 0,100% 100%,0 100%,0 0,${sel.left}px ${sel.top}px,${sel.left}px ${sel.top + sel.height}px,${sel.left + sel.width}px ${sel.top + sel.height}px,${sel.left + sel.width}px ${sel.top}px,${sel.left}px ${sel.top}px)` } : undefined} />
       {sel && <div className="pointer-events-none absolute border-2 border-[var(--accent)]" style={sel} />}
-      <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-[13px] text-white">{t("region.hint")}</div>
+      <div className="pointer-events-none absolute left-1/2 top-4 -translate-x-1/2 rounded-full bg-black/70 px-3 py-1 text-[13px] text-white">{t(copy ? "region.copyHint" : "region.hint")}</div>
     </div>
   );
 }
