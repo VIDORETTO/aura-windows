@@ -34,6 +34,7 @@ pub mod recorder;
 pub mod reminders;
 pub mod settings_assistant;
 pub mod speech;
+pub mod speech_stats;
 pub mod tokens;
 pub mod tools;
 pub mod voice;

@@ -195,4 +195,15 @@ describe("meeting panel", () => {
     await waitFor(() => expect(line.closest("li")).toHaveAttribute("aria-current", "true"));
     expect(screen.getByText("Bom dia").closest("li")).not.toHaveAttribute("aria-current");
   });
+
+  it("a saved meeting shows the user's own speech numbers, privately", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    bridge.state.meetingList = [{ id: "m1", title: "Revisão", kind: "other", briefing: "", origin: "live", status: "ended", startedAt: 1, endedAt: 2, projectId: null }];
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    await user.click(await screen.findByRole("button", { name: /Revisão/ }));
+    const stats = await screen.findByLabelText("Sua fala (só você vê)");
+    expect(within(stats).getByText("40%")).toBeInTheDocument();
+    expect(within(stats).getByText("117")).toBeInTheDocument();
+  });
 });

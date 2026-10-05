@@ -536,6 +536,11 @@ pub fn meeting_utterances(
 }
 
 #[tauri::command]
+pub fn meeting_stats(s: State<'_, AppState>, id: String) -> R<aura_app::speech_stats::SpeechStats> {
+    Ok(s.host.meeting_speech_stats(&id)?)
+}
+
+#[tauri::command]
 pub fn meeting_delete(s: State<'_, AppState>, id: String) -> R<()> {
     Ok(s.host.meeting_delete(&id)?)
 }

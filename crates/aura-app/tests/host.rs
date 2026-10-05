@@ -3530,3 +3530,30 @@ async fn region_text_becomes_the_selection_chip_for_translate() {
     // Nothing went to the clipboard.
     assert!(e.fg.clipboard.lock().unwrap().is_none());
 }
+
+#[tokio::test]
+async fn speech_stats_come_from_the_saved_transcript() {
+    // 045: private coaching numbers, only for the user's own speech.
+    let e = env().await;
+    let m = e.host.meeting_start("Chamada", "other", "").await.unwrap();
+    e.host.meeting_stop().await.unwrap();
+    e.host
+        .meetings_repo()
+        .store_utterances_for_tests(
+            &m.id,
+            &[
+                (0, 30_000, "them", "Explicação do cliente"),
+                (
+                    30_000,
+                    50_000,
+                    "you",
+                    "então né tipo vamos fechar isso hoje certo?",
+                ),
+            ],
+        )
+        .unwrap();
+    let s = e.host.meeting_speech_stats(&m.id).unwrap();
+    assert_eq!(s.talk_percent, 40);
+    assert!(s.filler_count >= 3);
+    assert_eq!(s.questions_asked, 1);
+}

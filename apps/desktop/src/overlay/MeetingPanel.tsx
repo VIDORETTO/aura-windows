@@ -4,7 +4,7 @@
 import { Mic, Pause, Play, Square, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
-import type { Action, Meeting, Project, Recipe, Utterance } from "../ipc/types";
+import type { Action, Meeting, Project, Recipe, SpeechStats, Utterance } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { useApp } from "../state/app";
 import { useSession } from "./session";
@@ -55,6 +55,7 @@ export function MeetingPanel() {
   const [note, setNote] = useState("");
   const citation = useSession((s) => s.citation);
   const [highlight, setHighlight] = useState<number | null>(null);
+  const [stats, setStats] = useState<SpeechStats | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const fail = (e: unknown) => useApp.getState().notify("error", errorMessage(e));
 
@@ -69,12 +70,15 @@ export function MeetingPanel() {
       if (b) setBrief(b);
       const shown = a ?? viewing;
       setLines(shown ? await api.meetingUtterances(shown.id) : []);
+      setStats(!a && viewing ? await api.meetingStats(viewing.id) : null);
     })().catch(() => undefined);
   }, [revision, viewing]);
 
   // A clicked citation: show the meeting being viewed (or the latest) at that minute.
   useEffect(() => {
     if (!citation) return;
+    // Consumed once: reopening the panel later must not jump again.
+    useSession.setState({ citation: null });
     void (async () => {
       const all = await api.meetingsList();
       const target = active ?? viewing ?? all.find((m) => m.status !== "active") ?? null;
@@ -178,6 +182,14 @@ export function MeetingPanel() {
             {projects.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </Select>
         </div>
+        {stats && (
+          <dl className="grid grid-cols-4 gap-1 border-b border-line px-3 py-1.5 text-center text-[11px]" aria-label={t("meeting.stats")}>
+            <div><dt className="text-muted">{t("meeting.stats.talk")}</dt><dd className="font-medium">{stats.talkPercent}%</dd></div>
+            <div><dt className="text-muted">{t("meeting.stats.pace")}</dt><dd className="font-medium">{stats.wordsPerMinute}</dd></div>
+            <div><dt className="text-muted">{t("meeting.stats.fillers")}</dt><dd className="font-medium">{stats.fillerCount}</dd></div>
+            <div><dt className="text-muted">{t("meeting.stats.questions")}</dt><dd className="font-medium">{stats.questionsAsked}</dd></div>
+          </dl>
+        )}
         <div className="min-h-0 flex-1 overflow-y-auto">
           <Transcript lines={lines} highlight={highlight} />
         </div>

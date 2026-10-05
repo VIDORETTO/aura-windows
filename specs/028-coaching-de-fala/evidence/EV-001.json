@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/speech_stats.rs": "4247140ef3f0adeca4b77b34a62b763f54dfcd13bd861a762d79a5a69937f339",
+    "specs/028-coaching-de-fala/change.md": "8564fefa87ba501152a600ac9ddb8746941c115c1d6b81c4032376f94db98dc1"
+  },
+  "input_paths": [
+    "crates/aura-app/src/speech_stats.rs",
+    "specs/028-coaching-de-fala/change.md"
+  ],
+  "limitations": "Ritmo depende da qualidade dos tempos do ASR; sem tom de voz nem comparação ao longo do tempo",
+  "observations": "Tempo de fala, ritmo, muletas (pt/en, palavras inteiras), maior turno e perguntas; painel e ferramenta meeting_stats",
+  "procedure": "cargo test -p aura-app (speech_stats, speech_stats_come_from_the_saved_transcript); vitest MeetingPanel",
+  "result": "passed",
+  "tested_revision": "local:b6412ea71fee808ceb5d03937883fa1486a2242aa38c332925d59eb5af545a33",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:12:43+00:00"
+}

@@ -540,6 +540,7 @@ fn main() {
             commands::meeting_from_buffer,
             commands::meetings_list,
             commands::meeting_utterances,
+            commands::meeting_stats,
             commands::meeting_delete,
             commands::meeting_search,
             commands::capture_hiding_check,

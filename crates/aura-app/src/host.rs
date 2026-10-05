@@ -323,6 +323,13 @@ impl crate::tools::ExtensionsAccess for Host {
         self.meeting_set_brief(briefing).map_err(|e| e.message)
     }
 
+    fn meeting_stats(&self, meeting_id: &str) -> Result<serde_json::Value, String> {
+        let s = self
+            .meeting_speech_stats(meeting_id)
+            .map_err(|e| e.message)?;
+        serde_json::to_value(s).map_err(|e| e.to_string())
+    }
+
     fn project_list(&self) -> serde_json::Value {
         let list = self
             .meetings
@@ -1436,6 +1443,11 @@ impl Host {
         } else {
             text.to_string()
         }
+    }
+
+    /// Private speech coaching numbers of a saved meeting (045).
+    pub fn meeting_speech_stats(&self, id: &str) -> HostResult<crate::speech_stats::SpeechStats> {
+        Ok(crate::speech_stats::compute(&self.meeting_utterances(id)?))
     }
 
     pub fn meeting_delete(&self, id: &str) -> HostResult<()> {

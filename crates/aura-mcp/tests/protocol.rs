@@ -129,6 +129,7 @@ async fn handshake_list_and_call() {
             "project_list",
             "project_save",
             "meeting_set_project",
+            "meeting_stats",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

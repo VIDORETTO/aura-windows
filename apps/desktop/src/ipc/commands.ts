@@ -100,6 +100,7 @@ export const api = {
   meetingFromBuffer: (title: string, minutes: number) => call<T.Meeting>("meeting_from_buffer", { title, minutes }),
   meetingsList: () => call<T.Meeting[]>("meetings_list"),
   meetingUtterances: (id: string) => call<T.Utterance[]>("meeting_utterances", { id }),
+  meetingStats: (id: string) => call<T.SpeechStats>("meeting_stats", { id }),
   meetingDelete: (id: string) => call<void>("meeting_delete", { id }),
   meetingSearch: (query: string, meeting?: string) => call<T.MeetingHit[]>("meeting_search", { query, meeting }),
   captureHidingCheck: () => call<T.HidingStatus[]>("capture_hiding_check"),

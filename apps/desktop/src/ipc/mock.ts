@@ -482,6 +482,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     meetings_list: () => state.meetingList,
     meeting_utterances: ({ id }) => state.meetingLines[String(id)] ?? [],
+    meeting_stats: () => ({ talkPercent: 40, youSeconds: 20, themSeconds: 30, wordsPerMinute: 117, fillerCount: 5, fillerPer100: 12.8, longestTurnSeconds: 20, questionsAsked: 1 }),
     meeting_delete: ({ id }) => {
       state.meetingList = state.meetingList.filter((m) => m.id !== id);
     },

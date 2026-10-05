@@ -18,7 +18,7 @@ use aura_mcp::tools::{
     SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SETTINGS_APPLY, SETTINGS_DESCRIBE,
     SETTINGS_PROPOSE, SETTINGS_UNDO, SKILL_SAVE,
 };
-use aura_mcp::tools::{MEETING_SET_PROJECT, PROJECT_LIST, PROJECT_SAVE};
+use aura_mcp::tools::{MEETING_SET_PROJECT, MEETING_STATS, PROJECT_LIST, PROJECT_SAVE};
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
     AccessRequest, Decision, DenyReason, Grants, Policy, Requester, Source, Target, decide,
@@ -95,6 +95,7 @@ pub trait ExtensionsAccess: Send + Sync {
         project: Option<&str>,
     ) -> Result<Value, String>;
     /// Projects (039).
+    fn meeting_stats(&self, meeting_id: &str) -> Result<Value, String>;
     fn project_list(&self) -> Value;
     fn project_save(
         &self,
@@ -652,6 +653,10 @@ impl HostTools {
                     Err(e) => invalid(e),
                 }
             }
+            MEETING_STATS => match ext.meeting_stats(&text("meeting_id")) {
+                Ok(v) => ToolOutput::text(v.to_string()),
+                Err(e) => invalid(e),
+            },
             PROJECT_LIST => ToolOutput::text(ext.project_list().to_string()),
             PROJECT_SAVE => match ext.project_save(
                 args["id"].as_str(),
@@ -792,7 +797,7 @@ impl ToolHandler for HostTools {
                 | REMINDER_CREATE | REMINDER_LIST | REMINDER_DELETE | NOTE_SAVE | NOTE_SEARCH => {
                     self.extensions_tool(tool, args).await
                 }
-                PROJECT_LIST | PROJECT_SAVE | MEETING_SET_PROJECT => {
+                PROJECT_LIST | PROJECT_SAVE | MEETING_SET_PROJECT | MEETING_STATS => {
                     self.extensions_tool(tool, args).await
                 }
                 other => {

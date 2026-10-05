@@ -128,6 +128,18 @@ export interface Action {
   overdue: boolean;
 }
 
+/** Private speech coaching numbers of the user in a meeting (045). */
+export interface SpeechStats {
+  talkPercent: number;
+  youSeconds: number;
+  themSeconds: number;
+  wordsPerMinute: number;
+  fillerCount: number;
+  fillerPer100: number;
+  longestTurnSeconds: number;
+  questionsAsked: number;
+}
+
 export interface Project {
   id: string;
   name: string;

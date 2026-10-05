@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "0e62e99ee5cd3a098d8d24917a9cd3307d7a32e7"
+  },
+  "blockers": [],
+  "effort_id": "028-coaching-de-fala",
+  "inputs": {
+    "contract": {
+      "fingerprint": "f4d166a036f1ffe405e055541bb248192c8274dd8a273d928d58b7da8663f3bb",
+      "path": "specs/028-coaching-de-fala/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

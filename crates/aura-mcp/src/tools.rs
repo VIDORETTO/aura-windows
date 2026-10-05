@@ -35,6 +35,7 @@ pub const ACTION_DONE: &str = "action_done";
 pub const PROJECT_LIST: &str = "project_list";
 pub const PROJECT_SAVE: &str = "project_save";
 pub const MEETING_SET_PROJECT: &str = "meeting_set_project";
+pub const MEETING_STATS: &str = "meeting_stats";
 pub const OPEN_WINDOWS: &str = "open_windows";
 pub const EXCLUSION_LIST: &str = "exclusion_list";
 pub const EXCLUSION_ADD: &str = "exclusion_add";
@@ -421,6 +422,15 @@ pub fn all() -> Vec<ToolDef> {
                 "project_id": {"type": "string"}},
                 "required": ["meeting_id"], "additionalProperties": false}),
             annotations: writes("Mover reunião para projeto"),
+        },
+        ToolDef {
+            name: MEETING_STATS.into(),
+            description: "Private speech coaching for the USER only, from a saved meeting: share of talk time, words per minute, filler words, longest turn and questions asked. Never score or judge the other people. Offer it as gentle, concrete feedback."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "meeting_id": {"type": "string"}},
+                "required": ["meeting_id"], "additionalProperties": false}),
+            annotations: read_only("Estatísticas de fala"),
         },
     ]
 }

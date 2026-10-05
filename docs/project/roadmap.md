@@ -60,7 +60,7 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-042 | Ensaio por voz: entrevista, vendas, apresentação e negociação com personas e feedback (Final Round, Sensei, Yoodli, Gong) | CAND-033, CAND-006 | P1 | candidate | — |
 | CAND-043 | Quem falou: diarização e nomes dos participantes (spike de motor e licença antes de prometer) | CAND-035 | P1 | candidate | — |
 | CAND-044 | Áudio por aplicativo (process loopback) e supressão de eco para transcrição limpa | CAND-005 | P1 | candidate | — |
-| CAND-045 | Coaching de fala privado: ritmo, muletas, tempo de fala, perguntas (Yoodli, Read, Verve) | CAND-035 | P2 | candidate | — |
+| CAND-045 | Coaching de fala privado: ritmo, muletas, tempo de fala, perguntas (Yoodli, Read, Verve) | CAND-035 | P2 | promoted | 028-coaching-de-fala |
 | CAND-046 | Modo Estudo (aula/vídeo): notas, glossário, flashcards e quiz | CAND-035 | P2 | candidate | — |
 | CAND-047 | Compromissos e promessas entre reuniões, com envelhecimento e lembretes | CAND-037 | P2 | promoted | 027-compromissos |
 | CAND-048 | Hábitos locais viram sugestões de configuração (sempre como proposta) | CAND-034 | P2 | candidate | — |

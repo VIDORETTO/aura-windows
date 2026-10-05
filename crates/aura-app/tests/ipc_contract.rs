@@ -281,6 +281,7 @@ fn build() -> Value {
             speaker: "you".into(),
             text: "Sim, com corte de 10%".into(),
         },
+        "speechStats": aura_app::speech_stats::compute(&[]),
         "recipe": aura_app::recipes::builtins().into_iter().next(),
         "chip": chip,
         "attachmentChip": attachment_chip,

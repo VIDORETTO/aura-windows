@@ -31,7 +31,6 @@
 | `CAND-042` | Ensaio por voz: entrevista, vendas, apresentação e negociação com personas e feedback (Final Round, Sensei, Yoodli, Gong) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-043` | Quem falou: diarização e nomes dos participantes (spike de motor e licença antes de prometer) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-044` | Áudio por aplicativo (process loopback) e supressão de eco para transcrição limpa | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-045` | Coaching de fala privado: ritmo, muletas, tempo de fala, perguntas (Yoodli, Read, Verve) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-046` | Modo Estudo (aula/vídeo): notas, glossário, flashcards e quiz | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-048` | Hábitos locais viram sugestões de configuração (sempre como proposta) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-049` | Aura como servidor MCP/API local somente leitura (notas e reuniões) para outras ferramentas (Granola API/MCP) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -74,3 +73,4 @@
 | `025-pos-reuniao-e-receitas` | Change: Pós-reunião e Receitas | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `026-biblioteca-e-pergunte` | Change: Biblioteca de reuniões e Pergunte | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `027-compromissos` | Change: Compromissos e promessas entre reuniões | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `028-coaching-de-fala` | Change: Coaching de fala privado | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

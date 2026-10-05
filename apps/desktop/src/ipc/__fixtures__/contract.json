@@ -560,6 +560,16 @@
     "workerIdleMinutes": 2,
     "yolo": false
   },
+  "speechStats": {
+    "fillerCount": 0,
+    "fillerPer100": 0.0,
+    "longestTurnSeconds": 0,
+    "questionsAsked": 0,
+    "talkPercent": 0,
+    "themSeconds": 0,
+    "wordsPerMinute": 0,
+    "youSeconds": 0
+  },
   "turnErrors": [
     {
       "kind": "planUsageLimit"
