@@ -73,7 +73,7 @@ fn luhn_ok(d: &[u32]) -> bool {
             }
         })
         .sum();
-    sum % 10 == 0
+    sum.is_multiple_of(10)
 }
 
 /// `123.456.789-00` / `12.345.678/0001-90` shapes are documents, never phones.
