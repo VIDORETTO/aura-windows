@@ -494,6 +494,7 @@
     "doubleTapCtrl": false,
     "effortPresets": {},
     "globalVoiceShortcut": "Ctrl+Alt+Space",
+    "hideFromCapture": true,
     "hideOnBlur": false,
     "invokeShortcut": "Ctrl+Shift+Space",
     "language": "ptBr",

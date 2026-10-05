@@ -75,6 +75,13 @@ export function AppearanceButton({ grow }: { grow: boolean }) {
             </span>
             <Switch label={t("general.hideOnBlur")} checked={settings.hideOnBlur} onChange={(v) => void updateSettings({ hideOnBlur: v })} />
           </label>
+          <label className="flex items-center justify-between gap-3 text-[12px]">
+            <span>
+              <span className="block font-medium">{t("general.hideFromCapture")}</span>
+              <span className="block text-[11px] leading-snug text-muted">{t("appearance.hideFromCapture.hint")}</span>
+            </span>
+            <Switch label={t("general.hideFromCapture")} checked={settings.hideFromCapture} onChange={(v) => void updateSettings({ hideFromCapture: v })} />
+          </label>
         </div>
       </PopoverPanel>
     </>

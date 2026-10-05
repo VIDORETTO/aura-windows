@@ -16,6 +16,8 @@ Data: 2026-10-05 · Status: **proposta** (não é spec; vira candidatos CAND-033
 
 **Ordem recomendada:** Fase 0 (Preparo + Configurar com IA + motor de Reunião) → Fase 1 (Reunião MVP, pós-reunião, consentimento) → Fase 2 (tradução ao vivo, calendário, Ensaio, ditado inteligente, Projetos) → Fase 3 (agendados, coaching, estudo) (§8).
 
+**Revisão 2 (2026-10-05):** §12 trata de **ocultar o Aura em qualquer transmissão** (já implementado como opção, §12.1) e §13 reúne **funções dos concorrentes fora de reuniões**.
+
 **Decisões que dependem de você:** §10 (Q-006 a Q-010), todas com recomendação.
 
 ---
@@ -428,7 +430,7 @@ Numeração dos esforços é indicativa; o Hybrid atribui ao promover. Cada esfo
 
 | ID | Pergunta | Recomendação |
 | --- | --- | --- |
-| **Q-006** | Posicionamento em **entrevistas**: ajuda ao vivo sem avisar o entrevistador, ou só preparo/ensaio/retrospectiva? | Preparo + Ensaio + retrospectiva primeiro; ajuda ao vivo existe só como Reunião genérica, sem marketing de "indetectável" nem recursos de evasão |
+| **Q-006** (decidida em 05/10) | Posicionamento em **entrevistas**/ocultação | Você pediu a opção de ocultar como os concorrentes: **mantida e configurável** (§12). Continuam de fora: esconder o processo do Gerenciador de Tarefas, enganar softwares de prova/proctoring, e marketing de "indetectável" |
 | **Q-007** | Por onde começar: Fase 0 completa ou direto na Reunião? | Fase 0 (Preparo + Configurar com IA) **em paralelo** ao spike de ASR contínuo: entrega valor já e destrava a Reunião |
 | **Q-008** | Calendário na 0.3? | Não; detectar pelo app/janela e preparo manual. Calendário entra na Fase 2 via conectores MCP |
 | **Q-009** | Guardar o áudio das reuniões? | Apagar ao encerrar por padrão (fica texto e notas); manter é opt-in |
@@ -445,6 +447,44 @@ Numeração dos esforços é indicativa; o Hybrid atribui ao promover. Cada esfo
 - **Painel ao vivo** — janela da Reunião em andamento. _Evitar_: HUD (na UI).
 - **Marcador** — momento destacado pelo usuário durante a Reunião.
 - **Nível de ajuda** — Silencioso, Sob demanda, Equilibrado, Ativo.
+
+## 12. Ocultar o Aura em qualquer transmissão
+
+### 12.1 Estado (implementado em 05/10)
+
+Opção **Configurações › Geral › "Ocultar em transmissões e gravações"** (`hideFromCapture`, padrão **ligada**) e o mesmo interruptor no menu Aparência do Overlay. Usa `SetWindowDisplayAffinity(WDA_EXCLUDEFROMCAPTURE)` em **todas** as janelas do Aura (Overlay, Configurações, seletor de região), aplicado na hora ao mudar a opção e na criação de cada janela. Ligada: só o usuário vê o Aura. Desligada: aparece como qualquer janela (útil para demonstrações e tutoriais).
+
+O que isso cobre: tudo que captura pela pilha gráfica do Windows (Windows Graphics Capture, duplicação DXGI, GDI/BitBlt) — compartilhamento de tela do Meet, Teams, Zoom, Discord e Slack, OBS, Gravador de Tela, Print Screen, e controle remoto como AnyDesk e semelhantes quando capturam pelo Windows. O Overlay já ficava fora do Alt+Tab e da barra de tarefas.
+
+**Limites que o app informa na própria opção:** não cobre câmera apontada para a tela nem placa de captura de vídeo (HDMI); ferramentas de acesso remoto com driver próprio de espelhamento, ou sessões RDP, **precisam ser testadas** (roteiro abaixo) — não prometemos o que não validamos; o Windows 10 anterior à versão 2004 não suporta esta API; notificações do Windows (toasts) e o ícone da bandeja não são janelas do Aura e podem aparecer na transmissão.
+
+### 12.2 Próximos passos
+
+- **Modo Transmissão:** quando o usuário estiver compartilhando (detecção por app de transmissão em primeiro plano ou botão), silenciar notificações nativas e prévias da Minibar fora do Aura.
+- **Testar ocultação:** botão que captura a tela pelos três caminhos (WGC, DXGI, GDI) e confirma, com a miniatura, que o Aura não aparece.
+- **Roteiro manual** de validação em: Meet (Chrome), Teams, Zoom, Discord (tela e janela), OBS (tela e janela), AnyDesk, RDP e Print Screen. Registrar evidência no Hybrid.
+- **Fora do escopo, por decisão:** ocultar o processo, mascarar o nome do executável ou enganar proctoring. Primeiro uso mostra aviso curto: respeite as regras da empresa, da prova e dos participantes.
+
+## 13. Outras funções dos concorrentes (fora de reuniões)
+
+| # | Função | Origem | O que é no Aura | Candidato |
+| --- | --- | --- | --- | --- |
+| G01 | **"Me ajude agora"**: uma tecla responde sobre tela + último trecho de áudio, sem digitar | Cluely (`Ctrl+Enter`) | Atalho global que anexa tela e buffer recente e envia uma pergunta padrão; resposta no Overlay ou Minibar | CAND-050 |
+| G02 | **Modo Código/Prova técnica**: lê o enunciado na tela e explica passo a passo (modo tutor: dica, depois solução) | Final Round, LockedIn (LeetCode, HackerRank) | Skill de tutor de código + OCR/UIA; níveis de ajuda "dica → abordagem → solução" | CAND-051 |
+| G03 | **Carreira**: currículo sob medida para a vaga, carta de apresentação, banco de perguntas, histórias STAR | Final Round | Skills + Projeto "Busca de emprego"; usa Preparo 🧭 | CAND-052 |
+| G04 | **Detecção automática de pergunta** (na tela ou no áudio) com rascunho de resposta | Sensei | Gatilho opcional do painel ao vivo e do Overlay | em CAND-036 |
+| G05 | **Widget compacto fixo** (sempre visível, minúsculo) | Cluely Desktop Widget | Modo do Overlay/Minibar fixável, com opacidade | CAND-053 |
+| G06 | **Tutor guiado na tela**: aponta onde clicar, passo a passo | Clicky | Anotação sobre a tela (CAND-014) + modo "guia" | CAND-014 (existente) |
+| G07 | **Tradução de tela e de vídeo** (legenda do que toca/aparece) | Krisp, Cluely (12+ idiomas) | OCR + áudio do sistema → tradução no Overlay | CAND-040 |
+| G08 | **Clipes e playlists** de trechos (áudio/tela) para compartilhar | Fathom | Recortes exportáveis com legenda | CAND-054 |
+| G09 | **Base de conhecimento viva** (roteiros, FAQs, material de estudo) consultada em qualquer resposta | Cluely, Fireflies AskFred | Pastas indexadas com citações | CAND-030 (existente) |
+| G10 | **Rastreadores de tópicos e palavras** (alertar quando citarem preço, prazo, concorrente) | Fireflies, Gong | Regras simples no painel ao vivo, criadas por IA | CAND-055 |
+| G11 | **Roleplay** com personas (cliente difícil, entrevistador) | Gong, Yoodli | Ensaio | CAND-042 |
+| G12 | **Voz limpa**: supressão de ruído do microfone local | Krisp | Avaliar (fora do núcleo; só se houver motor permissivo) | CAND-056 |
+| G13 | **Agente que age**: agenda follow-up, envia e-mail, atualiza CRM com aprovação | Otter, Gong | Modo Tarefa + conectores MCP | CAND-031 (existente) |
+| G14 | **Integração via MCP/API** com outras ferramentas | Granola | Aura como servidor MCP somente leitura | CAND-049 |
+
+Não adotar: coach humano em tempo real (LockedIn), métricas de "carisma/viés" (Read) e qualquer recurso que dependa de enganar terceiros.
 
 ## Fontes
 

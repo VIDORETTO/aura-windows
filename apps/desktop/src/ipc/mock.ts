@@ -44,6 +44,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   accentColor: null,
   effortPresets: {},
   yolo: false,
+  hideFromCapture: true,
 };
 
 const PRESETS: T.Preset[] = [

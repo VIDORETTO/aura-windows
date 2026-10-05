@@ -57,8 +57,12 @@ pub fn open_settings(app: &AppHandle, section: Option<&str>) {
         .min_inner_size(760.0, 520.0)
         .center()
         .build();
-    if let Err(e) = built {
-        tracing::error!("could not open settings: {e}");
+    match built {
+        Ok(_) => overlay::apply_capture_exclusion(
+            app,
+            app.state::<AppState>().host.settings().hide_from_capture,
+        ),
+        Err(e) => tracing::error!("could not open settings: {e}"),
     }
 }
 
@@ -99,7 +103,8 @@ pub fn open_region_selector(
     // The frozen image is already in the window; keep the selector itself out of captures.
     #[cfg(windows)]
     if let Ok(hwnd) = w.hwnd() {
-        aura_win::windows_info::exclude_from_capture(hwnd.0 as usize as u64, true);
+        let hide = app.state::<AppState>().host.settings().hide_from_capture;
+        aura_win::windows_info::exclude_from_capture(hwnd.0 as usize as u64, hide);
     }
     let _ = w.set_focus();
     Ok(())
@@ -139,6 +144,7 @@ pub fn apply_settings(app: &AppHandle, s: &Settings) {
     if let Err(e) = result {
         tracing::warn!("autostart: {e}");
     }
+    overlay::apply_capture_exclusion(app, s.hide_from_capture);
     #[cfg(windows)]
     shortcuts::apply(app, s);
     let _ = app.emit(

@@ -65,5 +65,13 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-047 | Compromissos e promessas entre reuniões, com envelhecimento e lembretes | CAND-037 | P2 | candidate | — |
 | CAND-048 | Hábitos locais viram sugestões de configuração (sempre como proposta) | CAND-034 | P2 | candidate | — |
 | CAND-049 | Aura como servidor MCP/API local somente leitura (notas e reuniões) para outras ferramentas (Granola API/MCP) | CAND-039 | P3 | candidate | — |
+| CAND-050 | "Me ajude agora": atalho único que responde sobre a tela e o áudio recente (Cluely) | CAND-004, CAND-005 | P1 | candidate | — |
+| CAND-051 | Modo Código/Prova técnica com tutor em níveis (dica, abordagem, solução) a partir da tela | CAND-004 | P2 | candidate | — |
+| CAND-052 | Carreira: currículo sob medida, carta, banco de perguntas e histórias STAR | CAND-033 | P2 | candidate | — |
+| CAND-053 | Widget compacto fixo, sempre visível | CAND-001 | P2 | candidate | — |
+| CAND-054 | Clipes de áudio/tela com legenda para compartilhar (Fathom) | CAND-035 | P3 | candidate | — |
+| CAND-055 | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | CAND-036 | P3 | candidate | — |
+| CAND-056 | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | CAND-005 | P3 | candidate | — |
+| CAND-057 | Modo Transmissão e "Testar ocultação": silenciar notificações ao compartilhar e verificar a ocultação por WGC, DXGI e GDI (a opção de ocultar já existe) | CAND-001 | P1 | candidate | — |
 
 > Revisão 2026-10-05: CAND-033…049 vêm de `docs/project/plano-reuniao-e-configuracao-assistida.md` e `docs/research/competitors-ao-vivo.md`. CAND-016 passa a ser coberto por CAND-035/036/037; CAND-025, 028, 030 e 031 ganham prioridade como habilitadores (ditado inteligente, sugestões contextuais, base de conhecimento, conectores). Nada aqui é esforço até passar pelo fluxo Hybrid.

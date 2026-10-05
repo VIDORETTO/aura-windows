@@ -57,6 +57,9 @@ export function GeneralSection() {
         <Row label={t("general.hideOnBlur")} hint={t("general.hideOnBlur.hint")}>
           <Switch label={t("general.hideOnBlur")} checked={s.hideOnBlur} onChange={(v) => void updateSettings({ hideOnBlur: v })} />
         </Row>
+        <Row label={t("general.hideFromCapture")} hint={t("general.hideFromCapture.hint")}>
+          <Switch label={t("general.hideFromCapture")} checked={s.hideFromCapture} onChange={(v) => void updateSettings({ hideFromCapture: v })} />
+        </Row>
         <Row label={t("general.attachScreen")}>
           <Switch label={t("general.attachScreen")} checked={s.attachScreenOnOpen} onChange={(v) => void updateSettings({ attachScreenOnOpen: v })} />
         </Row>

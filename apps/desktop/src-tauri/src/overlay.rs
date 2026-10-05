@@ -244,11 +244,29 @@ pub fn decorate(app: &AppHandle) {
         let id = hwnd.0 as usize as u64;
         // Visual QA screenshots of the demo build only (never in a shipped build).
         let capturable = cfg!(feature = "demo") && std::env::var_os("AURA_QA_CAPTURABLE").is_some();
-        if !capturable && !aura_win::windows_info::exclude_from_capture(id, true) {
+        let hide = host(app).settings().hide_from_capture;
+        if !capturable && hide && !aura_win::windows_info::exclude_from_capture(id, true) {
             tracing::warn!("SetWindowDisplayAffinity failed: overlay may appear in captures");
         }
         aura_win::windows_info::apply_overlay_chrome(id);
     }
     #[cfg(not(windows))]
     let _ = app;
+}
+
+/// Applies "hide from screen sharing" to every Aura window that exists now
+/// (Overlay, Settings, region selector). Windows opened later read the setting
+/// when they are created.
+pub fn apply_capture_exclusion(app: &AppHandle, hide: bool) {
+    #[cfg(windows)]
+    for label in [LABEL, "settings", "region"] {
+        if let Some(w) = app.get_webview_window(label)
+            && let Ok(hwnd) = w.hwnd()
+            && !aura_win::windows_info::exclude_from_capture(hwnd.0 as usize as u64, hide)
+        {
+            tracing::warn!("SetWindowDisplayAffinity failed for {label}");
+        }
+    }
+    #[cfg(not(windows))]
+    let _ = (app, hide);
 }

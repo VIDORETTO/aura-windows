@@ -85,6 +85,10 @@ pub struct Settings {
     /// YOLO (018): Task mode runs without asking for permission. Changed
     /// only through `yolo_set` (needs the typed confirmation), not patches.
     pub yolo: bool,
+    /// Keep every Aura window out of screenshots, recordings and screen
+    /// sharing (Meet, Teams, Discord, AnyDesk…), so only the user sees it.
+    /// On by default; off lets the Aura appear in captures (demos, tutorials).
+    pub hide_from_capture: bool,
 }
 
 /// Words that confirm turning YOLO on (018), in any case.
@@ -144,6 +148,7 @@ impl Default for Settings {
             accent_color: None,
             effort_presets: Default::default(),
             yolo: false,
+            hide_from_capture: true,
         }
     }
 }
@@ -210,6 +215,7 @@ pub struct SettingsPatch {
     pub accent_color: Option<Option<String>>,
     /// Replaces every preset (the UI sends the whole map).
     pub effort_presets: Option<std::collections::BTreeMap<String, ModeEfforts>>,
+    pub hide_from_capture: Option<bool>,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -274,6 +280,9 @@ impl Settings {
         }
         if let Some(v) = patch.start_with_windows {
             next.start_with_windows = v;
+        }
+        if let Some(v) = patch.hide_from_capture {
+            next.hide_from_capture = v;
         }
         if let Some(v) = patch.hide_on_blur {
             next.hide_on_blur = v;
@@ -828,6 +837,22 @@ mod tests {
                 .accent_color,
             None
         );
+    }
+
+    #[test]
+    fn windows_are_hidden_from_capture_by_default_and_can_be_shown() {
+        let s = Settings::default();
+        assert!(s.hide_from_capture);
+        let off = s
+            .apply(&SettingsPatch {
+                hide_from_capture: Some(false),
+                ..Default::default()
+            })
+            .unwrap();
+        assert!(!off.hide_from_capture);
+        // A stored settings blob from before this option keeps the safe default.
+        let old: Settings = serde_json::from_str(r#"{"opacity":0.9}"#).unwrap();
+        assert!(old.hide_from_capture);
     }
 
     #[test]

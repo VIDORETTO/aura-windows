@@ -5,6 +5,11 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+- Setting "Hide from screen sharing and recordings" (Settings › General and the
+  Overlay's Appearance menu), on by default: every Aura window stays out of
+  screen sharing, recordings and screenshots; turn it off to show Aura in captures.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added

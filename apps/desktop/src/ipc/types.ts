@@ -50,6 +50,8 @@ export interface Settings {
   effortPresets: Record<string, ModeEfforts>;
   /** YOLO (018): Task mode never asks for permission; set by `yolo_set`. */
   yolo: boolean;
+  /** Hide every Aura window from screenshots, recordings and screen sharing. */
+  hideFromCapture: boolean;
 }
 
 export interface ModeEfforts {
