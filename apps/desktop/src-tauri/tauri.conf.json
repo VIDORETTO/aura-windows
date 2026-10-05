@@ -57,7 +57,7 @@
     ],
     "publisher": "Aura contributors",
     "shortDescription": "Assistente de IA flutuante para Windows",
-    "longDescription": "Aura \u00e9 um assistente de IA sempre \u00e0 m\u00e3o: atalho global, v\u00ea a tela quando voc\u00ea permite, ouve, l\u00ea anexos e age com ferramentas.",
+    "longDescription": "Aura é um assistente de IA sempre à mão: atalho global, vê a tela quando você permite, ouve, lê anexos e age com ferramentas.",
     "category": "Productivity",
     "copyright": "MIT OR Apache-2.0",
     "externalBin": [
@@ -65,7 +65,7 @@
     ],
     "windows": {
       "webviewInstallMode": {
-        "type": "downloadBootstrapper"
+        "type": "embedBootstrapper"
       },
       "nsis": {
         "installMode": "currentUser",
@@ -76,11 +76,14 @@
         "displayLanguageSelector": false
       }
     },
-    "createUpdaterArtifacts": true
+    "createUpdaterArtifacts": true,
+    "resources": {
+      "binaries/*.dll": "./"
+    }
   },
   "plugins": {
     "updater": {
-      "pubkey": "REPLACE_WITH_THE_PUBLIC_KEY_FROM_`pnpm tauri signer generate`",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERCMDMyODZCNTc1REU1OEIKUldTTDVWMVhheWdEMjd1VWQ3ell4OUh6c3FkU0xOY0hDWWxVejlweG1DK0hSdGN1V1VDeWlGWUIK",
       "endpoints": [
         "https://github.com/VIDORETTO/aura-windows/releases/latest/download/latest.json"
       ],
