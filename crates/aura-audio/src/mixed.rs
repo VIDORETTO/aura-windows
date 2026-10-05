@@ -130,10 +130,7 @@ impl AudioStream for MixedStream {
             *s = s.clamp(-1.0, 1.0);
         }
         if mix.is_empty() && self.shared.alive.load(Ordering::SeqCst) == 0 {
-            return match self.shared.last_error.lock().unwrap().take() {
-                Some(e) => Some(Err(e)),
-                None => None,
-            };
+            return self.shared.last_error.lock().unwrap().take().map(Err);
         }
         Some(Ok(RawChunk {
             samples: mix,
