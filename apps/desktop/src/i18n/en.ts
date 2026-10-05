@@ -424,6 +424,8 @@ export const en: Record<MessageKey, string> = {
   "hiding.window.overlay": "Overlay",
   "hiding.window.settings": "Settings",
   "hiding.window.region": "Region selector",
+  "general.broadcast": "Broadcast mode",
+  "general.broadcast.hint": "On: Aura shows no Windows notifications (which could show on a shared screen); messages stay inside the Overlay.",
   "general.hideOnBlur": "Hide when clicking elsewhere",
   "general.hideOnBlur.hint": "Off: the Overlay stays open until you use the shortcut or minimize it to the tray.",
   "general.attachScreen": "Attach the screen on open",

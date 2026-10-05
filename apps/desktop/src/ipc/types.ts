@@ -54,6 +54,8 @@ export interface Settings {
   hideFromCapture: boolean;
   /** Keep a Meeting's audio after it ends (default: only the text stays). */
   meetingKeepAudio: boolean;
+  /** Broadcast mode (021): no Windows notifications from Aura. */
+  broadcastMode: boolean;
   /** Mask CPF, cards, e-mails and phones before the model reads a Meeting. */
   meetingRedactPii: boolean;
 }

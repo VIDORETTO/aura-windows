@@ -945,6 +945,7 @@ pub fn region_copy_text(
     use tauri_plugin_notification::NotificationExt;
     crate::close_region_selector(&app);
     let language = s.host.settings().language;
+    let quiet = s.host.settings().broadcast_mode;
     let (title, body) = match s.host.region_copy_text(&token, rect) {
         Ok(text) => (
             aura_app::localization::text(language, "native.region.copied").to_string(),
@@ -955,6 +956,9 @@ pub fn region_copy_text(
             e.message,
         ),
     };
+    if quiet {
+        return Ok(());
+    }
     app.notification()
         .builder()
         .title(title)
@@ -1053,8 +1057,12 @@ pub fn updater_configured(app: AppHandle) -> bool {
 
 /// Windows toast (answer finished while the user was elsewhere).
 #[tauri::command]
-pub fn notify(app: AppHandle, title: String, body: String) -> R<()> {
+pub fn notify(app: AppHandle, s: State<'_, AppState>, title: String, body: String) -> R<()> {
     use tauri_plugin_notification::NotificationExt;
+    // Broadcast mode (021): nothing of Aura pops up on a shared screen.
+    if s.host.settings().broadcast_mode {
+        return Ok(());
+    }
     app.notification()
         .builder()
         .title(title)

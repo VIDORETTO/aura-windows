@@ -424,6 +424,8 @@ export const ptBR = {
   "hiding.window.overlay": "Overlay",
   "hiding.window.settings": "Configurações",
   "hiding.window.region": "Seletor de região",
+  "general.broadcast": "Modo transmissão",
+  "general.broadcast.hint": "Ligado: o Aura não mostra notificações do Windows (que poderiam aparecer na tela compartilhada); os avisos ficam dentro do Overlay.",
   "general.hideOnBlur": "Esconder ao clicar fora",
   "general.hideOnBlur.hint": "Desligado: o Overlay fica aberto até você usar o atalho ou minimizar para a bandeja.",
   "general.attachScreen": "Anexar a tela ao abrir",

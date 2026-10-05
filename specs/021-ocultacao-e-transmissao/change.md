@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-057. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Aura invisível para quem assiste à tela compartilhada, com verificação e silêncio de notificações durante a transmissão.
 
-Nota: **Feito (05/10):** opção `hideFromCapture`, aplicação em todas as janelas, botão "Testar ocultação" (lê a afinidade de cada janela com `GetWindowDisplayAffinity`). **Falta:** teste por WGC/DXGI/GDI com miniaturas, Modo Transmissão (silenciar notificações), roteiro nos apps reais. Fora do escopo por decisão: ocultar o processo e enganar softwares de prova.
+Nota: **Feito (05/10):** opção `hideFromCapture`, aplicação em todas as janelas, botão "Testar ocultação" (lê a afinidade de cada janela com `GetWindowDisplayAffinity`). **Também feito:** Modo transmissão manual (`broadcastMode`: sem notificações do Windows). **Falta:** detecção automática de compartilhamento, teste por WGC/DXGI/GDI com miniaturas, roteiro nos apps reais. Fora do escopo por decisão: ocultar o processo e enganar softwares de prova.
 
 ## Contrato de comportamento
 

@@ -46,6 +46,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   yolo: false,
   hideFromCapture: true,
   meetingKeepAudio: false,
+  broadcastMode: false,
   meetingRedactPii: false,
 };
 

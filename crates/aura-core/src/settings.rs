@@ -91,6 +91,9 @@ pub struct Settings {
     pub hide_from_capture: bool,
     /// Keep the audio of a Meeting after it ends (off: only the text stays).
     pub meeting_keep_audio: bool,
+    /// Broadcast mode (021): Aura shows no Windows notifications, so nothing
+    /// of it appears on a shared screen; messages stay inside the Overlay.
+    pub broadcast_mode: bool,
     /// Mask CPF, cards, e-mails and phones before the model reads a Meeting.
     pub meeting_redact_pii: bool,
 }
@@ -154,6 +157,7 @@ impl Default for Settings {
             yolo: false,
             hide_from_capture: true,
             meeting_keep_audio: false,
+            broadcast_mode: false,
             meeting_redact_pii: false,
         }
     }
@@ -223,6 +227,7 @@ pub struct SettingsPatch {
     pub effort_presets: Option<std::collections::BTreeMap<String, ModeEfforts>>,
     pub hide_from_capture: Option<bool>,
     pub meeting_keep_audio: Option<bool>,
+    pub broadcast_mode: Option<bool>,
     pub meeting_redact_pii: Option<bool>,
 }
 
@@ -288,6 +293,9 @@ impl Settings {
         }
         if let Some(v) = patch.start_with_windows {
             next.start_with_windows = v;
+        }
+        if let Some(v) = patch.broadcast_mode {
+            next.broadcast_mode = v;
         }
         if let Some(v) = patch.meeting_keep_audio {
             next.meeting_keep_audio = v;
@@ -867,6 +875,19 @@ mod tests {
         // A stored settings blob from before this option keeps the safe default.
         let old: Settings = serde_json::from_str(r#"{"opacity":0.9}"#).unwrap();
         assert!(old.hide_from_capture);
+    }
+
+    #[test]
+    fn broadcast_mode_is_off_by_default_and_toggles() {
+        let s = Settings::default();
+        assert!(!s.broadcast_mode);
+        let on = s
+            .apply(&SettingsPatch {
+                broadcast_mode: Some(true),
+                ..Default::default()
+            })
+            .unwrap();
+        assert!(on.broadcast_mode);
     }
 
     #[test]

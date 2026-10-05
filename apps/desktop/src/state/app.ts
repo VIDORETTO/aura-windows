@@ -165,7 +165,9 @@ export const useApp = create<AppStore>((set, get) => ({
       case "reminder":
         // One toast: the Overlay window shows it, Settings/region windows do not.
         if (!/^#\/(settings|region)/.test(window.location.hash)) {
-          void api.notify("Aura", e.event.text).catch(() => {});
+          // Broadcast mode keeps it inside Aura (the Overlay is hidden from sharing).
+          if (get().settings?.broadcastMode) get().notify("info", e.event.text);
+          else void api.notify("Aura", e.event.text).catch(() => {});
         }
         break;
       case "extensionsChanged":

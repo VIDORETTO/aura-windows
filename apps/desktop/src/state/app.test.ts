@@ -25,4 +25,13 @@ describe("reminders (020)", () => {
     expect(notify).toHaveBeenCalledTimes(1);
     window.location.hash = "";
   });
+
+  it("in broadcast mode the reminder stays inside Aura, with no Windows notification", async () => {
+    await freshApp({ signedIn: true });
+    const notify = vi.spyOn(api, "notify").mockResolvedValue(undefined);
+    useApp.getState().setSettings({ ...useApp.getState().settings!, broadcastMode: true });
+    useApp.getState().handle({ channel: "reminder", event: { id: "r3", text: "Ligar para a Ana" } });
+    expect(notify).not.toHaveBeenCalled();
+    expect(useApp.getState().notices.map((n) => n.message)).toContain("Ligar para a Ana");
+  });
 });

@@ -527,6 +527,7 @@
     "asrVocabulary": [],
     "attachScreenOnOpen": false,
     "autoRead": false,
+    "broadcastMode": false,
     "cloudAsrProvider": null,
     "defaultEffort": null,
     "defaultModel": null,

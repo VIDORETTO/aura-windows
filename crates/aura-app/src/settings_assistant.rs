@@ -54,6 +54,10 @@ pub const EDITABLE: &[(&str, &str)] = &[
         "Mask CPF, cards, e-mails and phone numbers before the model reads a meeting.",
     ),
     (
+        "broadcastMode",
+        "Broadcast mode: no Windows notifications from Aura while the user shares the screen; messages stay inside the Overlay.",
+    ),
+    (
         "hideFromCapture",
         "Keep Aura out of screen sharing and recordings (turning it off widens exposure).",
     ),

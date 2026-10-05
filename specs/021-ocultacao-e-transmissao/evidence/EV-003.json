@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-core/src/settings.rs": "29244be93ff50dddfbfada04b6a74c2d6b8fdda87a61ccff38ebee25551416ad",
+    "specs/021-ocultacao-e-transmissao/change.md": "84cffdd4fcf90441fb8c5caaffb0df599ad7a99cb3e97eb448a73689f5a81361"
+  },
+  "input_paths": [
+    "crates/aura-core/src/settings.rs",
+    "specs/021-ocultacao-e-transmissao/change.md"
+  ],
+  "limitations": "Ativação manual (sem detecção automática de compartilhamento); toast de inicialização e do instalador não cobertos; teste por WGC/DXGI/GDI com miniaturas e roteiro nos apps reais pendentes",
+  "observations": "Modo transmissão (broadcastMode): sem notificações do Windows (comando notify do shell e toast de cópia de texto) e lembretes ficam dentro do Overlay; a IA pode ligar/desligar",
+  "procedure": "cargo test -p aura-core (broadcast_mode); vitest state/app.test.ts",
+  "result": "partial",
+  "tested_revision": "local:49c028e0ab6292a11093b26d092d773a96ba94c2474592cc2f0609773425ccf6",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:52:12+00:00"
+}
