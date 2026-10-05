@@ -223,6 +223,7 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/carreira` | Currículo sob medida, carta e histórias de entrevista, só com os seus fatos |
 | `/documento` | Explica contrato, boleto, bula ou termos em linguagem simples, com riscos e prazos |
 | `/ajuda` | "Me ajude agora": responde sobre a tela e o áudio recente |
+| `/agendar <o quê e quando>` | Agenda uma instrução recorrente ("todo dia útil às 8h, resuma meus compromissos"); roda numa conversa de Chat, só leitura |
 | `/anota <texto>` · `/notas <busca>` | Guarda e procura anotações rápidas |
 | `/texto` | Arraste sobre uma área da tela e o texto (OCR) vai para a área de transferência |
 | `/colar [formato]` | Converte o texto da área de transferência (lista, tabela, texto limpo, formal…) para você colar |

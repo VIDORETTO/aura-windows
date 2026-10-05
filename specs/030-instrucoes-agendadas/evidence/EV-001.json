@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/reminders.rs": "14e3d70343ecd458ae3fb7e8414759a1158b28e56c6280e6d544756262610b2a",
+    "specs/030-instrucoes-agendadas/change.md": "6897d8783fa24b5ac0e0b58a1a7198d59274f164f5d21922bda9beaa630f1a85"
+  },
+  "input_paths": [
+    "crates/aura-app/src/reminders.rs",
+    "specs/030-instrucoes-agendadas/change.md"
+  ],
+  "limitations": "Rotina roda com o Aura aberto (bandeja); sem execução em modo Tarefa; sem lista de execuções; comportamento do agente real não verificado",
+  "observations": "A instrução agendada abre Chat só quando vence; recorrência pula ocorrências perdidas; migração 0015",
+  "procedure": "cargo test -p aura-app (scheduled_instructions_open_a_chat_when_due, reminders)",
+  "result": "partial",
+  "tested_revision": "local:4f16517fbedd3c73c9a8d8e9e0ba9cf43114ecb8e082771b38d0bfee2c033e9a",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:16:00+00:00"
+}

@@ -3557,3 +3557,50 @@ async fn speech_stats_come_from_the_saved_transcript() {
     assert!(s.filler_count >= 3);
     assert_eq!(s.questions_asked, 1);
 }
+
+#[tokio::test]
+async fn scheduled_instructions_open_a_chat_when_due() {
+    // 017 (first slice): "every weekday at 8, summarize my commitments".
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-sched".into(),
+    };
+    let mut events = e.host.subscribe();
+    let out = tools
+        .call(
+            "reminder_create",
+            json!({"text": "Resumo da manhã", "delay_minutes": 5, "repeat": "daily",
+                   "agent_prompt": "Resuma meus compromissos abertos com action_list"}),
+            ctx.clone(),
+        )
+        .await;
+    assert!(!out.is_error);
+    let later = aura_store::now_secs() + 6 * 60;
+    assert_eq!(e.host.tick_reminders_at(later, 0), 1);
+    until(&mut events, |ev| matches!(ev, HostEvent::AgentTask { text, mode } if text.contains("action_list") && mode == "chat")).await;
+    // A plain reminder never opens a conversation.
+    let plain = tools
+        .call(
+            "reminder_create",
+            json!({"text": "ligar", "delay_minutes": 5}),
+            ctx,
+        )
+        .await;
+    assert!(!plain.is_error);
+    let mut rx = e.host.subscribe();
+    e.host.tick_reminders_at(aura_store::now_secs() + 7 * 60, 0);
+    let mut saw_task = false;
+    while let Ok(ev) = rx.try_recv() {
+        saw_task |= matches!(ev, HostEvent::AgentTask { .. });
+    }
+    assert!(!saw_task, "the daily one is not due again yet");
+}

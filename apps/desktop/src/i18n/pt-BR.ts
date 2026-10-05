@@ -166,6 +166,7 @@ export const ptBR = {
   "quick.template.career": "$aura-carreira Preciso de ajuda com minha carreira: {texto}",
   "quick.template.document": "$aura-documentos Me ajude a entender este documento: {selecao}",
   "quick.template.help": "{tela}Me ajude agora com o que está na tela. Se houver buffer de áudio, use audio_recent dos últimos 2 minutos como contexto. Seja direto: o que está acontecendo e o que fazer a seguir, em poucas linhas.\n\n{texto}",
+  "quick.template.schedule": "Agende uma instrução recorrente com as ferramentas clock_now e reminder_create (use agent_prompt para o que devo executar na hora, repeat daily, weekdays ou weekly). Ela roda numa conversa de Chat, só leitura. Pedido: {texto}",
   "quick.template.saved": "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.",
   "audio.allOutputs": "Todas as saídas (alto-falantes, fone…)",
   "meeting.commitments": "Compromissos",

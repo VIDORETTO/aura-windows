@@ -32,7 +32,7 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-014 | Apontar e anotar na tela (setas, círculos, destaque) | CAND-004 | P3 | candidate | — |
 | CAND-015 | Timeline pesquisável de tela e áudio (FTS5 + OCR/UIA) | CAND-004, CAND-005 | P3 | candidate | — |
 | CAND-016 | Assistente de reuniões (transcrição, diarização, resumo) | CAND-005, CAND-006 | P3 | candidate | — |
-| CAND-017 | Agentes agendados e gatilhos por atividade | CAND-008 | P3 | candidate | — |
+| CAND-017 | Agentes agendados e gatilhos por atividade | CAND-008 | P3 | promoted | 030-instrucoes-agendadas |
 | CAND-018 | Porte para macOS | CAND-010 | P4 | candidate | — |
 | CAND-019 | Contexto rico no `@`: escolher janela aberta, arquivo do workspace (`fuzzyFileSearch`), conversa anterior, área de transferência | CAND-004 | P2 | candidate | — |
 | CAND-020 | Comandos rápidos com saída "substituir a seleção no app" (reaproveita Inserir no app) | CAND-009 | P2 | candidate | — |

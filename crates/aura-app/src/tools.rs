@@ -139,6 +139,7 @@ pub trait ExtensionsAccess: Send + Sync {
         at: Option<&str>,
         delay_minutes: Option<i64>,
         repeat: &str,
+        agent_prompt: Option<&str>,
     ) -> Result<Value, String>;
     fn reminder_list(&self) -> Value;
     fn reminder_delete(&self, id: &str) -> Result<(), String>;
@@ -737,6 +738,7 @@ impl HostTools {
                 args["at"].as_str(),
                 args["delay_minutes"].as_i64(),
                 args["repeat"].as_str().unwrap_or("none"),
+                args["agent_prompt"].as_str(),
             ) {
                 Ok(v) => ToolOutput::text(format!("Lembrete criado: {v}")),
                 Err(e) => invalid(e),

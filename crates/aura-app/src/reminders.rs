@@ -159,6 +159,9 @@ pub struct Reminder {
     pub text: String,
     pub due_at: i64,
     pub repeat: String,
+    /// An instruction the agent runs in a new Chat conversation when it is
+    /// due ("every weekday at 8, summarize my open commitments").
+    pub prompt: Option<String>,
 }
 
 #[derive(Clone)]
@@ -177,7 +180,9 @@ impl RemindersRepo {
         due_at: i64,
         repeat: Repeat,
         now: i64,
+        prompt: Option<&str>,
     ) -> Result<Reminder, ReminderError> {
+        let prompt = prompt.map(str::trim).filter(|p| !p.is_empty());
         let text = text.trim();
         if text.is_empty() {
             return Err(ReminderError::EmptyText);
@@ -188,8 +193,8 @@ impl RemindersRepo {
         let id = uuid::Uuid::new_v4().to_string();
         self.store.with_conn(|c| {
             c.execute(
-                "INSERT INTO reminders(id, text, due_at, repeat, done, created_at) VALUES (?1,?2,?3,?4,0,?5)",
-                params![id, text, due_at, repeat.key(), now],
+                "INSERT INTO reminders(id, text, due_at, repeat, done, created_at, prompt) VALUES (?1,?2,?3,?4,0,?5,?6)",
+                params![id, text, due_at, repeat.key(), now, prompt],
             )?;
             Ok(())
         })?;
@@ -198,13 +203,14 @@ impl RemindersRepo {
             text: text.into(),
             due_at,
             repeat: repeat.key().into(),
+            prompt: prompt.map(str::to_string),
         })
     }
 
     pub fn list(&self) -> Result<Vec<Reminder>, ReminderError> {
         Ok(self.store.with_conn(|c| {
             let mut st = c.prepare(
-                "SELECT id, text, due_at, repeat FROM reminders WHERE done = 0 ORDER BY due_at",
+                "SELECT id, text, due_at, repeat, prompt FROM reminders WHERE done = 0 ORDER BY due_at",
             )?;
             let rows = st
                 .query_map([], |r| {
@@ -213,6 +219,7 @@ impl RemindersRepo {
                         text: r.get(1)?,
                         due_at: r.get(2)?,
                         repeat: r.get(3)?,
+                        prompt: r.get(4)?,
                     })
                 })?
                 .collect::<Result<Vec<_>, _>>()?;
@@ -238,9 +245,9 @@ impl RemindersRepo {
     /// move to their next occurrence (missed occurrences are not replayed).
     pub fn fire_due(&self, now: i64, offset: i32) -> Result<Vec<Reminder>, ReminderError> {
         let due: Vec<(Reminder, String)> = self.store.with_conn(|c| {
-            let mut st = c.prepare("SELECT id, text, due_at, repeat FROM reminders WHERE done = 0 AND due_at <= ?1 ORDER BY due_at")?;
+            let mut st = c.prepare("SELECT id, text, due_at, repeat, prompt FROM reminders WHERE done = 0 AND due_at <= ?1 ORDER BY due_at")?;
             let rows = st
-                .query_map(params![now], |r| Ok((Reminder { id: r.get(0)?, text: r.get(1)?, due_at: r.get(2)?, repeat: r.get::<_, String>(3)? }, r.get::<_, String>(3)?)))?
+                .query_map(params![now], |r| Ok((Reminder { id: r.get(0)?, text: r.get(1)?, due_at: r.get(2)?, repeat: r.get::<_, String>(3)?, prompt: r.get(4)? }, r.get::<_, String>(3)?)))?
                 .collect::<Result<Vec<_>, _>>()?;
             Ok(rows)
         })?;
@@ -307,16 +314,16 @@ mod tests {
     fn create_validates_and_lists_by_time() {
         let r = repo();
         assert_eq!(
-            r.create("  ", NOON_UTC + 60, Repeat::None, NOON_UTC),
+            r.create("  ", NOON_UTC + 60, Repeat::None, NOON_UTC, None),
             Err(ReminderError::EmptyText)
         );
         assert_eq!(
-            r.create("ligar", NOON_UTC, Repeat::None, NOON_UTC),
+            r.create("ligar", NOON_UTC, Repeat::None, NOON_UTC, None),
             Err(ReminderError::InThePast)
         );
-        r.create("depois", NOON_UTC + 7200, Repeat::None, NOON_UTC)
+        r.create("depois", NOON_UTC + 7200, Repeat::None, NOON_UTC, None)
             .unwrap();
-        r.create("antes", NOON_UTC + 60, Repeat::None, NOON_UTC)
+        r.create("antes", NOON_UTC + 60, Repeat::None, NOON_UTC, None)
             .unwrap();
         let texts: Vec<_> = r.list().unwrap().into_iter().map(|x| x.text).collect();
         assert_eq!(texts, ["antes", "depois"]);
@@ -326,7 +333,13 @@ mod tests {
     fn due_reminders_fire_once() {
         let r = repo();
         let a = r
-            .create("ligar para o João", NOON_UTC + 60, Repeat::None, NOON_UTC)
+            .create(
+                "ligar para o João",
+                NOON_UTC + 60,
+                Repeat::None,
+                NOON_UTC,
+                None,
+            )
             .unwrap();
         assert!(r.fire_due(NOON_UTC + 59, BRT).unwrap().is_empty());
         let fired = r.fire_due(NOON_UTC + 61, BRT).unwrap();
@@ -340,7 +353,7 @@ mod tests {
     fn repeating_reminders_move_to_the_next_day_and_skip_missed_ones() {
         let r = repo();
         let d = r
-            .create("daily", NOON_UTC + 60, Repeat::Daily, NOON_UTC)
+            .create("daily", NOON_UTC + 60, Repeat::Daily, NOON_UTC, None)
             .unwrap();
         // Aura was closed for three days: fires once, next one is in the future.
         let now = NOON_UTC + 3 * 86_400 + 120;
@@ -372,7 +385,7 @@ mod tests {
     fn delete_removes_only_active_reminders() {
         let r = repo();
         let a = r
-            .create("x", NOON_UTC + 60, Repeat::None, NOON_UTC)
+            .create("x", NOON_UTC + 60, Repeat::None, NOON_UTC, None)
             .unwrap();
         r.delete(&a.id).unwrap();
         assert_eq!(r.delete(&a.id), Err(ReminderError::NotFound));

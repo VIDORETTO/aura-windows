@@ -224,13 +224,14 @@ pub fn all() -> Vec<ToolDef> {
         },
         ToolDef {
             name: REMINDER_CREATE.into(),
-            description: "Create a reminder that shows a Windows notification. Give either delay_minutes or at (local time 'YYYY-MM-DDTHH:MM', or RFC 3339). repeat: none, daily, weekdays or weekly. text: what to remind, in the user's language. The user approves the call."
+            description: "Create a reminder that shows a Windows notification and, with agent_prompt, also runs a scheduled instruction (a daily summary, a weekly review) in a new Chat conversation (read-only: it cannot change files). Give either delay_minutes or at (local time 'YYYY-MM-DDTHH:MM', or RFC 3339). repeat: none, daily, weekdays or weekly. text: what to remind, in the user's language. The user approves the call."
                 .into(),
             input_schema: json!({"type": "object", "properties": {
                 "text": {"type": "string", "maxLength": 500},
                 "at": {"type": "string"},
                 "delay_minutes": {"type": "integer", "minimum": 1},
-                "repeat": {"type": "string", "enum": ["none", "daily", "weekdays", "weekly"], "default": "none"}},
+                "repeat": {"type": "string", "enum": ["none", "daily", "weekdays", "weekly"], "default": "none"},
+                "agent_prompt": {"type": "string", "maxLength": 1000, "description": "Optional instruction the agent runs in a new read-only Chat conversation when the reminder is due (e.g. 'summarize my open commitments with action_list')."}},
                 "required": ["text"], "additionalProperties": false}),
             annotations: writes("Criar lembrete"),
         },

@@ -166,6 +166,7 @@ export const en: Record<MessageKey, string> = {
   "quick.template.career": "$aura-carreira I need help with my career: {texto}",
   "quick.template.document": "$aura-documentos Help me understand this document: {selecao}",
   "quick.template.help": "{tela}Help me now with what is on the screen. If there is an audio buffer, use audio_recent for the last 2 minutes as context. Be direct: what is going on and what to do next, in a few lines.\n\n{texto}",
+  "quick.template.schedule": "Schedule a recurring instruction with the clock_now and reminder_create tools (use agent_prompt for what to run at that time, repeat daily, weekdays or weekly). It runs in a read-only Chat conversation. Request: {texto}",
   "quick.template.saved": "Search my saved texts with the note_search tool (kind=saved, query: {texto}) and show what you find, newest first.",
   "audio.allOutputs": "All outputs (speakers, headset…)",
   "meeting.commitments": "Commitments",

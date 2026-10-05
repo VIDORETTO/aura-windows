@@ -446,6 +446,7 @@ impl crate::tools::ExtensionsAccess for Host {
         at: Option<&str>,
         delay_minutes: Option<i64>,
         repeat: &str,
+        agent_prompt: Option<&str>,
     ) -> Result<serde_json::Value, String> {
         use crate::reminders::{Repeat, parse_time};
         let (now, offset) = (self.clock.now(), self.clock.utc_offset_secs());
@@ -461,6 +462,7 @@ impl crate::tools::ExtensionsAccess for Host {
                 due,
                 Repeat::parse(repeat).map_err(|e| e.to_string())?,
                 now,
+                agent_prompt,
             )
             .map_err(|e| e.to_string())?;
         Ok(serde_json::json!({
@@ -473,6 +475,7 @@ impl crate::tools::ExtensionsAccess for Host {
         let items = self.reminders.list().unwrap_or_default();
         serde_json::json!(items.iter().map(|r| serde_json::json!({
             "id": r.id, "text": r.text, "due": crate::reminders::format_local(r.due_at, offset), "repeat": r.repeat,
+            "agent_prompt": r.prompt,
         })).collect::<Vec<_>>())
     }
 
@@ -1479,6 +1482,13 @@ impl Host {
                 id: r.id.clone(),
                 text: r.text.clone(),
             });
+            // A scheduled instruction runs in a new read-only Chat conversation.
+            if let Some(prompt) = &r.prompt {
+                let _ = self.events.send(HostEvent::AgentTask {
+                    text: prompt.clone(),
+                    mode: "chat".into(),
+                });
+            }
         }
         due.len()
     }
@@ -2924,6 +2934,7 @@ impl Host {
                 "carreira" => "quick.template.career",
                 "documento" => "quick.template.document",
                 "ajuda" => "quick.template.help",
+                "agendar" => "quick.template.schedule",
                 "salvos" => "quick.template.saved",
                 "configurar" => "quick.template.configure",
                 "preparo" => "quick.template.prepare",

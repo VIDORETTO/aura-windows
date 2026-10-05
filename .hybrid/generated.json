@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "ffbd122823332a461ec753d489a50ad86683e1c65d0afee643e88765c2d25f88",
+  "docs/project/backlog.md": "43bd5dca1fc36d277002f7ad064a059225f9b8febd1e9355c605302e1ff22732",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -39,5 +39,6 @@
   "specs/026-biblioteca-e-pergunte/verification.md": "f06a55bffe84ee002eb25b96b4185a82efb8d40d8c16d3dd0225f727b5b57ba8",
   "specs/027-compromissos/verification.md": "7888bf6ec418076be5347d289b9eef652e978c596ff7d11d6c823ae42d9e9e0e",
   "specs/028-coaching-de-fala/verification.md": "a4645d977d56e831b46f337a4285a8a9d075d09dd27f47933dbc55fa639bbb77",
-  "specs/029-habilidades-do-dia-a-dia/verification.md": "7981298c504134e76ee2dfbaabcf503cc232ba372e59c525eae78a5e9625b356"
+  "specs/029-habilidades-do-dia-a-dia/verification.md": "7981298c504134e76ee2dfbaabcf503cc232ba372e59c525eae78a5e9625b356",
+  "specs/030-instrucoes-agendadas/verification.md": "1d0ded751bca9d243ea12d54f7fabc4fd476026ebd3e48eb12133fd893bc6ea6"
 }

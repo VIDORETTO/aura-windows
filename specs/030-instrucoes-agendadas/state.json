@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "8ecbc0d0d8b2a816ac35a28c11abcad5931a0187"
+  },
+  "blockers": [],
+  "effort_id": "030-instrucoes-agendadas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "10658fc58ec169a85a57690b039c83a1dc2041d5021154a79106e0efd4bb34ac",
+      "path": "specs/030-instrucoes-agendadas/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

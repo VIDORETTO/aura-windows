@@ -160,6 +160,10 @@ pub fn builtins() -> Vec<QuickCommand> {
             "{tela}Me ajude agora com o que está na tela. Se houver buffer de áudio, use audio_recent dos últimos 2 minutos como contexto. Seja direto: o que está acontecendo e o que fazer a seguir, em poucas linhas.\n\n{texto}",
         ),
         b(
+            "agendar",
+            "Agende uma instrução recorrente com as ferramentas clock_now e reminder_create (use agent_prompt para o que devo executar na hora, repeat daily, weekdays ou weekly). Ela roda numa conversa de Chat, só leitura. Pedido: {texto}",
+        ),
+        b(
             "salvos",
             "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.",
         ),
@@ -538,7 +542,7 @@ mod tests {
     #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 24);
+        assert_eq!(repo.list().unwrap().len(), 25);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)

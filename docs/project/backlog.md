@@ -10,7 +10,6 @@
 | `CAND-014` | Apontar e anotar na tela (setas, círculos, destaque) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-015` | Timeline pesquisável de tela e áudio (FTS5 + OCR/UIA) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-016` | Assistente de reuniões (transcrição, diarização, resumo) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-017` | Agentes agendados e gatilhos por atividade | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-018` | Porte para macOS | `roadmap` | `P4` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-019` | Contexto rico no `@`: escolher janela aberta, arquivo do workspace (`fuzzyFileSearch`), conversa anterior, área de transferência | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-020` | Comandos rápidos com saída "substituir a seleção no app" (reaproveita Inserir no app) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -70,3 +69,4 @@
 | `027-compromissos` | Change: Compromissos e promessas entre reuniões | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `028-coaching-de-fala` | Change: Coaching de fala privado | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `029-habilidades-do-dia-a-dia` | Change: Habilidades do dia a dia: Ensaio, Estudo, Carreira, Documentos e Ajuda agora | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `030-instrucoes-agendadas` | Change: Instruções agendadas (primeira fatia dos agentes agendados) | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
