@@ -424,6 +424,69 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
     s.host.insert_into_app(&text)
 }
 
+// ---------------------------------------------------------------- meetings
+
+#[tauri::command]
+pub fn meeting_active(s: State<'_, AppState>) -> Option<aura_app::meeting::Meeting> {
+    s.host.meeting_active()
+}
+
+#[tauri::command]
+pub async fn meeting_start(
+    s: State<'_, AppState>,
+    title: String,
+    kind: String,
+    briefing: String,
+) -> R<aura_app::meeting::Meeting> {
+    Ok(s.host.meeting_start(&title, &kind, &briefing).await?)
+}
+
+#[tauri::command]
+pub fn meeting_pause(s: State<'_, AppState>, paused: bool) -> R<()> {
+    Ok(s.host.meeting_set_paused(paused)?)
+}
+
+#[tauri::command]
+pub async fn meeting_stop(s: State<'_, AppState>) -> R<aura_app::meeting::Meeting> {
+    Ok(s.host.meeting_stop().await?)
+}
+
+#[tauri::command]
+pub async fn meeting_from_buffer(
+    s: State<'_, AppState>,
+    title: String,
+    minutes: u32,
+) -> R<aura_app::meeting::Meeting> {
+    Ok(s.host.meeting_from_buffer(&title, minutes).await?)
+}
+
+#[tauri::command]
+pub fn meetings_list(s: State<'_, AppState>) -> R<Vec<aura_app::meeting::Meeting>> {
+    Ok(s.host.meetings_list()?)
+}
+
+#[tauri::command]
+pub fn meeting_utterances(
+    s: State<'_, AppState>,
+    id: String,
+) -> R<Vec<aura_app::meeting::Utterance>> {
+    Ok(s.host.meeting_utterances(&id)?)
+}
+
+#[tauri::command]
+pub fn meeting_delete(s: State<'_, AppState>, id: String) -> R<()> {
+    Ok(s.host.meeting_delete(&id)?)
+}
+
+#[tauri::command]
+pub fn meeting_search(
+    s: State<'_, AppState>,
+    query: String,
+    meeting: Option<String>,
+) -> R<Vec<aura_app::meeting::Hit>> {
+    Ok(s.host.meeting_search(&query, meeting.as_deref())?)
+}
+
 /// One Aura window and whether the OS keeps it out of captures.
 #[derive(serde::Serialize)]
 pub struct HidingStatus {

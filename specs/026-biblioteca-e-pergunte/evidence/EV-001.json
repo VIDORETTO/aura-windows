@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/meeting.rs": "8aceec2972d5383f0c081b50747883efc2d7bd9f9575f2aaeecd5ca999f1992e",
+    "specs/026-biblioteca-e-pergunte/change.md": "a00ea2b205f2b283550751127433ea67a089c0868aec0649b47dbf9fbddbd40c"
+  },
+  "input_paths": [
+    "crates/aura-app/src/meeting.rs",
+    "specs/026-biblioteca-e-pergunte/change.md"
+  ],
+  "limitations": "Sem filtro por pessoa/Receita, sem UI de biblioteca e sem verificação com o agente real",
+  "observations": "Busca sem acento por palavras, por reunião; ferramentas meeting_search/meeting_get devolvem reunião e minuto",
+  "procedure": "cargo test -p aura-app (search_lists_meetings..., agent_searches_and_reads_saved_meetings)",
+  "result": "partial",
+  "tested_revision": "local:dec38fcf8d36c4821f2081cb15c7d6b803de0420f32f188fff33f504e8332c0a",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:32:32+00:00"
+}

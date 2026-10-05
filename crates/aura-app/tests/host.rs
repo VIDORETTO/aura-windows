@@ -2891,3 +2891,133 @@ async fn reminders_and_notes_through_agent_tools() {
             .contains("bolo")
     );
 }
+
+#[tokio::test]
+async fn meeting_is_opt_in_and_records_audio_only_while_it_runs() {
+    // 023 AC-001.
+    let e = env().await;
+    let active = |h: &Arc<Host>| {
+        let h = h.clone();
+        async move { h.diagnostics().await.capture.active }
+    };
+    // Nothing is captured until the user starts a meeting.
+    assert!(!active(&e.host).await.contains(&"mic".to_string()));
+    assert!(e.host.meeting_active().is_none());
+
+    e.host.set_paused(true).unwrap();
+    assert_eq!(
+        e.host
+            .meeting_start("Revisão", "decision", "")
+            .await
+            .unwrap_err()
+            .code,
+        "paused"
+    );
+    e.host.set_paused(false).unwrap();
+
+    let mut events = e.host.subscribe();
+    let m = e
+        .host
+        .meeting_start("Revisão", "decision", "objetivo: fechar")
+        .await
+        .unwrap();
+    assert_eq!(m.status, "active");
+    until(
+        &mut events,
+        |ev| matches!(ev, HostEvent::Meeting { status, .. } if status == "active"),
+    )
+    .await;
+    let on = active(&e.host).await;
+    assert!(
+        on.contains(&"mic".to_string()) && on.contains(&"system".to_string()),
+        "{on:?}"
+    );
+    assert_eq!(
+        e.host
+            .meeting_start("outra", "x", "")
+            .await
+            .unwrap_err()
+            .code,
+        "busy"
+    );
+    assert_eq!(e.host.meeting_delete(&m.id).unwrap_err().code, "busy");
+
+    e.host.meeting_set_paused(true).unwrap();
+    e.host.meeting_set_paused(false).unwrap();
+    let ended = e.host.meeting_stop().await.unwrap();
+    assert_eq!(ended.status, "ended");
+    // Capture goes back to what the policy says (nothing).
+    assert!(!active(&e.host).await.contains(&"mic".to_string()));
+    assert_eq!(e.host.meetings_list().unwrap().len(), 1);
+    assert_eq!(e.host.meeting_stop().await.unwrap_err().code, "not_found");
+    e.host.meeting_delete(&m.id).unwrap();
+    assert!(e.host.meetings_list().unwrap().is_empty());
+}
+
+#[tokio::test]
+async fn agent_searches_and_reads_saved_meetings() {
+    // 026 AC-002 (tools): answers cite meeting and minute.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-meet".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+    // A meeting with one line at minute 2:05 (no audio needed: stored directly).
+    let m = e
+        .host
+        .meeting_start("Revisão Q3", "decision", "fechar orçamento")
+        .await
+        .unwrap();
+    e.host.meeting_stop().await.unwrap();
+    e.host
+        .meetings_repo()
+        .store_utterances_for_tests(
+            &m.id,
+            &[(125_000, 127_000, "them", "Vamos cortar 10% do orçamento")],
+        )
+        .unwrap();
+
+    let hits: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_search", json!({"query": "orcamento cortar"})).await,
+    ))
+    .unwrap();
+    assert_eq!(hits[0]["title"], "Revisão Q3");
+    assert_eq!(hits[0]["minute"], "02:05");
+    assert_eq!(hits[0]["speaker"], "them");
+    let one: serde_json::Value = serde_json::from_str(&text(
+        &call("meeting_get", json!({"meeting_id": m.id})).await,
+    ))
+    .unwrap();
+    assert_eq!(one["briefing"], "fechar orçamento");
+    assert_eq!(
+        one["transcript"][0],
+        "[02:05] Eles: Vamos cortar 10% do orçamento"
+    );
+    let list = text(&call("meeting_get", json!({})).await);
+    assert!(list.contains("Revisão Q3"));
+    assert!(
+        call("meeting_get", json!({"meeting_id": "nope"}))
+            .await
+            .is_error
+    );
+    assert_eq!(
+        text(&call("meeting_search", json!({"query": "inexistente"})).await),
+        "[]"
+    );
+}

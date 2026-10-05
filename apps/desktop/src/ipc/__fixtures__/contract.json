@@ -366,6 +366,13 @@
       "event": {}
     },
     {
+      "channel": "meeting",
+      "event": {
+        "id": "m1",
+        "status": "active"
+      }
+    },
+    {
       "channel": "reminder",
       "event": {
         "id": "r1",
@@ -414,6 +421,24 @@
       }
     }
   ],
+  "meeting": {
+    "briefing": "Fechar o orçamento",
+    "endedAt": 2000000,
+    "id": "m1",
+    "kind": "decision",
+    "origin": "live",
+    "startedAt": 1000000,
+    "status": "ended",
+    "title": "Revisão Q3"
+  },
+  "meetingHit": {
+    "meetingId": "m1",
+    "speaker": "you",
+    "startedAt": 1000000,
+    "t0": 5000,
+    "text": "Sim, com corte de 10%",
+    "title": "Revisão Q3"
+  },
   "modes": [
     {
       "mode": "chat"
@@ -536,5 +561,13 @@
       "kind": "other",
       "message": "y"
     }
-  ]
+  ],
+  "utterance": {
+    "id": 1,
+    "meetingId": "m1",
+    "speaker": "them",
+    "t0": 5000,
+    "t1": 6500,
+    "text": "Bom dia"
+  }
 }

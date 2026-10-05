@@ -113,6 +113,8 @@ async fn handshake_list_and_call() {
             "reminder_delete",
             "note_save",
             "note_search",
+            "meeting_search",
+            "meeting_get",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

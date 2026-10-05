@@ -46,7 +46,7 @@ fn kind_ok(kind: &str) -> Result<(), NoteError> {
 }
 
 /// Lowercase without accents, so "março" matches "marco".
-fn fold(s: &str) -> String {
+pub(crate) fn fold(s: &str) -> String {
     s.chars()
         .map(|c| match c.to_ascii_lowercase() {
             c if c.is_ascii() => c,

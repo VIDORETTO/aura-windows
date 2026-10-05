@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-039. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Biblioteca local com busca e ferramenta `meeting_search` para perguntar sobre reuniões e projetos.
 
-Nota: Depende de 025.
+Nota: Depende de 025. **Feito (05/10):** busca por palavras e ferramentas `meeting_search`/`meeting_get`. **Falta:** filtro por pessoa/Receita, UI da biblioteca, Projetos.
 
 ## Contrato de comportamento
 

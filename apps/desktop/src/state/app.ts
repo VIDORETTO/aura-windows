@@ -57,6 +57,8 @@ interface AppStore {
   agentRequest: { text: string; mode: "chat" | "task" | "plan"; seq: number } | null;
   /** Bumped when skills, quick commands or MCP servers change elsewhere. */
   extensionsRevision: number;
+  /** Bumped when a Meeting starts, gets speech or ends (023). */
+  meetingRevision: number;
   setSettings: (s: Settings) => void;
   setPrivacy: (p: PrivacyView) => void;
   refreshAuth: () => Promise<void>;
@@ -87,6 +89,7 @@ export const useApp = create<AppStore>((set, get) => ({
   conversationRequest: null,
   agentRequest: null,
   extensionsRevision: 0,
+  meetingRevision: 0,
   setSettings: (settings) => {
     set({ settings });
     applyTheme(settings);
@@ -155,6 +158,9 @@ export const useApp = create<AppStore>((set, get) => ({
         break;
       case "agentTask":
         set((s) => ({ agentRequest: { ...e.event, seq: (s.agentRequest?.seq ?? 0) + 1 } }));
+        break;
+      case "meeting":
+        set((s) => ({ meetingRevision: s.meetingRevision + 1 }));
         break;
       case "reminder":
         // One toast: the Overlay window shows it, Settings/region windows do not.

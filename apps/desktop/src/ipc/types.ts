@@ -75,6 +75,37 @@ export type SettingsPatch = Partial<Settings>;
 
 // ------------------------------------------------------------------- privacy
 
+/** Meeting (023): started by the user, never automatically. */
+export interface Meeting {
+  id: string;
+  title: string;
+  kind: string;
+  briefing: string;
+  origin: "live" | "buffer";
+  status: "active" | "ended" | "interrupted";
+  startedAt: number;
+  endedAt: number | null;
+}
+
+export interface Utterance {
+  id: number;
+  meetingId: string;
+  /** Milliseconds since the meeting started. */
+  t0: number;
+  t1: number;
+  speaker: "you" | "them";
+  text: string;
+}
+
+export interface MeetingHit {
+  meetingId: string;
+  title: string;
+  startedAt: number;
+  t0: number;
+  speaker: "you" | "them";
+  text: string;
+}
+
 export interface HidingStatus {
   window: string;
   hidden: boolean;
@@ -668,4 +699,5 @@ export type HostEvent =
   | { channel: "agentTask"; event: { text: string; mode: ConversationMode["mode"] } }
   | { channel: "extensionsChanged"; event: Record<string, never> }
   | { channel: "reminder"; event: { id: string; text: string } }
+  | { channel: "meeting"; event: { id: string; status: "active" | "updated" | "ended" } }
   | { channel: "settings"; event: Settings };

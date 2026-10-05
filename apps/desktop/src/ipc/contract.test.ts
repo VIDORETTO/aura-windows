@@ -2,7 +2,7 @@
 // through the TypeScript types and reducers: if either side changes shape,
 // one of the two test suites fails.
 import contract from "./__fixtures__/contract.json";
-import type { ContextChip, ConversationEvent, HostEvent, McpServerSpec, Settings } from "./types";
+import type { ContextChip, ConversationEvent, HostEvent, McpServerSpec, Meeting, MeetingHit, Settings, Utterance } from "./types";
 import { reduce, type ConvState } from "../state/conversation";
 import { useApp } from "../state/app";
 import { createMockBridge } from "./mock";
@@ -62,5 +62,17 @@ describe("IPC contract", () => {
     expect(contract.captureModes.map((m) => m.type)).toEqual(["off", "onDemand", "recentBuffer", "manual", "continuous"]);
     expect(contract.preset).toMatchObject({ id: "groq", credentialRequired: true, wire: "chat" });
     expect(contract.privacy.screen).toEqual({ mode: { type: "onDemand" }, agent: "ask" });
+  });
+
+  it("meetings keep their shape (023)", () => {
+    const m = contract.meeting as unknown as Meeting;
+    const u = contract.utterance as unknown as Utterance;
+    const hit = contract.meetingHit as unknown as MeetingHit;
+    expect(m).toMatchObject({ status: "ended", origin: "live", startedAt: 1000000, endedAt: 2000000 });
+    expect(u).toMatchObject({ meetingId: "m1", t0: 5000, speaker: "them" });
+    expect(hit).toMatchObject({ meetingId: "m1", speaker: "you" });
+    const before = useApp.getState().meetingRevision;
+    useApp.getState().handle(events.find((e) => e.channel === "meeting")!);
+    expect(useApp.getState().meetingRevision).toBe(before + 1);
   });
 });

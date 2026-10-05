@@ -89,6 +89,9 @@ pub struct CaptureService {
     screen: tokio::sync::Mutex<Option<ScreenRun>>,
     audio: tokio::sync::Mutex<HashMap<AudioSourceKind, AudioRun>>,
     manual: Mutex<Option<String>>,
+    /// A Meeting is in progress (023): mic and system audio are recorded even
+    /// when their mode is off, until it ends.
+    meeting: AtomicBool,
     /// Preferred (microphone, system output) device ids; None = OS default.
     devices: Mutex<(Option<String>, Option<String>)>,
     interval: Duration,
@@ -121,6 +124,7 @@ impl CaptureService {
             screen: tokio::sync::Mutex::new(None),
             audio: tokio::sync::Mutex::new(HashMap::new()),
             manual: Mutex::new(None),
+            meeting: AtomicBool::new(false),
             devices: Mutex::new((None, None)),
             interval,
         })
@@ -227,6 +231,8 @@ impl CaptureService {
                 Some((k.to_string(), None))
             } else if sp.mode == CaptureMode::Manual {
                 manual.clone().map(|id| ("recording".to_string(), Some(id)))
+            } else if self.meeting.load(Ordering::SeqCst) {
+                Some(("buffer".to_string(), None))
             } else {
                 None
             };
@@ -367,6 +373,52 @@ impl CaptureService {
             Ok(())
         });
         Some(id)
+    }
+
+    /// Turns the Meeting audio recording on or off (023). Only the user's
+    /// explicit start/stop calls this; the privacy pause still wins.
+    pub async fn set_meeting(&self, on: bool) {
+        self.meeting.store(on, Ordering::SeqCst);
+        let policy = self.policy.lock().unwrap().clone();
+        self.apply(&policy).await;
+    }
+
+    /// Transcribed lines of both sources between two absolute instants.
+    pub async fn audio_lines(
+        &self,
+        from: i64,
+        to: i64,
+    ) -> Result<Vec<crate::meeting::SourceLine>, String> {
+        use crate::meeting::{SourceLine, Speaker};
+        let transcriber = self.voice.transcriber_for_files()?;
+        self.flush_audio().await;
+        let mut out = Vec::new();
+        for (key, who) in [("mic", Speaker::You), ("system", Speaker::Them)] {
+            let segs = self
+                .audio_store
+                .range(key, from, to)
+                .map_err(|e| e.to_string())?;
+            let Some(first) = segs.first() else { continue };
+            let start = first.start_ms.max(from);
+            let pcm = read_range(&self.audio_store, &PcmZstd, key, from, to)
+                .map_err(|e| e.to_string())?;
+            if pcm.is_empty() {
+                continue;
+            }
+            let t = transcriber
+                .transcribe(&pcm, &AsrOptions::default())
+                .await
+                .map_err(|e| e.to_string())?;
+            for x in t.segments {
+                out.push(SourceLine {
+                    speaker: who,
+                    start_ms: start + x.start_ms,
+                    end_ms: start + x.end_ms,
+                    text: x.text,
+                });
+            }
+        }
+        Ok(out)
     }
 
     pub fn manual_active(&self) -> Option<String> {
@@ -683,4 +735,14 @@ fn write_wav(path: &Path, pcm: &[f32]) -> Result<(), String> {
             .map_err(|e| e.to_string())?;
     }
     w.finalize().map_err(|e| e.to_string())
+}
+
+impl crate::meeting::LineSource for CaptureService {
+    fn lines<'a>(
+        &'a self,
+        from_ms: i64,
+        to_ms: i64,
+    ) -> BoxFut<'a, Result<Vec<crate::meeting::SourceLine>, String>> {
+        Box::pin(self.audio_lines(from_ms, to_ms))
+    }
 }

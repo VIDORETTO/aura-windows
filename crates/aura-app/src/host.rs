@@ -167,6 +167,45 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn meeting_search(
+        &self,
+        query: &str,
+        meeting: Option<&str>,
+    ) -> Result<serde_json::Value, String> {
+        let hits = Host::meeting_search(self, query, meeting).map_err(|e| e.message)?;
+        Ok(serde_json::json!(
+            hits.iter()
+                .map(|h| serde_json::json!({
+                    "meeting_id": h.meeting_id, "title": h.title,
+                    "minute": format!("{:02}:{:02}", h.t0 / 60_000, (h.t0 / 1000) % 60),
+                    "speaker": h.speaker, "text": h.text,
+                }))
+                .collect::<Vec<_>>()
+        ))
+    }
+
+    fn meeting_get(&self, id: Option<&str>) -> Result<serde_json::Value, String> {
+        let Some(id) = id else {
+            let list = self.meetings_list().map_err(|e| e.message)?;
+            return Ok(serde_json::json!(
+                list.iter()
+                    .take(20)
+                    .map(|m| serde_json::json!({
+                        "meeting_id": m.id, "title": m.title, "kind": m.kind, "status": m.status,
+                    }))
+                    .collect::<Vec<_>>()
+            ));
+        };
+        let m = self.meetings.repo().get(id).map_err(|e| e.to_string())?;
+        let lines = self.meeting_utterances(id).map_err(|e| e.message)?;
+        Ok(serde_json::json!({
+            "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status,
+            "transcript": lines.iter().map(|u| format!(
+                "[{:02}:{:02}] {}: {}", u.t0 / 60_000, (u.t0 / 1000) % 60,
+                if u.speaker == "you" { "Você" } else { "Eles" }, u.text)).collect::<Vec<_>>(),
+        }))
+    }
+
     fn clock_now(&self) -> String {
         crate::reminders::format_local(self.clock.now(), self.clock.utc_offset_secs())
     }
@@ -429,6 +468,18 @@ fn random_token() -> String {
     b.iter().map(|x| format!("{x:02x}")).collect()
 }
 
+fn meeting_err(e: crate::meeting::MeetingError) -> HostError {
+    use crate::meeting::MeetingError as E;
+    let code = match e {
+        E::AlreadyActive => "busy",
+        E::NotActive | E::NotFound => "not_found",
+        E::NothingSaid => "empty",
+        E::Source(_) => "asr",
+        E::Store(_) => "store",
+    };
+    HostError::new(code, e.to_string())
+}
+
 fn now_ms() -> i64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -466,6 +517,7 @@ pub struct Host {
     voice: Arc<Voice>,
     codex_program: Arc<RwLock<Option<PathBuf>>>,
     capture: Arc<crate::recorder::CaptureService>,
+    meetings: Arc<crate::meeting::MeetingService>,
     /// Free space of the data drive (diagnostics, model downloads).
     disk: Arc<dyn DiskSpace>,
     /// Device tests in Settings (005 AC-001): one live hub per source.
@@ -820,6 +872,11 @@ impl Host {
 
         let store_for_profiles = store.clone();
         let store_for_notes = store.clone();
+        let meetings = Arc::new(crate::meeting::MeetingService::new(
+            crate::meeting::MeetingRepo::new(store.clone()),
+            capture.clone(),
+        ));
+        let _ = meetings.repo().recover(now_ms());
         let host = Arc::new(Host {
             paths: cfg.paths,
             platform: cfg.platform,
@@ -849,6 +906,7 @@ impl Host {
             voice,
             codex_program,
             capture,
+            meetings,
             disk: cfg.disk.clone(),
             audio_tests: Mutex::new(HashMap::new()),
             last_selection: Mutex::new(None),
@@ -871,6 +929,7 @@ impl Host {
                 tokio::time::sleep(std::time::Duration::from_secs(15)).await;
                 let Some(h) = weak_host.upgrade() else { break };
                 h.tick_reminders();
+                h.meeting_poll().await;
             }
         });
         Ok(host)
@@ -917,6 +976,121 @@ impl Host {
 
     pub fn settings(&self) -> Settings {
         self.settings.read().unwrap().clone()
+    }
+
+    // ------------------------------------------------------------ meetings
+
+    /// The meeting in progress (023).
+    pub fn meeting_active(&self) -> Option<crate::meeting::Meeting> {
+        self.meetings.active()
+    }
+
+    /// Starts a Meeting. Only an explicit call from the user starts audio
+    /// capture; the privacy pause blocks it.
+    pub async fn meeting_start(
+        &self,
+        title: &str,
+        kind: &str,
+        briefing: &str,
+    ) -> HostResult<crate::meeting::Meeting> {
+        if self.policy.read().unwrap().paused {
+            return Err(HostError::new("paused", "a privacidade está pausada"));
+        }
+        let m = self
+            .meetings
+            .start(title, kind, briefing, now_ms())
+            .map_err(meeting_err)?;
+        self.capture.set_meeting(true).await;
+        let _ = self.events.send(HostEvent::Meeting {
+            id: m.id.clone(),
+            status: "active".into(),
+        });
+        Ok(m)
+    }
+
+    pub fn meeting_set_paused(&self, paused: bool) -> HostResult<()> {
+        self.meetings
+            .set_paused(paused, now_ms())
+            .map_err(meeting_err)
+    }
+
+    /// Ends the Meeting after a last read of the audio.
+    pub async fn meeting_stop(&self) -> HostResult<crate::meeting::Meeting> {
+        let m = self.meetings.stop(now_ms()).await.map_err(meeting_err)?;
+        self.capture.set_meeting(false).await;
+        let _ = self.events.send(HostEvent::Meeting {
+            id: m.id.clone(),
+            status: "ended".into(),
+        });
+        Ok(m)
+    }
+
+    /// "Esqueci de iniciar": a Meeting from the last `minutes` of audio buffer.
+    pub async fn meeting_from_buffer(
+        &self,
+        title: &str,
+        minutes: u32,
+    ) -> HostResult<crate::meeting::Meeting> {
+        let m = self
+            .meetings
+            .from_buffer(title, minutes, now_ms())
+            .await
+            .map_err(meeting_err)?;
+        let _ = self.events.send(HostEvent::Meeting {
+            id: m.id.clone(),
+            status: "ended".into(),
+        });
+        Ok(m)
+    }
+
+    /// Reads new speech into the active Meeting (the timer calls it).
+    pub async fn meeting_poll(&self) {
+        match self.meetings.poll(now_ms()).await {
+            Ok(new) if !new.is_empty() => {
+                if let Some(m) = self.meetings.active() {
+                    let _ = self.events.send(HostEvent::Meeting {
+                        id: m.id,
+                        status: "updated".into(),
+                    });
+                }
+            }
+            Ok(_) => {}
+            Err(e) => tracing::warn!("meeting poll: {e}"),
+        }
+    }
+
+    /// Saved meetings store (the Meeting UI and tests read through it).
+    pub fn meetings_repo(&self) -> &crate::meeting::MeetingRepo {
+        self.meetings.repo()
+    }
+
+    pub fn meetings_list(&self) -> HostResult<Vec<crate::meeting::Meeting>> {
+        self.meetings.repo().list(100).map_err(meeting_err)
+    }
+
+    pub fn meeting_utterances(&self, id: &str) -> HostResult<Vec<crate::meeting::Utterance>> {
+        self.meetings.repo().utterances(id).map_err(meeting_err)
+    }
+
+    pub fn meeting_delete(&self, id: &str) -> HostResult<()> {
+        if self.meetings.active().is_some_and(|m| m.id == id) {
+            return Err(HostError::new(
+                "busy",
+                "encerre a reunião antes de apagá-la",
+            ));
+        }
+        self.meetings.repo().delete(id).map_err(meeting_err)
+    }
+
+    pub fn meeting_search(
+        &self,
+        query: &str,
+        meeting: Option<&str>,
+    ) -> HostResult<Vec<crate::meeting::Hit>> {
+        self.meetings
+            .repo()
+            .search(query, meeting, 30)
+            .map_err(meeting_err)
     }
 
     /// Fires the reminders due at `now` (the timer calls it every few seconds).

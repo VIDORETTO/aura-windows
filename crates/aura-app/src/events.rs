@@ -57,6 +57,11 @@ pub enum HostEvent {
     },
     /// Skills, quick commands or MCP servers changed (e.g. by the agent).
     ExtensionsChanged {},
+    /// A Meeting started, got new speech (`updated`) or ended (023).
+    Meeting {
+        id: String,
+        status: String,
+    },
     /// A reminder is due (020): the Overlay shows a Windows notification.
     Reminder {
         id: String,

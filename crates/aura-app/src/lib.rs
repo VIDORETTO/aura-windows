@@ -19,6 +19,7 @@ pub mod launcher;
 pub mod localization;
 pub mod mcp_diag;
 pub mod media;
+pub mod meeting;
 pub mod memories;
 pub mod notes;
 pub mod paths;

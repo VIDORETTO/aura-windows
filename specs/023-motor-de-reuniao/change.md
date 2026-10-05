@@ -13,7 +13,7 @@ profile: compact
 
 Candidatos: CAND-035, CAND-038. Origem: plano `docs/project/plano-reuniao-e-configuracao-assistida.md`. Reunião como sessão opt-in com transcrição contínua, biblioteca local e "esqueci de iniciar"; consentimento e privacidade desde o início.
 
-Nota: Depende dos motores de voz locais validados no Windows; nuvem como plano B.
+Nota: Depende dos motores de voz locais validados no Windows; nuvem como plano B. **Feito (05/10):** migração 0011, `MeetingService`/`MeetingRepo` (início, pausa, fim, falas únicas com tempo e falante, "esqueci de iniciar", recuperação após queda), gravação de áudio só durante a Reunião, comandos IPC e evento `meeting`, ferramentas `meeting_search`/`meeting_get`. **Falta:** transcrição contínua real (Windows), apagar áudio ao encerrar, retenção por reunião, aviso de consentimento (CAND-038), UI (esforço 024).
 
 ## Contrato de comportamento
 

@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-003"
+  ],
+  "environment": "Linux x86_64 (fonte de falas falsa; áudio sintético)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/meeting.rs": "8aceec2972d5383f0c081b50747883efc2d7bd9f9575f2aaeecd5ca999f1992e",
+    "specs/023-motor-de-reuniao/change.md": "06cbbc51709bd579936ff3effe897d28db6062a00d21f0ae1898edeee58e5a94"
+  },
+  "input_paths": [
+    "crates/aura-app/src/meeting.rs",
+    "specs/023-motor-de-reuniao/change.md"
+  ],
+  "limitations": "AC-002 (transcrição contínua real Você/Eles) sem verificação: depende dos motores de voz locais ou da nuvem no Windows; apagar o áudio ao encerrar e retenção por reunião ainda não implementados; sem UI de iniciar/parar (esforço 024)",
+  "observations": "Reunião só começa por chamada explícita, grava mic+sistema só enquanto roda e volta ao que a política diz; privacidade pausada bloqueia; falas guardadas uma vez com tempo e falante; pausa pula o intervalo; 'esqueci de iniciar' cria Reunião do buffer; reuniões interrompidas por queda são marcadas",
+  "procedure": "cargo test -p aura-app (meeting::tests, meeting_is_opt_in_and_records_audio_only_while_it_runs); pnpm -C apps/desktop test",
+  "result": "partial",
+  "tested_revision": "local:4b8ad035e4f3c4fa4ad4949824a923a787dea24abf1269254c389aaa6f8a949a",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:32:32+00:00"
+}

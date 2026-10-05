@@ -24,6 +24,8 @@ pub const REMINDER_LIST: &str = "reminder_list";
 pub const REMINDER_DELETE: &str = "reminder_delete";
 pub const NOTE_SAVE: &str = "note_save";
 pub const NOTE_SEARCH: &str = "note_search";
+pub const MEETING_SEARCH: &str = "meeting_search";
+pub const MEETING_GET: &str = "meeting_get";
 pub const SETTINGS_DESCRIBE: &str = "settings_describe";
 pub const SETTINGS_PROPOSE: &str = "settings_propose";
 pub const SETTINGS_APPLY: &str = "settings_apply";
@@ -241,6 +243,25 @@ pub fn all() -> Vec<ToolDef> {
                 "kind": {"type": "string", "enum": ["note", "saved"], "default": "note"}},
                 "additionalProperties": false}),
             annotations: read_only("Buscar notas"),
+        },
+        ToolDef {
+            name: MEETING_SEARCH.into(),
+            description: "Search what was said in the user's saved meetings. Every word of query must appear (accents ignored). Returns meeting id, title, date, minute and speaker (you = the user's microphone, them = the other side). Use meeting_get to read one meeting. Cite the meeting and minute in answers."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "query": {"type": "string"},
+                "meeting_id": {"type": "string", "description": "Limit the search to one meeting."}},
+                "required": ["query"], "additionalProperties": false}),
+            annotations: read_only("Buscar nas reuniões"),
+        },
+        ToolDef {
+            name: MEETING_GET.into(),
+            description: "Read one saved meeting: title, briefing and the full timed transcript (minute:second, speaker, text). Without meeting_id returns the list of recent meetings."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "meeting_id": {"type": "string"}},
+                "additionalProperties": false}),
+            annotations: read_only("Ler reunião"),
         },
     ]
 }

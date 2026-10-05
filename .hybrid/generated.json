@@ -32,5 +32,7 @@
   "specs/019-dia-a-dia-texto/verification.md": "e0274f373cefa0110fd15fb23f909fc2ea14b6efeb218761d560f4d8c9ce4db8",
   "specs/020-dia-a-dia-tela-e-notas/verification.md": "305b1f2529d1ac5ab56035809d4f87ce321b27f61e585c3d7aa0f4c95dc0c972",
   "specs/021-ocultacao-e-transmissao/verification.md": "19e7756c945effdf1513a2c1515b1311ac6ce20df8b238774ec80f85042d7c48",
-  "specs/022-preparo-e-configurar-com-ia/verification.md": "5ca5d66e1479a239441036ca03c3194edd25260a7ae1ad645f62d1de70999eb2"
+  "specs/022-preparo-e-configurar-com-ia/verification.md": "5ca5d66e1479a239441036ca03c3194edd25260a7ae1ad645f62d1de70999eb2",
+  "specs/023-motor-de-reuniao/verification.md": "052242f23da1f39c7a014857454d91c1babfb87693eddd3de4aed11b1654ce30",
+  "specs/026-biblioteca-e-pergunte/verification.md": "89454085cf192f2f953df205c9ffb89641c31c9d55a90c788677f9588d739945"
 }
