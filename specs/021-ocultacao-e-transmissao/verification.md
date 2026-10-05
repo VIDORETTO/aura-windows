@@ -14,3 +14,16 @@
 - Observations: Opção hideFromCapture testada em lógica e UI; WDA aplicado só no shell Windows
 - Evidence refs: none
 - Limitations: Afinidade da janela e apps reais (Meet, Teams, Discord, AnyDesk, OBS) não verificados: exigem Windows
+
+## EV-002 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-002`
+- Procedure: `cargo clippy -p aura-win --target x86_64-pc-windows-msvc; vitest Hiding.test.tsx`
+- Execution: `executed`
+- Environment: Linux x86_64, alvo x86_64-pc-windows-msvc só de tipos
+- Tested revision: `local:f5c8fa3930c40b0a089fe5c3a2b8ba151e6b0d156a78f824df44b25a04250805`
+- Timestamp: `2026-10-05T17:27:28+00:00`
+- Observations: is_excluded_from_capture (GetWindowDisplayAffinity) compila e passa no clippy; botão Testar ocultação na UI com resultado por janela
+- Evidence refs: none
+- Limitations: Leitura real da afinidade, teste por WGC/DXGI/GDI e Modo Transmissão (silenciar notificações) não implementados/verificados; shell Tauri não compila no Linux

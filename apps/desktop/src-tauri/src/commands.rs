@@ -424,6 +424,36 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
     s.host.insert_into_app(&text)
 }
 
+/// One Aura window and whether the OS keeps it out of captures.
+#[derive(serde::Serialize)]
+pub struct HidingStatus {
+    pub window: String,
+    pub hidden: bool,
+}
+
+/// "Testar ocultação" (021): asks Windows, for every open Aura window, whether
+/// it is excluded from screen sharing and recordings.
+#[tauri::command]
+pub fn capture_hiding_check(app: AppHandle) -> Vec<HidingStatus> {
+    use tauri::Manager;
+    let mut out = Vec::new();
+    #[cfg(windows)]
+    for label in [overlay::LABEL, "settings", "region"] {
+        if let Some(w) = app.get_webview_window(label)
+            && let Ok(hwnd) = w.hwnd()
+        {
+            out.push(HidingStatus {
+                window: label.to_string(),
+                hidden: aura_win::windows_info::is_excluded_from_capture(hwnd.0 as usize as u64)
+                    .unwrap_or(false),
+            });
+        }
+    }
+    #[cfg(not(windows))]
+    let _ = &app;
+    out
+}
+
 /// The text "Substituir seleção" would replace (019).
 #[tauri::command]
 pub fn replace_target(s: State<'_, AppState>) -> Option<String> {

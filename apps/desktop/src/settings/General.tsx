@@ -60,6 +60,7 @@ export function GeneralSection() {
         <Row label={t("general.hideFromCapture")} hint={t("general.hideFromCapture.hint")}>
           <Switch label={t("general.hideFromCapture")} checked={s.hideFromCapture} onChange={(v) => void updateSettings({ hideFromCapture: v })} />
         </Row>
+        <HidingTest />
         <Row label={t("general.attachScreen")}>
           <Switch label={t("general.attachScreen")} checked={s.attachScreenOnOpen} onChange={(v) => void updateSettings({ attachScreenOnOpen: v })} />
         </Row>
@@ -318,5 +319,38 @@ function AccentRow() {
       </div>
       {invalid && <p className="mt-1 text-xs text-danger">{t("general.accent.invalid")}</p>}
     </div>
+  );
+}
+
+/** "Testar ocultação" (021): asks Windows whether each Aura window is out of captures. */
+function HidingTest() {
+  const t = useT();
+  const hide = useApp((a) => a.settings?.hideFromCapture ?? true);
+  const [result, setResult] = useState<{ window: string; hidden: boolean }[] | null>(null);
+  const run = () => void api.captureHidingCheck().then(setResult).catch(() => setResult([]));
+  const names: Record<string, string> = { overlay: t("hiding.window.overlay"), settings: t("hiding.window.settings"), region: t("hiding.window.region") };
+  const allOk = result !== null && result.length > 0 && result.every((r) => r.hidden === hide);
+  return (
+    <Row label={t("hiding.test")} hint={t("hiding.test.hint")}>
+      <div className="flex flex-col items-end gap-1">
+        <Button onClick={run}>{t("hiding.test.run")}</Button>
+        {result && (
+          <div role="status" className="text-right text-[12px]">
+            {result.length === 0 ? (
+              t("hiding.test.none")
+            ) : (
+              <>
+                <div className={allOk ? "text-success" : "text-danger"}>{allOk ? t(hide ? "hiding.test.ok" : "hiding.test.okVisible") : t("hiding.test.fail")}</div>
+                {result.map((r) => (
+                  <div key={r.window} className="text-muted">
+                    {names[r.window] ?? r.window}: {r.hidden ? t("hiding.hidden") : t("hiding.visible")}
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </Row>
   );
 }

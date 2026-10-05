@@ -24,9 +24,9 @@ use windows::Win32::System::Threading::{
 use windows::Win32::UI::HiDpi::{GetDpiForMonitor, MDT_EFFECTIVE_DPI};
 use windows::Win32::UI::WindowsAndMessaging::{
     BringWindowToTop, EnumWindows, GWL_EXSTYLE, GetClassNameW, GetCursorPos, GetForegroundWindow,
-    GetWindowLongW, GetWindowRect, GetWindowTextLengthW, GetWindowTextW, GetWindowThreadProcessId,
-    IsIconic, IsWindow, IsWindowVisible, SW_RESTORE, SetForegroundWindow, SetWindowDisplayAffinity,
-    ShowWindow, WDA_EXCLUDEFROMCAPTURE, WDA_NONE, WS_EX_TOOLWINDOW,
+    GetWindowDisplayAffinity, GetWindowLongW, GetWindowRect, GetWindowTextLengthW, GetWindowTextW,
+    GetWindowThreadProcessId, IsIconic, IsWindow, IsWindowVisible, SW_RESTORE, SetForegroundWindow,
+    SetWindowDisplayAffinity, ShowWindow, WDA_EXCLUDEFROMCAPTURE, WDA_NONE, WS_EX_TOOLWINDOW,
 };
 use windows::core::{BOOL, PWSTR};
 
@@ -327,6 +327,17 @@ pub fn exclude_from_capture(window: u64, exclude: bool) -> bool {
             },
         )
         .is_ok()
+    }
+}
+
+/// Whether the OS currently keeps `window` out of captures
+/// (`WDA_EXCLUDEFROMCAPTURE`); `None` when the window cannot be read.
+pub fn is_excluded_from_capture(window: u64) -> Option<bool> {
+    let mut affinity = 0u32;
+    unsafe {
+        GetWindowDisplayAffinity(hwnd(window), &mut affinity)
+            .ok()
+            .map(|_| affinity == WDA_EXCLUDEFROMCAPTURE.0)
     }
 }
 

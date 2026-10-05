@@ -421,6 +421,7 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     attachments_list: () => [],
     insert_into_app: () => true,
+    capture_hiding_check: () => [{ window: "overlay", hidden: state.settings.hideFromCapture }],
     replace_target: () => state.replaceTarget,
     replace_selection: () => state.replaceTarget ?? "",
     undo_replace: () => true,

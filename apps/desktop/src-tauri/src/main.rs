@@ -518,6 +518,7 @@ fn main() {
             commands::region_open,
             commands::region_commit,
             commands::region_copy_text,
+            commands::capture_hiding_check,
             commands::replace_target,
             commands::replace_selection,
             commands::undo_replace,

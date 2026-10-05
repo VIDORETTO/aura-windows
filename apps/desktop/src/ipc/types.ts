@@ -75,6 +75,11 @@ export type SettingsPatch = Partial<Settings>;
 
 // ------------------------------------------------------------------- privacy
 
+export interface HidingStatus {
+  window: string;
+  hidden: boolean;
+}
+
 export type Source = "screen" | "mic" | "systemAudio" | "selection";
 export type CaptureMode =
   | { type: "off" }

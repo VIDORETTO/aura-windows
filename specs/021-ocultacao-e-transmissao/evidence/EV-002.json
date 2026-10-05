@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64, alvo x86_64-pc-windows-msvc só de tipos",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-win/src/windows_info.rs": "32acbd0918cc9d8e186bcf11ca68e16ae17497f237978966046fe133a6276c82",
+    "specs/021-ocultacao-e-transmissao/change.md": "422803d2373759188177cb1fb75e1a2c67b79b991b2cdbc9e6897993daeb08bd"
+  },
+  "input_paths": [
+    "crates/aura-win/src/windows_info.rs",
+    "specs/021-ocultacao-e-transmissao/change.md"
+  ],
+  "limitations": "Leitura real da afinidade, teste por WGC/DXGI/GDI e Modo Transmissão (silenciar notificações) não implementados/verificados; shell Tauri não compila no Linux",
+  "observations": "is_excluded_from_capture (GetWindowDisplayAffinity) compila e passa no clippy; botão Testar ocultação na UI com resultado por janela",
+  "procedure": "cargo clippy -p aura-win --target x86_64-pc-windows-msvc; vitest Hiding.test.tsx",
+  "result": "partial",
+  "tested_revision": "local:f5c8fa3930c40b0a089fe5c3a2b8ba151e6b0d156a78f824df44b25a04250805",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:27:28+00:00"
+}
