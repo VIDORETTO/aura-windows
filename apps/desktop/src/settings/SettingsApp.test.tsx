@@ -746,7 +746,7 @@ describe("App profiles", () => {
     await user.click(await screen.findByRole("button", { name: "Criar perfil para este app" }));
     const model = screen.getByRole("combobox", { name: "Modelo padrão" });
     await waitFor(() => expect(within(model).getByRole("option", { name: "QA Local · Qwen 3 8B" })).toBeInTheDocument());
-    expect(within(model).getByRole("option", { name: "ChatGPT · GPT-5.5 mini" })).toBeInTheDocument();
+    expect(within(model).getByRole("option", { name: "ChatGPT · GPT-6.1 Sol" })).toBeInTheDocument();
     await user.selectOptions(model, "QA Local · Qwen 3 8B");
     await user.click(screen.getByRole("button", { name: "Salvar" }));
     await waitFor(() => expect(bridge.state.profiles[0]?.defaultModel).toBe(`aura-${p.id}::qwen3:8b`));

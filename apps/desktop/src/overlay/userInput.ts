@@ -21,7 +21,15 @@ export interface SchemaField {
   default?: unknown;
 }
 
+/** An MCP tool call Codex asks the user to allow (`codex_approval_kind: mcp_tool_call`). */
+export interface ToolApproval {
+  server: string;
+  tool: string;
+  params: { name: string; value: string }[];
+}
+
 export type InputForm =
+  | { kind: "tool"; approval: ToolApproval }
   | { kind: "questions"; questions: Question[] }
   | { kind: "form"; message: string; fields: SchemaField[] }
   | { kind: "permissions"; reason: string | null; permissions: unknown }
@@ -35,6 +43,21 @@ export function parseInput(source: string, prompt: unknown): InputForm {
   const p = obj(prompt);
   if (source === "permissions") {
     return { kind: "permissions", reason: typeof p.reason === "string" ? p.reason : null, permissions: p.permissions ?? p };
+  }
+  const meta = obj(p._meta);
+  if (meta.codex_approval_kind === "mcp_tool_call") {
+    const display = Array.isArray(meta.tool_params_display) ? meta.tool_params_display : [];
+    return {
+      kind: "tool",
+      approval: {
+        server: str(p.serverName, source),
+        tool: /tool "([^"]+)"/.exec(str(p.message))?.[1] ?? "",
+        params: display.map((d) => {
+          const o = obj(d);
+          return { name: str(o.display_name, str(o.name)), value: typeof o.value === "string" ? o.value : JSON.stringify(o.value) };
+        }),
+      },
+    };
   }
   if (Array.isArray(p.questions)) {
     return {

@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "2afa2e92733c3bf4429e650f7fff7a5d3ca977bf"
+  },
+  "blockers": [],
+  "effort_id": "018-modo-yolo",
+  "inputs": {
+    "contract": {
+      "fingerprint": "b4d9c4dc010d182f260d7db3fde08b0740de2e8d562a8b25c0291d89e8df4057",
+      "path": "specs/018-modo-yolo/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

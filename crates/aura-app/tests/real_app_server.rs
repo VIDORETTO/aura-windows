@@ -60,8 +60,30 @@ async fn completions(seen: Arc<Mutex<Seen>>, headers: HeaderMap, body: Value) ->
     let wants_window = messages
         .iter()
         .any(|m| m["role"] == "user" && m["content"].to_string().contains("janela"));
+    // 017: "crie o comando" makes the model call Aura's quick_command_save.
+    let save_tool = body["tools"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|t| t["function"]["name"].as_str())
+        .find(|n| n.contains("quick_command_save"))
+        .map(str::to_string);
+    let wants_command = messages.last().is_some_and(|m| {
+        m["role"] == "user" && m["content"].to_string().contains("crie o comando")
+    });
     let mut sse = String::new();
     match (last_role.as_str(), tool_name) {
+        ("tool", _) if save_tool.is_some() && !wants_window => {
+            let tool_text = messages
+                .last()
+                .map(|m| m["content"].to_string())
+                .unwrap_or_default();
+            sse.push_str(&chunk(
+                json!({"role": "assistant", "content": format!("resultado: {tool_text}")}),
+                None,
+            ));
+            sse.push_str(&chunk(json!({}), Some("stop")));
+        }
         ("tool", _) => {
             let tool_text = messages
                 .last()
@@ -77,6 +99,15 @@ async fn completions(seen: Arc<Mutex<Seen>>, headers: HeaderMap, body: Value) ->
                 None,
             ));
             sse.push_str(&chunk(json!({}), Some("stop")));
+        }
+        _ if wants_command && save_tool.is_some() => {
+            let name = save_tool.unwrap();
+            sse.push_str(&chunk(
+                json!({"role": "assistant", "tool_calls": [{"index": 0, "id": "call_q", "type": "function",
+                    "function": {"name": name, "arguments": "{\"name\":\"formal\",\"template\":\"Reescreva formal: {texto}\"}"}}]}),
+                None,
+            ));
+            sse.push_str(&chunk(json!({}), Some("tool_calls")));
         }
         (_, Some(name)) if wants_window => {
             sse.push_str(&chunk(
@@ -621,5 +652,188 @@ async fn real_app_server_archive_and_unarchive() {
     host.unarchive(&conv.thread_id).await.unwrap();
     assert!(listed(false).await.contains(&conv.thread_id));
     assert!(!listed(true).await.contains(&conv.thread_id));
+    host.shutdown().await;
+}
+
+/// 017 AC-006: the generated config (`approval_mode = "prompt"` for Aura's
+/// write tools) is accepted by the pinned app-server, the user is asked
+/// before `quick_command_save` runs, and approving it saves the command.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "needs AURA_CODEX_BIN (real app-server)"]
+async fn real_app_server_asks_before_aura_write_tools() {
+    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
+        return;
+    };
+    let (base_url, _seen) = mock_provider().await;
+    let dir = tempfile::Builder::new()
+        .prefix("aura-e2e")
+        .tempdir_in(std::env::var("AURA_E2E_DIR").unwrap_or_else(|_| ".".into()))
+        .unwrap();
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.codex = CodexRuntime::Binary {
+        program: Some(bin.into()),
+        on_spawn: None,
+    };
+    let host = Host::start(cfg).await.expect("host");
+    let provider = host
+        .save_provider(
+            serde_json::from_value(
+                json!({"name": "Mock", "preset": "custom", "baseUrl": base_url}),
+            )
+            .unwrap(),
+            Some("sk-test-e2e".into()),
+        )
+        .unwrap();
+    let mut rx = host.subscribe();
+    let conv = host
+        .start_conversation(StartOptions {
+            provider: format!("aura-{}", provider.id),
+            model: Some("mock-model".into()),
+            ..Default::default()
+        })
+        .await
+        .expect("thread/start accepts the config");
+    let config = std::fs::read_to_string(dir.path().join("Aura/codex-home/config.toml")).unwrap();
+    assert!(config.contains("approval_mode = \"prompt\""), "{config}");
+
+    host.send(SendRequest {
+        thread_id: conv.thread_id.clone(),
+        text: "crie o comando formal".into(),
+        tray: conv.thread_id.clone(),
+        accepts_images: false,
+        options: Default::default(),
+    })
+    .await
+    .expect("send");
+    let mut asked = false;
+    let mut answer = String::new();
+    loop {
+        let e = tokio::time::timeout(Duration::from_secs(120), rx.recv())
+            .await
+            .expect("turn finished in time")
+            .expect("open");
+        match e {
+            HostEvent::Conversation(ConversationEvent::UserInputRequested {
+                request_id,
+                prompt,
+                source,
+                ..
+            }) => {
+                eprintln!("user input requested ({source}): {prompt}");
+                assert!(
+                    host.quick_commands()
+                        .unwrap()
+                        .iter()
+                        .all(|q| q.name != "formal"),
+                    "nothing saved before the user answers"
+                );
+                asked = true;
+                let decision = approve(&prompt);
+                host.respond(&request_id, decision).await.expect("respond");
+            }
+            HostEvent::Conversation(ConversationEvent::ApprovalRequested {
+                request_id,
+                kind,
+                ..
+            }) => {
+                eprintln!("approval requested: {kind:?}");
+                asked = true;
+                host.respond(&request_id, aura_codex::approvals::Decision::Accept)
+                    .await
+                    .expect("respond");
+            }
+            HostEvent::Conversation(ConversationEvent::MessageCompleted { text, .. }) => {
+                answer = text
+            }
+            HostEvent::Conversation(ConversationEvent::TurnCompleted { error, .. }) => {
+                assert!(error.is_none(), "turn failed: {error:?}");
+                break;
+            }
+            _ => {}
+        }
+    }
+    eprintln!("answer: {answer}");
+    assert!(asked, "Codex must ask before quick_command_save");
+    let formal = host
+        .quick_commands()
+        .unwrap()
+        .into_iter()
+        .find(|q| q.name == "formal")
+        .expect("saved after approval");
+    assert_eq!(formal.template, "Reescreva formal: {texto}");
+    host.shutdown().await;
+}
+
+/// Accepts a Codex MCP tool-approval prompt (elicitation or question form).
+fn approve(prompt: &Value) -> aura_codex::approvals::Decision {
+    if let Some(questions) = prompt["questions"].as_array() {
+        let mut answers = serde_json::Map::new();
+        for q in questions {
+            let option = q["options"]
+                .as_array()
+                .and_then(|o| o.first())
+                .and_then(|o| o["label"].as_str())
+                .unwrap_or("Allow")
+                .to_string();
+            answers.insert(
+                q["id"].as_str().unwrap_or_default().to_string(),
+                json!({"answers": [option]}),
+            );
+        }
+        return aura_codex::approvals::Decision::Answer {
+            content: json!({"answers": answers}),
+        };
+    }
+    aura_codex::approvals::Decision::Answer { content: json!({}) }
+}
+
+/// 018 AC-004: the pinned app-server accepts Task mode with YOLO
+/// (`danger-full-access` + `never`) on `thread/start` and `turn/start`.
+#[tokio::test(flavor = "multi_thread")]
+#[ignore = "needs AURA_CODEX_BIN (real app-server)"]
+async fn real_app_server_runs_task_mode_with_yolo() {
+    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
+        return;
+    };
+    let (base_url, _seen) = mock_provider().await;
+    let dir = tempfile::Builder::new()
+        .prefix("aura-e2e")
+        .tempdir_in(std::env::var("AURA_E2E_DIR").unwrap_or_else(|_| ".".into()))
+        .unwrap();
+    let (platform, _fg) = Platform::fake();
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.codex = CodexRuntime::Binary {
+        program: Some(bin.into()),
+        on_spawn: None,
+    };
+    let host = Host::start(cfg).await.expect("host");
+    host.set_yolo(true, "ACEITO").unwrap();
+    let provider = host
+        .save_provider(
+            serde_json::from_value(
+                json!({"name": "Mock", "preset": "custom", "baseUrl": base_url}),
+            )
+            .unwrap(),
+            Some("sk-test-e2e".into()),
+        )
+        .unwrap();
+    let mut rx = host.subscribe();
+    let conv = host
+        .start_conversation(StartOptions {
+            provider: format!("aura-{}", provider.id),
+            model: Some("mock-model".into()),
+            mode: aura_codex::modes::ConversationMode::Task {
+                granted: vec![],
+                network: false,
+            },
+            ..Default::default()
+        })
+        .await
+        .expect("thread/start with danger-full-access + never");
+    let (answer, _) = turn(&host, &mut rx, &conv.thread_id, "ping").await;
+    assert_eq!(answer.trim(), "pong");
     host.shutdown().await;
 }

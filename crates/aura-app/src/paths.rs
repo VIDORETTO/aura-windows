@@ -56,6 +56,10 @@ impl AppPaths {
     pub fn skills(&self) -> PathBuf {
         self.root.join("skills")
     }
+    /// Skills the agent always has (017); rewritten on every start.
+    pub fn core_skills(&self) -> PathBuf {
+        self.root.join("core-skills")
+    }
     pub fn ingest_cache(&self) -> PathBuf {
         self.root.join("cache").join("ingest")
     }

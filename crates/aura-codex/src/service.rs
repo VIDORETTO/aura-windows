@@ -143,6 +143,8 @@ struct Shared {
     loaded: Mutex<HashSet<String>>,
     /// Interface language, for texts Aura adds to turns (014).
     language: std::sync::RwLock<UiLanguage>,
+    /// YOLO (018): Task conversations run without sandbox or approvals.
+    yolo: std::sync::atomic::AtomicBool,
 }
 
 pub struct CodexService {
@@ -205,6 +207,7 @@ impl CodexService {
                 active_turns: Mutex::new(HashMap::new()),
                 loaded: Mutex::new(HashSet::new()),
                 language: std::sync::RwLock::new(UiLanguage::PtBr),
+                yolo: std::sync::atomic::AtomicBool::new(false),
             }),
             store,
             workspaces_root,
@@ -274,6 +277,12 @@ impl CodexService {
                         responder,
                     } => match self.pending.register(&method, &params, responder) {
                         Ok(event) => {
+                            // YOLO (018): permissions in Task are granted without asking.
+                            if let Some((id, decision)) = self.yolo_answer(&event).await {
+                                let _ = self.pending.respond(&id, decision);
+                                tracing::info!(method = %method, "YOLO accepted a request");
+                                continue;
+                            }
                             self.supervisor
                                 .set_pending_requests(self.pending.len())
                                 .await;
@@ -405,7 +414,7 @@ impl CodexService {
         if let Some(model) = &opts.model {
             params["model"] = json!(model);
         }
-        for (k, v) in thread_params(&opts.mode, &workspace)
+        for (k, v) in thread_params(&opts.mode, &workspace, self.yolo())
             .as_object()
             .expect("object")
         {
@@ -521,7 +530,7 @@ impl CodexService {
         let (meta, mode, _) = self.context(thread_id).await?;
         let peer = self.peer().await?;
         self.ensure_loaded(&peer, thread_id).await?;
-        let mut params = turn_overrides(&mode, &meta.workspace_path);
+        let mut params = turn_overrides(&mode, &meta.workspace_path, self.yolo());
         params["threadId"] = json!(thread_id);
         let mut input: Vec<Value> = inputs.iter().map(input_json).collect();
         // Mode changed since the agent was last told (014): say so after the
@@ -626,6 +635,48 @@ impl CodexService {
 
     /// Changes the mode of an existing conversation (applied from the next turn).
     /// Language of the texts Aura adds to turns (mode announcements).
+    pub fn set_yolo(&self, on: bool) {
+        self.shared
+            .yolo
+            .store(on, std::sync::atomic::Ordering::SeqCst);
+    }
+
+    fn yolo(&self) -> bool {
+        self.shared.yolo.load(std::sync::atomic::Ordering::SeqCst)
+    }
+
+    /// The automatic answer YOLO gives to a request of a Task conversation.
+    async fn yolo_answer(&self, event: &ConversationEvent) -> Option<(String, Decision)> {
+        if !self.yolo() {
+            return None;
+        }
+        let (thread_id, request_id) = match event {
+            ConversationEvent::ApprovalRequested {
+                thread_id,
+                request_id,
+                ..
+            } => (thread_id.clone(), request_id.clone()),
+            ConversationEvent::UserInputRequested {
+                thread_id: Some(thread_id),
+                request_id,
+                ..
+            } => (thread_id.clone(), request_id.clone()),
+            _ => return None,
+        };
+        let in_task = self
+            .shared
+            .threads
+            .lock()
+            .await
+            .get(&thread_id)
+            .is_some_and(|ctx| matches!(ctx.mode, ConversationMode::Task { .. }));
+        if !in_task {
+            return None;
+        }
+        let decision = self.pending.yolo_decision(&request_id)?;
+        Some((request_id, decision))
+    }
+
     pub fn set_language(&self, lang: UiLanguage) {
         *self.shared.language.write().unwrap() = lang;
     }

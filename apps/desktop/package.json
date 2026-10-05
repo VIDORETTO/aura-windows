@@ -1,7 +1,7 @@
 {
   "name": "aura-desktop",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Aura desktop UI (React + Tauri 2)",
   "license": "MIT OR Apache-2.0",

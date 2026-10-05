@@ -1,6 +1,37 @@
 import { formAnswer, parseInput, questionsAnswer } from "./userInput";
 
 describe("agent requests", () => {
+  it("reads a Codex MCP tool approval with its parameters (017)", () => {
+    // Shape captured from the pinned app-server (real_app_server_asks_before_aura_write_tools).
+    const f = parseInput("aura", {
+      _meta: {
+        codex_approval_kind: "mcp_tool_call",
+        tool_params: { name: "formal", template: "Reescreva formal: {texto}" },
+        tool_params_display: [
+          { display_name: "name", name: "name", value: "formal" },
+          { display_name: "template", name: "template", value: "Reescreva formal: {texto}" },
+          { display_name: "args", name: "args", value: ["-y"] },
+        ],
+      },
+      message: 'Allow the aura MCP server to run tool "quick_command_save"?',
+      mode: "form",
+      requestedSchema: { properties: {}, type: "object" },
+      serverName: "aura",
+    });
+    expect(f).toEqual({
+      kind: "tool",
+      approval: {
+        server: "aura",
+        tool: "quick_command_save",
+        params: [
+          { name: "name", value: "formal" },
+          { name: "template", value: "Reescreva formal: {texto}" },
+          { name: "args", value: '["-y"]' },
+        ],
+      },
+    });
+  });
+
   it("parses Codex questions and builds the answers map", () => {
     const f = parseInput("agent", {
       questions: [{ id: "lang", header: "Idioma", question: "Qual linguagem?", isOther: true, options: [{ label: "Rust" }, { label: "Go", description: "rápido" }] }],

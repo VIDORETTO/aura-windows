@@ -54,6 +54,8 @@ struct Pending {
     ty: RequestType,
     thread_id: Option<String>,
     responder: Responder,
+    /// What YOLO (018) answers: permissions only, never questions or forms.
+    yolo: Option<Decision>,
 }
 
 #[derive(Default)]
@@ -165,15 +167,39 @@ impl PendingRequests {
             ),
             _ => return Err(responder),
         };
+        let yolo = match ty {
+            RequestType::Command | RequestType::FileChange => Some(Decision::Accept),
+            RequestType::Permissions => Some(Decision::Grant {
+                permissions: params.get("permissions").cloned().unwrap_or(json!({})),
+                session: true,
+            }),
+            RequestType::Elicitation
+                if params["_meta"]["codex_approval_kind"].as_str() == Some("mcp_tool_call") =>
+            {
+                Some(Decision::Answer { content: json!({}) })
+            }
+            RequestType::Elicitation | RequestType::UserInput => None,
+        };
         self.inner.lock().unwrap().insert(
             request_id,
             Pending {
                 ty,
                 thread_id,
                 responder,
+                yolo,
             },
         );
         Ok(event)
+    }
+
+    /// The answer YOLO gives to a pending request, if it is a permission
+    /// (command, file change, permissions, MCP tool call) and not a question.
+    pub fn yolo_decision(&self, request_id: &str) -> Option<Decision> {
+        self.inner
+            .lock()
+            .unwrap()
+            .get(request_id)
+            .and_then(|p| p.yolo.clone())
     }
 
     /// Sends the user's decision. Consumes the pending request.

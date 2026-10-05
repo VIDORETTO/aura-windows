@@ -101,6 +101,8 @@ export const api = {
   mcpDetect: () => call<T.DetectedServer[]>("mcp_detect"),
   mcpImport: (names: string[]) => call<T.McpServerSpec[]>("mcp_import", { names }),
   agentRestart: () => call<boolean>("agent_restart"),
+  /** "Create with AI" (017): the Overlay starts a new conversation and sends `text`. */
+  agentTask: (text: string, mode: T.ConversationMode["mode"]) => call<void>("agent_task", { text, mode }),
   mcpStatus: () => call<T.McpStatus[]>("mcp_status"),
   mcpDiagnose: (name: string) => call<T.McpDiagnosis>("mcp_diagnose", { name }),
   mcpLogin: (name: string) => call<void>("mcp_login", { name }),
@@ -176,6 +178,8 @@ export const api = {
   updaterConfigured: () => call<boolean>("updater_configured"),
   onboardingResume: () => call<T.Settings>("onboarding_resume"),
   speechConsent: () => call<T.Settings>("speech_consent"),
+  /** YOLO (018): turning it on needs "ACEITO" or "ACCEPT". */
+  yoloSet: (enabled: boolean, confirmation: string) => call<T.Settings>("yolo_set", { enabled, confirmation }),
   diagnosticsExport: (dest: string) => call<string>("diagnostics_export", { dest }),
   eraseAllData: () => call<void>("erase_all_data"),
 };

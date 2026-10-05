@@ -196,6 +196,11 @@ fn build() -> Value {
             HostEvent::OpenConversation {
                 thread_id: "t1".into(),
             },
+            HostEvent::AgentTask {
+                text: "Crie uma Skill".into(),
+                mode: "task".into(),
+            },
+            HostEvent::ExtensionsChanged {},
         ])
         .collect();
 

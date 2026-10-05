@@ -268,7 +268,9 @@ export const useSession = create<Session>((set, get) => ({
       }
       let threadId = s.threadId;
       if (!threadId) {
-        const opts: StartOptions = { mode: modeValue(s.mode, s.granted), provider: s.provider, model: s.model, ephemeral: s.ephemeral };
+        // The plan always starts with an explicit catalog model (017).
+        const model = effectiveModel(s, useApp.getState().settings?.defaultModel ?? null);
+        const opts: StartOptions = { mode: modeValue(s.mode, s.granted), provider: s.provider, model, ephemeral: s.ephemeral };
         const started = await api.conversationStart(opts);
         threadId = started.threadId;
         await api.trayMove(DRAFT, threadId);
@@ -379,10 +381,25 @@ export const useSession = create<Session>((set, get) => ({
         set({ provider: hasAccount || providers.length === 0 ? CHATGPT_PLAN : `aura-${providers[0].id}`, model: null, effort: null });
       } else if (current && s.model && !current.models.some((m) => m.id === s.model)) {
         set({ model: null, effort: null });
+      } else if (s.provider === CHATGPT_PLAN && s.model && models.length > 0 && !models.some((m) => m.id === s.model)) {
+        // A model the plan no longer offers (e.g. GPT-5.x after 017).
+        set({ model: null, effort: null });
       }
     }
   },
 }));
+
+/**
+ * The model a new turn uses when the picker says "default": on the ChatGPT
+ * plan, the Settings default if the plan still offers it, else the plan's
+ * default; BYOK providers decide on their own (null).
+ */
+export function effectiveModel(s: Pick<Session, "provider" | "model" | "models">, settingsDefault: string | null): string | null {
+  if (s.model) return s.model;
+  if (s.provider !== CHATGPT_PLAN) return null;
+  if (settingsDefault && s.models.some((m) => m.id === settingsDefault)) return settingsDefault;
+  return s.models.find((m) => m.isDefault)?.id ?? s.models[0]?.id ?? null;
+}
 
 export interface ModelCapabilities {
   efforts: string[];

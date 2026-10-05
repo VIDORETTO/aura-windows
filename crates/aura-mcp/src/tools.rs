@@ -14,6 +14,18 @@ pub const SCREEN_TEXT: &str = "screen_text";
 pub const SCREEN_RECENT: &str = "screen_recent";
 pub const AUDIO_RECENT: &str = "audio_recent";
 pub const ATTACHMENT_READ: &str = "attachment_read";
+pub const EXTENSIONS_LIST: &str = "extensions_list";
+pub const SKILL_SAVE: &str = "skill_save";
+pub const QUICK_COMMAND_SAVE: &str = "quick_command_save";
+pub const MCP_SERVER_SAVE: &str = "mcp_server_save";
+
+/// Tools that change the user's configuration: Codex asks the user before
+/// each call (017).
+pub const WRITE_TOOLS: [&str; 3] = [SKILL_SAVE, QUICK_COMMAND_SAVE, MCP_SERVER_SAVE];
+
+fn writes(title: &str) -> serde_json::Value {
+    json!({"title": title, "readOnlyHint": false, "destructiveHint": false, "idempotentHint": true, "openWorldHint": false})
+}
 
 pub fn all() -> Vec<ToolDef> {
     vec![
@@ -80,6 +92,53 @@ pub fn all() -> Vec<ToolDef> {
                     "additionalProperties": false}},
                 "required": ["attachment_id"], "additionalProperties": false}),
             annotations: read_only("Ler anexo"),
+        },
+        ToolDef {
+            name: EXTENSIONS_LIST.into(),
+            description: "List the user's Aura extensions: skills (name, description, origin, enabled), quick commands (name, template, builtin, enabled) and MCP servers (name, transport, command or URL, enabled, secret variable names). Call before creating one to avoid duplicates."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {}, "additionalProperties": false}),
+            annotations: read_only("Extensões do Aura"),
+        },
+        ToolDef {
+            name: SKILL_SAVE.into(),
+            description: "Create (or, with replace=true, rewrite) an Aura skill: a reusable instruction set the agent loads when its description matches the task. name: lowercase letters, digits and single hyphens (max 64). description: when to use it, max 1024 chars. instructions: Markdown body. The user approves the call; it applies to new conversations."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "name": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 64},
+                "description": {"type": "string", "maxLength": 1024},
+                "instructions": {"type": "string"},
+                "replace": {"type": "boolean", "default": false}},
+                "required": ["name", "description", "instructions"], "additionalProperties": false}),
+            annotations: writes("Salvar Skill"),
+        },
+        ToolDef {
+            name: QUICK_COMMAND_SAVE.into(),
+            description: "Create (or, with replace=true, rewrite) a quick command the user runs as /name in Aura's input bar. The template is a prompt with placeholders: {selecao} = selected text, else the typed text; {texto} = typed text only; {args} or {args:default} = first word after the command; {tela} = attach a screenshot. Built-in commands cannot be changed. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "name": {"type": "string", "pattern": "^[a-z0-9-]+$", "maxLength": 64},
+                "template": {"type": "string"},
+                "replace": {"type": "boolean", "default": false}},
+                "required": ["name", "template"], "additionalProperties": false}),
+            annotations: writes("Salvar comando rápido"),
+        },
+        ToolDef {
+            name: MCP_SERVER_SAVE.into(),
+            description: "Add (or update) an MCP server for future conversations. transport=stdio needs command (+ args, plain env); transport=http needs url. Never ask for or pass secret values: list secret variable names in secret_env (stdio) or set bearer=true (http); such servers are saved disabled until the user types the secret in Settings > Extensions. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "name": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$", "maxLength": 64},
+                "transport": {"type": "string", "enum": ["stdio", "http"]},
+                "command": {"type": "string"},
+                "args": {"type": "array", "items": {"type": "string"}},
+                "env": {"type": "object", "additionalProperties": {"type": "string"}, "description": "Non-secret environment variables."},
+                "secret_env": {"type": "array", "items": {"type": "string"}, "description": "Names of secret environment variables (values are typed by the user)."},
+                "url": {"type": "string"},
+                "bearer": {"type": "boolean", "default": false},
+                "approval": {"type": "string", "enum": ["alwaysAsk", "askForWrites", "auto"], "default": "askForWrites"}},
+                "required": ["name", "transport"], "additionalProperties": false}),
+            annotations: writes("Salvar servidor MCP"),
         },
     ]
 }

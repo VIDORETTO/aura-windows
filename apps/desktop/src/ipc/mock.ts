@@ -43,6 +43,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   autoRead: false,
   accentColor: null,
   effortPresets: {},
+  yolo: false,
 };
 
 const PRESETS: T.Preset[] = [
@@ -69,11 +70,11 @@ function preset(id: string, name: string, wire: T.Wire, baseUrl: string, credent
   };
 }
 
+// The ChatGPT plan catalog (017): only the GPT-6 trio.
 const MODELS: T.ModelInfo[] = [
-  { id: "gpt-5.5", displayName: "GPT-5.5", efforts: ["low", "medium", "high"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: true },
-  { id: "gpt-5.5-mini", displayName: "GPT-5.5 mini", efforts: ["low", "medium"], defaultEffort: "low", inputModalities: ["text", "image"], isDefault: false },
-  // Added by Aura's catalog when the plan list omits it (013).
+  { id: "gpt-6-luna", displayName: "GPT-6 Luna", efforts: ["low", "medium", "high"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: true },
   { id: "gpt-6.1-sol", displayName: "GPT-6.1 Sol", efforts: ["low", "medium", "high", "xhigh", "max"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: false },
+  { id: "gpt-6-astra", displayName: "GPT-6 Astra", efforts: ["low", "medium", "high", "xhigh", "max"], defaultEffort: "medium", inputModalities: ["text", "image"], isDefault: false },
 ];
 
 // A 1×1 PNG so image chips have a preview in the browser.
@@ -170,7 +171,9 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       if (patch.accentColor && !/^#[0-9a-fA-F]{6}$/.test(patch.accentColor)) throw { code: "settings", message: "cor inválida" };
       if (patch.accentColor) patch = { ...patch, accentColor: patch.accentColor.toLowerCase() };
       if (patch.effortPresets) patch = { ...patch, effortPresets: Object.fromEntries(Object.entries(patch.effortPresets as Record<string, Record<string, string | null>>).map(([k, v]) => [k, Object.fromEntries(Object.entries(v).filter(([, e]) => e))]).filter(([, v]) => Object.keys(v as object).length > 0)) };
-      state.settings = { ...state.settings, ...patch };
+      // YOLO only changes through yolo_set (018).
+      const { yolo: _yolo, ...rest } = patch;
+      state.settings = { ...state.settings, ...rest };
       host({ channel: "settings", event: state.settings });
       return state.settings;
     },
@@ -209,6 +212,10 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       state.accessLog.find((e) => e.id === id)?.hasThumbnail ? "data:image/png;base64,iVBORw0KGgo=" : null,
     privacy_open_conversation: ({ threadId }) => {
       host({ channel: "openConversation", event: { threadId } });
+    },
+    agent_task: ({ text, mode }) => {
+      if (!String(text ?? "").trim()) throw { code: "invalid", message: "descreva o que o agente deve fazer" };
+      host({ channel: "agentTask", event: { text: String(text).trim(), mode } });
     },
     consent_answer: () => undefined,
     auth_status: () => ({ accounts: state.account ? [state.account] : [], active: state.account }),
@@ -628,6 +635,14 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
       ],
       cloud: state.providers.filter((p) => p.preset === "custom" || p.preset === "openai").map((p) => ({ id: p.id, name: p.name })),
     }),
+    yolo_set: ({ enabled, confirmation }) => {
+      if (enabled && !["ACEITO", "ACCEPT"].includes(String(confirmation ?? "").trim().toUpperCase())) {
+        throw { code: "invalid", message: "para ligar o modo YOLO, escreva ACEITO (ou ACCEPT)" };
+      }
+      state.settings = { ...state.settings, yolo: !!enabled };
+      host({ channel: "settings", event: state.settings });
+      return state.settings;
+    },
     speech_consent: () => {
       const id = state.settings.ttsProvider;
       if (id && !state.settings.ttsCloudConsent.includes(id)) state.settings = { ...state.settings, ttsCloudConsent: [...state.settings.ttsCloudConsent, id] };

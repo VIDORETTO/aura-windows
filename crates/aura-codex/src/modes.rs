@@ -159,18 +159,32 @@ fn path_str(p: &Path) -> String {
     p.to_string_lossy().into_owned()
 }
 
+/// YOLO (018): Task runs without sandbox or approvals; Chat and Plan stay read-only.
+fn yolo_task(mode: &ConversationMode, yolo: bool) -> bool {
+    yolo && matches!(mode, ConversationMode::Task { .. })
+}
+
 /// `sandbox`/`approvalPolicy`/`cwd` for `thread/start`.
-pub fn thread_params(mode: &ConversationMode, workspace: &Path) -> Value {
+pub fn thread_params(mode: &ConversationMode, workspace: &Path, yolo: bool) -> Value {
     let sandbox = match mode {
+        _ if yolo_task(mode, yolo) => "danger-full-access",
         ConversationMode::Task { .. } => "workspace-write",
         _ => "read-only",
     };
+    let approval = if yolo_task(mode, yolo) {
+        "never"
+    } else {
+        "on-request"
+    };
     // Protocol spellings (v0.159): SandboxMode and AskForApproval are kebab-case.
-    json!({"sandbox": sandbox, "approvalPolicy": "on-request", "cwd": path_str(workspace)})
+    json!({"sandbox": sandbox, "approvalPolicy": approval, "cwd": path_str(workspace)})
 }
 
 /// Per-turn overrides (`sandboxPolicy`, `approvalPolicy`, `cwd`).
-pub fn turn_overrides(mode: &ConversationMode, workspace: &Path) -> Value {
+pub fn turn_overrides(mode: &ConversationMode, workspace: &Path, yolo: bool) -> Value {
+    if yolo_task(mode, yolo) {
+        return json!({"sandboxPolicy": {"type": "dangerFullAccess"}, "approvalPolicy": "never", "cwd": path_str(workspace)});
+    }
     let policy = match mode {
         ConversationMode::Task { granted, network } => {
             let mut roots = vec![path_str(workspace)];
@@ -191,11 +205,11 @@ mod tests {
     fn chat_is_read_only() {
         let w = Path::new("/w/t1");
         assert_eq!(
-            thread_params(&ConversationMode::Chat, w),
+            thread_params(&ConversationMode::Chat, w, false),
             json!({"sandbox": "read-only", "approvalPolicy": "on-request", "cwd": "/w/t1"})
         );
         assert_eq!(
-            turn_overrides(&ConversationMode::Plan, w)["sandboxPolicy"],
+            turn_overrides(&ConversationMode::Plan, w, false)["sandboxPolicy"],
             json!({"type": "readOnly"})
         );
     }
@@ -207,11 +221,39 @@ mod tests {
             granted: vec!["/docs".into()],
             network: false,
         };
-        assert_eq!(thread_params(&mode, w)["sandbox"], "workspace-write");
+        assert_eq!(thread_params(&mode, w, false)["sandbox"], "workspace-write");
         assert_eq!(
-            turn_overrides(&mode, w)["sandboxPolicy"],
+            turn_overrides(&mode, w, false)["sandboxPolicy"],
             json!({"type": "workspaceWrite", "writableRoots": ["/w/t1", "/docs"], "networkAccess": false})
         );
+    }
+
+    #[test]
+    fn yolo_frees_only_task_mode() {
+        // 018 AC-002.
+        let w = Path::new("/w/t1");
+        let task = ConversationMode::Task {
+            granted: vec![],
+            network: false,
+        };
+        assert_eq!(
+            thread_params(&task, w, true),
+            json!({"sandbox": "danger-full-access", "approvalPolicy": "never", "cwd": "/w/t1"})
+        );
+        assert_eq!(
+            turn_overrides(&task, w, true),
+            json!({"sandboxPolicy": {"type": "dangerFullAccess"}, "approvalPolicy": "never", "cwd": "/w/t1"})
+        );
+        for mode in [ConversationMode::Chat, ConversationMode::Plan] {
+            assert_eq!(
+                thread_params(&mode, w, true),
+                json!({"sandbox": "read-only", "approvalPolicy": "on-request", "cwd": "/w/t1"})
+            );
+            assert_eq!(
+                turn_overrides(&mode, w, true)["sandboxPolicy"],
+                json!({"type": "readOnly"})
+            );
+        }
     }
 
     #[test]

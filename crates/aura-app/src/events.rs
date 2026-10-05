@@ -49,6 +49,14 @@ pub enum HostEvent {
     OpenConversation {
         thread_id: String,
     },
+    /// Settings asked the agent to do something ("Create with AI", 017): the
+    /// Overlay starts a new conversation in `mode` and sends `text`.
+    AgentTask {
+        text: String,
+        mode: String,
+    },
+    /// Skills, quick commands or MCP servers changed (e.g. by the agent).
+    ExtensionsChanged {},
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

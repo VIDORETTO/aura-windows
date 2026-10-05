@@ -153,6 +153,20 @@ export function OverlayApp() {
     if (conversationRequest) void useSession.getState().openConversation(conversationRequest.threadId);
   }, [conversationRequest]);
 
+  // "Create with AI" in Settings (017): a new conversation in the requested mode.
+  const agentRequest = useApp((s) => s.agentRequest);
+  useEffect(() => {
+    if (!agentRequest) return;
+    // Consumed once: a remount must not send it again.
+    useApp.setState({ agentRequest: null });
+    void (async () => {
+      const s = useSession.getState();
+      await s.newConversation();
+      await s.setMode(agentRequest.mode);
+      await useSession.getState().send(agentRequest.text);
+    })();
+  }, [agentRequest]);
+
   // Answer finished while the user was elsewhere → system notification.
   // "Read answers automatically" (009 AC-005): on every finished turn of
   // the open conversation, read its last answer.

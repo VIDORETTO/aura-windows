@@ -408,6 +408,8 @@ fn main() {
             commands::privacy_clear_access_log,
             commands::privacy_access_thumbnail,
             commands::privacy_open_conversation,
+            commands::agent_task,
+            commands::yolo_set,
             commands::consent_answer,
             commands::auth_status,
             commands::auth_login,

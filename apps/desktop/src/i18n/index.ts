@@ -7,6 +7,11 @@ export type { MessageKey };
 
 const tables: Record<Language, Record<MessageKey, string>> = { ptBr: ptBR, en };
 
+/** Every message of a language (settings search, 017). */
+export function messages(lang: Language): Record<MessageKey, string> {
+  return tables[lang] ?? ptBR;
+}
+
 export function translate(lang: Language, key: MessageKey, vars?: Record<string, string | number>): string {
   let s = tables[lang]?.[key] ?? ptBR[key] ?? key;
   if (vars) for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, String(v));

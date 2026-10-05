@@ -115,8 +115,8 @@ pub fn parse_models(body: &Value) -> Vec<ModelSpec> {
                         .or(m["name"].as_str())
                         .map(str::to_string)
                         .or_else(|| Some(k.display_name.to_string())),
-                    context_window: Some(k.context_window),
-                    max_output: Some(k.max_output),
+                    context_window: k.context_window,
+                    max_output: k.max_output,
                     supports_images: k.images,
                     supports_tools: k.tools,
                     supports_reasoning: true,

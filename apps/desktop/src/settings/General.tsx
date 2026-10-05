@@ -1,3 +1,4 @@
+import { AlertTriangle } from "lucide-react";
 import { ConfirmButton } from "../ui/ConfirmButton";
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../ipc/commands";
@@ -89,7 +90,80 @@ export function GeneralSection() {
         </div>
       </Section>
       <MemoriesSection />
+      <YoloSection />
     </>
+  );
+}
+
+/**
+ * YOLO (018): Task mode stops asking for permission. Turning it on shows the
+ * risks and needs the typed word; the host checks it too.
+ */
+function YoloSection() {
+  const t = useT();
+  const on = useApp((x) => x.settings?.yolo ?? false);
+  const [arming, setArming] = useState(false);
+  const [typed, setTyped] = useState("");
+  const word = t("yolo.word");
+  const confirmed = typed.trim().toUpperCase() === word;
+  const set = async (enabled: boolean, confirmation: string) => {
+    try {
+      useApp.getState().setSettings(await api.yoloSet(enabled, confirmation));
+      setArming(false);
+      setTyped("");
+    } catch (e) {
+      useApp.getState().notify("error", errorMessage(e));
+    }
+  };
+  return (
+    <Section title={t("yolo.title")} description={t("yolo.description")}>
+      <div className="flex flex-col gap-3 py-2.5">
+        <div role="status" aria-label={t("yolo.state")} className={cx("flex items-center gap-2 text-sm", on ? "font-medium text-danger" : "text-muted")}>
+          <AlertTriangle size={15} className={on ? "text-danger" : "text-warning"} aria-hidden />
+          {on ? t("yolo.on") : t("yolo.off")}
+        </div>
+        {on ? (
+          <div>
+            <Button variant="primary" onClick={() => void set(false, "")}>{t("yolo.disable")}</Button>
+          </div>
+        ) : !arming ? (
+          <div>
+            <Button variant="danger" onClick={() => setArming(true)}>{t("yolo.enable")}</Button>
+          </div>
+        ) : (
+          <div role="group" aria-label={t("yolo.warningTitle")} className="flex flex-col gap-2 rounded-md border border-danger/50 bg-danger/5 p-3">
+            <div className="flex items-center gap-2 text-[13px] font-semibold text-danger">
+              <AlertTriangle size={15} aria-hidden /> {t("yolo.warningTitle")}
+            </div>
+            <ul className="list-disc pl-5 text-[13px] leading-relaxed">
+              <li>{t("yolo.risk.commands")}</li>
+              <li>{t("yolo.risk.files")}</li>
+              <li>{t("yolo.risk.network")}</li>
+              <li>{t("yolo.risk.mcp")}</li>
+            </ul>
+            <p className="text-xs text-muted">{t("yolo.scope")}</p>
+            <Field label={t("yolo.type", { word })}>
+              <input
+                type="text"
+                autoFocus
+                autoComplete="off"
+                spellCheck={false}
+                value={typed}
+                onChange={(e) => setTyped(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && confirmed) void set(true, typed);
+                }}
+                className="h-8 w-48 rounded-md border border-line bg-surface-strong px-2 font-mono text-sm uppercase outline-none focus:border-danger"
+              />
+            </Field>
+            <div className="flex gap-2">
+              <Button variant="danger" disabled={!confirmed} onClick={() => void set(true, typed)}>{t("yolo.confirm")}</Button>
+              <Button variant="ghost" onClick={() => { setArming(false); setTyped(""); }}>{t("common.cancel")}</Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </Section>
   );
 }
 

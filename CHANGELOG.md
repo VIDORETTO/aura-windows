@@ -5,6 +5,31 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-05
+
+### Added
+- YOLO mode: in Task mode the agent runs without sandbox and never asks for
+  permission (commands, file changes, permissions and MCP tool calls are
+  accepted). Turned on in Settings › General after a risk warning and typing
+  ACEITO / ACCEPT (checked by the host); the Overlay shows "Task · YOLO".
+- Extensions: search, bulk on/off per section, MCP server editing (secrets
+  kept when left blank) and "Create with AI" for skills, quick commands and
+  MCP servers (agent in Task mode).
+- Aura MCP tools `extensions_list`, `skill_save`, `quick_command_save`,
+  `mcp_server_save` (writes need the user's approval) and built-in agent
+  skills in `core-skills` that the user cannot see or turn off.
+- Settings search (Ctrl+K / Ctrl+F) across every page.
+
+### Changed
+- ChatGPT plan offers only GPT-6 Luna, GPT-6.1 Sol and GPT-6 Astra; new plan
+  conversations always start with an explicit catalog model.
+- Model and reasoning effort can be chosen in the compact Overlay before the
+  first message; efforts are chips and the chosen effort shows in the pill.
+- `/` and `@` menus: Enter picks the highlighted item; a bare `/` or `@` is
+  never sent.
+
+## [0.1.0] - 2026-10-05
+
 ### Added
 - Rust workspace: core domain (settings, gestures, placement, context chips,
   JSON-RPC, redacted logging), SQLite store with DPAPI-sealed vault, privacy

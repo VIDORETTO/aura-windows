@@ -1,6 +1,7 @@
 // 015: in the native window, the compact Overlay shows the mode, the `/` menu
-// lists localized commands without /tela, Esc keeps the text and Enter on a
-// message ending in "@word" sends it instead of capturing the screen.
+// lists localized commands without /tela, Enter picks the highlighted command
+// (017), Esc keeps the text and Enter on a message ending in "@word" sends it
+// instead of capturing the screen.
 const invoke = (cmd: string, args: Record<string, unknown> = {}) =>
   browser.execute(async (c, a) => JSON.stringify(await (window as any).__TAURI_INTERNALS__.invoke(c, a)), cmd, args).then((s) => JSON.parse(s as string));
 
@@ -29,8 +30,12 @@ describe("Composer menus, mode badge (015)", () => {
     expect(options.some((o) => o.startsWith("/plano"))).toBe(true);
     expect(options.some((o) => o.startsWith("/compactar"))).toBe(true);
     expect(options.some((o) => o.startsWith("/tela"))).toBe(false);
+    // 017: Enter picks the highlighted (first) command; "/" alone is never sent.
     await browser.keys("Enter");
-    expect(await box.getValue()).toBe("/");
+    expect(await box.getValue()).toBe("/plano ");
+    for (let i = 0; i < "/plano ".length; i++) await browser.keys("Backspace");
+    await browser.keys("/");
+    await (await $('[role="listbox"]')).waitForDisplayed({ timeout: 10_000 });
     await browser.keys("Escape");
     expect(await box.getValue()).toBe("/");
     expect(await $('[role="listbox"]').isExisting()).toBe(false);

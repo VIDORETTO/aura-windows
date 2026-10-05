@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005"
+  ],
+  "environment": "Windows 10 Pro 19045, Node 22.17, pnpm 12.5.1, codex-app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/settings/General.tsx": "82e92fc168dd019b387594be43cd6e8f208dc23ed3137e8e36c0cb6b323395a8",
+    "crates/aura-codex/src/approvals.rs": "6c6253cf0b7885a9c2771e7cb71abe8452f03bbed3899559386f2e9b5136aabc",
+    "crates/aura-codex/src/modes.rs": "3ce9d4911da0be887b5d564d7d323ef06f25611c6ae32d01dfa956b5a9d4454d",
+    "crates/aura-codex/src/service.rs": "bc3ebf3453b9e0b82847c785d462ced969e8686b6361e4e9593c09d7bc6786ea",
+    "specs/018-modo-yolo/change.md": "04562e0dac453791fabcc6e3419070432d98a87c294aa0cb6bfc73be09766255"
+  },
+  "input_paths": [
+    "specs/018-modo-yolo/change.md",
+    "crates/aura-codex/src/modes.rs",
+    "crates/aura-codex/src/approvals.rs",
+    "crates/aura-codex/src/service.rs",
+    "apps/desktop/src/settings/General.tsx"
+  ],
+  "limitations": "Auto-accept exercised with the fake app-server command request only; no dedicated unit test for other request types",
+  "observations": "Rust 330 passed/6 ignored; UI 191/191; real app-server accepts danger-full-access + never",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo clippy --workspace --all-targets -D warnings; UPDATE_GOLDEN=1 cargo test -p aura-app --test ipc_contract; AURA_CODEX_BIN=<pinned rust-v0.159.0> cargo test -p aura-app --test real_app_server -- --ignored yolo; pnpm test; pnpm typecheck",
+  "result": "passed",
+  "tested_revision": "local:1975c2db5a27431ea12ca2eedd1da6d3ff73d8bf1041dab9b0c077639b60f7cf",
+  "ticket": null,
+  "timestamp": "2026-10-05T12:35:28+00:00"
+}

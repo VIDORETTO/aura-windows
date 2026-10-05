@@ -659,3 +659,94 @@ async fn switching_mode_mid_conversation_tells_the_agent() {
         .collect();
     assert_eq!(users, ["primeira", "segunda", "terceira", "quarta"]);
 }
+
+#[tokio::test]
+async fn yolo_accepts_task_permissions_without_asking() {
+    // 018 AC-002, AC-003.
+    let h = default_harness();
+    h.svc.set_yolo(true);
+    let mut rx = h.svc.events();
+    let task = h
+        .svc
+        .start(StartOptions {
+            mode: ConversationMode::Task {
+                granted: vec![],
+                network: false,
+            },
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    h.svc
+        .send(
+            &task.thread_id,
+            &text("/aprovar rode echo"),
+            TurnOptions::default(),
+        )
+        .await
+        .unwrap();
+    let events = until_turn_completed(&mut rx).await;
+    assert!(
+        !events
+            .iter()
+            .any(|e| matches!(e, E::ApprovalRequested { .. })),
+        "YOLO never shows the request"
+    );
+    assert!(events.iter().any(
+        |e| matches!(e, E::MessageCompleted { text, .. } if text.contains("Decisão recebida: accept."))
+    ));
+    assert!(h.svc.pending_request_ids().is_empty());
+    let start = &sent(&h.record, "thread/start")[0];
+    assert_eq!(
+        (start["sandbox"].as_str(), start["approvalPolicy"].as_str()),
+        (Some("danger-full-access"), Some("never"))
+    );
+    let turn = &sent(&h.record, "turn/start")[0];
+    assert_eq!(turn["sandboxPolicy"]["type"], "dangerFullAccess");
+    assert_eq!(turn["approvalPolicy"], "never");
+
+    // Chat stays read-only and the user is still asked.
+    let chat = h.svc.start(StartOptions::default()).await.unwrap();
+    h.svc
+        .send(
+            &chat.thread_id,
+            &text("/aprovar rode echo"),
+            TurnOptions::default(),
+        )
+        .await
+        .unwrap();
+    let request_id = loop {
+        if let E::ApprovalRequested { request_id, .. } = rx.recv().await.unwrap() {
+            break request_id;
+        }
+    };
+    assert_eq!(h.svc.pending_request_ids(), vec![request_id.clone()]);
+    h.svc.respond(&request_id, Decision::Decline).await.unwrap();
+    until_turn_completed(&mut rx).await;
+    assert_eq!(
+        sent(&h.record, "turn/start")[1]["sandboxPolicy"]["type"],
+        "readOnly"
+    );
+
+    // YOLO off again: the next Task turn asks.
+    h.svc.set_yolo(false);
+    h.svc
+        .send(
+            &task.thread_id,
+            &text("/aprovar rode echo"),
+            TurnOptions::default(),
+        )
+        .await
+        .unwrap();
+    let request_id = loop {
+        if let E::ApprovalRequested { request_id, .. } = rx.recv().await.unwrap() {
+            break request_id;
+        }
+    };
+    assert_eq!(
+        sent(&h.record, "turn/start")[2]["sandboxPolicy"]["type"],
+        "workspaceWrite"
+    );
+    h.svc.respond(&request_id, Decision::Decline).await.unwrap();
+    until_turn_completed(&mut rx).await;
+}

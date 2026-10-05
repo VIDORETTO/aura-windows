@@ -48,6 +48,8 @@ export interface Settings {
   accentColor: string | null;
   /** Reasoning effort per `provider::model` and mode (013). */
   effortPresets: Record<string, ModeEfforts>;
+  /** YOLO (018): Task mode never asks for permission; set by `yolo_set`. */
+  yolo: boolean;
 }
 
 export interface ModeEfforts {
@@ -656,4 +658,6 @@ export type HostEvent =
   | { channel: "voice"; event: PttState }
   | { channel: "notice"; event: { level: "info" | "warning" | "error"; message: string } }
   | { channel: "openConversation"; event: { threadId: string } }
+  | { channel: "agentTask"; event: { text: string; mode: ConversationMode["mode"] } }
+  | { channel: "extensionsChanged"; event: Record<string, never> }
   | { channel: "settings"; event: Settings };

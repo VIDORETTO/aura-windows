@@ -7,6 +7,14 @@ import { useConversation } from "../state/conversation";
 import { Button, Field, Select, Switch, TextField, cx } from "../ui/primitives";
 import { formAnswer, parseInput, questionsAnswer } from "./userInput";
 import type { ApprovalDecision } from "../ipc/types";
+import type { MessageKey } from "../i18n";
+
+/** Friendly names of Aura's own write tools (017). */
+const AURA_TOOLS: Record<string, MessageKey> = {
+  skill_save: "toolApproval.skill_save",
+  quick_command_save: "toolApproval.quick_command_save",
+  mcp_server_save: "toolApproval.mcp_server_save",
+};
 
 export function UserInputCard({ requestId, source, prompt, autoResolveMs, resolved }: { requestId: string; source: string; prompt: unknown; autoResolveMs: number | null; resolved?: string }) {
   const t = useT();
@@ -32,7 +40,16 @@ export function UserInputCard({ requestId, source, prompt, autoResolveMs, resolv
     }
   };
 
-  const title = source === "permissions" ? t("input.permissionsTitle") : source === "agent" ? t("input.questionTitle") : t("input.formTitle", { source });
+  const title =
+    form.kind === "tool"
+      ? form.approval.server === "aura" && AURA_TOOLS[form.approval.tool]
+        ? t(AURA_TOOLS[form.approval.tool])
+        : t("toolApproval.title", { tool: form.approval.tool || "?", server: form.approval.server })
+      : source === "permissions"
+        ? t("input.permissionsTitle")
+        : source === "agent"
+          ? t("input.questionTitle")
+          : t("input.formTitle", { source });
 
   return (
     <div role="group" aria-label={title} className={cx("rounded-md border px-3 py-2", resolved ? "border-line opacity-70" : "border-accent/50 bg-accent/5")}>
@@ -41,7 +58,24 @@ export function UserInputCard({ requestId, source, prompt, autoResolveMs, resolv
         {left !== null && !resolved && left > 0 && <span className="ml-auto text-[11px] text-muted">{t("input.autoResolve", { s: left })}</span>}
       </div>
       {resolved ? (
-        <div className="mt-1 text-xs text-muted">{t("approval.resolved")}</div>
+        <div className="mt-1 text-xs text-muted">{t(resolved === "accepted" ? "approval.accepted" : resolved === "declined" ? "approval.declined" : "approval.resolved")}</div>
+      ) : form.kind === "tool" ? (
+        <div className="mt-2 flex flex-col gap-2">
+          {form.approval.params.length > 0 && (
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-[12px]">
+              {form.approval.params.map((p) => (
+                <div key={p.name} className="contents">
+                  <dt className="text-muted">{p.name}</dt>
+                  <dd className="selectable max-h-32 overflow-auto whitespace-pre-wrap break-words font-mono text-[11px]">{p.value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          <div className="flex gap-1.5">
+            <Button size="sm" variant="primary" onClick={() => void send({ type: "answer", content: {} }, "accepted")}>{t("toolApproval.allow")}</Button>
+            <Button size="sm" variant="ghost" onClick={() => void send({ type: "decline" }, "declined")}>{t("approval.decline")}</Button>
+          </div>
+        </div>
       ) : form.kind === "questions" ? (
         <div className="mt-2 flex flex-col gap-3">
           {form.questions.map((q) => (

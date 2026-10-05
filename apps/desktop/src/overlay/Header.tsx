@@ -35,6 +35,8 @@ export function Header({ compact, subtitle }: { compact: boolean; subtitle?: str
       </span>
       {compact ? (
         <>
+          {/* Model and effort can be chosen before the first message (017). */}
+          <ModelPicker compact />
           <ModeBadge />
           {subtitle && (
             <span data-tauri-drag-region className="min-w-0 truncate text-[11px] text-muted" title={subtitle}>

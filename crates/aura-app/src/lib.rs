@@ -10,6 +10,7 @@
 
 pub mod attachments;
 pub mod consent;
+pub mod core_skills;
 pub mod diagnostics;
 pub mod error;
 pub mod events;

@@ -53,6 +53,10 @@ interface AppStore {
   notices: Notice[];
   /** Conversation another window asked the Overlay to show (access log). */
   conversationRequest: { threadId: string; seq: number } | null;
+  /** "Create with AI" asked the Overlay for a new agent conversation (017). */
+  agentRequest: { text: string; mode: "chat" | "task" | "plan"; seq: number } | null;
+  /** Bumped when skills, quick commands or MCP servers change elsewhere. */
+  extensionsRevision: number;
   setSettings: (s: Settings) => void;
   setPrivacy: (p: PrivacyView) => void;
   refreshAuth: () => Promise<void>;
@@ -81,6 +85,8 @@ export const useApp = create<AppStore>((set, get) => ({
   appServer: { state: "stopped" },
   notices: [],
   conversationRequest: null,
+  agentRequest: null,
+  extensionsRevision: 0,
   setSettings: (settings) => {
     set({ settings });
     applyTheme(settings);
@@ -146,6 +152,12 @@ export const useApp = create<AppStore>((set, get) => ({
         break;
       case "openConversation":
         set((s) => ({ conversationRequest: { threadId: e.event.threadId, seq: (s.conversationRequest?.seq ?? 0) + 1 } }));
+        break;
+      case "agentTask":
+        set((s) => ({ agentRequest: { ...e.event, seq: (s.agentRequest?.seq ?? 0) + 1 } }));
+        break;
+      case "extensionsChanged":
+        set((s) => ({ extensionsRevision: s.extensionsRevision + 1 }));
         break;
       case "settings":
         get().setSettings(e.event);

@@ -14,6 +14,7 @@ import { PrivacySection } from "./Privacy";
 import { ProvidersSection } from "./Providers";
 import { ShortcutsSection } from "./Shortcuts";
 import { VoiceSection } from "./Voice";
+import { SettingsSearch, revealText } from "./SettingsSearch";
 
 interface Page {
   id: string;
@@ -44,10 +45,33 @@ export function SettingsApp() {
   const t = useT();
   const [page, setPage] = useState(() => pageFromHash(window.location.hash));
   const main = useRef<HTMLElement>(null);
+  const search = useRef<HTMLInputElement>(null);
+  /** Text to flash once the page chosen in the search has rendered. */
+  const [reveal, setReveal] = useState<{ text: string; n: number } | null>(null);
   // Each page opens at its top (it used to keep the previous page's scroll).
   useEffect(() => {
     if (main.current) main.current.scrollTop = 0;
   }, [page]);
+
+  useEffect(() => {
+    if (!reveal || !main.current) return;
+    const root = main.current;
+    const h = setTimeout(() => revealText(root, reveal.text), 60);
+    return () => clearTimeout(h);
+  }, [reveal, page]);
+
+  // Ctrl+K / Ctrl+F: search the settings (017).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && (e.key.toLowerCase() === "k" || e.key.toLowerCase() === "f")) {
+        e.preventDefault();
+        search.current?.focus();
+        search.current?.select();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   useEffect(() => {
     document.body.classList.add("settings");
@@ -70,8 +94,19 @@ export function SettingsApp() {
   const Current = PAGES.find((p) => p.id === page)!.Component;
   return (
     <div className="flex h-full">
-      <nav aria-label={t("settings.title")} className="flex w-52 shrink-0 flex-col gap-0.5 border-r border-line p-2">
+      <nav aria-label={t("settings.title")} className="flex w-56 shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-line p-2">
         <h1 className="px-2 pb-2 pt-1 text-sm font-semibold">{t("settings.title")}</h1>
+        <div className="pb-2">
+          <SettingsSearch
+            pages={PAGES}
+            inputRef={search}
+            onOpen={(id, text) => {
+              window.location.hash = `#/settings/${id}`;
+              setPage(id);
+              setReveal((r) => ({ text, n: (r?.n ?? 0) + 1 }));
+            }}
+          />
+        </div>
         {PAGES.map((p) => (
           <a
             key={p.id}

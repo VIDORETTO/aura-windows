@@ -9,15 +9,18 @@ use crate::platform::Platform;
 use crate::privacy::PrivacyRepo;
 use aura_capture::source::{CaptureError, Target as CapTarget, read_screen_text};
 use aura_capture::{CaptureOutcome, capture_with_policy};
+use aura_extensions::mcp_config::{ApprovalMode, EnvValue, McpServerSpec, Transport};
 use aura_mcp::tools::{
-    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT,
+    ACTIVE_WINDOW_INFO, ATTACHMENT_READ, AUDIO_RECENT, EXTENSIONS_LIST, MCP_SERVER_SAVE,
+    QUICK_COMMAND_SAVE, SCREEN_CAPTURE, SCREEN_RECENT, SCREEN_TEXT, SKILL_SAVE,
 };
 use aura_mcp::{BoxFut, CallContext, Content, ToolHandler, ToolOutput};
 use aura_policy::{
     AccessRequest, Decision, DenyReason, Grants, Policy, Requester, Source, Target, decide,
 };
 use serde_json::{Value, json};
-use std::sync::{Arc, RwLock};
+use std::collections::BTreeMap;
+use std::sync::{Arc, OnceLock, RwLock, Weak};
 use tokio::sync::broadcast;
 
 /// Longest image side sent to the model (keeps a screenshot ≈ 1–2k tokens).
@@ -60,7 +63,94 @@ impl RecentMedia for NoRecentMedia {
     }
 }
 
+/// What the agent may change in the user's extensions (017). The host
+/// implements it; Codex asks the user before each write (`WRITE_TOOLS`).
+pub trait ExtensionsAccess: Send + Sync {
+    /// Skills, quick commands and MCP servers as JSON for the model.
+    fn list(&self) -> BoxFut<'_, Result<Value, String>>;
+    fn save_skill(
+        &self,
+        name: &str,
+        description: &str,
+        instructions: &str,
+        replace: bool,
+    ) -> Result<(), String>;
+    fn save_quick_command(&self, name: &str, template: &str, replace: bool) -> Result<(), String>;
+    fn save_mcp_server(&self, spec: McpServerSpec) -> Result<(), String>;
+}
+
+/// Filled once the host exists (it owns the tools' MCP router).
+pub type ExtensionsSlot = Arc<OnceLock<Weak<dyn ExtensionsAccess>>>;
+
+/// The server the agent described, without secret values: servers that need
+/// one are saved off until the user types it in Settings.
+pub fn mcp_spec_from_args(args: &Value) -> Result<McpServerSpec, String> {
+    let name = args["name"].as_str().unwrap_or_default().trim().to_string();
+    let strings = |v: &Value| -> Vec<String> {
+        v.as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(Value::as_str)
+            .map(str::to_string)
+            .collect()
+    };
+    let secrets = strings(&args["secret_env"]);
+    let bearer = args["bearer"].as_bool().unwrap_or(false);
+    let transport = match args["transport"].as_str() {
+        Some("stdio") => {
+            let mut env: BTreeMap<String, EnvValue> = args["env"]
+                .as_object()
+                .into_iter()
+                .flatten()
+                .filter_map(|(k, v)| {
+                    v.as_str().map(|value| {
+                        (
+                            k.clone(),
+                            EnvValue::Plain {
+                                value: value.to_string(),
+                            },
+                        )
+                    })
+                })
+                .collect();
+            for var in &secrets {
+                env.insert(var.clone(), EnvValue::Secret);
+            }
+            Transport::Stdio {
+                command: args["command"].as_str().unwrap_or_default().to_string(),
+                args: strings(&args["args"]),
+                env,
+                cwd: None,
+            }
+        }
+        Some("http") => Transport::Http {
+            url: args["url"].as_str().unwrap_or_default().to_string(),
+            bearer_secret: bearer,
+            headers: BTreeMap::new(),
+        },
+        _ => return Err("transport deve ser \"stdio\" ou \"http\"".into()),
+    };
+    let approval_mode = match args["approval"].as_str() {
+        Some("alwaysAsk") => ApprovalMode::AlwaysAsk,
+        Some("auto") => ApprovalMode::Auto,
+        _ => ApprovalMode::AskForWrites,
+    };
+    let spec = McpServerSpec {
+        name,
+        transport,
+        enabled: secrets.is_empty() && !bearer,
+        disabled_tools: vec![],
+        approval_mode,
+        startup_timeout_sec: None,
+        tool_timeout_sec: None,
+    };
+    spec.validate().map_err(|e| e.to_string())?;
+    Ok(spec)
+}
+
 pub struct HostTools {
+    /// The user's extensions (017); empty until the host is built.
+    pub extensions: ExtensionsSlot,
     pub platform: Platform,
     pub policy: Arc<RwLock<Policy>>,
     pub grants: Arc<RwLock<Grants>>,
@@ -438,6 +528,71 @@ impl HostTools {
     }
 }
 
+impl HostTools {
+    fn extensions(&self) -> Result<Arc<dyn ExtensionsAccess>, ToolOutput> {
+        self.extensions
+            .get()
+            .and_then(Weak::upgrade)
+            .ok_or_else(|| ToolOutput::error("unavailable", "Extensões indisponíveis agora."))
+    }
+
+    async fn extensions_tool(&self, tool: &str, args: Value) -> ToolOutput {
+        let ext = match self.extensions() {
+            Ok(e) => e,
+            Err(out) => return out,
+        };
+        let text = |k: &str| args[k].as_str().unwrap_or_default().to_string();
+        let replace = args["replace"].as_bool().unwrap_or(false);
+        let invalid = |m: String| ToolOutput::error("invalid", &m);
+        match tool {
+            EXTENSIONS_LIST => match ext.list().await {
+                Ok(v) => ToolOutput::text(v.to_string()),
+                Err(e) => ToolOutput::error("unavailable", &e),
+            },
+            SKILL_SAVE => {
+                let name = text("name");
+                match ext.save_skill(&name, &text("description"), &text("instructions"), replace) {
+                    Ok(()) => ToolOutput::text(format!(
+                        "Skill \"{name}\" salva. Vale para as próximas conversas; o usuário pode revisá-la em Configurações › Extensões."
+                    )),
+                    Err(e) => invalid(e),
+                }
+            }
+            QUICK_COMMAND_SAVE => {
+                let name = text("name");
+                match ext.save_quick_command(&name, &text("template"), replace) {
+                    Ok(()) => ToolOutput::text(format!(
+                        "Comando rápido /{name} salvo. O usuário já pode digitar /{name} na barra do Aura."
+                    )),
+                    Err(e) => invalid(e),
+                }
+            }
+            MCP_SERVER_SAVE => {
+                let spec = match mcp_spec_from_args(&args) {
+                    Ok(s) => s,
+                    Err(e) => return invalid(e),
+                };
+                let (name, enabled) = (spec.name.clone(), spec.enabled);
+                let needs: Vec<String> =
+                    spec.secret_vars().into_iter().map(|(var, _)| var).collect();
+                match ext.save_mcp_server(spec) {
+                    Ok(()) if enabled => ToolOutput::text(format!(
+                        "Servidor MCP \"{name}\" salvo e ligado. Ele vale nas próximas conversas (não nesta)."
+                    )),
+                    Ok(()) => ToolOutput::text(format!(
+                        "Servidor MCP \"{name}\" salvo DESLIGADO: falta o segredo ({}). Peça ao usuário para abrir Configurações › Extensões, editar \"{name}\", informar o segredo e ligar o servidor. Nunca peça o segredo na conversa.",
+                        needs.join(", ")
+                    )),
+                    Err(e) => invalid(e),
+                }
+            }
+            other => {
+                ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
+            }
+        }
+    }
+}
+
 impl ToolHandler for HostTools {
     fn call<'a>(&'a self, tool: &'a str, args: Value, ctx: CallContext) -> BoxFut<'a, ToolOutput> {
         Box::pin(async move {
@@ -448,6 +603,9 @@ impl ToolHandler for HostTools {
                 SCREEN_RECENT => self.screen_recent(args, ctx).await,
                 AUDIO_RECENT => self.audio_recent(args, ctx).await,
                 ATTACHMENT_READ => self.attachment_read(args, ctx).await,
+                EXTENSIONS_LIST | SKILL_SAVE | QUICK_COMMAND_SAVE | MCP_SERVER_SAVE => {
+                    self.extensions_tool(tool, args).await
+                }
                 other => {
                     ToolOutput::error("unknown_tool", &format!("ferramenta desconhecida: {other}"))
                 }

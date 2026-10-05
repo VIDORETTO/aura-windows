@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "2afa2e92733c3bf4429e650f7fff7a5d3ca977bf"
+  },
+  "blockers": [],
+  "effort_id": "017-modelos-gpt6-extensoes-agenticas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "312d65aad9e30ce937e9cc37f5f62fc4369fe7412443b68076cec31b75449cde",
+      "path": "specs/017-modelos-gpt6-extensoes-agenticas/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

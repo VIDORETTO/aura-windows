@@ -82,6 +82,18 @@ pub struct Settings {
     pub accent_color: Option<String>,
     /// Reasoning effort per `provider::model` and mode (013).
     pub effort_presets: std::collections::BTreeMap<String, ModeEfforts>,
+    /// YOLO (018): Task mode runs without asking for permission. Changed
+    /// only through `yolo_set` (needs the typed confirmation), not patches.
+    pub yolo: bool,
+}
+
+/// Words that confirm turning YOLO on (018), in any case.
+pub const YOLO_CONFIRMATIONS: [&str; 2] = ["ACEITO", "ACCEPT"];
+
+/// Whether `typed` confirms turning YOLO on.
+pub fn yolo_confirmed(typed: &str) -> bool {
+    let typed = typed.trim().to_uppercase();
+    YOLO_CONFIRMATIONS.contains(&typed.as_str())
 }
 
 /// Effort chosen for one model in each conversation mode (013).
@@ -131,6 +143,7 @@ impl Default for Settings {
             auto_read: false,
             accent_color: None,
             effort_presets: Default::default(),
+            yolo: false,
         }
     }
 }

@@ -13,25 +13,55 @@ pub struct KnownModel {
     pub default_effort: &'static str,
     pub images: bool,
     pub tools: bool,
-    pub context_window: u32,
-    pub max_output: u32,
-    /// Offered in the ChatGPT plan even when the server list omits it.
+    /// Published limits; `None` when Aura does not know them.
+    pub context_window: Option<u32>,
+    pub max_output: Option<u32>,
+    /// Offered in the ChatGPT plan (017: the plan shows only these).
     pub in_plan: bool,
 }
 
-/// GPT-6.1 Sol (OpenAI, 2026-09-29): `low`…`max`, default `medium`; no
-/// `none`/`minimal`; text + image input; 1,050,000 context, 128,000 output.
-pub const KNOWN: &[KnownModel] = &[KnownModel {
-    id: "gpt-6.1-sol",
-    display_name: "GPT-6.1 Sol",
-    efforts: &["low", "medium", "high", "xhigh", "max"],
-    default_effort: "medium",
-    images: true,
-    tools: true,
-    context_window: 1_050_000,
-    max_output: 128_000,
-    in_plan: true,
-}];
+/// Efforts used when the Codex `model/list` does not describe a model.
+const GPT6_EFFORTS: &[&str] = &["low", "medium", "high", "xhigh", "max"];
+
+/// The ChatGPT plan catalog, in the order the picker shows it (017):
+/// GPT-6 Luna (fast), GPT-6.1 Sol and GPT-6 Astra (flagship; no `none`).
+/// GPT-6.1 Sol (2026-09-29): `low`…`max`, default `medium`, 1,050,000
+/// context, 128,000 output (013).
+pub const KNOWN: &[KnownModel] = &[
+    KnownModel {
+        id: "gpt-6-luna",
+        display_name: "GPT-6 Luna",
+        efforts: GPT6_EFFORTS,
+        default_effort: "medium",
+        images: true,
+        tools: true,
+        context_window: None,
+        max_output: None,
+        in_plan: true,
+    },
+    KnownModel {
+        id: "gpt-6.1-sol",
+        display_name: "GPT-6.1 Sol",
+        efforts: GPT6_EFFORTS,
+        default_effort: "medium",
+        images: true,
+        tools: true,
+        context_window: Some(1_050_000),
+        max_output: Some(128_000),
+        in_plan: true,
+    },
+    KnownModel {
+        id: "gpt-6-astra",
+        display_name: "GPT-6 Astra",
+        efforts: GPT6_EFFORTS,
+        default_effort: "medium",
+        images: true,
+        tools: true,
+        context_window: None,
+        max_output: None,
+        in_plan: true,
+    },
+];
 
 /// Looks a model up by id, also as `vendor/id` (OpenRouter style).
 pub fn known_model(id: &str) -> Option<&'static KnownModel> {
@@ -54,7 +84,10 @@ mod tests {
         let k = known_model("gpt-6.1-sol").unwrap();
         assert_eq!(k.efforts, ["low", "medium", "high", "xhigh", "max"]);
         assert_eq!(k.default_effort, "medium");
-        assert_eq!((k.context_window, k.max_output), (1_050_000, 128_000));
+        assert_eq!(
+            (k.context_window, k.max_output),
+            (Some(1_050_000), Some(128_000))
+        );
         assert!(k.images && k.tools && k.in_plan);
         assert_eq!(
             known_model("openai/GPT-6.1-Sol").map(|k| k.id),
@@ -62,5 +95,22 @@ mod tests {
         );
         assert!(known_model("gpt-6.1").is_none());
         assert!(is_effort("max") && is_effort("none") && !is_effort("ultra"));
+    }
+
+    #[test]
+    fn the_plan_catalog_is_luna_sol_astra() {
+        // 017 FR-001: only the GPT-6 family, in this order.
+        let plan: Vec<_> = KNOWN.iter().filter(|k| k.in_plan).map(|k| k.id).collect();
+        assert_eq!(plan, ["gpt-6-luna", "gpt-6.1-sol", "gpt-6-astra"]);
+        assert_eq!(
+            known_model("gpt-6-astra").unwrap().display_name,
+            "GPT-6 Astra"
+        );
+        assert!(
+            !known_model("gpt-6-astra")
+                .unwrap()
+                .efforts
+                .contains(&"none")
+        );
     }
 }

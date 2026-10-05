@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-007",
+    "AC-008"
+  ],
+  "environment": "Windows 10 Pro 19045, Rust workspace toolchain, Node 22.17, pnpm 12.5.1, codex-app-server rust-v0.159.0",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/InputBar.tsx": "54969fb5f65b17b2bb42368b7bc4c577b2eb8839a51a0167da5afd6b16900f46",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "b3c275d27137f63ef8c9270ddd78e76dedc0eafea5412f3d6b336b75c00f507c",
+    "apps/desktop/src/settings/Extensions.tsx": "3b179f04fe3731f67bda77bf6d2d38e5760629e3740d73775449640e5843478e",
+    "apps/desktop/src/settings/SettingsSearch.tsx": "db04b0e9c8fea0133ccec9b32430a51a422603fbdb747b1852e4b996de32581f",
+    "crates/aura-app/src/core_skills.rs": "67e0e6eec0ffad6cd34930132ab22eebd847755fdd8717dc42c3e2884bc68799",
+    "crates/aura-app/src/tools.rs": "04f75d9ca1d8a6662156963b9004809b1465a95e7775ecf8f7031326ba6d7c54",
+    "crates/aura-codex/src/models.rs": "02e0957cbed7d660c730bb5883f14308f35011bfadf16952c412999fe5decbd6",
+    "specs/017-modelos-gpt6-extensoes-agenticas/change.md": "8ae47a476a4305a213e2db0193fc33c595198ac70c501bdf028a893a1676052b"
+  },
+  "input_paths": [
+    "specs/017-modelos-gpt6-extensoes-agenticas/change.md",
+    "crates/aura-codex/src/models.rs",
+    "crates/aura-app/src/tools.rs",
+    "crates/aura-app/src/core_skills.rs",
+    "apps/desktop/src/overlay/InputBar.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/settings/Extensions.tsx",
+    "apps/desktop/src/settings/SettingsSearch.tsx"
+  ],
+  "limitations": "No ChatGPT account (plan catalog verified by functions); native E2E not run (tauri-driver/msedgedriver missing)",
+  "observations": "Rust 327 passed/5 ignored; UI 188/188; real app-server accepts per-tool approval_mode=prompt and sends mcp_tool_call elicitation before quick_command_save",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo clippy --workspace --all-targets -D warnings; UPDATE_GOLDEN=1 cargo test -p aura-app --test ipc_contract; AURA_CODEX_BIN=<pinned rust-v0.159.0> cargo test -p aura-app --test real_app_server -- --ignored (asks_before_aura_write_tools, byok_turn_and_mcp_tool); pnpm test; pnpm typecheck; pnpm build",
+  "result": "passed",
+  "tested_revision": "local:c2034d39da4cdb1770593dd99565fbebc1ca2af086ad3d60812900f5108709be",
+  "ticket": null,
+  "timestamp": "2026-10-05T12:20:09+00:00"
+}

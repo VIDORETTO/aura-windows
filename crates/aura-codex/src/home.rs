@@ -30,6 +30,9 @@ pub struct BaseConfig {
     /// Skills the user turned off (008 AC-001); Codex reads them from here
     /// because this file is regenerated on every start.
     pub disabled_skills: Vec<PathBuf>,
+    /// Aura MCP tools Codex must ask the user about before each call (017:
+    /// tools that change the user's extensions).
+    pub aura_prompt_tools: Vec<String>,
 }
 
 impl Default for BaseConfig {
@@ -41,6 +44,7 @@ impl Default for BaseConfig {
             memories: false,
             windows_sandbox: "unelevated".into(),
             disabled_skills: Vec::new(),
+            aura_prompt_tools: Vec::new(),
         }
     }
 }
@@ -100,15 +104,28 @@ pub fn render(base: &BaseConfig, contributors: &[&dyn ConfigContributor]) -> Tab
 
     if let Some(port) = base.mcp_port {
         let mut servers = Table::new();
-        servers.insert(
-            "aura".into(),
-            table([
-                ("url", Value::String(format!("http://127.0.0.1:{port}/mcp"))),
-                ("bearer_token_env_var", Value::String(MCP_TOKEN_ENV.into())),
-                ("default_tools_approval_mode", Value::String("auto".into())),
-                ("required", Value::Boolean(false)),
-            ]),
-        );
+        let mut aura = table([
+            ("url", Value::String(format!("http://127.0.0.1:{port}/mcp"))),
+            ("bearer_token_env_var", Value::String(MCP_TOKEN_ENV.into())),
+            ("default_tools_approval_mode", Value::String("auto".into())),
+            ("required", Value::Boolean(false)),
+        ]);
+        if !base.aura_prompt_tools.is_empty()
+            && let Value::Table(t) = &mut aura
+        {
+            let tools: Table = base
+                .aura_prompt_tools
+                .iter()
+                .map(|name| {
+                    (
+                        name.clone(),
+                        table([("approval_mode", Value::String("prompt".into()))]),
+                    )
+                })
+                .collect();
+            t.insert("tools".into(), Value::Table(tools));
+        }
+        servers.insert("aura".into(), aura);
         root.insert("mcp_servers".into(), Value::Table(servers));
     }
 
@@ -196,6 +213,24 @@ mod tests {
         assert!(text.contains("[model_providers.aura-groq]"));
         assert!(text.contains("url = \"http://127.0.0.1:4100/mcp\""));
         assert!(!text.to_lowercase().contains("sk-"));
+    }
+
+    #[test]
+    fn aura_write_tools_ask_the_user() {
+        // 017 AC-006: Codex prompts before tools that change extensions.
+        let base = BaseConfig {
+            mcp_port: Some(4100),
+            aura_prompt_tools: vec!["skill_save".into()],
+            ..BaseConfig::default()
+        };
+        let text = toml::to_string(&render(&base, &[])).unwrap();
+        let v: Table = text.parse().unwrap();
+        let aura = &v["mcp_servers"]["aura"];
+        assert_eq!(aura["default_tools_approval_mode"].as_str(), Some("auto"));
+        assert_eq!(
+            aura["tools"]["skill_save"]["approval_mode"].as_str(),
+            Some("prompt")
+        );
     }
 
     #[test]

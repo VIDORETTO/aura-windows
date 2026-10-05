@@ -98,7 +98,11 @@ async fn handshake_list_and_call() {
             "screen_text",
             "screen_recent",
             "audio_recent",
-            "attachment_read"
+            "attachment_read",
+            "extensions_list",
+            "skill_save",
+            "quick_command_save",
+            "mcp_server_save",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);

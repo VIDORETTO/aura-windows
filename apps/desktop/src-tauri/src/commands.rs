@@ -116,6 +116,15 @@ pub fn privacy_open_conversation(
     Ok(())
 }
 
+/// "Create with AI" (017): shows the Overlay, which starts a new
+/// conversation in `mode` and sends `text`.
+#[tauri::command]
+pub fn agent_task(app: AppHandle, s: State<'_, AppState>, text: String, mode: String) -> R<()> {
+    s.host.agent_task(&text, &mode)?;
+    overlay::show(&app);
+    Ok(())
+}
+
 #[tauri::command]
 pub fn privacy_clear_access_log(s: State<'_, AppState>) -> R<()> {
     s.host.clear_access_log()
@@ -901,6 +910,19 @@ pub fn speech_options(s: State<'_, AppState>) -> R<aura_app::host::SpeechOptions
 }
 
 /// One-time consent to send answers to the chosen cloud voice (009 AC-006).
+/// YOLO (018): on only with the typed confirmation ("ACEITO"/"ACCEPT").
+#[tauri::command]
+pub fn yolo_set(
+    app: AppHandle,
+    s: State<'_, AppState>,
+    enabled: bool,
+    confirmation: String,
+) -> R<Settings> {
+    let next = s.host.set_yolo(enabled, &confirmation)?;
+    crate::apply_settings(&app, &next);
+    Ok(next)
+}
+
 #[tauri::command]
 pub fn speech_consent(app: AppHandle, s: State<'_, AppState>) -> R<Settings> {
     let next = s.host.speech_consent()?;

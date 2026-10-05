@@ -353,6 +353,17 @@
       "event": {
         "threadId": "t1"
       }
+    },
+    {
+      "channel": "agentTask",
+      "event": {
+        "mode": "task",
+        "text": "Crie uma Skill"
+      }
+    },
+    {
+      "channel": "extensionsChanged",
+      "event": {}
     }
   ],
   "mcpServers": [
@@ -501,7 +512,8 @@
     "ttsCloudVoice": "alloy",
     "ttsProvider": null,
     "ttsVoice": null,
-    "workerIdleMinutes": 2
+    "workerIdleMinutes": 2,
+    "yolo": false
   },
   "turnErrors": [
     {

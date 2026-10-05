@@ -1,12 +1,14 @@
-// One pill for provider, model and mode (replaces three native selects that
-// did not fit the header).
+// One pill for provider, model, reasoning effort and mode (replaces three
+// native selects that did not fit the header). The compact Overlay shows a
+// slimmer pill so model and effort can be chosen before the first message
+// (017); the mode keeps its own badge there.
 
 import { ChevronDown } from "lucide-react";
 import { useT } from "../i18n";
 import { cx } from "../ui/primitives";
 import { useApp } from "../state/app";
 import { MenuLabel, MenuOption, PopoverPanel, usePopover } from "../ui/Popover";
-import { CHATGPT_PLAN, modelCapabilities, useSession, type ModeKey, type ModelCapabilities } from "./session";
+import { CHATGPT_PLAN, effectiveModel, modelCapabilities, useSession, type ModeKey, type ModelCapabilities } from "./session";
 
 const MODES: ModeKey[] = ["chat", "task", "plan"];
 const EFFORT_KEYS = ["none", "minimal", "low", "medium", "high", "xhigh", "max"] as const;
@@ -21,7 +23,25 @@ function capabilityHint(t: ReturnType<typeof useT>, c: ModelCapabilities | null)
   return tags.length ? tags.join(" · ") : t("picker.cap.textOnly");
 }
 
-export function ModelPicker() {
+/** A reasoning effort as a small toggle; several fit on one row. */
+function EffortChip({ selected, onSelect, children }: { selected: boolean; onSelect: () => void; children: string }) {
+  return (
+    <button
+      type="button"
+      role="menuitemradio"
+      aria-checked={selected}
+      onClick={onSelect}
+      className={cx(
+        "rounded-full border px-2 py-0.5 text-[12px] hover:bg-hover",
+        selected ? "border-accent bg-accent/10 text-accent" : "border-line text-fg",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function ModelPicker({ compact = false }: { compact?: boolean }) {
   const t = useT();
   const s = useSession();
   const pop = usePopover();
@@ -32,12 +52,21 @@ export function ModelPicker() {
       : (provider?.models ?? []).map((m) => ({ id: m.id, name: m.displayName ?? m.id }));
   const providerName = s.provider === CHATGPT_PLAN ? "ChatGPT" : (provider?.name ?? s.provider);
   const settingsDefault = useApp((a) => a.settings?.defaultModel ?? null);
-  // "Default" names the model it stands for: the Settings default (ChatGPT plan) or the plan's own default.
-  const effective =
-    s.model ?? (s.provider === CHATGPT_PLAN ? (settingsDefault ?? s.models.find((m) => m.isDefault)?.id ?? null) : null);
+  // "Default" names the model it stands for: the Settings default (when the plan still offers it) or the plan's own default.
+  const effective = effectiveModel(s, settingsDefault);
   const modelName = models.find((m) => m.id === effective)?.name ?? t("general.defaultModel");
   const locked = s.threadId !== null;
-  const caps = modelCapabilities(s, s.model);
+  const caps = modelCapabilities(s, effective);
+  const effortName = s.effort ? effortLabel(t, s.effort) : null;
+  const modeName = t(`mode.${s.mode}`);
+  const yoloTask = useApp((a) => a.settings?.yolo ?? false) && s.mode === "task";
+  const label = compact
+    ? effortName
+      ? t("picker.compactLabelEffort", { model: modelName, effort: effortName })
+      : t("picker.compactLabel", { model: modelName })
+    : effortName
+      ? t("picker.labelEffort", { model: modelName, mode: modeName, effort: effortName })
+      : t("picker.label", { model: modelName, mode: modeName });
 
   return (
     <>
@@ -46,64 +75,91 @@ export function ModelPicker() {
         type="button"
         onClick={pop.toggle}
         aria-expanded={pop.open}
-        aria-label={t("picker.label", { model: modelName, mode: t(`mode.${s.mode}`) })}
+        aria-label={label}
+        title={label}
         className={cx(
-          "flex h-7 min-w-0 max-w-[260px] items-center gap-1.5 rounded-md border border-line px-2 text-[12px] hover:bg-hover",
+          "flex min-w-0 items-center gap-1.5 border border-line hover:bg-hover",
+          compact ? "h-5 max-w-[220px] rounded-full px-1.5 text-[11px]" : "h-7 max-w-[300px] rounded-md px-2 text-[12px]",
           pop.open && "bg-hover",
         )}
       >
-        <span className="truncate font-medium">{modelName}</span>
-        <span className="shrink-0 text-muted">·</span>
-        <span className="shrink-0 text-muted">{t(`mode.${s.mode}`)}</span>
-        <ChevronDown size={13} className="shrink-0 text-muted" />
+        <span className={cx("truncate", compact ? "text-fg" : "font-medium")}>{modelName}</span>
+        {effortName && (
+          <>
+            <span className="shrink-0 text-muted">·</span>
+            <span className="shrink-0 text-muted">{effortName}</span>
+          </>
+        )}
+        {!compact && (
+          <>
+            <span className="shrink-0 text-muted">·</span>
+            <span className={cx("shrink-0", yoloTask ? "font-semibold text-danger" : "text-muted")}>{yoloTask ? t("yolo.badge", { mode: modeName }) : modeName}</span>
+          </>
+        )}
+        <ChevronDown size={compact ? 11 : 13} className="shrink-0 text-muted" />
       </button>
-      <PopoverPanel pop={pop} label={t("picker.title")} className="w-72 max-w-[calc(100vw-16px)]">
-        <MenuLabel>{t("picker.provider")}</MenuLabel>
-        {locked && <p className="px-2 pb-1 text-[11px] text-muted">{t("picker.providerLocked")}</p>}
-        <div role="menu" aria-label={t("picker.provider")}>
-          {[{ id: CHATGPT_PLAN, name: "ChatGPT", error: false }, ...s.providers.map((p) => ({ id: `aura-${p.id}`, name: p.name, error: p.status === "error" }))].map((p) =>
-            locked && p.id !== s.provider ? null : (
-              <MenuOption key={p.id} selected={p.id === s.provider} onSelect={() => !locked && s.setProvider(p.id, null)}>
-                {p.name}
-                {p.error && <span className="ml-2 text-danger">{t("providers.status.error")}</span>}
-              </MenuOption>
-            ),
-          )}
-        </div>
+      <PopoverPanel pop={pop} label={t(compact ? "picker.compactTitle" : "picker.title")} grow={compact} className="w-72 max-w-[calc(100vw-16px)]">
+        {(s.providers.length > 0 || locked) && (
+          <>
+            <MenuLabel>{t("picker.provider")}</MenuLabel>
+            {locked && <p className="px-2 pb-1 text-[11px] text-muted">{t("picker.providerLocked")}</p>}
+            <div role="menu" aria-label={t("picker.provider")}>
+              {[{ id: CHATGPT_PLAN, name: "ChatGPT", error: false }, ...s.providers.map((p) => ({ id: `aura-${p.id}`, name: p.name, error: p.status === "error" }))].map((p) =>
+                locked && p.id !== s.provider ? null : (
+                  <MenuOption key={p.id} selected={p.id === s.provider} onSelect={() => !locked && s.setProvider(p.id, null)}>
+                    {p.name}
+                    {p.error && <span className="ml-2 text-danger">{t("providers.status.error")}</span>}
+                  </MenuOption>
+                ),
+              )}
+            </div>
+          </>
+        )}
         <MenuLabel>{t("picker.model")}</MenuLabel>
         <div role="menu" aria-label={t("picker.model")} className="max-h-48 overflow-y-auto">
-          <MenuOption selected={!s.model} onSelect={() => s.setModel(null)}>
-            {t("general.defaultModel")}
-          </MenuOption>
+          {s.provider !== CHATGPT_PLAN && (
+            <MenuOption selected={!s.model} onSelect={() => s.setModel(null)}>
+              {t("general.defaultModel")}
+            </MenuOption>
+          )}
           {models.map((m) => (
-            <MenuOption key={m.id} selected={m.id === s.model} hint={capabilityHint(t, modelCapabilities(s, m.id))} onSelect={() => s.setModel(m.id)}>
+            <MenuOption
+              key={m.id}
+              selected={s.provider === CHATGPT_PLAN ? m.id === effective : m.id === s.model}
+              hint={capabilityHint(t, modelCapabilities(s, m.id))}
+              onSelect={() => s.setModel(m.id)}
+            >
               {m.name}
             </MenuOption>
           ))}
         </div>
         <MenuLabel>{t("picker.effort")}</MenuLabel>
         {caps && caps.efforts.length > 0 ? (
-          <div role="menu" aria-label={t("picker.effort")}>
-            <MenuOption selected={!s.effort} onSelect={() => s.setEffort(null)}>
+          <div role="menu" aria-label={t("picker.effort")} className="flex flex-wrap gap-1 px-2 pb-1 pt-0.5">
+            <EffortChip selected={!s.effort} onSelect={() => s.setEffort(null)}>
               {caps.defaultEffort ? t("picker.effort.default", { effort: effortLabel(t, caps.defaultEffort).toLowerCase() }) : t("picker.effort.modelDefault")}
-            </MenuOption>
+            </EffortChip>
             {caps.efforts.map((e) => (
-              <MenuOption key={e} selected={s.effort === e} onSelect={() => s.setEffort(e)}>
+              <EffortChip key={e} selected={s.effort === e} onSelect={() => s.setEffort(e)}>
                 {effortLabel(t, e)}
-              </MenuOption>
+              </EffortChip>
             ))}
           </div>
         ) : (
           <p className="px-2 pb-1 text-[11px] text-muted">{t(caps ? "picker.effort.unsupported" : "picker.effort.unknown")}</p>
         )}
-        <MenuLabel>{t("picker.mode")}</MenuLabel>
-        <div role="menu" aria-label={t("picker.mode")}>
-          {MODES.map((m) => (
-            <MenuOption key={m} selected={m === s.mode} hint={t(`mode.${m}.desc`)} onSelect={() => m !== s.mode && void s.setMode(m)}>
-              {t(`mode.${m}`)}
-            </MenuOption>
-          ))}
-        </div>
+        {!compact && (
+          <>
+            <MenuLabel>{t("picker.mode")}</MenuLabel>
+            <div role="menu" aria-label={t("picker.mode")}>
+              {MODES.map((m) => (
+                <MenuOption key={m} selected={m === s.mode} hint={t(`mode.${m}.desc`)} onSelect={() => m !== s.mode && void s.setMode(m)}>
+                  {t(`mode.${m}`)}
+                </MenuOption>
+              ))}
+            </div>
+          </>
+        )}
         <span className="sr-only">{providerName}</span>
       </PopoverPanel>
     </>
@@ -116,7 +172,8 @@ export function ModeBadge() {
   const mode = useSession((s) => s.mode);
   const setMode = useSession((s) => s.setMode);
   const pop = usePopover();
-  const name = t(`mode.${mode}`);
+  const yolo = useApp((a) => a.settings?.yolo ?? false) && mode === "task";
+  const name = yolo ? t("yolo.badge", { mode: t(`mode.${mode}`) }) : t(`mode.${mode}`);
   return (
     <>
       <button
@@ -125,10 +182,16 @@ export function ModeBadge() {
         onClick={pop.toggle}
         aria-expanded={pop.open}
         aria-label={t("mode.badge", { mode: name })}
-        title={t(`mode.${mode}.desc`)}
+        title={yolo ? t("yolo.badgeHint") : t(`mode.${mode}.desc`)}
         className={cx(
           "flex h-5 shrink-0 items-center gap-0.5 rounded-full border px-1.5 text-[11px] hover:bg-hover",
-          mode === "task" ? "border-warning/60 text-warning" : mode === "plan" ? "border-accent/50 text-accent" : "border-line text-muted",
+          yolo
+            ? "border-danger/70 bg-danger/10 font-semibold text-danger"
+            : mode === "task"
+              ? "border-warning/60 text-warning"
+              : mode === "plan"
+                ? "border-accent/50 text-accent"
+                : "border-line text-muted",
         )}
       >
         {name}

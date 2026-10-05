@@ -26,6 +26,9 @@ export interface MenuItem {
 
 const MAX_LINES = 8;
 
+/** Only a menu trigger (`/` or `@`): never sent as a message (017). */
+const BARE_TRIGGER = /^\s*[/@]\s*$/;
+
 /** Inserts `text` at the caret (adds a space when needed). */
 export function insertAtCaret(value: string, caret: number, text: string): [string, number] {
   const before = value.slice(0, caret);
@@ -72,6 +75,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
   const voice = useApp((s) => s.voice);
   const voiceResultRevision = useApp((s) => s.voiceResultRevision);
   const settings = useApp((s) => s.settings);
+  const extensionsRevision = useApp((s) => s.extensionsRevision);
 
   const [value, setValue] = useState("");
   const [caret, setCaret] = useState(0);
@@ -121,7 +125,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     // Disabled skills leave the menu (008 AC-001).
     void api.skillsCatalog().then((list) => { if (!cancelled) setSkills(list.filter((s) => s.enabled)); }).catch(() => undefined);
     return () => { cancelled = true; };
-  }, [autoFocusKey, settings?.language]);
+  }, [autoFocusKey, settings?.language, extensionsRevision]);
 
   // Dictation result → caret (or send, when configured).
   useEffect(() => {
@@ -224,6 +228,7 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
 
   const submit = async (steerMode: boolean) => {
     const text = value;
+    if (BARE_TRIGGER.test(text)) return;
     if (running) {
       if (!text.trim()) return;
       setValue("");
@@ -273,9 +278,8 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
         const typed = value.trim();
         const complete = !item.run && !navigated && (item.insert.trim() === typed || (item.aliases ?? []).some((a) => `/${a}` === typed));
         if (!complete) {
+          // The highlighted item (the first one unless the arrows moved) is chosen (017).
           e.preventDefault();
-          // A bare trigger picks only after the arrows; "/" or "@" alone is never sent.
-          if (trigger && trigger.query === "" && !navigated) return;
           choose(item);
           return;
         }
@@ -288,7 +292,6 @@ export function InputBar({ running, autoFocusKey, compact = false }: { running: 
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (!running && /^\/\s*$/.test(value)) return;
       void submit(e.ctrlKey);
     }
   };

@@ -75,16 +75,105 @@ pub fn start_model(
     profile_default: Option<&str>,
 ) -> Option<String> {
     let plan = format!("aura-{CHATGPT_PLAN_ROUTE}");
-    if let Some(m) = requested {
-        return Some(m.to_string());
-    }
     let from_profile = profile_default.and_then(|v| match v.split_once("::") {
         Some((p, m)) if p.starts_with("aura-") => (p == provider).then_some(m),
         _ => (provider == plan).then_some(v),
     });
-    from_profile
-        .or_else(|| settings_default.filter(|_| provider == plan))
-        .map(str::to_string)
+    if provider == plan {
+        // The plan offers only Aura's catalog (017): stale choices fall back
+        // to its first model, and the server never picks one on its own.
+        let offered = |m: &&str| {
+            aura_core::model_catalog::known_model(m).is_some_and(|k| k.in_plan && k.id == *m)
+        };
+        return requested
+            .filter(offered)
+            .or(from_profile.filter(offered))
+            .or(settings_default.filter(offered))
+            .or_else(|| {
+                aura_core::model_catalog::KNOWN
+                    .iter()
+                    .find(|k| k.in_plan)
+                    .map(|k| k.id)
+            })
+            .map(str::to_string);
+    }
+    requested.or(from_profile).map(str::to_string)
+}
+
+/// New skills cannot take the names of the agent's core skills (017).
+fn reserved_skill_name(name: &str) -> HostResult<()> {
+    if name.starts_with(crate::core_skills::RESERVED_PREFIX) {
+        return Err(HostError::new(
+            "skill",
+            format!(
+                "nomes começando com \"{}\" são reservados ao Aura",
+                crate::core_skills::RESERVED_PREFIX
+            ),
+        ));
+    }
+    Ok(())
+}
+
+impl crate::tools::ExtensionsAccess for Host {
+    fn list(&self) -> aura_mcp::BoxFut<'_, Result<serde_json::Value, String>> {
+        Box::pin(async move {
+            let skills = self.skills_catalog().await.map_err(|e| e.message)?;
+            let quick = self.quick_commands().map_err(|e| e.message)?;
+            let servers = self.mcp_servers().map_err(|e| e.message)?;
+            Ok(serde_json::json!({
+                "skills": skills.iter().map(|s| serde_json::json!({
+                    "name": s.name, "description": s.description, "origin": s.origin, "enabled": s.enabled,
+                })).collect::<Vec<_>>(),
+                "quick_commands": quick,
+                "mcp_servers": servers.iter().map(|s| {
+                    let (transport, target) = match &s.transport {
+                        aura_extensions::mcp_config::Transport::Stdio { command, args, .. } => {
+                            ("stdio", format!("{command} {}", args.join(" ")).trim().to_string())
+                        }
+                        aura_extensions::mcp_config::Transport::Http { url, .. } => ("http", url.clone()),
+                    };
+                    serde_json::json!({
+                        "name": s.name, "transport": transport, "target": target, "enabled": s.enabled,
+                        "secret_env": s.secret_vars().into_iter().map(|(v, _)| v).collect::<Vec<_>>(),
+                    })
+                }).collect::<Vec<_>>(),
+            }))
+        })
+    }
+
+    fn save_skill(
+        &self,
+        name: &str,
+        description: &str,
+        instructions: &str,
+        replace: bool,
+    ) -> Result<(), String> {
+        let exists = self.paths.skills().join(name).join("SKILL.md").is_file();
+        let r = if exists && replace {
+            self.update_skill(name, description, instructions)
+        } else {
+            self.create_skill(name, description, instructions)
+                .map(|_| ())
+        };
+        r.map_err(|e| e.message)?;
+        self.extensions_changed();
+        Ok(())
+    }
+
+    fn save_quick_command(&self, name: &str, template: &str, replace: bool) -> Result<(), String> {
+        self.save_quick_command(name, template, replace)
+            .map_err(|e| e.message)?;
+        self.extensions_changed();
+        Ok(())
+    }
+
+    fn save_mcp_server(&self, spec: McpServerSpec) -> Result<(), String> {
+        // Keeps the secrets already in the vault when the server exists.
+        self.save_mcp_server(spec, vec![], None)
+            .map_err(|e| e.message)?;
+        self.extensions_changed();
+        Ok(())
+    }
 }
 
 /// How the host runs the Codex app-server.
@@ -539,7 +628,9 @@ impl Host {
             policy.read().unwrap().clone(),
             cfg.capture_interval,
         );
+        let extensions_slot: crate::tools::ExtensionsSlot = Arc::default();
         let tools = Arc::new(HostTools {
+            extensions: extensions_slot.clone(),
             vault: vault.clone(),
             platform: cfg.platform.clone(),
             policy: policy.clone(),
@@ -567,6 +658,10 @@ impl Host {
                 gateway_port: gateway.port,
                 mcp_port: Some(gateway.port),
                 memories: false,
+                aura_prompt_tools: aura_mcp::tools::WRITE_TOOLS
+                    .iter()
+                    .map(|t| t.to_string())
+                    .collect(),
                 ..BaseConfig::default()
             },
             providers,
@@ -606,7 +701,10 @@ impl Host {
         let (tx, rx) = mpsc::unbounded_channel();
         let supervisor = AppServerSupervisor::new(launcher, sup_cfg, tx);
         let codex = CodexService::new(supervisor, rx, store.clone(), cfg.paths.workspaces());
-        codex.set_skill_roots(vec![cfg.paths.skills()]);
+        if let Err(e) = crate::core_skills::install(&cfg.paths.core_skills()) {
+            tracing::warn!("core skills: {e}");
+        }
+        codex.set_skill_roots(vec![cfg.paths.skills(), cfg.paths.core_skills()]);
         if let Err(e) = codex.cleanup_on_start() {
             tracing::warn!("workspace cleanup failed: {e}");
         }
@@ -645,6 +743,9 @@ impl Host {
             profiles: crate::profiles::ProfilesRepo::new(store_for_profiles),
             rt: tokio::runtime::Handle::current(),
         });
+        let weak: std::sync::Weak<dyn crate::tools::ExtensionsAccess> =
+            Arc::downgrade(&host) as std::sync::Weak<dyn crate::tools::ExtensionsAccess>;
+        let _ = extensions_slot.set(weak);
         host.apply_runtime_settings(&host.settings());
         host.spawn_forwarders();
         host.reconcile_capture();
@@ -717,6 +818,7 @@ impl Host {
             aura_core::settings::Language::PtBr => aura_codex::modes::UiLanguage::PtBr,
             aura_core::settings::Language::En => aura_codex::modes::UiLanguage::En,
         });
+        self.codex.set_yolo(s.yolo);
         self.capture.set_devices(
             s.microphone_device_id.clone(),
             s.system_audio_device_id.clone(),
@@ -918,6 +1020,32 @@ impl Host {
             "data:image/png;base64,{}",
             base64::engine::general_purpose::STANDARD.encode(png)
         )))
+    }
+
+    /// "Create with AI" (017): the Overlay starts a new conversation in
+    /// `mode` (`chat`, `task`, `plan`) and sends `text`.
+    pub fn agent_task(&self, text: &str, mode: &str) -> HostResult<()> {
+        if text.trim().is_empty() {
+            return Err(HostError::new(
+                "invalid",
+                "descreva o que o agente deve fazer",
+            ));
+        }
+        if !matches!(mode, "chat" | "task" | "plan") {
+            return Err(HostError::new(
+                "invalid",
+                format!("modo desconhecido: {mode}"),
+            ));
+        }
+        let _ = self.events.send(HostEvent::AgentTask {
+            text: text.trim().to_string(),
+            mode: mode.to_string(),
+        });
+        Ok(())
+    }
+
+    fn extensions_changed(&self) {
+        let _ = self.events.send(HostEvent::ExtensionsChanged {});
     }
 
     /// Asks the Overlay to show a conversation of the access log.
@@ -1249,9 +1377,12 @@ impl Host {
         Ok(self.codex.respond(request_id, decision).await?)
     }
 
-    /// Models of the ChatGPT plan route (via Codex `model/list`).
+    /// Models of the ChatGPT plan route: Aura's plan catalog, described by
+    /// Codex `model/list` when it knows them (017).
     pub async fn models(&self) -> HostResult<Vec<ModelInfo>> {
-        Ok(self.codex.codex_models().await?)
+        Ok(aura_codex::models::plan_catalog(
+            &self.codex.codex_models().await?,
+        ))
     }
 
     // ----------------------------------------------------------------- context
@@ -2226,6 +2357,7 @@ impl Host {
     }
 
     pub fn create_skill(&self, name: &str, description: &str, body: &str) -> HostResult<PathBuf> {
+        reserved_skill_name(name)?;
         Ok(skills::create(
             &self.paths.skills(),
             name,
@@ -2252,12 +2384,15 @@ impl Host {
     /// (008 AC-001); Codex owns the enabled flag.
     pub async fn skills_catalog(&self) -> HostResult<Vec<SkillEntry>> {
         let aura_root = self.paths.skills();
+        let core_root = self.paths.core_skills();
         let _ = std::fs::create_dir_all(&aura_root);
         Ok(self
             .codex
             .skills()
             .await?
             .into_iter()
+            // Core skills belong to the agent, not to the user (017).
+            .filter(|s| !s.path.starts_with(&core_root))
             .map(|s| {
                 let origin = if s.path.starts_with(&aura_root) {
                     SkillOrigin::Aura
@@ -2278,6 +2413,9 @@ impl Host {
     }
 
     pub async fn set_skill_enabled(&self, path: &Path, enabled: bool) -> HostResult<()> {
+        if path.starts_with(self.paths.core_skills()) {
+            return Err(HostError::new("skill", "esta Skill é interna do Aura"));
+        }
         self.codex.set_skill_enabled(path, enabled).await?;
         // Codex wrote its config.toml, which Aura regenerates on every start:
         // keep the choice in Aura's settings too.
@@ -2723,6 +2861,21 @@ impl Host {
     }
 
     /// The user agreed to send answers to the chosen cloud voice provider.
+    /// YOLO (018): turning it on needs the typed confirmation ("ACEITO" or
+    /// "ACCEPT"); turning it off needs nothing.
+    pub fn set_yolo(&self, enabled: bool, confirmation: &str) -> HostResult<Settings> {
+        if enabled && !aura_core::settings::yolo_confirmed(confirmation) {
+            return Err(HostError::new(
+                "invalid",
+                "para ligar o modo YOLO, escreva ACEITO (ou ACCEPT)",
+            ));
+        }
+        let mut s = self.settings();
+        s.yolo = enabled;
+        tracing::warn!(enabled, "YOLO mode changed");
+        self.replace_settings(s)
+    }
+
     pub fn speech_consent(&self) -> HostResult<Settings> {
         let mut s = self.settings();
         let Some(id) = s.tts_provider.clone() else {

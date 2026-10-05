@@ -528,6 +528,7 @@ fn tools_of(
     let privacy = aura_app::privacy::PrivacyRepo::new(store);
     let policy = privacy.load().unwrap();
     HostTools {
+        extensions: Default::default(),
         vault,
         platform: e.platform.clone(),
         policy: Arc::new(std::sync::RwLock::new(policy)),
@@ -884,6 +885,197 @@ async fn skills_settings_list_origins_toggle_and_edit_aura_skills() {
 }
 
 #[tokio::test]
+async fn core_skills_reach_the_agent_but_not_the_user() {
+    // 017 AC-007.
+    let e = env().await;
+    let core = e.host.paths.core_skills();
+    for (name, _) in aura_app::core_skills::CORE_SKILLS {
+        assert!(core.join(name).join("SKILL.md").is_file(), "{name}");
+    }
+    let catalog = e.host.skills_catalog().await.unwrap();
+    assert!(
+        catalog.iter().all(|s| !s.name.starts_with("aura-")),
+        "{catalog:?}"
+    );
+    // The fake app-server lists every extra root: the core root is one of them.
+    assert!(catalog.iter().any(|s| s.name == "skill-creator"));
+    let path = core.join("aura-criar-skill").join("SKILL.md");
+    assert_eq!(
+        e.host
+            .set_skill_enabled(&path, false)
+            .await
+            .unwrap_err()
+            .code,
+        "skill"
+    );
+    assert_eq!(
+        e.host
+            .create_skill("aura-minha", "x", "y")
+            .unwrap_err()
+            .code,
+        "skill"
+    );
+}
+
+#[tokio::test]
+async fn agent_creates_extensions_through_aura_tools() {
+    // 017 AC-006.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let mut events = e.host.subscribe();
+    let ctx = CallContext {
+        conversation: "conv-ext".into(),
+    };
+    let call = |tool: &'static str, args: serde_json::Value| {
+        let (tools, ctx) = (&tools, ctx.clone());
+        async move { tools.call(tool, args, ctx).await }
+    };
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+
+    let out = call(
+        "skill_save",
+        json!({"name": "resumir-ata", "description": "Resume atas", "instructions": "Liste decisões."}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    until(&mut events, |ev| {
+        matches!(ev, HostEvent::ExtensionsChanged {})
+    })
+    .await;
+    let skill = e
+        .host
+        .skills()
+        .into_iter()
+        .find(|s| s.manifest.name == "resumir-ata")
+        .unwrap();
+    assert_eq!(skill.manifest.description, "Resume atas");
+    // Same name again without replace: validation error the agent can fix.
+    let again = call(
+        "skill_save",
+        json!({"name": "resumir-ata", "description": "Outra", "instructions": "x"}),
+    )
+    .await;
+    assert!(again.is_error);
+    let replaced = call(
+        "skill_save",
+        json!({"name": "resumir-ata", "description": "Resume atas de condomínio", "instructions": "x", "replace": true}),
+    )
+    .await;
+    assert!(!replaced.is_error, "{}", text(&replaced));
+    assert_eq!(
+        e.host.skill_source("resumir-ata").unwrap().0,
+        "Resume atas de condomínio"
+    );
+
+    let out = call(
+        "quick_command_save",
+        json!({"name": "formal", "template": "Reescreva formal: {texto}"}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    let formal = e
+        .host
+        .quick_commands()
+        .unwrap()
+        .into_iter()
+        .find(|q| q.name == "formal")
+        .unwrap();
+    assert_eq!(formal.template, "Reescreva formal: {texto}");
+    assert!(formal.enabled && !formal.builtin);
+
+    let out = call(
+        "mcp_server_save",
+        json!({"name": "github", "transport": "stdio", "command": "npx",
+               "args": ["-y", "@modelcontextprotocol/server-github"], "secret_env": ["GITHUB_TOKEN"]}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert!(text(&out).contains("Configurações"), "{}", text(&out));
+    let github = e
+        .host
+        .mcp_servers()
+        .unwrap()
+        .into_iter()
+        .find(|s| s.name == "github")
+        .unwrap();
+    assert!(!github.enabled, "needs the secret first");
+    assert_eq!(github.secret_vars()[0].0, "GITHUB_TOKEN");
+
+    let out = call(
+        "mcp_server_save",
+        json!({"name": "docs", "transport": "http", "url": "https://example.com/mcp"}),
+    )
+    .await;
+    assert!(!out.is_error, "{}", text(&out));
+    assert!(
+        e.host
+            .mcp_servers()
+            .unwrap()
+            .iter()
+            .any(|s| s.name == "docs" && s.enabled)
+    );
+    let reserved = call(
+        "mcp_server_save",
+        json!({"name": "aura", "transport": "http", "url": "https://example.com/mcp"}),
+    )
+    .await;
+    assert!(reserved.is_error);
+
+    let listed = call("extensions_list", json!({})).await;
+    let v: serde_json::Value = serde_json::from_str(&text(&listed)).unwrap();
+    assert!(
+        v["skills"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|s| s["name"] == "resumir-ata")
+    );
+    assert!(
+        v["quick_commands"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|q| q["name"] == "formal")
+    );
+    assert_eq!(
+        v["mcp_servers"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|s| s["name"] == "github")
+            .unwrap()["secret_env"],
+        json!(["GITHUB_TOKEN"])
+    );
+}
+
+#[tokio::test]
+async fn agent_task_asks_the_overlay_for_a_new_conversation() {
+    // 017 AC-005.
+    let e = env().await;
+    let mut rx = e.host.subscribe();
+    e.host.agent_task("crie uma skill", "task").unwrap();
+    let HostEvent::AgentTask { text, mode } =
+        until(&mut rx, |ev| matches!(ev, HostEvent::AgentTask { .. })).await
+    else {
+        unreachable!()
+    };
+    assert_eq!((text.as_str(), mode.as_str()), ("crie uma skill", "task"));
+    assert_eq!(e.host.agent_task("  ", "task").unwrap_err().code, "invalid");
+    assert_eq!(e.host.agent_task("x", "turbo").unwrap_err().code, "invalid");
+}
+
+#[tokio::test]
 async fn attach_skill_adds_one_skill_chip_and_rejects_disabled() {
     // 015 AC-003: choosing a skill in the `/` menu becomes a Chip, not `$name` text.
     let e = env().await;
@@ -971,6 +1163,34 @@ fn start_model_keeps_defaults_with_their_provider() {
     assert_eq!(
         start_model("aura-groq", None, None, Some("gpt-6.1-sol")),
         None
+    );
+}
+
+#[test]
+fn plan_conversations_always_start_with_a_catalog_model() {
+    // 017 AC-001: a default saved before the GPT-6 catalog is not sent; the
+    // plan starts with an explicit catalog model (Luna first).
+    use aura_app::host::start_model;
+    let plan = "aura-chatgpt-plan";
+    assert_eq!(
+        start_model(plan, None, Some("gpt-5.5"), None),
+        Some("gpt-6-luna".into())
+    );
+    assert_eq!(
+        start_model(plan, None, None, None),
+        Some("gpt-6-luna".into())
+    );
+    assert_eq!(
+        start_model(plan, None, Some("gpt-5.5"), Some("gpt-6-astra")),
+        Some("gpt-6-astra".into())
+    );
+    assert_eq!(
+        start_model(plan, Some("gpt-5.6-sol"), None, None),
+        Some("gpt-6-luna".into())
+    );
+    assert_eq!(
+        start_model(plan, Some("gpt-6.1-sol"), None, None),
+        Some("gpt-6.1-sol".into())
     );
 }
 
@@ -2393,4 +2613,24 @@ async fn selection_chip_follows_the_latest_selection() {
     *e.fg.selection.lock().unwrap() = None;
     assert!(e.host.capture_selection("draft", false).unwrap().is_none());
     assert_eq!(selections(&e.host), ["outro trecho"]);
+}
+
+#[tokio::test]
+async fn yolo_needs_the_typed_confirmation() {
+    // 018 AC-001.
+    let e = env().await;
+    assert!(!e.host.settings().yolo);
+    assert_eq!(e.host.set_yolo(true, "talvez").unwrap_err().code, "invalid");
+    assert!(!e.host.settings().yolo);
+    assert!(e.host.set_yolo(true, " aceito ").unwrap().yolo);
+    assert!(!e.host.set_yolo(false, "").unwrap().yolo);
+    assert!(e.host.set_yolo(true, "ACCEPT").unwrap().yolo);
+    // A settings patch never turns it off (or on).
+    let next = e
+        .host
+        .update_settings(
+            serde_json::from_value(json!({"yolo": false, "hideOnBlur": true})).unwrap(),
+        )
+        .unwrap();
+    assert!(next.yolo && next.hide_on_blur);
 }

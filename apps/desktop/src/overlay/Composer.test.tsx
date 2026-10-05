@@ -48,15 +48,27 @@ describe("composer menus (015)", () => {
     expect(labels).toEqual(["@tela", "@região", "@janela", "@seleção", "@arquivo", "@recente"]);
   });
 
-  it("a bare / is never sent, Esc keeps the text, @ opens at the caret (AC-002)", async () => {
+  it("Enter picks the highlighted item, a bare trigger is never sent, Esc keeps the text (017 AC-003)", async () => {
     const bridge = await freshApp({ signedIn: true });
     const s = spy(bridge);
     const user = userEvent.setup();
     render(<OverlayApp />);
     const box = (await screen.findByRole("combobox")) as HTMLTextAreaElement;
+    // "/" + Enter: the first command (already highlighted) is chosen, nothing is sent.
     await user.type(box, "/{Enter}");
     expect(s.sent()).toEqual([]);
+    expect(box).toHaveValue("/plano ");
+    await user.clear(box);
+    // "@" + Enter: the first context item runs (screen capture); "@" never reaches the chat.
+    await user.type(box, "@{Enter}");
+    await waitFor(() => expect(s.count("capture_screen")).toBe(1));
+    expect(box).toHaveValue("");
+    expect(s.sent()).toEqual([]);
+    // A bare trigger with the menu closed (Esc) is not sent either.
+    await user.type(box, "/{Escape}{Enter}");
     expect(box).toHaveValue("/");
+    await user.click(screen.getByRole("button", { name: "Enviar" }));
+    expect(s.sent()).toEqual([]);
     await user.type(box, "tl{Escape}");
     expect(box).toHaveValue("/tl");
     expect(screen.queryByRole("listbox")).toBeNull();
@@ -154,9 +166,49 @@ describe("model picker", () => {
     const user = userEvent.setup();
     render(<OverlayApp />);
     await user.click(await screen.findByRole("button", { name: "Expandir" }));
-    expect(await screen.findByRole("button", { name: /^Modelo GPT-5\.5, modo Chat/ })).toBeInTheDocument();
+    expect(await screen.findByRole("button", { name: /^Modelo GPT-6 Luna, modo Chat/ })).toBeInTheDocument();
     await act(async () => { await bridge.invoke("settings_update", { patch: { defaultModel: "gpt-6.1-sol" } }); });
     expect(await screen.findByRole("button", { name: /^Modelo GPT-6\.1 Sol, modo Chat/ })).toBeInTheDocument();
+    // A default the plan no longer offers (GPT-5.x) falls back to the plan default.
+    await act(async () => { await bridge.invoke("settings_update", { patch: { defaultModel: "gpt-5.5" } }); });
+    expect(await screen.findByRole("button", { name: /^Modelo GPT-6 Luna, modo Chat/ })).toBeInTheDocument();
+  });
+
+  it("offers only the GPT-6 trio and chooses model and effort before the first message (017 AC-001, AC-002)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await act(async () => { await bridge.invoke("settings_update", { patch: { defaultModel: "gpt-5.5" } }); });
+    const s = spy(bridge);
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    // Compact Overlay, no conversation yet: the model pill is there.
+    const pill = await screen.findByRole("button", { name: "Modelo GPT-6 Luna" });
+    expect(screen.queryByRole("button", { name: "Expandir" })).toBeInTheDocument();
+    await user.click(pill);
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    const models = within(within(picker).getByRole("menu", { name: "Modelo" })).getAllByRole("menuitemradio");
+    expect(models.map((m) => m.querySelector("span span")?.textContent)).toEqual(["GPT-6 Luna", "GPT-6.1 Sol", "GPT-6 Astra"]);
+    await user.click(models[2]);
+    await user.click(within(within(picker).getByRole("menu", { name: "Esforço de raciocínio" })).getByRole("menuitemradio", { name: "Alto" }));
+    expect(screen.getByRole("button", { name: "Modelo GPT-6 Astra, esforço Alto" })).toHaveTextContent("GPT-6 Astra·Alto");
+    await user.keyboard("{Escape}");
+    await user.type(screen.getByRole("combobox"), "oi{Enter}");
+    await waitFor(() => expect(s.sent()).toEqual(["oi"]));
+    const start = s.calls.find((c) => c.cmd === "conversation_start")!.args.options as { model: string };
+    const send = s.calls.find((c) => c.cmd === "conversation_send")!.args.request as { options: { model: string; effort: string } };
+    expect(start.model).toBe("gpt-6-astra");
+    expect(send.options).toMatchObject({ model: "gpt-6-astra", effort: "high" });
+  });
+
+  it("a new plan conversation starts with an explicit catalog model (017 AC-001)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await act(async () => { await bridge.invoke("settings_update", { patch: { defaultModel: "gpt-5.5" } }); });
+    const s = spy(bridge);
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await screen.findByRole("button", { name: "Modelo GPT-6 Luna" });
+    await user.type(screen.getByRole("combobox"), "oi{Enter}");
+    await waitFor(() => expect(s.sent()).toEqual(["oi"]));
+    expect((s.calls.find((c) => c.cmd === "conversation_start")!.args.options as { model: string }).model).toBe("gpt-6-luna");
   });
 });
 
@@ -236,5 +288,50 @@ describe("queue, mode and message actions (015)", () => {
     expect(s.count("conversation_compact")).toBe(0);
     await user.click(screen.getByRole("button", { name: "Compactar" }));
     await waitFor(() => expect(s.count("conversation_compact")).toBe(1));
+  });
+});
+
+describe("agent-made extensions (017)", () => {
+  it("'Create with AI' starts a new Task conversation and sends the request (AC-005)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const s = spy(bridge);
+    render(<OverlayApp />);
+    await screen.findByRole("combobox");
+    await act(async () => {
+      await bridge.invoke("agent_task", { text: "$aura-criar-skill Crie uma Skill do Aura para: atas", mode: "task" });
+    });
+    await waitFor(() => expect(s.sent()).toEqual(["$aura-criar-skill Crie uma Skill do Aura para: atas"]));
+    const start = s.calls.find((c) => c.cmd === "conversation_start")!.args.options as { mode: { mode: string } };
+    expect(start.mode.mode).toBe("task");
+  });
+
+  it("asks before Aura saves an extension and shows what will be saved", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const s = spy(bridge);
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    const box = await screen.findByRole("combobox");
+    await user.type(box, "crie o comando{Enter}");
+    await waitFor(() => expect(s.sent()).toHaveLength(1));
+    const { useSession } = await import("./session");
+    const threadId = useSession.getState().threadId!;
+    act(() =>
+      bridge.emitLocal!("aura://event", {
+        channel: "conversation",
+        event: {
+          type: "userInputRequested", threadId, requestId: "req_tool", autoResolveMs: null, source: "aura",
+          prompt: {
+            _meta: { codex_approval_kind: "mcp_tool_call", tool_params_display: [{ display_name: "name", name: "name", value: "formal" }, { display_name: "template", name: "template", value: "Reescreva formal: {texto}" }] },
+            message: 'Allow the aura MCP server to run tool "quick_command_save"?', serverName: "aura", requestedSchema: { type: "object", properties: {} },
+          },
+        },
+      }),
+    );
+    const card = await screen.findByRole("group", { name: "Salvar este comando rápido?" });
+    expect(within(card).getByText("Reescreva formal: {texto}")).toBeInTheDocument();
+    await user.click(within(card).getByRole("button", { name: "Permitir" }));
+    const respond = s.calls.find((c) => c.cmd === "conversation_respond")!;
+    expect(respond.args).toMatchObject({ requestId: "req_tool", decision: { type: "answer", content: {} } });
+    expect(await within(card).findByText("Aceito")).toBeInTheDocument();
   });
 });

@@ -376,9 +376,9 @@ describe("Overlay", () => {
     expect(useSession.getState()).toMatchObject({ provider: `aura-${p.id}`, model: "qwen3:8b" });
     // Older profiles stored a bare ChatGPT model id.
     useSession.setState({ provider: `aura-${p.id}`, model: null });
-    bridge.state.profiles = [{ ...bridge.state.profiles[0], defaultModel: "gpt-5.5-mini" }];
+    bridge.state.profiles = [{ ...bridge.state.profiles[0], defaultModel: "gpt-6-astra" }];
     await useSession.getState().applyProfile();
-    expect(useSession.getState()).toMatchObject({ provider: "aura-chatgpt-plan", model: "gpt-5.5-mini" });
+    expect(useSession.getState()).toMatchObject({ provider: "aura-chatgpt-plan", model: "gpt-6-astra" });
   });
 
   it("Ctrl+Shift+L reads the last answer and Ctrl+Shift+Enter inserts it into the previous app (QA-035)", async () => {
@@ -553,7 +553,8 @@ describe("Overlay", () => {
     expect(await within(panel).findByText("Roteiro Lisboa")).toBeInTheDocument();
   });
 
-  it("pages through the whole History with Load more and restarts paging on a new search", async () => {
+  // Renders 120 rows and types in the search: about 5 s on the Windows QA machine.
+  it("pages through the whole History with Load more and restarts paging on a new search", { timeout: 20_000 }, async () => {
     const bridge = await freshApp({ signedIn: true });
     const pad = (n: number) => String(n).padStart(3, "0");
     // Conversa 120 is the newest.
@@ -869,24 +870,26 @@ describe("window behaviour (001 revision 2)", () => {
     await user.click(await screen.findByRole("button", { name: /modo Chat/ }));
     const picker = screen.getByRole("dialog", { name: "Modelo e modo" });
     const effortMenu = within(picker).getByRole("menu", { name: "Esforço de raciocínio" });
-    // Mock GPT-5.5 (default model): efforts low/medium/high, default medium.
+    // Mock GPT-6 Luna (default model): efforts low/medium/high, default medium.
     expect(within(effortMenu).getAllByRole("menuitemradio").map((o) => o.textContent)).toEqual(["Padrão do modelo (médio)", "Baixo", "Médio", "Alto"]);
-    const gpt = within(within(picker).getByRole("menu", { name: "Modelo" })).getByRole("menuitemradio", { name: "GPT-5.5" });
+    const gpt = within(within(picker).getByRole("menu", { name: "Modelo" })).getByRole("menuitemradio", { name: "GPT-6 Luna" });
     expect(gpt).toHaveTextContent("Imagem");
     expect(gpt).toHaveTextContent("Ferramentas");
     expect(gpt).toHaveTextContent("Raciocínio");
-    await user.click(within(effortMenu).getByRole("menuitemradio", { name: "Alto" }));
+    // GPT-6.1 Sol goes up to "max".
+    const { useSession } = await import("./session");
+    act(() => useSession.getState().setModel("gpt-6.1-sol"));
+    await user.click(within(effortMenu).getByRole("menuitemradio", { name: "Muito alto" }));
     await user.keyboard("{Escape}");
     await user.type(screen.getByRole("combobox"), "primeiro{Enter}");
-    await waitFor(() => expect(efforts).toEqual(["high"]));
+    await waitFor(() => expect(efforts).toEqual(["xhigh"]));
 
-    // GPT-5.5 mini supports low/medium only: "high" falls back to the model default.
-    const { useSession } = await import("./session");
-    act(() => useSession.getState().setModel("gpt-5.5-mini"));
+    // GPT-6 Luna stops at "high": "xhigh" falls back to the model default.
+    act(() => useSession.getState().setModel("gpt-6-luna"));
     expect(useSession.getState().effort).toBeNull();
     await waitFor(() => expect(useSession.getState().sending).toBe(false));
     await user.type(screen.getByRole("combobox"), "segundo{Enter}");
-    await waitFor(() => expect(efforts).toEqual(["high", null]));
+    await waitFor(() => expect(efforts).toEqual(["xhigh", null]));
   });
 
   it("offers a custom model's own efforts and remembers the effort per model and mode (013)", async () => {
