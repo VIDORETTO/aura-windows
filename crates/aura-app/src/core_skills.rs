@@ -16,6 +16,22 @@ pub const CORE_SKILLS: &[(&str, &str)] = &[
         include_str!("../core-skills/aura-criar-comando-rapido/SKILL.md"),
     ),
     (
+        "aura-ensaio",
+        include_str!("../core-skills/aura-ensaio/SKILL.md"),
+    ),
+    (
+        "aura-estudo",
+        include_str!("../core-skills/aura-estudo/SKILL.md"),
+    ),
+    (
+        "aura-carreira",
+        include_str!("../core-skills/aura-carreira/SKILL.md"),
+    ),
+    (
+        "aura-documentos",
+        include_str!("../core-skills/aura-documentos/SKILL.md"),
+    ),
+    (
         "aura-criar-receita",
         include_str!("../core-skills/aura-criar-receita/SKILL.md"),
     ),

@@ -218,6 +218,11 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/responder [tom]` | Anexa a tela e escreve um rascunho de resposta |
 | `/lembrar <o quê e quando>` | Cria um lembrete com notificação do Windows (únicos ou recorrentes) |
 | ⭐ Salvar (em cada resposta) · `/salvos <busca>` | Guarda respostas e textos prontos e os procura depois |
+| `/ensaio <cenário>` | Treina uma conversa difícil (entrevista, vendas, negociação) com feedback |
+| `/estudo` | Notas, glossário, flashcards e quiz do conteúdo que você estuda |
+| `/carreira` | Currículo sob medida, carta e histórias de entrevista, só com os seus fatos |
+| `/documento` | Explica contrato, boleto, bula ou termos em linguagem simples, com riscos e prazos |
+| `/ajuda` | "Me ajude agora": responde sobre a tela e o áudio recente |
 | `/anota <texto>` · `/notas <busca>` | Guarda e procura anotações rápidas |
 | `/texto` | Arraste sobre uma área da tela e o texto (OCR) vai para a área de transferência |
 | `/colar [formato]` | Converte o texto da área de transferência (lista, tabela, texto limpo, formal…) para você colar |

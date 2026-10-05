@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "27aeeec21f2fe5524fa52917ad81a0e39c8ff136"
+  },
+  "blockers": [],
+  "effort_id": "029-habilidades-do-dia-a-dia",
+  "inputs": {
+    "contract": {
+      "fingerprint": "8689e1d74331d3f71a4f53aef069eb5aac0e322292aa38ce5dcb23fbb61eedf9",
+      "path": "specs/029-habilidades-do-dia-a-dia/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

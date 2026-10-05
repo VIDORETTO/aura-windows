@@ -28,20 +28,15 @@
 | `CAND-032` | Exportar conversa (Markdown/PDF) e copiar resposta como texto formatado | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-040` | Legendas e tradução ao vivo; sugerir resposta em outro idioma | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-041` | Briefing antes da reunião e resumo diário a partir do calendário (Granola Briefs, Fireflies Meeting Prep) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-042` | Ensaio por voz: entrevista, vendas, apresentação e negociação com personas e feedback (Final Round, Sensei, Yoodli, Gong) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-043` | Quem falou: diarização e nomes dos participantes (spike de motor e licença antes de prometer) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-044` | Áudio por aplicativo (process loopback) e supressão de eco para transcrição limpa | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-046` | Modo Estudo (aula/vídeo): notas, glossário, flashcards e quiz | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-048` | Hábitos locais viram sugestões de configuração (sempre como proposta) | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-049` | Aura como servidor MCP/API local somente leitura (notas e reuniões) para outras ferramentas (Granola API/MCP) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-050` | "Me ajude agora": atalho único que responde sobre a tela e o áudio recente (Cluely) | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-051` | Modo Código/Prova técnica com tutor em níveis (dica, abordagem, solução) a partir da tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-052` | Carreira: currículo sob medida, carta, banco de perguntas e histórias STAR | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-053` | Widget compacto fixo, sempre visível | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-054` | Clipes de áudio/tela com legenda para compartilhar (Fathom) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-055` | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-056` | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-066` | Entender documentos (contrato, boleto, bula, termos) com riscos e prazos destacados | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-069` | Histórico da área de transferência e snippets, opt-in e sem dados de gerenciadores de senha | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-070` | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-071` | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -74,3 +69,4 @@
 | `026-biblioteca-e-pergunte` | Change: Biblioteca de reuniões e Pergunte | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `027-compromissos` | Change: Compromissos e promessas entre reuniões | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `028-coaching-de-fala` | Change: Coaching de fala privado | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `029-habilidades-do-dia-a-dia` | Change: Habilidades do dia a dia: Ensaio, Estudo, Carreira, Documentos e Ajuda agora | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

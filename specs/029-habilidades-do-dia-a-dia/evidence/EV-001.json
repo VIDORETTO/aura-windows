@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/core-skills": "ce955c592502e4a61696a72623f9d6903a15a293d47ad23997a73fa596e07128",
+    "specs/029-habilidades-do-dia-a-dia/change.md": "27424be067f872e039a4a8a6d1bbb636a03f58cbb4652fda3263dbaaffa68e00"
+  },
+  "input_paths": [
+    "crates/aura-app/core-skills",
+    "specs/029-habilidades-do-dia-a-dia/change.md"
+  ],
+  "limitations": "Qualidade das respostas do agente com as Skills não foi avaliada (exige o app-server real e um modelo)",
+  "observations": "Quatro Skills internas válidas e reinstaladas; cinco comandos expandem como especificado",
+  "procedure": "cargo test -p aura-app (core_skills_*), -p aura-extensions (skill_commands_point_at_their_core_skill...)",
+  "result": "partial",
+  "tested_revision": "local:7fc8e18ea6378b4d36873688d3ceb845cdd9ba9b2bcb1d083270cfb547e7dbc1",
+  "ticket": null,
+  "timestamp": "2026-10-05T18:14:32+00:00"
+}

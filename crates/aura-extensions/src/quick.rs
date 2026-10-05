@@ -142,6 +142,23 @@ pub fn builtins() -> Vec<QuickCommand> {
             "colar",
             "Converta o texto abaixo para este formato: {args:lista com marcadores}. Responda só com o resultado, pronto para colar.\n\n{area}",
         ),
+        b("ensaio", "$aura-ensaio Quero ensaiar uma conversa: {texto}"),
+        b(
+            "estudo",
+            "$aura-estudo Quero estudar este conteúdo: {texto}",
+        ),
+        b(
+            "carreira",
+            "$aura-carreira Preciso de ajuda com minha carreira: {texto}",
+        ),
+        b(
+            "documento",
+            "$aura-documentos Me ajude a entender este documento: {selecao}",
+        ),
+        b(
+            "ajuda",
+            "{tela}Me ajude agora com o que está na tela. Se houver buffer de áudio, use audio_recent dos últimos 2 minutos como contexto. Seja direto: o que está acontecendo e o que fazer a seguir, em poucas linhas.\n\n{texto}",
+        ),
         b(
             "salvos",
             "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.",
@@ -489,9 +506,39 @@ mod tests {
     }
 
     #[test]
+    fn skill_commands_point_at_their_core_skill_and_help_attaches_the_screen() {
+        let ctx = QuickContext {
+            selection: Some("Cláusula 7: renovação automática por 12 meses".into()),
+            ..Default::default()
+        };
+        let doc = expand(&cmd("documento"), "", &ctx).unwrap();
+        assert!(doc.prompt_text.starts_with("$aura-documentos"));
+        assert!(
+            doc.prompt_text
+                .ends_with("renovação automática por 12 meses")
+        );
+        assert_eq!(
+            expand(&cmd("documento"), "", &QuickContext::default()),
+            Err(QuickError::NoInput)
+        );
+        for (name, skill) in [
+            ("ensaio", "$aura-ensaio"),
+            ("estudo", "$aura-estudo"),
+            ("carreira", "$aura-carreira"),
+        ] {
+            let e = expand(&cmd(name), "pedir aumento", &QuickContext::default()).unwrap();
+            assert!(e.prompt_text.starts_with(skill), "{name}");
+            assert!(e.prompt_text.contains("pedir aumento"));
+        }
+        let help = expand(&cmd("ajuda"), "", &QuickContext::default()).unwrap();
+        assert!(help.needs_screen);
+        assert!(help.prompt_text.contains("audio_recent"));
+    }
+
+    #[test]
     fn repo_seeds_builtins_and_protects_them() {
         let repo = QuickCommandsRepo::new(Store::open_in_memory().unwrap()).unwrap();
-        assert_eq!(repo.list().unwrap().len(), 19);
+        assert_eq!(repo.list().unwrap().len(), 24);
         assert_eq!(repo.save("tldr", "x", true), Err(QuickError::Builtin));
         assert_eq!(repo.delete("tldr"), Err(QuickError::Builtin));
         repo.save("email-formal", "Formal: {selecao}", false)
