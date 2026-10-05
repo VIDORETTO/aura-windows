@@ -3254,7 +3254,20 @@ impl Host {
         } else {
             aura_audio::AudioSourceKind::Mic
         };
-        self.platform.audio.devices(kind)
+        let mut list = self.platform.audio.devices(kind);
+        // System audio can also be every output at once.
+        if system && list.len() > 1 {
+            list.insert(
+                0,
+                aura_audio::DeviceInfo {
+                    id: aura_audio::mixed::ALL_OUTPUTS.into(),
+                    name: crate::localization::text(self.settings().language, "audio.allOutputs")
+                        .into(),
+                    is_default: false,
+                },
+            );
+        }
+        list
     }
 
     // ------------------------------------------------------------ app-server

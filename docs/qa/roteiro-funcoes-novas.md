@@ -58,6 +58,14 @@ Tudo abaixo foi implementado e testado no Linux (lógica, host e interface com b
 | 8 | Receita: escolher "1:1", encerrar, "Resumo e ações"; "Gerar ata (agente)" | Resumo no formato da Receita, com minutos; `ata.md` criada no workspace após aprovação |
 | 9 | "Criar uma Receita com IA" | `recipe_save` com aprovação; a Receita aparece no seletor |
 
+## Áudio do sistema de todas as saídas
+
+| # | Passo | Esperado |
+| --- | --- | --- |
+| 1 | Conectar fone e alto-falantes; em Configurações › Voz, escolher "Todas as saídas" no áudio do sistema e usar o teste com medidor | O medidor reage ao som tocando em **qualquer** saída |
+| 2 | Iniciar uma Reunião sem escolher dispositivo e tocar áudio só no fone (não padrão) | A fala aparece como "Eles" (a Reunião ouve todas as saídas) |
+| 3 | Plugar um fone novo **durante** a gravação | Limite conhecido: só entra após reiniciar a captura |
+
 ## Itens que dependem do ASR local
 
 Compilar o worker com `--features engines` (HANDOFF §7) e repetir 023-2 com o modelo local; sem isso, usar a transcrição na nuvem (BYOK) e anotar a diferença de latência.

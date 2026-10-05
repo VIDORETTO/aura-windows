@@ -20,6 +20,22 @@ pub enum HubEvent {
     Stopped { reason: Option<AudioError> },
 }
 
+/// Opens `device`; for system audio the id `*` means every output at once.
+fn open_device(
+    source: &dyn AudioSource,
+    kind: AudioSourceKind,
+    device: &DeviceSel,
+) -> Result<Box<dyn crate::AudioStream>, AudioError> {
+    match device {
+        DeviceSel::Id(id)
+            if kind == AudioSourceKind::SystemAudio && id == crate::mixed::ALL_OUTPUTS =>
+        {
+            Ok(Box::new(crate::mixed::open_all(source, kind)?))
+        }
+        other => source.open(kind, other),
+    }
+}
+
 /// Pumps one device on a dedicated thread (audio APIs are blocking).
 pub struct AudioHub {
     tx: broadcast::Sender<Chunk>,
@@ -39,7 +55,7 @@ impl AudioHub {
         let (tx, _) = broadcast::channel(256);
         let (events, _) = broadcast::channel(16);
         let mut fallback_from = None;
-        let mut stream = match source.open(kind, &device) {
+        let mut stream = match open_device(source.as_ref(), kind, &device) {
             Ok(s) => s,
             Err(AudioError::NoDevice | AudioError::DeviceLost) if device != DeviceSel::Default => {
                 let wanted = match &device {

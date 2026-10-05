@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Linux x86_64, fontes sintéticas",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-audio/src/mixed.rs": "2c113353c63e7e99764f1942e95e9c32476ae4b2740dea63888ba9d3d4d18ae9",
+    "specs/023-motor-de-reuniao/change.md": "9ac33b6d0597ffc6d8ee3f22fe28bebc6f305f4cbf2cccc7f60d629002f31f2c"
+  },
+  "input_paths": [
+    "crates/aura-audio/src/mixed.rs",
+    "specs/023-motor-de-reuniao/change.md"
+  ],
+  "limitations": "Não validado com WASAPI real; dispositivos plugados depois não entram até reiniciar a captura; soma simples sem sincronização fina entre dispositivos",
+  "observations": "Captura de todas as saídas: um loopback por dispositivo, convertidos a 16 kHz mono e somados; dispositivo com falha é ignorado; id '*' no hub; Reunião usa todas as saídas quando nenhum dispositivo foi escolhido",
+  "procedure": "cargo test -p aura-audio (mixed::tests); cargo clippy -p aura-win --target x86_64-pc-windows-msvc",
+  "result": "partial",
+  "tested_revision": "local:f5b9234f96ad8b9411a9de74bfc70fa074b1903df06930749791357ed0444928",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:58:34+00:00"
+}

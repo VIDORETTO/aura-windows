@@ -162,6 +162,7 @@ export const en: Record<MessageKey, string> = {
   "saved.do": "Save",
   "saved.done": "Saved",
   "quick.template.saved": "Search my saved texts with the note_search tool (kind=saved, query: {texto}) and show what you find, newest first.",
+  "audio.allOutputs": "All outputs (speakers, headset…)",
   "region.hint": "Drag to select · Enter confirms · Esc cancels",
   "context.window": "Active window",
   "context.selection": "Selection",

@@ -56,6 +56,8 @@ struct AudioRun {
     task: tokio::task::JoinHandle<()>,
     kind: String,
     recording_id: Option<String>,
+    /// Capturing every output device (Meeting, no device chosen).
+    all_outputs: bool,
 }
 
 struct ScreenRun {
@@ -237,7 +239,7 @@ impl CaptureService {
                 None
             };
             let mut audio = self.audio.lock().await;
-            let same = matches!((audio.get(&kind), &want), (Some(r), Some((k, id))) if &r.kind == k && &r.recording_id == id);
+            let same = matches!((audio.get(&kind), &want), (Some(r), Some((k, id))) if &r.kind == k && &r.recording_id == id && r.all_outputs == self.wants_all_outputs(kind));
             if same {
                 continue;
             }
@@ -256,6 +258,13 @@ impl CaptureService {
         self.active().await
     }
 
+    /// System audio during a Meeting with no device chosen: every output.
+    fn wants_all_outputs(&self, kind: AudioSourceKind) -> bool {
+        kind == AudioSourceKind::SystemAudio
+            && self.meeting.load(Ordering::SeqCst)
+            && self.devices.lock().unwrap().1.is_none()
+    }
+
     fn start_audio(
         &self,
         kind: AudioSourceKind,
@@ -269,12 +278,16 @@ impl CaptureService {
                 AudioSourceKind::SystemAudio => system,
             }
         };
-        let hub = AudioHub::start(
-            self.platform.audio.clone(),
-            kind,
-            device.map(DeviceSel::Id).unwrap_or(DeviceSel::Default),
-        )
-        .map_err(|e| e.to_string())?;
+        // In a Meeting the other side may play on any device (a headset that is
+        // not the Windows default), so with no device chosen listen to all.
+        let all_outputs = self.wants_all_outputs(kind);
+        let sel = match device {
+            Some(id) => DeviceSel::Id(id),
+            None if all_outputs => DeviceSel::Id(aura_audio::mixed::ALL_OUTPUTS.into()),
+            None => DeviceSel::Default,
+        };
+        let hub =
+            AudioHub::start(self.platform.audio.clone(), kind, sel).map_err(|e| e.to_string())?;
         let mut rx = hub.subscribe();
         let stop = Arc::new(AtomicBool::new(false));
         let stop2 = stop.clone();
@@ -325,6 +338,7 @@ impl CaptureService {
             task,
             kind: seg_kind.into(),
             recording_id,
+            all_outputs,
         })
     }
 

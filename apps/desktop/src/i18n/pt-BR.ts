@@ -162,6 +162,7 @@ export const ptBR = {
   "saved.do": "Salvar",
   "saved.done": "Salvo",
   "quick.template.saved": "Procure nos meus textos salvos com a ferramenta note_search (kind=saved, consulta: {texto}) e mostre o que achar, o mais recente primeiro.",
+  "audio.allOutputs": "Todas as saídas (alto-falantes, fone…)",
   "region.hint": "Arraste para selecionar · Enter confirma · Esc cancela",
   "context.window": "Janela ativa",
   "context.selection": "Seleção",

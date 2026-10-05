@@ -27,3 +27,16 @@
 - Observations: Áudio da reunião é apagado ao encerrar por padrão e guardado só se pedido; CPF/CNPJ/cartão (dígitos verificadores)/e-mail/telefone mascarados para o modelo quando ligado; aviso aos participantes copiável; opções em Configurações › Privacidade
 - Evidence refs: none
 - Limitations: Modo 'só local' (modelo local) não implementado; redação não cobre nomes nem endereços; a transcrição que o usuário vê continua completa; apagar áudio apaga também o buffer do usuário no mesmo intervalo
+
+## EV-003 — partial
+
+- Ticket: `—`
+- Acceptance: `AC-002`
+- Procedure: `cargo test -p aura-audio (mixed::tests); cargo clippy -p aura-win --target x86_64-pc-windows-msvc`
+- Execution: `executed`
+- Environment: Linux x86_64, fontes sintéticas
+- Tested revision: `local:f5b9234f96ad8b9411a9de74bfc70fa074b1903df06930749791357ed0444928`
+- Timestamp: `2026-10-05T17:58:34+00:00`
+- Observations: Captura de todas as saídas: um loopback por dispositivo, convertidos a 16 kHz mono e somados; dispositivo com falha é ignorado; id '*' no hub; Reunião usa todas as saídas quando nenhum dispositivo foi escolhido
+- Evidence refs: none
+- Limitations: Não validado com WASAPI real; dispositivos plugados depois não entram até reiniciar a captura; soma simples sem sincronização fina entre dispositivos

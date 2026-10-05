@@ -4,6 +4,7 @@
 pub mod clips;
 pub mod dsp;
 pub mod hub;
+pub mod mixed;
 #[cfg(feature = "store")]
 pub mod recorder;
 
