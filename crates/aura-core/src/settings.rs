@@ -89,6 +89,10 @@ pub struct Settings {
     /// sharing (Meet, Teams, Discord, AnyDesk…), so only the user sees it.
     /// On by default; off lets the Aura appear in captures (demos, tutorials).
     pub hide_from_capture: bool,
+    /// Keep the audio of a Meeting after it ends (off: only the text stays).
+    pub meeting_keep_audio: bool,
+    /// Mask CPF, cards, e-mails and phones before the model reads a Meeting.
+    pub meeting_redact_pii: bool,
 }
 
 /// Words that confirm turning YOLO on (018), in any case.
@@ -149,6 +153,8 @@ impl Default for Settings {
             effort_presets: Default::default(),
             yolo: false,
             hide_from_capture: true,
+            meeting_keep_audio: false,
+            meeting_redact_pii: false,
         }
     }
 }
@@ -216,6 +222,8 @@ pub struct SettingsPatch {
     /// Replaces every preset (the UI sends the whole map).
     pub effort_presets: Option<std::collections::BTreeMap<String, ModeEfforts>>,
     pub hide_from_capture: Option<bool>,
+    pub meeting_keep_audio: Option<bool>,
+    pub meeting_redact_pii: Option<bool>,
 }
 
 #[derive(Debug, Error, PartialEq, Eq)]
@@ -280,6 +288,12 @@ impl Settings {
         }
         if let Some(v) = patch.start_with_windows {
             next.start_with_windows = v;
+        }
+        if let Some(v) = patch.meeting_keep_audio {
+            next.meeting_keep_audio = v;
+        }
+        if let Some(v) = patch.meeting_redact_pii {
+            next.meeting_redact_pii = v;
         }
         if let Some(v) = patch.hide_from_capture {
             next.hide_from_capture = v;

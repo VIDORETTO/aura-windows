@@ -45,6 +45,8 @@ const DEFAULT_SETTINGS: T.Settings = {
   effortPresets: {},
   yolo: false,
   hideFromCapture: true,
+  meetingKeepAudio: false,
+  meetingRedactPii: false,
 };
 
 const PRESETS: T.Preset[] = [

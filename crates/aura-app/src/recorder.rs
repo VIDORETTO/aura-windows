@@ -383,6 +383,39 @@ impl CaptureService {
         self.apply(&policy).await;
     }
 
+    /// Audio segments of the meeting window still on disk.
+    pub fn audio_segments_between(&self, from: i64, to: i64) -> usize {
+        ["mic", "system"]
+            .iter()
+            .map(|k| {
+                self.audio_store
+                    .range(k, from, to)
+                    .map(|v| v.len())
+                    .unwrap_or(0)
+            })
+            .sum()
+    }
+
+    /// Deletes the meeting audio (segments of the background buffer between
+    /// two instants): used when a Meeting ends and the user keeps only text.
+    pub async fn erase_audio(&self, from: i64, to: i64) -> usize {
+        self.flush_audio().await;
+        let mut n = 0;
+        for key in ["mic", "system"] {
+            let ids: Vec<String> = self
+                .audio_store
+                .range(key, from, to)
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|s| s.kind == "buffer" && !s.manual && s.recording_id.is_none())
+                .map(|s| s.id)
+                .collect();
+            n += ids.len();
+            let _ = self.audio_store.delete(&ids);
+        }
+        n
+    }
+
     /// Transcribed lines of both sources between two absolute instants.
     pub async fn audio_lines(
         &self,

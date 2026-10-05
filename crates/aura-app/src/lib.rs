@@ -23,6 +23,7 @@ pub mod meeting;
 pub mod memories;
 pub mod notes;
 pub mod paths;
+pub mod pii;
 pub mod platform;
 pub mod privacy;
 pub mod profiles;

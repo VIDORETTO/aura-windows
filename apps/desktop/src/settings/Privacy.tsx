@@ -7,6 +7,7 @@ import { exactTime } from "../lib/format";
 import { useApp } from "../state/app";
 import { Badge, Button, Row, Section, Select, Switch, TextField } from "../ui/primitives";
 import { RecordingsSection } from "./Recordings";
+import { updateSettings as update } from "./General";
 
 const MODES = ["off", "onDemand", "recentBuffer", "manual", "continuous"] as const;
 
@@ -92,6 +93,7 @@ export function PrivacySection() {
         <SourceRow source="mic" policy={privacy.mic} onChange={setPrivacy} />
         <SourceRow source="systemAudio" policy={privacy.systemAudio} onChange={setPrivacy} />
       </Section>
+      <MeetingPrivacySection />
       <Section title={t("privacy.exclusions")} description={t("privacy.exclusions.hint")}>
         {privacy.exclusions.map((r) => (
           <div key={r.id} className="flex items-center gap-3 py-2">
@@ -272,6 +274,22 @@ function RetentionSection() {
           {t("privacy.retention.save")}
         </Button>
       </div>
+    </Section>
+  );
+}
+/** Meetings (038): only the text stays by default; personal data can be masked. */
+function MeetingPrivacySection() {
+  const t = useT();
+  const settings = useApp((s) => s.settings);
+  if (!settings) return null;
+  return (
+    <Section title={t("privacy.meetings")} description={t("privacy.meetings.hint")}>
+      <Row label={t("privacy.meetings.keepAudio")} hint={t("privacy.meetings.keepAudio.hint")}>
+        <Switch label={t("privacy.meetings.keepAudio")} checked={settings.meetingKeepAudio} onChange={(v) => void update({ meetingKeepAudio: v })} />
+      </Row>
+      <Row label={t("privacy.meetings.redact")} hint={t("privacy.meetings.redact.hint")}>
+        <Switch label={t("privacy.meetings.redact")} checked={settings.meetingRedactPii} onChange={(v) => void update({ meetingRedactPii: v })} />
+      </Row>
     </Section>
   );
 }

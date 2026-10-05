@@ -3144,3 +3144,95 @@ async fn recipes_are_listed_created_by_the_agent_and_shape_the_meeting_notes() {
     .unwrap();
     assert!(got["recipe"].is_null());
 }
+
+#[tokio::test]
+async fn meeting_audio_is_erased_at_the_end_unless_kept_and_pii_is_masked() {
+    // 038: only text stays by default; personal data can be masked for the model.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let text = |o: &aura_mcp::ToolOutput| match &o.content[0] {
+        aura_mcp::Content::Text(t) => t.clone(),
+        _ => panic!("text"),
+    };
+
+    // Default: audio erased when the meeting ends.
+    let m = e
+        .host
+        .meeting_start("Sem áudio", "other", "")
+        .await
+        .unwrap();
+    tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    let ended = e.host.meeting_stop().await.unwrap();
+    assert_eq!(e.host.meeting_audio_kept(&ended.id).unwrap(), 0);
+
+    // Kept on request.
+    e.host
+        .update_settings(aura_core::settings::SettingsPatch {
+            meeting_keep_audio: Some(true),
+            ..Default::default()
+        })
+        .unwrap();
+    let kept = e
+        .host
+        .meeting_start("Com áudio", "other", "")
+        .await
+        .unwrap();
+    tokio::time::sleep(std::time::Duration::from_millis(300)).await;
+    let kept = {
+        e.host.meeting_stop().await.unwrap();
+        kept
+    };
+    let _ = m;
+    assert!(
+        e.host.meeting_audio_kept(&kept.id).unwrap() > 0,
+        "audio stays when asked"
+    );
+
+    // Personal data reaches the model masked only when the option is on.
+    e.host
+        .meetings_repo()
+        .store_utterances_for_tests(
+            &kept.id,
+            &[(
+                1_000,
+                2_000,
+                "them",
+                "Meu CPF é 529.982.247-25 e o e-mail ana@empresa.com",
+            )],
+        )
+        .unwrap();
+    let get = |on: bool| {
+        let host = e.host.clone();
+        let tools = &tools;
+        let id = kept.id.clone();
+        async move {
+            host.update_settings(aura_core::settings::SettingsPatch {
+                meeting_redact_pii: Some(on),
+                ..Default::default()
+            })
+            .unwrap();
+            let ctx = CallContext {
+                conversation: "pii".into(),
+            };
+            tools
+                .call("meeting_get", json!({"meeting_id": id}), ctx)
+                .await
+        }
+    };
+    let plain = text(&get(false).await);
+    assert!(plain.contains("529.982.247-25") && plain.contains("ana@empresa.com"));
+    let masked = text(&get(true).await);
+    assert!(
+        masked.contains("[CPF]") && masked.contains("[E-MAIL]"),
+        "{masked}"
+    );
+    assert!(!masked.contains("529.982.247-25") && !masked.contains("ana@empresa.com"));
+}

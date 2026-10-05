@@ -135,6 +135,19 @@ export function MeetingPanel() {
     <aside className="absolute inset-y-0 left-0 z-10 flex w-72 shrink-0 flex-col gap-3 overflow-y-auto border-r border-line bg-[var(--surface-menu)] p-3 backdrop-blur-xl min-[1024px]:static min-[1024px]:z-auto" aria-label={t("meeting.title")}>
       <h2 className="flex items-center gap-1.5 text-[13px] font-semibold"><Mic size={14} /> {t("meeting.new")}</h2>
       <p className="text-[11px] leading-snug text-muted">{t("meeting.optin")}</p>
+      <button
+        type="button"
+        className="self-start text-[11px] text-muted underline-offset-2 hover:text-fg hover:underline"
+        title={t("meeting.notice.text")}
+        onClick={() =>
+          void navigator.clipboard
+            ?.writeText(t("meeting.notice.text"))
+            .then(() => useApp.getState().notify("info", t("meeting.notice.copied")))
+            .catch(() => undefined)
+        }
+      >
+        {t("meeting.notice.copy")}
+      </button>
 
       {brief && (
         <section className="flex flex-col gap-1.5 rounded-md border border-line p-2" aria-label={t("meeting.brief")}>

@@ -538,6 +538,8 @@
     "hideOnBlur": false,
     "invokeShortcut": "Ctrl+Shift+Space",
     "language": "ptBr",
+    "meetingKeepAudio": false,
+    "meetingRedactPii": false,
     "memories": false,
     "microphoneDeviceId": null,
     "onboarded": false,

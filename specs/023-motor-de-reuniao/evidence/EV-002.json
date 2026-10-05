@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Linux x86_64 (áudio sintético)",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-app/src/pii.rs": "0a85c88ca760cd13b849b4e3ed438e9ffb888452ce4fe1f8831289ba414a551d",
+    "specs/023-motor-de-reuniao/change.md": "06af1fc2bdfbc7a43fb3673ed98d75b0d6ad7fbe29d529037dd8237e7472f30e"
+  },
+  "input_paths": [
+    "crates/aura-app/src/pii.rs",
+    "specs/023-motor-de-reuniao/change.md"
+  ],
+  "limitations": "Modo 'só local' (modelo local) não implementado; redação não cobre nomes nem endereços; a transcrição que o usuário vê continua completa; apagar áudio apaga também o buffer do usuário no mesmo intervalo",
+  "observations": "Áudio da reunião é apagado ao encerrar por padrão e guardado só se pedido; CPF/CNPJ/cartão (dígitos verificadores)/e-mail/telefone mascarados para o modelo quando ligado; aviso aos participantes copiável; opções em Configurações › Privacidade",
+  "procedure": "cargo test -p aura-app (meeting_audio_is_erased_at_the_end_unless_kept_and_pii_is_masked, pii); vitest MeetingPrivacy/MeetingPanel",
+  "result": "partial",
+  "tested_revision": "local:4e7f116bc41ea12dd13cf58ec81f6ee7ff17c4eadb56e012c67a4ab5d80fe4c7",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:45:00+00:00"
+}

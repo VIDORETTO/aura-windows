@@ -211,7 +211,7 @@ impl crate::tools::ExtensionsAccess for Host {
                 .map(|h| serde_json::json!({
                     "meeting_id": h.meeting_id, "title": h.title,
                     "minute": format!("{:02}:{:02}", h.t0 / 60_000, (h.t0 / 1000) % 60),
-                    "speaker": h.speaker, "text": h.text,
+                    "speaker": h.speaker, "text": self.for_model(&h.text),
                 }))
                 .collect::<Vec<_>>()
         ))
@@ -240,7 +240,7 @@ impl crate::tools::ExtensionsAccess for Host {
             "meeting_id": m.id, "title": m.title, "briefing": m.briefing, "status": m.status, "recipe": recipe,
             "transcript": lines.iter().map(|u| format!(
                 "[{:02}:{:02}] {}: {}", u.t0 / 60_000, (u.t0 / 1000) % 60,
-                if u.speaker == "you" { "Você" } else { "Eles" }, u.text)).collect::<Vec<_>>(),
+                if u.speaker == "you" { "Você" } else { "Eles" }, self.for_model(&u.text))).collect::<Vec<_>>(),
         }))
     }
 
@@ -1096,6 +1096,11 @@ impl Host {
     pub async fn meeting_stop(&self) -> HostResult<crate::meeting::Meeting> {
         let m = self.meetings.stop(now_ms()).await.map_err(meeting_err)?;
         self.capture.set_meeting(false).await;
+        if !self.settings().meeting_keep_audio {
+            self.capture
+                .erase_audio(m.started_at, m.ended_at.unwrap_or_else(now_ms) + 1_000)
+                .await;
+        }
         let _ = self.events.send(HostEvent::Meeting {
             id: m.id.clone(),
             status: "ended".into(),
@@ -1148,6 +1153,23 @@ impl Host {
 
     pub fn meeting_utterances(&self, id: &str) -> HostResult<Vec<crate::meeting::Utterance>> {
         self.meetings.repo().utterances(id).map_err(meeting_err)
+    }
+
+    /// How many audio segments of a Meeting are still on disk (0 once erased).
+    pub fn meeting_audio_kept(&self, id: &str) -> HostResult<usize> {
+        let m = self.meetings.repo().get(id).map_err(meeting_err)?;
+        Ok(self
+            .capture
+            .audio_segments_between(m.started_at, m.ended_at.unwrap_or_else(now_ms) + 1_000))
+    }
+
+    /// What the model may read: personal data masked when the user asked.
+    fn for_model(&self, text: &str) -> String {
+        if self.settings().meeting_redact_pii {
+            crate::pii::redact(text)
+        } else {
+            text.to_string()
+        }
     }
 
     pub fn meeting_delete(&self, id: &str) -> HostResult<()> {

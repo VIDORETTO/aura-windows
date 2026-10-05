@@ -120,4 +120,12 @@ describe("meeting panel", () => {
     expect(text).toMatch(/meeting_get com meeting_id=m1/);
     expect(text).toContain("[mm:ss]");
   });
+
+  it("copies a ready notice for the participants", async () => {
+    await freshApp({ signedIn: true });
+    const user = userEvent.setup();
+    render(<MeetingPanel />);
+    await user.click(await screen.findByRole("button", { name: "Copiar aviso aos participantes" }));
+    expect(await navigator.clipboard.readText()).toContain("assistente de IA");
+  });
 });

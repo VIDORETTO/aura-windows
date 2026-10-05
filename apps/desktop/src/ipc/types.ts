@@ -52,6 +52,10 @@ export interface Settings {
   yolo: boolean;
   /** Hide every Aura window from screenshots, recordings and screen sharing. */
   hideFromCapture: boolean;
+  /** Keep a Meeting's audio after it ends (default: only the text stays). */
+  meetingKeepAudio: boolean;
+  /** Mask CPF, cards, e-mails and phones before the model reads a Meeting. */
+  meetingRedactPii: boolean;
 }
 
 export interface ModeEfforts {

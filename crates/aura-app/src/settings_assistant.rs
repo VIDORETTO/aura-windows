@@ -46,6 +46,14 @@ pub const EDITABLE: &[(&str, &str)] = &[
     ),
     ("autoRead", "Read every finished answer aloud."),
     (
+        "meetingKeepAudio",
+        "Keep the audio of a meeting after it ends; off keeps only the text (turning it on widens what is kept).",
+    ),
+    (
+        "meetingRedactPii",
+        "Mask CPF, cards, e-mails and phone numbers before the model reads a meeting.",
+    ),
+    (
         "hideFromCapture",
         "Keep Aura out of screen sharing and recordings (turning it off widens exposure).",
     ),
@@ -62,6 +70,7 @@ fn widens(key: &str, after: &Value) -> bool {
         (key, after),
         ("attachScreenOnOpen", Value::Bool(true))
             | ("memories", Value::Bool(true))
+            | ("meetingKeepAudio", Value::Bool(true))
             | ("hideFromCapture", Value::Bool(false))
     )
 }
