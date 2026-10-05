@@ -427,6 +427,16 @@ pub fn insert_into_app(app: AppHandle, s: State<'_, AppState>, text: String) -> 
 // ---------------------------------------------------------------- meetings
 
 #[tauri::command]
+pub fn meeting_brief(s: State<'_, AppState>) -> Option<String> {
+    s.host.meeting_brief()
+}
+
+#[tauri::command]
+pub fn meeting_set_brief(s: State<'_, AppState>, text: String) -> R<()> {
+    Ok(s.host.meeting_set_brief(&text)?)
+}
+
+#[tauri::command]
 pub fn meeting_active(s: State<'_, AppState>) -> Option<aura_app::meeting::Meeting> {
     s.host.meeting_active()
 }

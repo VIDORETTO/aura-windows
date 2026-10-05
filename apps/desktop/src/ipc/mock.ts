@@ -421,6 +421,40 @@ export function createMockBridge(opts: MockOptions = {}): Bridge & { state: Mock
     },
     attachments_list: () => [],
     insert_into_app: () => true,
+    meeting_brief: () => state.meetingBrief,
+    meeting_set_brief: ({ text }) => {
+      state.meetingBrief = String(text || "") || null;
+      host({ channel: "meeting", event: { id: "", status: "briefing" } });
+    },
+    meeting_active: () => state.meetingNow,
+    meeting_start: ({ title, kind, briefing }) => {
+      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: String(kind), briefing: String(briefing || state.meetingBrief || ""), origin: "live", status: "active", startedAt: Date.now(), endedAt: null };
+      state.meetingNow = m;
+      state.meetingList = [m, ...state.meetingList];
+      state.meetingBrief = null;
+      host({ channel: "meeting", event: { id: m.id, status: "active" } });
+      return m;
+    },
+    meeting_pause: () => undefined,
+    meeting_stop: () => {
+      const m = { ...state.meetingNow!, status: "ended" as const, endedAt: Date.now() };
+      state.meetingList = state.meetingList.map((x) => (x.id === m.id ? m : x));
+      state.meetingNow = null;
+      host({ channel: "meeting", event: { id: m.id, status: "ended" } });
+      return m;
+    },
+    meeting_from_buffer: ({ title }) => {
+      const m: T.Meeting = { id: `m${state.meetingList.length + 1}`, title: String(title), kind: "other", briefing: "", origin: "buffer", status: "ended", startedAt: Date.now() - 600000, endedAt: Date.now() };
+      state.meetingList = [m, ...state.meetingList];
+      host({ channel: "meeting", event: { id: m.id, status: "ended" } });
+      return m;
+    },
+    meetings_list: () => state.meetingList,
+    meeting_utterances: ({ id }) => state.meetingLines[String(id)] ?? [],
+    meeting_delete: ({ id }) => {
+      state.meetingList = state.meetingList.filter((m) => m.id !== id);
+    },
+    meeting_search: () => [],
     capture_hiding_check: () => [{ window: "overlay", hidden: state.settings.hideFromCapture }],
     replace_target: () => state.replaceTarget,
     replace_selection: () => state.replaceTarget ?? "",
@@ -736,6 +770,10 @@ export class MockState {
     { name: "parei", template: "Use a ferramenta screen_recent para ver os últimos minutos da minha tela e diga, em poucas linhas, o que eu estava fazendo, em que ponto parei e qual seria o próximo passo. Se o buffer de tela estiver desligado, explique como ligá-lo em Configurações › Privacidade.\n\n{texto}", builtin: true, enabled: true },
   ];
   mcp: T.McpServerSpec[] = [];
+  meetingNow: T.Meeting | null = null;
+  meetingList: T.Meeting[] = [];
+  meetingBrief: string | null = null;
+  meetingLines: Record<string, T.Utterance[]> = {};
   /** Selected text a quick command was applied to (019). */
   replaceTarget: string | null = null;
   recordings: T.Recording[] = [];

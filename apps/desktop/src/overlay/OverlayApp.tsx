@@ -17,6 +17,7 @@ import { Kbd, Progress, cx } from "../ui/primitives";
 import { percent } from "../lib/format";
 import { Header } from "./Header";
 import { HistoryPanel } from "./HistoryPanel";
+import { MeetingPanel } from "./MeetingPanel";
 import { InputBar } from "./InputBar";
 import { ConsentCard, MessageList } from "./Messages";
 import { LoginCard, WelcomeModal } from "./Onboarding";
@@ -326,6 +327,7 @@ export function OverlayApp() {
             {expanded && (
               <div className="relative flex min-h-0 flex-1">
                 {session.historyOpen && <HistoryPanel />}
+                {session.meetingOpen && <MeetingPanel />}
                 <div className="flex min-w-0 flex-1 flex-col">
                   {thread && thread.blocks.length > 0 ? (
                     <MessageList thread={thread} />

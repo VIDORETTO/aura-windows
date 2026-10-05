@@ -26,6 +26,7 @@ pub const NOTE_SAVE: &str = "note_save";
 pub const NOTE_SEARCH: &str = "note_search";
 pub const MEETING_SEARCH: &str = "meeting_search";
 pub const MEETING_GET: &str = "meeting_get";
+pub const MEETING_BRIEF_SAVE: &str = "meeting_brief_save";
 pub const SETTINGS_DESCRIBE: &str = "settings_describe";
 pub const SETTINGS_PROPOSE: &str = "settings_propose";
 pub const SETTINGS_APPLY: &str = "settings_apply";
@@ -33,7 +34,8 @@ pub const SETTINGS_UNDO: &str = "settings_undo";
 
 /// Tools that change the user's configuration: Codex asks the user before
 /// each call (017).
-pub const WRITE_TOOLS: [&str; 7] = [
+pub const WRITE_TOOLS: [&str; 8] = [
+    MEETING_BRIEF_SAVE,
     REMINDER_CREATE,
     REMINDER_DELETE,
     SKILL_SAVE,
@@ -262,6 +264,15 @@ pub fn all() -> Vec<ToolDef> {
                 "meeting_id": {"type": "string"}},
                 "additionalProperties": false}),
             annotations: read_only("Ler reunião"),
+        },
+        ToolDef {
+            name: MEETING_BRIEF_SAVE.into(),
+            description: "Save the meeting briefing ('Entendi assim': objective, what to leave with, agenda points, cautions) for the user to review in the Meeting panel. This does NOT start the meeting or any recording: only the user starts it. The user approves the call."
+                .into(),
+            input_schema: json!({"type": "object", "properties": {
+                "briefing": {"type": "string", "maxLength": 8000}},
+                "required": ["briefing"], "additionalProperties": false}),
+            annotations: writes("Salvar briefing da reunião"),
         },
     ]
 }

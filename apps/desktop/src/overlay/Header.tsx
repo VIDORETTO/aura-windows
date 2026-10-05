@@ -1,4 +1,4 @@
-import { FileStack, FolderPlus, History, Maximize2, Minimize2, Minus, Plus, Settings2 } from "lucide-react";
+import { FileStack, FolderPlus, History, Mic, Maximize2, Minimize2, Minus, Plus, Settings2 } from "lucide-react";
 import { inTauri } from "../ipc/bridge";
 import { api } from "../ipc/commands";
 import { useT } from "../i18n";
@@ -73,6 +73,9 @@ export function Header({ compact, subtitle }: { compact: boolean; subtitle?: str
           )}
         </>
       )}
+      <IconButton label={t("meeting.title")} active={s.meetingOpen} onClick={() => s.toggleMeeting()}>
+        <Mic size={15} />
+      </IconButton>
       <IconButton label={t("header.history")} active={s.historyOpen} onClick={() => s.toggleHistory()}>
         <History size={15} />
       </IconButton>

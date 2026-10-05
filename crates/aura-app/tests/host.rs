@@ -3021,3 +3021,55 @@ async fn agent_searches_and_reads_saved_meetings() {
         "[]"
     );
 }
+
+#[tokio::test]
+async fn agent_prepares_the_briefing_but_only_the_user_starts_the_meeting() {
+    // 024 AC-001: preparing never starts capture.
+    let e = env().await;
+    let (tx, _rx) = tokio::sync::broadcast::channel(16);
+    let tools = tools_of(
+        &e,
+        tx,
+        Arc::new(aura_app::consent::ConsentBroker::default()),
+    );
+    let weak: std::sync::Weak<dyn aura_app::tools::ExtensionsAccess> =
+        Arc::downgrade(&e.host) as std::sync::Weak<dyn aura_app::tools::ExtensionsAccess>;
+    tools.extensions.set(weak).ok().unwrap();
+    let ctx = CallContext {
+        conversation: "conv-brief".into(),
+    };
+    let out = tools
+        .call(
+            "meeting_brief_save",
+            json!({"briefing": "Objetivo: fechar o orçamento do Q3"}),
+            ctx,
+        )
+        .await;
+    assert!(!out.is_error);
+    assert!(
+        e.host.meeting_active().is_none(),
+        "the agent cannot start a meeting"
+    );
+    assert!(
+        !e.host
+            .diagnostics()
+            .await
+            .capture
+            .active
+            .contains(&"mic".to_string())
+    );
+    assert_eq!(
+        e.host.meeting_brief().as_deref(),
+        Some("Objetivo: fechar o orçamento do Q3")
+    );
+    // The user starts it without typing a briefing: the prepared one is used once.
+    let m = e
+        .host
+        .meeting_start("Revisão", "decision", "")
+        .await
+        .unwrap();
+    assert_eq!(m.briefing, "Objetivo: fechar o orçamento do Q3");
+    assert!(e.host.meeting_brief().is_none());
+    e.host.meeting_stop().await.unwrap();
+    assert!(e.host.meeting_set_brief(&"x".repeat(8001)).is_err());
+}

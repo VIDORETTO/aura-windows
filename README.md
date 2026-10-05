@@ -221,6 +221,7 @@ A seleção vem do app anterior via UI Automation: ao abrir o Overlay pelo atalh
 | `/colar [formato]` | Converte o texto da área de transferência (lista, tabela, texto limpo, formal…) para você colar |
 | `/ler` | Lê em voz alta o texto selecionado em outro app |
 | `/configurar <pedido>` | A IA configura o Aura por você, mostrando antes → depois |
+| Botão Reunião (microfone) | Painel para preparar (⚡ uma frase, 🧭 grill-me ou sem preparo), iniciar, pausar e encerrar uma reunião, ou salvar os últimos minutos do buffer ("esqueci de iniciar") |
 | `/preparo <assunto>` | A IA entrevista você (⚡ uma frase ou 🧭 grill-me) antes de uma tarefa |
 | `/parei` | Resume o que você fazia nos últimos minutos (precisa do buffer de tela) |
 | `/traduzir <idioma>` | Traduz (padrão: inglês) |

@@ -699,5 +699,5 @@ export type HostEvent =
   | { channel: "agentTask"; event: { text: string; mode: ConversationMode["mode"] } }
   | { channel: "extensionsChanged"; event: Record<string, never> }
   | { channel: "reminder"; event: { id: string; text: string } }
-  | { channel: "meeting"; event: { id: string; status: "active" | "updated" | "ended" } }
+  | { channel: "meeting"; event: { id: string; status: "active" | "updated" | "ended" | "briefing" } }
   | { channel: "settings"; event: Settings };

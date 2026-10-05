@@ -518,6 +518,8 @@ fn main() {
             commands::region_open,
             commands::region_commit,
             commands::region_copy_text,
+            commands::meeting_brief,
+            commands::meeting_set_brief,
             commands::meeting_active,
             commands::meeting_start,
             commands::meeting_pause,

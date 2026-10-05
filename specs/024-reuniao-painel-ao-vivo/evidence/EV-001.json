@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Linux x86_64, UI em jsdom com backend simulado",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/MeetingPanel.tsx": "aebfd1a4f460c28b93f215ec466c6d0036124b85df1c903ab165c5353117daba",
+    "specs/024-reuniao-painel-ao-vivo/change.md": "cc22e024989f5d45def4dbb1b64f0784dfa1a13079a4f4c45105f24ae8f93612"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/MeetingPanel.tsx",
+    "specs/024-reuniao-painel-ao-vivo/change.md"
+  ],
+  "limitations": "AC-003 (janela própria 'meeting' excluída de captura) não implementada: o painel vive dentro do Overlay; respostas em 5 s não medidas; notas do usuário e marcadores pendentes; transcrição real depende do ASR no Windows",
+  "observations": "Painel Reunião no Overlay: Preparo ⚡/🧭/▶, briefing do agente aguarda Começar, ao vivo com transcrição, pausa, encerrar, 'esqueci de iniciar', reuniões salvas; ações Perdi o fio/Resumo/O que respondo? abrem conversa com meeting_get; sem violações axe; agente nunca inicia a reunião",
+  "procedure": "pnpm -C apps/desktop test (MeetingPanel.test.tsx, a11y); cargo test -p aura-app (agent_prepares_the_briefing_but_only_the_user_starts_the_meeting)",
+  "result": "partial",
+  "tested_revision": "local:e2cce9e9ac6d0ad02301266bce9a44cbe0069ee7c671fc4fd8d140160886ccb0",
+  "ticket": null,
+  "timestamp": "2026-10-05T17:36:47+00:00"
+}

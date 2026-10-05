@@ -167,6 +167,10 @@ impl crate::tools::ExtensionsAccess for Host {
         Ok(())
     }
 
+    fn meeting_brief_save(&self, briefing: &str) -> Result<(), String> {
+        self.meeting_set_brief(briefing).map_err(|e| e.message)
+    }
+
     fn meeting_search(
         &self,
         query: &str,
@@ -518,6 +522,9 @@ pub struct Host {
     codex_program: Arc<RwLock<Option<PathBuf>>>,
     capture: Arc<crate::recorder::CaptureService>,
     meetings: Arc<crate::meeting::MeetingService>,
+    /// The "Entendi assim" briefing the agent prepared, waiting for the user
+    /// to press Start (the agent never starts a Meeting).
+    pending_briefing: Mutex<Option<String>>,
     /// Free space of the data drive (diagnostics, model downloads).
     disk: Arc<dyn DiskSpace>,
     /// Device tests in Settings (005 AC-001): one live hub per source.
@@ -907,6 +914,7 @@ impl Host {
             codex_program,
             capture,
             meetings,
+            pending_briefing: Mutex::new(None),
             disk: cfg.disk.clone(),
             audio_tests: Mutex::new(HashMap::new()),
             last_selection: Mutex::new(None),
@@ -980,6 +988,28 @@ impl Host {
 
     // ------------------------------------------------------------ meetings
 
+    /// Briefing prepared by the agent (`meeting_brief_save`); starting a
+    /// Meeting without text uses it.
+    pub fn meeting_brief(&self) -> Option<String> {
+        self.pending_briefing.lock().unwrap().clone()
+    }
+
+    pub fn meeting_set_brief(&self, text: &str) -> HostResult<()> {
+        let text = text.trim();
+        if text.chars().count() > 8_000 {
+            return Err(HostError::new(
+                "invalid",
+                "briefing longo demais (máx. 8000 caracteres)",
+            ));
+        }
+        *self.pending_briefing.lock().unwrap() = (!text.is_empty()).then(|| text.to_string());
+        let _ = self.events.send(HostEvent::Meeting {
+            id: String::new(),
+            status: "briefing".into(),
+        });
+        Ok(())
+    }
+
     /// The meeting in progress (023).
     pub fn meeting_active(&self) -> Option<crate::meeting::Meeting> {
         self.meetings.active()
@@ -996,6 +1026,12 @@ impl Host {
         if self.policy.read().unwrap().paused {
             return Err(HostError::new("paused", "a privacidade está pausada"));
         }
+        let pending = self.pending_briefing.lock().unwrap().take();
+        let briefing = if briefing.trim().is_empty() {
+            pending.as_deref().unwrap_or("")
+        } else {
+            briefing
+        };
         let m = self
             .meetings
             .start(title, kind, briefing, now_ms())

@@ -33,6 +33,7 @@ interface Session {
   chips: ContextChip[];
   overlayMode: OverlayMode;
   historyOpen: boolean;
+  meetingOpen: boolean;
   workOpen: boolean;
   /** Compact status pill while an answer runs in the background. */
   minibar: boolean;
@@ -67,6 +68,7 @@ interface Session {
   setOverlayMode: (m: OverlayMode) => void;
   toggleHistory: (open?: boolean) => void;
   toggleWork: (open?: boolean) => void;
+  toggleMeeting: (open?: boolean) => void;
   refreshChips: () => Promise<void>;
   removeChip: (id: string) => Promise<void>;
   captureScreen: (windowOnly?: boolean) => Promise<void>;
@@ -102,6 +104,7 @@ export const useSession = create<Session>((set, get) => ({
   chips: [],
   overlayMode: "compact",
   historyOpen: false,
+  meetingOpen: false,
   workOpen: false,
   minibar: false,
   models: [],
@@ -156,7 +159,7 @@ export const useSession = create<Session>((set, get) => ({
 
   toggleHistory: (open) => {
     const next = open ?? !get().historyOpen;
-    set({ historyOpen: next, ...(next ? { workOpen: false } : {}) });
+    set({ historyOpen: next, ...(next ? { workOpen: false, meetingOpen: false } : {}) });
     if (next) get().setOverlayMode("expanded");
   },
 
@@ -178,9 +181,15 @@ export const useSession = create<Session>((set, get) => ({
     else if (get().threadId) void api.overlaySetMode(get().overlayMode).catch(() => undefined);
   },
 
+  toggleMeeting: (open) => {
+    const next = open ?? !get().meetingOpen;
+    set({ meetingOpen: next, ...(next ? { historyOpen: false, workOpen: false } : {}) });
+    if (next) get().setOverlayMode("expanded");
+  },
+
   toggleWork: (open) => {
     const next = open ?? !get().workOpen;
-    set({ workOpen: next, ...(next ? { historyOpen: false } : {}) });
+    set({ workOpen: next, ...(next ? { historyOpen: false, meetingOpen: false } : {}) });
     if (next) get().setOverlayMode("expanded");
   },
 

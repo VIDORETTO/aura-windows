@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { freshApp } from "./test/harness";
 import { OverlayApp } from "./overlay/OverlayApp";
 import { PAGES, SettingsApp } from "./settings/SettingsApp";
+import { MeetingPanel } from "./overlay/MeetingPanel";
 
 async function audit(container: HTMLElement) {
   const r = await axe.run(container, { rules: { "color-contrast": { enabled: false }, region: { enabled: false } } });
@@ -22,6 +23,17 @@ describe("accessibility", () => {
     expect(await audit(container)).toEqual([]);
     await user.type(screen.getByRole("combobox"), "/aprovar{Enter}");
     await screen.findByRole("group", { name: "Executar comando" });
+    expect(await audit(container)).toEqual([]);
+  });
+
+  it("meeting panel (idle and live) has no serious violations (024)", async () => {
+    await freshApp({ signedIn: true });
+    const user = userEvent.setup();
+    const { container } = render(<MeetingPanel />);
+    await screen.findByText("Nova reunião");
+    expect(await audit(container)).toEqual([]);
+    await user.click(screen.getByRole("button", { name: /Começar sem preparo/ }));
+    await screen.findByRole("timer");
     expect(await audit(container)).toEqual([]);
   });
 
