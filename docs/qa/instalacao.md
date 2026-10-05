@@ -13,7 +13,7 @@
 
 ```powershell
 ./scripts/prepare-sidecars.ps1 -Release -DirectML   # worker com voz local (ou -Skip para reaproveitar o já compilado)
-$env:TAURI_SIGNING_PRIVATE_KEY = Get-Content -Raw "$HOME\.tauriura-updater.key"
+$env:TAURI_SIGNING_PRIVATE_KEY = Get-Content -Raw "$HOME\.tauri\aura-updater.key"
 $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = ""
 pnpm -C apps/desktop tauri build
 ```
@@ -41,7 +41,7 @@ assinar o `setup.exe` (Azure Trusted Signing ou certificado OV/EV) — ver `taur
 ## Chave do updater
 
 O par foi gerado em 04/10/2026: a pública está em `tauri.conf.json` (`plugins.updater.pubkey`);
-a privada fica **fora do repositório** em `%USERPROFILE%\.tauriura-updater.key` (sem senha).
+a privada fica **fora do repositório** em `%USERPROFILE%\.tauri\aura-updater.key` (sem senha).
 Guarde uma cópia segura: sem ela, as versões instaladas não aceitam atualizações assinadas
 (seria preciso reinstalar). Para o workflow `release.yml`, cadastre o conteúdo do arquivo no
 secret `TAURI_SIGNING_PRIVATE_KEY` do repositório (e `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` vazio).
