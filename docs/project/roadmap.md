@@ -73,5 +73,20 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-055 | Rastreadores de tópicos e palavras no painel ao vivo, criados por IA | CAND-036 | P3 | candidate | — |
 | CAND-056 | Voz limpa: supressão de ruído do microfone (avaliar motor permissivo) | CAND-005 | P3 | candidate | — |
 | CAND-057 | Modo Transmissão e "Testar ocultação": silenciar notificações ao compartilhar e verificar a ocultação por WGC, DXGI e GDI (a opção de ocultar já existe) | CAND-001 | P1 | candidate | — |
+| CAND-058 | Menu na seleção (Corrigir, Mais formal, Mais curto, Resumir, Traduzir, Explicar) com resultado que substitui a seleção, antes→depois e Desfazer (absorve CAND-020) | CAND-009 | P0 | candidate | — |
+| CAND-059 | Copiar texto da tela ou de uma imagem por região (OCR), com tradução opcional | CAND-004 | P0 | candidate | — |
+| CAND-060 | "Isso é golpe?": análise de mensagem, e-mail, link ou boleto selecionado, em linguagem simples | CAND-009 | P0 | candidate | — |
+| CAND-061 | "Responder isto": rascunho de resposta ao e-mail/conversa na tela, no tom do usuário, inserido no campo | CAND-009 | P1 | candidate | — |
+| CAND-062 | Lembretes por conversa ("me lembra às 15h…", recorrentes) com notificação nativa | CAND-017 | P1 | candidate | — |
+| CAND-063 | Anotação rápida por voz ou texto numa caixa de entrada pesquisável | CAND-011 | P1 | candidate | — |
+| CAND-064 | "Onde eu parei?": resumo do que o usuário fazia nos últimos minutos, via buffer de tela | CAND-004 | P1 | candidate | — |
+| CAND-065 | "Colar como…": converter a área de transferência (texto limpo, lista, tabela, resumo, tradução) | CAND-058 | P2 | candidate | — |
+| CAND-066 | Entender documentos (contrato, boleto, bula, termos) com riscos e prazos destacados | CAND-007 | P2 | candidate | — |
+| CAND-067 | Ler a seleção em voz alta | CAND-009 | P2 | candidate | — |
+| CAND-068 | Salvos: guardar respostas e textos prontos numa lista pesquisável | CAND-002 | P2 | candidate | — |
+| CAND-069 | Histórico da área de transferência e snippets, opt-in e sem dados de gerenciadores de senha | CAND-058 | P3 | candidate | — |
+| CAND-070 | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | CAND-002 | P3 | candidate | — |
+| CAND-071 | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | CAND-004 | P3 | candidate | — |
+| CAND-072 | Respostas instantâneas locais: contas, porcentagens, conversões | CAND-001 | P3 | candidate | — |
 
 > Revisão 2026-10-05: CAND-033…049 vêm de `docs/project/plano-reuniao-e-configuracao-assistida.md` e `docs/research/competitors-ao-vivo.md`. CAND-016 passa a ser coberto por CAND-035/036/037; CAND-025, 028, 030 e 031 ganham prioridade como habilitadores (ditado inteligente, sugestões contextuais, base de conhecimento, conectores). Nada aqui é esforço até passar pelo fluxo Hybrid.

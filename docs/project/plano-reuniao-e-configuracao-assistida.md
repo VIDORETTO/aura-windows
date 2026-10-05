@@ -16,7 +16,7 @@ Data: 2026-10-05 · Status: **proposta** (não é spec; vira candidatos CAND-033
 
 **Ordem recomendada:** Fase 0 (Preparo + Configurar com IA + motor de Reunião) → Fase 1 (Reunião MVP, pós-reunião, consentimento) → Fase 2 (tradução ao vivo, calendário, Ensaio, ditado inteligente, Projetos) → Fase 3 (agendados, coaching, estudo) (§8).
 
-**Revisão 2 (2026-10-05):** §12 trata de **ocultar o Aura em qualquer transmissão** (já implementado como opção, §12.1) e §13 reúne **funções dos concorrentes fora de reuniões**.
+**Revisão 2 (2026-10-05):** §12 trata de **ocultar o Aura em qualquer transmissão** (já implementado como opção, §12.1) e §13 reúne **funções dos concorrentes fora de reuniões** e §14 o **pacote "Dia a Dia"**: funções simples, sem código nem reunião, para o uso comum.
 
 **Decisões que dependem de você:** §10 (Q-006 a Q-010), todas com recomendação.
 
@@ -485,6 +485,57 @@ O que isso cobre: tudo que captura pela pilha gráfica do Windows (Windows Graph
 | G14 | **Integração via MCP/API** com outras ferramentas | Granola | Aura como servidor MCP somente leitura | CAND-049 |
 
 Não adotar: coach humano em tempo real (LockedIn), métricas de "carisma/viés" (Read) e qualquer recurso que dependa de enganar terceiros.
+
+## 14. Pacote "Dia a Dia": funções simples para todo mundo
+
+Pesquisa 3 (assistentes de uso geral): Windows Click to Do e PowerToys Advanced Paste, ChatGPT desktop (Appshots, Quick Chat, tarefas agendadas), Raycast AI (comandos de IA com substituição no lugar, histórico da área de transferência, snippets, tradutor), Apple Intelligence (Writing Tools: revisar, reescrever, resumir) e Highlight (assistente que vê a tela). O que eles têm em comum: **ação em um gesto, no app onde a pessoa já está, com resultado que volta para o lugar certo**.
+
+Critérios de escolha: usada todo dia · zero configuração · resultado em poucos segundos · aproveita o que o Aura já tem (Chip de seleção, "Inserir no app", região da tela, OCR, buffer recente, TTS, Comandos rápidos). Quase tudo é Skill + Comando rápido + um pouco de interface.
+
+### 14.1 Prioridade alta (a base do dia a dia)
+
+| # | Função | Como o usuário vê | Já existe e é reaproveitado | Origem | Candidato |
+| --- | --- | --- | --- | --- | --- |
+| D01 | **Menu na seleção**: selecione texto em qualquer app, aperte o atalho e escolha Corrigir · Mais formal · Mais curto · Mais simpático · Resumir · Traduzir · Explicar; o resultado **substitui a seleção** (ou copia) com um clique | Mini-menu flutuante perto do texto; sem abrir conversa | Chip de seleção (UI Automation), `/corrigir`, `/traduzir`, "Inserir no app" | Apple Writing Tools, Raycast, Click to Do | CAND-058 (absorve CAND-020) |
+| D02 | **Copiar texto da tela ou de uma imagem**: arrastar uma região e o texto já está copiado (com tradução opcional) | Atalho + retângulo; aviso "texto copiado" | Seleção de região, Windows OCR | Click to Do, PowerToys | CAND-059 |
+| D03 | **"Isso é golpe?"**: selecione uma mensagem, e-mail, link ou boleto e o Aura diz, em linguagem simples, se tem sinais de golpe e o que fazer | Botão no menu da seleção e comando `/golpe` | Seleção, tela, busca web do agente; Skill interna | novo; alto valor para o público brasileiro | CAND-060 |
+| D04 | **Responder isto**: com um e-mail ou conversa na tela, o Aura escreve um rascunho de resposta no tom da pessoa e cola no campo | Atalho; opções "curta / completa / educada" | Tela, Perfis de app, "Inserir no app" | Cluely, Wispr, ChatGPT | CAND-061 |
+| D05 | **Lembretes por conversa**: "me lembra às 15h de ligar para o João" ou "toda segunda às 9h…" vira notificação nativa | Escreve ou fala; cartão de confirmação com horário | Notificações nativas, agendador mínimo (primeira fatia de CAND-017) | ChatGPT Tasks, Raycast | CAND-062 |
+| D06 | **Anotação rápida**: falar ou digitar "anota: …" guarda numa caixa de entrada pesquisável; a IA organiza por assunto quando pedido | Atalho de voz → "Anotado" na Minibar | Ditado global, memórias, armazenamento local | Raycast, Otter | CAND-063 |
+| D07 | **Onde eu parei?**: depois de uma interrupção, o Aura resume o que você estava fazendo nos últimos minutos | Botão e `/parei` | Buffer recente de tela (`screen_recent`) | novo (aproveita o diferencial do buffer) | CAND-064 |
+
+### 14.2 Prioridade média
+
+| # | Função | Descrição | Origem | Candidato |
+| --- | --- | --- | --- | --- |
+| D08 | **Colar como…** | Colar o que está na área de transferência em outro formato: texto limpo, lista, tabela, resumo, tradução, e-mail formal | PowerToys Advanced Paste | CAND-065 |
+| D09 | **Entender documentos** | Contrato, boleto, bula, termos de uso, extrato: resumo em linguagem simples, riscos e prazos destacados, perguntas para fazer | novo; usa anexos e leitura por trechos | CAND-066 |
+| D10 | **Ler a seleção em voz alta** | Mesma voz offline do "Ouvir", mas para qualquer texto selecionado (acessibilidade e estudo) | Apple, Windows Narrator | CAND-067 |
+| D11 | **Copiar para o destino certo** | Copiar resposta já formatada para WhatsApp (sem Markdown), e-mail ou documento | Exportar (CAND-032) | CAND-032 (existente, sobe para P1) |
+| D12 | **Salvos** | Estrela numa resposta guarda numa lista pesquisável (receitas, textos prontos, instruções) | Raycast, ChatGPT | CAND-068 |
+
+### 14.3 Depois
+
+| # | Função | Descrição | Candidato |
+| --- | --- | --- | --- |
+| D13 | **Histórico da área de transferência e snippets** (`;email`, `;endereço`) — opt-in, nunca guarda o que vem de gerenciadores de senha | CAND-069 |
+| D14 | **Organizar arquivos**: "arrume minha pasta Downloads por tipo", "ache o contrato de aluguel de 2024" (modo Tarefa, com prévia e aprovação) | CAND-070 |
+| D15 | **Como faço isso aqui?**: tutor passo a passo do app em foco (une CAND-014) | CAND-071 |
+| D16 | **Respostas instantâneas locais**: contas, porcentagens, conversões de moeda e unidade sem esperar o modelo | CAND-072 |
+
+### 14.4 Princípios para o pacote
+
+1. **Um gesto, um resultado.** Nenhuma etapa de configuração antes da primeira vez; o Preparo (§2) só aparece quando realmente muda o resultado (ex.: tom de voz uma única vez).
+2. **O resultado volta para onde a pessoa está** (substituir, colar ou copiar), nunca só "fica no chat".
+3. **Mostrar o que será trocado** antes de substituir (antes → depois, com Desfazer), como em §3.
+4. **Privacidade igual ao resto:** tudo passa pelo Chip e pela Política; nada de monitorar a área de transferência por padrão.
+5. **Descoberta por sugestão:** o menu na seleção e as sugestões contextuais (CAND-028) ensinam as funções; não exigem decorar comandos.
+
+### 14.5 Ordem sugerida
+
+**Pacote 0.2.x "Dia a Dia"** (rápido, valor imediato, sem depender de ASR): D01 → D03 → D02 → D04 → D10. Em seguida D05/D06/D07 e o resto. D01 e D03 são principalmente Skills e Comandos rápidos; o trabalho de interface é o mini-menu e o "Substituir" com antes → depois.
+
+Fontes: [Click to Do e PowerToys](https://www.windowscentral.com/software-apps/microsoft-powertoys-will-soon-take-full-advantage-of-the-same-ai-that-powers-copilot-pcs) · [ChatGPT desktop 2026](https://www.theneuron.ai/explainer-articles/gpt-5-6-and-the-new-chatgpt-desktop-app-complete-guide/) · [Raycast AI](https://www.raycast.com/core-features/ai) · [Apple Writing Tools](https://support.apple.com/guide/iphone/find-the-right-words-with-writing-tools-iph6f08da1d2/ios) · [Highlight](https://www.theai.tw/en/tools/highlight-ai)
 
 ## Fontes
 
