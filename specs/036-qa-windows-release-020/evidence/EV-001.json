@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows 11, MSVC, WebView2 154",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "a46a6963078886dfdf38c90a68b5bffd3e07dc8d7045a5b7c881cdadfbfdaaf9",
+    "target/qa-tools/release-020-ui.log": "d591de222dbdb8b53c640a70fb7c36e97f8cf264f1679b486c0d535a40440f9c"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-ui.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Evidence invalidated because an input changed.",
+  "observations": "Rust passou; UI 232/232; tipos, Clippy do shell Windows e rustfmt passaram. Clippy inicialmente falhou com 23 needless_question_mark, corrigidos.",
+  "procedure": "cargo test --workspace --exclude aura-desktop; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo clippy --workspace --all-targets -- -D warnings; cargo fmt --all -- --check",
+  "result": "stale",
+  "tested_revision": "local:31e7ae517d94931eedfc1ddf1371c0238187ca58581ae9110847662fb03c27fd",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:28:45+00:00"
+}

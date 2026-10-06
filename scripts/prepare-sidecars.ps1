@@ -11,7 +11,10 @@ if ($Release) { $cargoArgs += "--release" }
 if ($DirectML) { $cargoArgs += @("--features", "directml") }
 elseif ($Engines) { $cargoArgs += @("--features", "engines") }
 # -Skip: keep the aura-worker already built in target/<profile> (only refresh the DLLs).
-if (-not $Skip) { cargo @cargoArgs }
+if (-not $Skip) {
+  cargo @cargoArgs
+  if ($LASTEXITCODE -ne 0) { throw "aura-worker build failed; refusing to bundle a stale sidecar" }
+}
 $dest = "apps/desktop/src-tauri/binaries"
 New-Item -ItemType Directory -Force $dest | Out-Null
 Copy-Item "target/$profile/aura-worker.exe" "$dest/aura-worker-$triple.exe" -Force

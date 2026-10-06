@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "specs/037-publicacao-e-chave-permanente/change.md": "673fd0d83326b3f783b0f4ed99c1d8fa09c0b85617d1cf7764d9444e01dbfa63",
+    "target/qa-tools/public-audit-history.json": "1a4602edd3e043cb3568a7a7c7b0398b0d740875df064d1e824440be6fec4595",
+    "target/qa-tools/public-audit-working-tree.json": "e5c9d3a83033916cdedcac6ff8e0dbe25a571176f68a969c10fe57fc21b5f4cf",
+    "target/qa-tools/publication-extra-audit.json": "c6f915cb6a57cc98ac7f4e6cb8e62e0af97b2a01d79edc92cc037e2648d249cb"
+  },
+  "input_paths": [
+    "target/qa-tools/public-audit-history.json",
+    "target/qa-tools/publication-extra-audit.json",
+    "target/qa-tools/public-audit-working-tree.json",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "",
+  "observations": "61 commits, 1857 blobs e snapshot994 arquivos; 20 alertas falsos positivos revisados, nenhum segredo real encontrado. GitHub mantém commit antigo com Gmail por SHA, verificado via API; abertura suspensa até decisão de caches.",
+  "procedure": "Gitleaks redigido history e snapshot; revisão de alertas; busca literal e base64 em blobs; artefato bench e metadata release",
+  "result": "partial",
+  "tested_revision": "local:cbe8da963cd7eb0e2e86174734e6064fa1eded901bccc01899264ff69bb466ad",
+  "ticket": null,
+  "timestamp": "2026-10-06T01:15:35+00:00"
+}

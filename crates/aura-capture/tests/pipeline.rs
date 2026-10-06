@@ -27,6 +27,56 @@ fn win(id: u64, process: &str, rect: Rect) -> WindowInfo {
     }
 }
 
+#[test]
+fn concurrent_sources_keep_every_retained_segment_readable() {
+    use aura_capture::retention::SegmentMeta;
+    let dir = tempfile::tempdir().unwrap();
+    let store = Store::open_in_memory().unwrap();
+    let vault = Vault::open(&store, &StaticKeyProtector::default()).unwrap();
+    let segments = SegmentStore::new(
+        store,
+        dir.path().join("audio"),
+        Arc::new(VaultSealer(vault)),
+    );
+    std::thread::scope(|scope| {
+        for source in ["mic", "system"] {
+            let segments = segments.clone();
+            scope.spawn(move || {
+                for index in 0..200 {
+                    let id = format!("{source}-{index}");
+                    segments
+                        .write(
+                            SegmentMeta {
+                                id,
+                                source: source.into(),
+                                kind: "buffer".into(),
+                                recording_id: None,
+                                start_ms: 0,
+                                end_ms: 1000,
+                                bytes: 0,
+                                manual: false,
+                            },
+                            b"retained synthetic audio",
+                        )
+                        .expect("concurrent write succeeds");
+                    segments
+                        .apply_retention(&RetentionPolicy::default(), 1000)
+                        .unwrap();
+                }
+            });
+        }
+    });
+    assert_eq!(segments.list(None).unwrap().len(), 400);
+    for source in ["mic", "system"] {
+        for index in 0..200 {
+            assert_eq!(
+                segments.read(&format!("{source}-{index}")).unwrap(),
+                b"retained synthetic audio"
+            );
+        }
+    }
+}
+
 struct Solid;
 impl FrameSource for Solid {
     fn capture(&self, _t: &Target) -> Result<Frame, aura_capture::source::CaptureError> {

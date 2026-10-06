@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "ac5f5f6f22633f3cbcf935f2b3f57a9e32bb75d9d4335f6a7ed664d1046e74aa",
+    "target/qa-tools/release-020-build-audio-fixed.log": "722f8b4b17e4d65ae10a29391adb2bc6f09c37271e26df3c7e1f2f5b84c7f29a",
+    "target/qa-tools/release-020-migration-final.log": "6f61c542b026eaf4bed3df71ffe567aa7d2f983c8aee02fc31262f074725199f",
+    "target/qa-tools/release-020-signature-final.log": "5b392b4fb260176eab0b0aaa12efc75a5712fde57fb9eabc1e3b42b98e79cc91",
+    "target/qa-tools/release-020-signature-msi-final.log": "4ad18b8f405f7a81cb18ea05d4151949a6252bfe438f1b923682d200706d95f0"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-build-audio-fixed.log",
+    "target/qa-tools/release-020-signature-final.log",
+    "target/qa-tools/release-020-signature-msi-final.log",
+    "target/qa-tools/release-020-migration-final.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Publicação interrompida; canal público não provisionado; instalação por cima, Windows limpo e updater entre versões novas ainda não rodaram.",
+  "observations": "Dois instaladores assinados, manifest local e hashes; assinaturas válidas com chave nova, negativos rejeitados; dados antigos continuam preservados no pacote final.",
+  "procedure": "Build assinado após correção de áudio; verificador NSIS/MSI, chave antiga e byte alterado; WebDriver migration-020.e2e.ts com MSI final e perfil originado da 0.1.0",
+  "result": "partial",
+  "tested_revision": "local:324407b72d5f9ad01fcc28fa029ae5461368508054d51b106755cbb60872dbeb",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:46:08+00:00"
+}

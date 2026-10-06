@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/tauri.conf.json": "ab6da3df044b15a82d1d285dc1fc02ead3756fe5d06f2dd3ad27eb8dc26881ff",
+    "docs/qa/publicacao-e-chave-permanente.md": "7c44d483e6ed56c742f554ac001081ec337277f9ff5b3d852b8ba4dc89366b23",
+    "specs/037-publicacao-e-chave-permanente/change.md": "673fd0d83326b3f783b0f4ed99c1d8fa09c0b85617d1cf7764d9444e01dbfa63"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "docs/qa/publicacao-e-chave-permanente.md",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "Secret no repositório final, reabertura pública, build para endpoint restaurado e nova release ainda pendentes; nenhum upload de release realizado",
+  "observations": "Par novo existente reutilizado, cópia canônica fora do Git, endpoint aura-windows restaurado, guarda de chave e tipos passaram. Chave antiga aposentada.",
+  "procedure": "Comparação da pubkey configurada com pública permanente; endpoint estável; node scripts/check-updater-key.mjs; pnpm -C apps/desktop typecheck",
+  "result": "partial",
+  "tested_revision": "local:c929eaa82966889f8d0ff88ee37e1a88158dfad98c191b21b41c088469060349",
+  "ticket": null,
+  "timestamp": "2026-10-06T01:17:11+00:00"
+}

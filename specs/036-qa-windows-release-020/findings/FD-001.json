@@ -1,0 +1,16 @@
+{
+  "area": "updater",
+  "consequence": "Usuários não recebem atualização; decisão aceita: código privado, canal público separado e reinstalação de transição",
+  "created_at": "2026-10-06T00:30:08+00:00",
+  "dedupe_key": "036-qa-windows-release-020|convergence|distribution|updater|",
+  "effort": "036-qa-windows-release-020",
+  "evidence_location": "gh repo view --json visibility,isPrivate; curl.exe -I -L endpoint instalado",
+  "fix_ticket": null,
+  "gap_type": "distribution",
+  "id": "FD-001",
+  "origin": "convergence",
+  "severity": "blocker",
+  "source_ref": "",
+  "state": "open",
+  "summary": "Updater 0.1.0 aponta para repositório privado: acesso anônimo ao latest.json retorna 404"
+}

@@ -1,5 +1,11 @@
 # Roteiro de instalação e atualização (010 TK-001/TK-002)
 
+> A estratégia posterior está em [Publicação e chave permanente](publicacao-e-chave-permanente.md).
+> O usuário é o único instalador da 0.1.0 e agora quer abrir o repositório após
+> anonimização. Endpoint preparado: `aura-windows/releases/latest/download/latest.json`.
+> Chave permanente: `%USERPROFILE%\.tauri\aura-updater-permanent.key`, mesma pública
+> do candidato novo. As decisões anteriores de canal separado são históricas.
+
 | # | Passo | Esperado |
 | --- | --- | --- |
 | 1 | `pnpm -C apps/desktop tauri build` (com `TAURI_SIGNING_PRIVATE_KEY`) | Gera `*-setup.exe` (NSIS por usuário), `.msi`, `.sig` e `latest.json` |
@@ -13,7 +19,7 @@
 
 ```powershell
 ./scripts/prepare-sidecars.ps1 -Release -DirectML   # worker com voz local (ou -Skip para reaproveitar o já compilado)
-$env:TAURI_SIGNING_PRIVATE_KEY = Get-Content -Raw "$HOME\.tauri\aura-updater.key"
+$env:TAURI_SIGNING_PRIVATE_KEY = Get-Content -Raw "$HOME\.tauri\aura-updater-permanent.key"
 $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = ""
 pnpm -C apps/desktop tauri build
 ```
@@ -40,10 +46,33 @@ assinar o `setup.exe` (Azure Trusted Signing ou certificado OV/EV) — ver `taur
 
 ## Chave do updater
 
-O par foi gerado em 04/10/2026: a pública está em `tauri.conf.json` (`plugins.updater.pubkey`);
-a privada fica **fora do repositório** em `%USERPROFILE%\.tauri\aura-updater.key` (sem senha).
+O par atual foi gerado em 05/10/2026: a pública está em `tauri.conf.json` (`plugins.updater.pubkey`);
+a privada fica **fora do repositório** em `%USERPROFILE%\.tauri\aura-updater-2026-10.key` (sem senha).
+O par anterior (`aura-updater.key`) está aposentado após exposição na saída da ferramenta;
+nunca use a chave anterior para novas releases. Não execute a ajuda do CLI com uma chave
+privada carregada no ambiente: o CLI pode imprimir o valor da variável.
 Guarde uma cópia segura: sem ela, as versões instaladas não aceitam atualizações assinadas
 (seria preciso reinstalar). Para o workflow `release.yml`, cadastre o conteúdo do arquivo no
 secret `TAURI_SIGNING_PRIVATE_KEY` do repositório (e `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` vazio).
 Falta o teste de atualização de ponta a ponta (010 AC-004): publicar a versão N, instalar,
 publicar N+1 e atualizar pelo botão.
+
+## Transição da 0.1.0 — publicação retida
+
+A 0.1.0 aponta para `VIDORETTO/aura-windows`, que é privado: o endpoint do updater retorna
+404 para acesso anônimo. Em 05/10 o usuário decidiu manter o código privado, interromper
+a publicação, trocar a chave e usar um canal público separado para binários.
+O endereço preparado no candidato é `VIDORETTO/aura-releases`; o canal ainda precisa ser
+criado/configurado e receber os artefatos. Não há atualização automática funcional ainda.
+
+Quem usa a 0.1.0 deverá encerrar o Aura e executar o instalador de transição por cima da
+instalação existente, sem desinstalar nem apagar os dados. O identifier continua
+`app.aura.desktop` e a migração de dados foi testada com o executável extraído do MSI
+publicado, em perfil isolado. A instalação por cima e a atualização posterior pelo updater
+ainda precisam de QA real antes de divulgar esse procedimento aos usuários.
+
+Para liberar: conferir o canal público sem autenticação, configurar secrets com a chave
+nova, adaptar o workflow ao repositório de distribuição e compilar o worker com motores
+locais, validar o instalador em Windows limpo e sobre a 0.1.0, e testar uma atualização
+assinada entre duas versões de transição. O workflow está sem gatilho automático por tag.
+Relatório e evidências: [QA 0.2.0](release-020-2026-10-05.md).

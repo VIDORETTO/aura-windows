@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-003",
+    "AC-005"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "ac5f5f6f22633f3cbcf935f2b3f57a9e32bb75d9d4335f6a7ed664d1046e74aa",
+    "target/qa-tools/release-020-packaged-native-fixed.log": "369a0c78ac476508394850fdde0973a72fde399bdb92ac594ed369ef05474b77"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-packaged-native-fixed.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Não houve update público nem instalação via updater.",
+  "observations": "Erro real do canal retido persistente após 5,5 s; chave configurada; botão de nova tentativa habilitado. Quatro specs, cinco casos passaram no pacote final.",
+  "procedure": "WebDriver updates.e2e.ts no MSI reconstruído após correção de concorrência, AURA_E2E_UPDATER_EXPECT_ERROR=1",
+  "result": "passed",
+  "tested_revision": "local:32d436f9e28d29891ba32a15ee6cb2820ce933f5a640e0ed9ccc3fd6bd93b004",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:46:07+00:00"
+}

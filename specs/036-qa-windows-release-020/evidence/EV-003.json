@@ -1,0 +1,25 @@
+{
+  "acceptance_refs": [
+    "AC-003",
+    "AC-005"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "a46a6963078886dfdf38c90a68b5bffd3e07dc8d7045a5b7c881cdadfbfdaaf9",
+    "target/qa-tools/release-020-final-native.log": "35192b0b0251d19f8fbca10de5ba05fcbbd61f6597ac6e96f13d8daa5ed1390c"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-final-native.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Passagem comprova tratamento de erro; não comprova atualização pública ou instalação assinada. Evidence invalidated because an input changed.",
+  "observations": "Erro real de endpoint aparece e permanece além do timeout dos toasts; chave configurada verdadeira e botão habilitado após consulta. Caso UI red/green cobriu falha e nova tentativa bem-sucedida.",
+  "procedure": "pnpm -C apps/desktop test src/settings/Updates.test.tsx; WebDriver updates.e2e.ts com AURA_E2E_UPDATER_EXPECT_ERROR=1 no canal ainda retido",
+  "result": "stale",
+  "tested_revision": "local:e34b1cae2ba3468beead5c5195e3d079deaeea3936629f32ee1b200ffb0c38d0",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:30:37+00:00"
+}

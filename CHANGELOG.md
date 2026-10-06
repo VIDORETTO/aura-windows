@@ -5,6 +5,19 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+- Concurrent audio sources no longer race with orphan cleanup while publishing
+  encrypted segments, which could drop meeting speech on Windows.
+- Windows shell passes Clippy; real app-server approval tests use an independent
+  command and refuse to silently pass without the pinned executable.
+- Update checks show progress and a persistent error, limit network waits to
+  15 seconds, and release the native update resource after inspection.
+
+### Distribution
+- 0.2.0 remains a local candidate. Publication is held following updater-key
+  rotation. A separate public binary channel is planned; 0.1.0 users will need
+  a transition reinstall because their updater targets a private repository.
+
 ### Added
 - Meetings (opt-in): panel in the Overlay with Preparo in three speeds, live
   transcript, pause/end, notes and ★ markers, "I forgot to start" from the audio

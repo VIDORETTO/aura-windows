@@ -776,6 +776,7 @@ export const en: Record<MessageKey, string> = {
   "about.releases": "Releases and changes",
   "updates.title": "Updates",
   "updates.check": "Check for updates",
+  "updates.checking": "Checking…",
   "updates.none": "You are on the latest version.",
   "updates.available": "Version {version} is available.",
   "updates.install": "Install and restart",

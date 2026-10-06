@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "specs/037-publicacao-e-chave-permanente/change.md": "673fd0d83326b3f783b0f4ed99c1d8fa09c0b85617d1cf7764d9444e01dbfa63",
+    "target/qa-tools/publication-branch.json": "aa8170680eb9e513ec41b10b9e37704e616c635cbe0fadc8c7ae0d6220a74b36"
+  },
+  "input_paths": [
+    "target/qa-tools/publication-branch.json",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "",
+  "observations": "release/0.2.0 no GitHub e local; árvores iguais; diff não commitado idêntico; nenhum autor/committer Gmail nos refs sanitizados; backup bundle preservado fora da publicação",
+  "procedure": "GitHub rename branch API; git-filter-repo em mirror isolado; force-with-lease de branches/tag; comparação de árvores e alinhamento de refs locais",
+  "result": "passed",
+  "tested_revision": "local:e86c1b90bc7e43418d856978bcf6c776092db4f95d285308f95b6c032f84a6c1",
+  "ticket": null,
+  "timestamp": "2026-10-06T01:15:49+00:00"
+}

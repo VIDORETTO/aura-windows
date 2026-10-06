@@ -1,0 +1,28 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "3c972e2cc0f2dbdc850a7d6533b40ae54de6c4a8"
+  },
+  "blockers": [
+    "GitHub ainda retém objetos antigos com Gmail; decidir repositório limpo na mesma URL com backup privado ou suporte para purga"
+  ],
+  "effort_id": "037-publicacao-e-chave-permanente",
+  "inputs": {
+    "contract": {
+      "fingerprint": "673fd0d83326b3f783b0f4ed99c1d8fa09c0b85617d1cf7764d9444e01dbfa63",
+      "path": "specs/037-publicacao-e-chave-permanente/change.md",
+      "revision": 2
+    }
+  },
+  "last_evidence": "EV-002",
+  "mode": "compact",
+  "next_action": "Após escolha do usuário, remover exposição de metadados antigos, tornar repositório público e verificar acesso anônimo; configurar chave permanente nova sem publicar release",
+  "pending_questions": [],
+  "phase": "delivery",
+  "revision": 1,
+  "schema_version": "1.0",
+  "status": "waiting_input",
+  "updated_at": "2026-10-06T01:15:36+00:00"
+}

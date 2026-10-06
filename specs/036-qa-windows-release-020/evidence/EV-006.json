@@ -1,0 +1,24 @@
+{
+  "acceptance_refs": [
+    "AC-006"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "ac5f5f6f22633f3cbcf935f2b3f57a9e32bb75d9d4335f6a7ed664d1046e74aa",
+    "target/qa-tools/release-020-packaged-meeting.log": "4a5af6a2aec628e512f7f579bf928c6ad6dfcbe43c6fa552e18f40a26e3d99bf"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-packaged-meeting.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "",
+  "observations": "Reunião perdeu a frase; log audio segment Acesso negado. Teste público de escrita+retenção de duas fontes reproduziu Io PermissionDenied antes da correção.",
+  "procedure": "Reunião real no MSI inicial; cargo test -p aura-capture --test pipeline concurrent_sources_keep_every_retained_segment_readable antes da correção",
+  "result": "failed",
+  "tested_revision": "local:10a607aac6c8fe0f063c026701638a3279f40ed15c97c084c6bcb04a57beb0d7",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:40:39+00:00"
+}

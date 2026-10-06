@@ -83,7 +83,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IERCMDMyODZCNTc1REU1OEIKUldTTDVWMVhheWdEMjd1VWQ3ell4OUh6c3FkU0xOY0hDWWxVejlweG1DK0hSdGN1V1VDeWlGWUIK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDBGNjVBNUEzQzZGQzhGN0QKUldSOWovekdvNlZsRDFORWtWOEV3MEhXYU9pem1wT0c1ZTBqd3ZWVkhrdWlmYm5QWVQ0UjZvczYK",
       "endpoints": [
         "https://github.com/VIDORETTO/aura-windows/releases/latest/download/latest.json"
       ],

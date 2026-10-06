@@ -445,32 +445,32 @@ pub fn actions_list(s: State<'_, AppState>, status: Option<String>) -> R<Vec<Act
 
 #[tauri::command]
 pub fn action_done(s: State<'_, AppState>, id: String, done: bool) -> R<()> {
-    Ok(s.host.action_set_done(&id, done)?)
+    s.host.action_set_done(&id, done)
 }
 
 #[tauri::command]
 pub fn action_delete(s: State<'_, AppState>, id: String) -> R<()> {
-    Ok(s.host.action_delete(&id)?)
+    s.host.action_delete(&id)
 }
 
 #[tauri::command]
 pub fn projects_list(s: State<'_, AppState>) -> R<Vec<aura_app::projects::Project>> {
-    Ok(s.host.projects_list()?)
+    s.host.projects_list()
 }
 
 #[tauri::command]
 pub fn project_add(s: State<'_, AppState>, name: String) -> R<aura_app::projects::Project> {
-    Ok(s.host.project_add(&name, "")?)
+    s.host.project_add(&name, "")
 }
 
 #[tauri::command]
 pub fn meeting_move(s: State<'_, AppState>, id: String, project: Option<String>) -> R<()> {
-    Ok(s.host.meeting_move(&id, project.as_deref())?)
+    s.host.meeting_move(&id, project.as_deref())
 }
 
 #[tauri::command]
 pub fn recipes_list(s: State<'_, AppState>) -> R<Vec<aura_app::recipes::Recipe>> {
-    Ok(s.host.recipes_list()?)
+    s.host.recipes_list()
 }
 
 #[tauri::command]
@@ -480,7 +480,7 @@ pub fn meeting_brief(s: State<'_, AppState>) -> Option<String> {
 
 #[tauri::command]
 pub fn meeting_set_brief(s: State<'_, AppState>, text: String) -> R<()> {
-    Ok(s.host.meeting_set_brief(&text)?)
+    s.host.meeting_set_brief(&text)
 }
 
 #[tauri::command]
@@ -495,22 +495,22 @@ pub async fn meeting_start(
     kind: String,
     briefing: String,
 ) -> R<aura_app::meeting::Meeting> {
-    Ok(s.host.meeting_start(&title, &kind, &briefing).await?)
+    s.host.meeting_start(&title, &kind, &briefing).await
 }
 
 #[tauri::command]
 pub fn meeting_note(s: State<'_, AppState>, text: String) -> R<aura_app::meeting::Utterance> {
-    Ok(s.host.meeting_note(&text)?)
+    s.host.meeting_note(&text)
 }
 
 #[tauri::command]
 pub fn meeting_pause(s: State<'_, AppState>, paused: bool) -> R<()> {
-    Ok(s.host.meeting_set_paused(paused)?)
+    s.host.meeting_set_paused(paused)
 }
 
 #[tauri::command]
 pub async fn meeting_stop(s: State<'_, AppState>) -> R<aura_app::meeting::Meeting> {
-    Ok(s.host.meeting_stop().await?)
+    s.host.meeting_stop().await
 }
 
 #[tauri::command]
@@ -519,12 +519,12 @@ pub async fn meeting_from_buffer(
     title: String,
     minutes: u32,
 ) -> R<aura_app::meeting::Meeting> {
-    Ok(s.host.meeting_from_buffer(&title, minutes).await?)
+    s.host.meeting_from_buffer(&title, minutes).await
 }
 
 #[tauri::command]
 pub fn meetings_list(s: State<'_, AppState>) -> R<Vec<aura_app::meeting::Meeting>> {
-    Ok(s.host.meetings_list()?)
+    s.host.meetings_list()
 }
 
 #[tauri::command]
@@ -532,17 +532,17 @@ pub fn meeting_utterances(
     s: State<'_, AppState>,
     id: String,
 ) -> R<Vec<aura_app::meeting::Utterance>> {
-    Ok(s.host.meeting_utterances(&id)?)
+    s.host.meeting_utterances(&id)
 }
 
 #[tauri::command]
 pub fn meeting_stats(s: State<'_, AppState>, id: String) -> R<aura_app::speech_stats::SpeechStats> {
-    Ok(s.host.meeting_speech_stats(&id)?)
+    s.host.meeting_speech_stats(&id)
 }
 
 #[tauri::command]
 pub fn meeting_delete(s: State<'_, AppState>, id: String) -> R<()> {
-    Ok(s.host.meeting_delete(&id)?)
+    s.host.meeting_delete(&id)
 }
 
 #[tauri::command]
@@ -551,7 +551,7 @@ pub fn meeting_search(
     query: String,
     meeting: Option<String>,
 ) -> R<Vec<aura_app::meeting::Hit>> {
-    Ok(s.host.meeting_search(&query, meeting.as_deref())?)
+    s.host.meeting_search(&query, meeting.as_deref())
 }
 
 /// One Aura window and whether the OS keeps it out of captures.
@@ -586,17 +586,17 @@ pub fn capture_hiding_check(app: AppHandle) -> Vec<HidingStatus> {
 
 #[tauri::command]
 pub fn note_add(s: State<'_, AppState>, kind: String, text: String) -> R<()> {
-    Ok(s.host.note_add(&kind, &text)?)
+    s.host.note_add(&kind, &text)
 }
 
 #[tauri::command]
 pub fn reminders_all(s: State<'_, AppState>) -> R<Vec<aura_app::reminders::Reminder>> {
-    Ok(s.host.reminders_all()?)
+    s.host.reminders_all()
 }
 
 #[tauri::command]
 pub fn reminder_remove(s: State<'_, AppState>, id: String) -> R<()> {
-    Ok(s.host.reminder_remove(&id)?)
+    s.host.reminder_remove(&id)
 }
 
 #[tauri::command]
@@ -605,12 +605,12 @@ pub fn notes_all(
     kind: String,
     query: String,
 ) -> R<Vec<aura_app::notes::Note>> {
-    Ok(s.host.notes_all(&kind, &query)?)
+    s.host.notes_all(&kind, &query)
 }
 
 #[tauri::command]
 pub fn note_remove(s: State<'_, AppState>, id: String) -> R<()> {
-    Ok(s.host.note_remove(&id)?)
+    s.host.note_remove(&id)
 }
 
 /// The text "Substituir seleção" would replace (019).
@@ -622,7 +622,7 @@ pub fn replace_target(s: State<'_, AppState>) -> Option<String> {
 /// Replaces the previous app's selection with `text`; returns the original.
 #[tauri::command]
 pub fn replace_selection(s: State<'_, AppState>, text: String) -> R<String> {
-    Ok(s.host.replace_selection(&text)?)
+    s.host.replace_selection(&text)
 }
 
 #[tauri::command]

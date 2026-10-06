@@ -1,0 +1,16 @@
+{
+  "area": "signing",
+  "consequence": "Nova chave gerada fora do Git; novos binários não serão aceitos pela chave da 0.1.0; requer reinstalação e atualização dos secrets antes de publicar",
+  "created_at": "2026-10-06T00:30:09+00:00",
+  "dedupe_key": "036-qa-windows-release-020|convergence|release-security|signing|",
+  "effort": "036-qa-windows-release-020",
+  "evidence_location": "Decisão explícita do usuário nesta sessão; tauri.conf.json com nova pública",
+  "fix_ticket": null,
+  "gap_type": "release-security",
+  "id": "FD-002",
+  "origin": "convergence",
+  "severity": "blocker",
+  "source_ref": "",
+  "state": "open",
+  "summary": "Chave anterior exposta na saída da ajuda do CLI; publicação interrompida pelo usuário"
+}

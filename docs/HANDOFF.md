@@ -1,5 +1,11 @@
 # HANDOFF — do Linux para o Windows
 
+> **05/10/2026 — QA da branch serene-cori-t5pt94 e distribuição retida:**
+> [relatório atual](qa/release-020-2026-10-05.md), esforço 036. Build local 0.2.0
+> com motores ASR, nova chave do updater e canal público planejado. Publicação
+> interrompida pelo usuário; 0.1.0 requer reinstalação de transição. Não usar a
+> chave anterior nem tratar os roteiros antigos como evidência desta versão.
+
 Documento para o agente de IA (ou pessoa) que continua o Aura **no Windows**:
 compilar o app de verdade, validar o que só foi verificado por tipo e produzir
 evidências. Leia inteiro antes de mudar código.

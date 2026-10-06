@@ -104,7 +104,7 @@ async fn completions(seen: Arc<Mutex<Seen>>, headers: HeaderMap, body: Value) ->
             let name = save_tool.unwrap();
             sse.push_str(&chunk(
                 json!({"role": "assistant", "tool_calls": [{"index": 0, "id": "call_q", "type": "function",
-                    "function": {"name": name, "arguments": "{\"name\":\"formal\",\"template\":\"Reescreva formal: {texto}\"}"}}]}),
+                    "function": {"name": name, "arguments": "{\"name\":\"qa-formal\",\"template\":\"Reescreva formal: {texto}\"}"}}]}),
                 None,
             ));
             sse.push_str(&chunk(json!({}), Some("tool_calls")));
@@ -199,9 +199,8 @@ async fn turn(
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "needs AURA_CODEX_BIN (real app-server)"]
 async fn real_app_server_byok_turn_and_mcp_tool() {
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let (base_url, seen) = mock_provider().await;
     let dir = tempfile::Builder::new()
         .prefix("aura-e2e")
@@ -297,9 +296,8 @@ async fn real_app_server_byok_turn_and_mcp_tool() {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "probe: prints the raw Responses request Codex sends"]
 async fn probe_raw_responses_request() {
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let captured = Arc::new(Mutex::new(None::<Value>));
     let c2 = captured.clone();
     let app = Router::new()
@@ -428,9 +426,8 @@ async fn probe_raw_responses_request() {
 #[ignore = "needs AURA_CODEX_BIN (real app-server)"]
 async fn real_app_server_task_mode_confines_writes() {
     use aura_codex::modes::ConversationMode;
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let dir = tempfile::Builder::new()
         .prefix("aura-sbx")
         .tempdir_in(std::env::var("AURA_E2E_DIR").unwrap_or_else(|_| ".".into()))
@@ -600,9 +597,8 @@ async fn real_app_server_task_mode_confines_writes() {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "needs AURA_CODEX_BIN (real app-server)"]
 async fn real_app_server_archive_and_unarchive() {
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let (base_url, _seen) = mock_provider().await;
     let dir = tempfile::Builder::new()
         .prefix("aura-arch")
@@ -661,9 +657,8 @@ async fn real_app_server_archive_and_unarchive() {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "needs AURA_CODEX_BIN (real app-server)"]
 async fn real_app_server_asks_before_aura_write_tools() {
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let (base_url, _seen) = mock_provider().await;
     let dir = tempfile::Builder::new()
         .prefix("aura-e2e")
@@ -700,7 +695,7 @@ async fn real_app_server_asks_before_aura_write_tools() {
 
     host.send(SendRequest {
         thread_id: conv.thread_id.clone(),
-        text: "crie o comando formal".into(),
+        text: "crie o comando qa-formal".into(),
         tray: conv.thread_id.clone(),
         accepts_images: false,
         options: Default::default(),
@@ -726,7 +721,7 @@ async fn real_app_server_asks_before_aura_write_tools() {
                     host.quick_commands()
                         .unwrap()
                         .iter()
-                        .all(|q| q.name != "formal"),
+                        .all(|q| q.name != "qa-formal"),
                     "nothing saved before the user answers"
                 );
                 asked = true;
@@ -760,7 +755,7 @@ async fn real_app_server_asks_before_aura_write_tools() {
         .quick_commands()
         .unwrap()
         .into_iter()
-        .find(|q| q.name == "formal")
+        .find(|q| q.name == "qa-formal")
         .expect("saved after approval");
     assert_eq!(formal.template, "Reescreva formal: {texto}");
     host.shutdown().await;
@@ -794,9 +789,8 @@ fn approve(prompt: &Value) -> aura_codex::approvals::Decision {
 #[tokio::test(flavor = "multi_thread")]
 #[ignore = "needs AURA_CODEX_BIN (real app-server)"]
 async fn real_app_server_runs_task_mode_with_yolo() {
-    let Some(bin) = std::env::var_os("AURA_CODEX_BIN") else {
-        return;
-    };
+    let bin = std::env::var_os("AURA_CODEX_BIN")
+        .expect("set AURA_CODEX_BIN to the pinned app-server before running ignored E2E tests");
     let (base_url, _seen) = mock_provider().await;
     let dir = tempfile::Builder::new()
         .prefix("aura-e2e")

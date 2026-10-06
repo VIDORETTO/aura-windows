@@ -7,6 +7,7 @@ describe("Provider catalog invalidation (QA-003)", () => {
   it("unlocks an already mounted Overlay after saving the first keyless provider", async () => {
     await browser.execute(async () => {
       const invoke = (window as any).__TAURI_INTERNALS__.invoke;
+      await invoke("settings_update", { patch: { language: "ptBr" } });
       for (const p of await invoke("providers_list")) await invoke("providers_remove", { id: p.id });
     });
     // Only initial empty-profile preparation reloads; the tested mutation does not.

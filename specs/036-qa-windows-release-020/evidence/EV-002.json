@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "a46a6963078886dfdf38c90a68b5bffd3e07dc8d7045a5b7c881cdadfbfdaaf9",
+    "target/qa-tools/release-020-meeting-audio.log": "59068c4ca8687f54213147070f136936c227764a9dea528927a227ad94cfa6bc",
+    "target/qa-tools/release-020-migration-verify.log": "4654ac9ff1b8482b3ef624a200f5eba7d6191503fdf5d1c2bc0d6700161aca26",
+    "target/qa-tools/release-020-real-app-server.log": "bff7e0a494e4046cf1c47aa74d6713499236410ad0b23fd7d8b564783fa921bc"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-real-app-server.log",
+    "target/qa-tools/release-020-meeting-audio.log",
+    "target/qa-tools/release-020-migration-verify.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Ainda falta jornada de criação/disparo de lembrete; instalação interativa/updater público, login ChatGPT e DPI 125/150 não executados. Evidence invalidated because an input changed.",
+  "observations": "6/6 app-server; notas e contratos novos 2/2; reunião WASAPI/Parakeet/VB-Cable 1/1; migração do MSI 0.1.0 verificou preferências, provedor e comando. Transcrição literal correta sem eco e persistida.",
+  "procedure": "AURA_CODEX_BIN fixado: cargo test -p aura-app --test real_app_server -- --ignored; WebDriver release-020, meeting-audio-020 e migration-020 seed/verify",
+  "result": "stale",
+  "tested_revision": "local:e1b95aa95ec437e50c9a3d35c664dc73e3fc8fb665cb2c1f665b19655b8fcdca",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:28:46+00:00"
+}

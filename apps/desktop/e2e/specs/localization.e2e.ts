@@ -49,8 +49,8 @@ describe("Locale consistency (QA-004)", () => {
     await browser.keys("Backspace");
     await $("textarea").addValue("/tldr");
     console.log("Native localized draft", await $("textarea").getValue());
-    await $('ul[role="listbox"][aria-label="Suggestions"]').waitForDisplayed();
-    expect(await $('ul[role="listbox"]').getText()).toContain("Summarize in up to three sentences");
+    await $('[role="listbox"][aria-label="Suggestions"]').waitForDisplayed();
+    expect(await $('[role="listbox"]').getText()).toContain("Summarize in up to three sentences");
     await $("textarea").setValue("");
     const settings = (await browser.getWindowHandles()).find((handle) => handle !== overlay)!;
     await browser.switchToWindow(settings);
@@ -80,8 +80,8 @@ describe("Locale consistency (QA-004)", () => {
     await browser.keys("Backspace");
     await $("textarea").addValue("/tldr");
     console.log("Native localized draft", await $("textarea").getValue());
-    await $('ul[role="listbox"][aria-label="Sugestões"]').waitForDisplayed();
-    expect(await $('ul[role="listbox"]').getText()).toContain("Resuma em até três frases");
+    await $('[role="listbox"][aria-label="Sugestões"]').waitForDisplayed();
+    expect(await $('[role="listbox"]').getText()).toContain("Resuma em até três frases");
     await $("textarea").setValue("");
     await browser.execute(async () => (window as any).__TAURI_INTERNALS__.invoke("settings_update", { patch: { language: "en" } }));
     await $('ul[aria-label="Context"]').waitForDisplayed();

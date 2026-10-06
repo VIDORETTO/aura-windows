@@ -1,14 +1,17 @@
 name: Release
 
 on:
-  push:
-    tags: ["v*"]
+  # Publication is held after the 2026-10-05 updater-key rotation.
+  # See docs/qa/release-020-2026-10-05.md before enabling tag releases again.
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   windows:
+    # A manual run must select a version tag; a branch name is not a release version.
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

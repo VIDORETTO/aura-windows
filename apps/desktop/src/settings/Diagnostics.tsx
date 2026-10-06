@@ -142,14 +142,21 @@ export function AboutSection() {
   const [update, setUpdate] = useState<UpdateCheck | null>(null);
   const [pct, setPct] = useState<number | null>(null);
   const [version, setVersion] = useState<string | null>(null);
+  const [checking, setChecking] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
   useEffect(() => {
     void api.diagnostics().then((d) => setVersion(d.version)).catch(() => undefined);
   }, []);
   const check = async () => {
+    setChecking(true);
+    setUpdateError(null);
+    setUpdate(null);
     try {
       setUpdate(await checkForUpdate());
     } catch (e) {
-      useApp.getState().notify("error", errorMessage(e));
+      setUpdateError(errorMessage(e));
+    } finally {
+      setChecking(false);
     }
   };
   return (
@@ -162,7 +169,7 @@ export function AboutSection() {
           <p className="text-xs text-muted">{t("about.license")}</p>
           <p className="mt-1 flex gap-3 text-xs">
             <button type="button" className="text-accent hover:underline" onClick={() => void api.openExternal(REPO_URL)}>{t("about.repo")}</button>
-            <button type="button" className="text-accent hover:underline" onClick={() => void api.openExternal(`${REPO_URL}/releases`)}>{t("about.releases")}</button>
+            <button type="button" className="text-accent hover:underline" onClick={() => void api.openExternal("https://github.com/VIDORETTO/aura-windows/releases")}>{t("about.releases")}</button>
           </p>
         </div>
       </div>
@@ -172,9 +179,10 @@ export function AboutSection() {
             {t("updates.install")}
           </Button>
         ) : (
-          <Button onClick={() => void check()}>{t("updates.check")}</Button>
+          <Button disabled={checking} onClick={() => void check()}>{t(checking ? "updates.checking" : "updates.check")}</Button>
         )}
       </Row>
+      {updateError && <p role="alert" className="mt-2 break-words text-sm text-danger">{updateError}</p>}
     </Section>
   );
 }

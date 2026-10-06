@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-005",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "a46a6963078886dfdf38c90a68b5bffd3e07dc8d7045a5b7c881cdadfbfdaaf9",
+    "target/qa-tools/release-020-build-signed.log": "9f7f13164a04da382b5828e1115d4ce26796f53139f0363b82d0216a4e491630",
+    "target/qa-tools/release-020-signature.log": "5b392b4fb260176eab0b0aaa12efc75a5712fde57fb9eabc1e3b42b98e79cc91"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-build-signed.log",
+    "target/qa-tools/release-020-signature.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Publicação interrompida; não houve instalação por cima, Windows limpo ou update público. Canal público não provisionado e CI deve ser adaptado. Evidence invalidated because an input changed.",
+  "observations": "NSIS/MSI e duas .sig gerados; nova chave verifica e chave aposentada/arquivo adulterado são rejeitados; pacote contém motores Parakeet/Whisper e DLLs DirectML/VC++.",
+  "procedure": "pnpm -C apps/desktop tauri build com chave nova; verificador minisign no NSIS e MSI; alteração de byte e chave antiga como casos negativos; extração administrativa do MSI",
+  "result": "stale",
+  "tested_revision": "local:162af4a4284e02cb71c6161a40375993e7f6be1f806ac979fc13147f81fcfaa9",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:34:36+00:00"
+}

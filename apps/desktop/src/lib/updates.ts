@@ -9,15 +9,20 @@ export async function checkForUpdate(): Promise<UpdateCheck> {
   if (!(await api.updaterConfigured().catch(() => false))) return { kind: "notConfigured" };
   if (!inTauri()) return { kind: "unsupported" };
   const { check } = await import("@tauri-apps/plugin-updater");
-  const update = await check();
-  return update ? { kind: "available", version: update.version, notes: update.body ?? "" } : { kind: "none" };
+  const update = await check({ timeout: 15_000 });
+  if (!update) return { kind: "none" };
+  try {
+    return { kind: "available", version: update.version, notes: update.body ?? "" };
+  } finally {
+    await update.close();
+  }
 }
 
 /** Downloads, verifies the signature, installs and restarts. */
 export async function installUpdate(onProgress: (pct: number) => void): Promise<void> {
   const { check } = await import("@tauri-apps/plugin-updater");
   const { relaunch } = await import("@tauri-apps/plugin-process");
-  const update = await check();
+  const update = await check({ timeout: 15_000 });
   if (!update) return;
   let total = 0;
   let done = 0;

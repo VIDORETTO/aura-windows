@@ -41,6 +41,8 @@ describe("Native Overlay resizing (QA-001/042)", () => {
   // Aura starts in the tray (001 AC-001); launching it again opens the
   // Overlay, like a user would before resizing it.
   before(async () => {
+    await browser.execute(async () => (window as any).__TAURI_INTERNALS__.invoke("settings_update", { patch: { language: "ptBr" } }));
+    await browser.refresh();
     spawn(globalThis.process.env.AURA_E2E_APP!, [], { stdio: "ignore", detached: true }).unref();
     await browser.pause(2000);
   });

@@ -1,0 +1,16 @@
+{
+  "area": "capture-segments",
+  "consequence": "Corrigido com lock compartilhado; teste dos 400 segmentos e reunião real no MSI reconstruído passaram. EV-008 e release-020-packaged-meeting-fixed.log confirmam a correção.",
+  "created_at": "2026-10-06T00:39:55+00:00",
+  "dedupe_key": "036-qa-windows-release-020|convergence|concurrency|capture-segments|",
+  "effort": "036-qa-windows-release-020",
+  "evidence_location": "target/qa-tools/release-020-packaged-meeting.log; crates/aura-capture/tests/pipeline.rs concurrent_sources_keep_every_retained_segment_readable",
+  "fix_ticket": null,
+  "gap_type": "concurrency",
+  "id": "FD-006",
+  "origin": "convergence",
+  "severity": "major",
+  "source_ref": "",
+  "state": "resolved",
+  "summary": "Limpeza de órfãos concorrente apagava segmentos em publicação por outra fonte: Acesso negado no Windows"
+}

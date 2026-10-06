@@ -776,6 +776,7 @@ export const ptBR = {
   "about.releases": "Novidades e versões",
   "updates.title": "Atualizações",
   "updates.check": "Verificar atualizações",
+  "updates.checking": "Verificando…",
   "updates.none": "Você está na versão mais recente.",
   "updates.available": "Versão {version} disponível.",
   "updates.install": "Instalar e reiniciar",

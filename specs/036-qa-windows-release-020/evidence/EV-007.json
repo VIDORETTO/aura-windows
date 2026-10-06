@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "ac5f5f6f22633f3cbcf935f2b3f57a9e32bb75d9d4335f6a7ed664d1046e74aa",
+    "target/qa-tools/release-020-rust-after-audio-fix.log": "e9d312deb598f19061e01e844da0142dc5dd3d8936fb7ff44e0402a3388931f5",
+    "target/qa-tools/release-020-ui-final.log": "193011b92f9fd1b3ca7ad8862b1d9fded463ad6e8292ccf55606a64d161de46f"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-rust-after-audio-fix.log",
+    "target/qa-tools/release-020-ui-final.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "",
+  "observations": "Rust, 232 testes UI, tipos e Clippy passaram após lock compartilhado de publicação/limpeza. IPC e sidecar Codex sem mudanças.",
+  "procedure": "cargo test --workspace --exclude aura-desktop após correção de segmentos; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo clippy --workspace --all-targets -- -D warnings",
+  "result": "passed",
+  "tested_revision": "local:5ca1a4828ec11761e16c7da82230cb89f6c2dcc52695ee581aa090e53738b98f",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:40:40+00:00"
+}

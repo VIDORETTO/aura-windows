@@ -1,0 +1,16 @@
+{
+  "area": "asr",
+  "consequence": "Habilitar engines/DirectML e toolchain libclang na distribuição futura; conferir --capabilities do binário empacotado",
+  "created_at": "2026-10-06T00:30:09+00:00",
+  "dedupe_key": "036-qa-windows-release-020|convergence|packaging|asr|",
+  "effort": "036-qa-windows-release-020",
+  "evidence_location": ".github/workflows/release.yml prepare-sidecars.ps1 -Release; worker local --capabilities",
+  "fix_ticket": null,
+  "gap_type": "packaging",
+  "id": "FD-003",
+  "origin": "convergence",
+  "severity": "major",
+  "source_ref": "",
+  "state": "open",
+  "summary": "Workflow de release compila worker sem engines; candidato local usa DirectML, mas CI não reproduz voz local"
+}

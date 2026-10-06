@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "specs/036-qa-windows-release-020/change.md": "a46a6963078886dfdf38c90a68b5bffd3e07dc8d7045a5b7c881cdadfbfdaaf9",
+    "target/qa-tools/release-020-extended.log": "1d4b1527f84aab718f8b20a3341f8dfdf6ab508aa151eac3a2172489cd60b763",
+    "target/qa-tools/release-020-localization-b.log": "4f2e5d2f2d69c41656641fdc395dbe07ce3987fce02619c93eeca4af26e4f1ff",
+    "target/qa-tools/release-020-rerun.log": "2335f86aa702460bd72409bd6883b21fdc88f2f54af0c83c58339bfe8bd4fa38"
+  },
+  "input_paths": [
+    "target/qa-tools/release-020-extended.log",
+    "target/qa-tools/release-020-localization-b.log",
+    "target/qa-tools/release-020-rerun.log",
+    "specs/036-qa-windows-release-020/change.md"
+  ],
+  "limitations": "Evidence invalidated because an input changed.",
+  "observations": "11/13 specs iniciais verdes; provider refresh verde após fixar idioma. Resize 8/9 inicialmente e 6/9 na repetição com recusa de foco. Demais comportamentos passaram; evidência não equivale a validação de todas as escalas.",
+  "procedure": "WebDriver regressão ampliada 13 specs; localização e providers-refresh repetidos após correção de setup",
+  "result": "stale",
+  "tested_revision": "local:c221e0dc27edc27e58ad4418bcdfd56abdca2db83ed2342e3dc3364e4c186a33",
+  "ticket": null,
+  "timestamp": "2026-10-06T00:32:43+00:00"
+}

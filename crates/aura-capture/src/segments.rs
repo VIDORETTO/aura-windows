@@ -51,6 +51,8 @@ pub struct SegmentStore {
     store: Store,
     root: PathBuf,
     sealer: Arc<dyn Sealer>,
+    // Shared by source writers: orphan cleanup must not see a half-published file.
+    publication: Arc<Mutex<()>>,
 }
 
 impl SegmentStore {
@@ -59,6 +61,7 @@ impl SegmentStore {
             store,
             root,
             sealer,
+            publication: Arc::new(Mutex::new(())),
         }
     }
 
@@ -72,6 +75,7 @@ impl SegmentStore {
         plaintext: &[u8],
     ) -> Result<SegmentMeta, SegmentError> {
         let sealed = self.sealer.seal(plaintext)?;
+        let _publication = self.publication.lock().unwrap();
         let dir = self.root.join(&meta_in.source);
         std::fs::create_dir_all(&dir)?;
         let path = dir.join(format!("{}.seg", meta_in.id));
@@ -165,6 +169,7 @@ impl SegmentStore {
         policy: &RetentionPolicy,
         now_ms: i64,
     ) -> Result<usize, SegmentError> {
+        let _publication = self.publication.lock().unwrap();
         let all = self.list(None)?;
         let doomed = plan(&all, policy, now_ms);
         self.delete(&doomed)?;

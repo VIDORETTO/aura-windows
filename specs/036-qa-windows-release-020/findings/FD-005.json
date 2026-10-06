@@ -1,0 +1,16 @@
+{
+  "area": "windows-visual",
+  "consequence": "Repetir QA com foco nativo disponível e escalas reais; primeira execução resize 8/9, repetição 6/9 com recusa de foreground; não reduzir a guarda de foco",
+  "created_at": "2026-10-06T00:30:37+00:00",
+  "dedupe_key": "036-qa-windows-release-020|convergence|verification|windows-visual|",
+  "effort": "036-qa-windows-release-020",
+  "evidence_location": "target/qa-tools/release-020-extended.log; target/qa-tools/release-020-rerun.log",
+  "fix_ticket": null,
+  "gap_type": "verification",
+  "id": "FD-005",
+  "origin": "convergence",
+  "severity": "major",
+  "source_ref": "",
+  "state": "open",
+  "summary": "DPI 125/150 e arraste nativo não têm cobertura final conclusiva"
+}
