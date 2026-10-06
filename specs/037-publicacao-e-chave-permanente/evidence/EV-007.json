@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005"
+  ],
+  "environment": "Windows 11; WebView2; instalador público; WebDriver; endpoint GitHub anônimo",
+  "evidence_refs": [
+    "target/qa-tools/release020-live-updater-install.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "specs/037-publicacao-e-chave-permanente/change.md": "b221b08b8766045c27ac3bb591d4c6b60dfd4e79c2561f5a24b9741fa53c96b2",
+    "target/qa-tools/publication-final-status.json": "cec5ff0ff2b5891262647d7c4a39a15335dd8da066751a8ca9629b5ca12c8b13",
+    "target/qa-tools/release020-installed-updater-check.log": "88052401a4b066109c53a798e0d47fe22324c6147740f8ad51f07d26ac2c5147",
+    "target/qa-tools/release020-live-updater-install.log": "13572386e58d7bd39e1b81a59290103dbf8e7fb0bda777a8506c14092a1e5da0",
+    "target/qa-tools/release020-updated-profile-e2e.log": "1efc0a6ec28d2f90d7c90fc8b84b8fb36921ba23161dd274cf46abd890c8ff3d"
+  },
+  "input_paths": [
+    "target/qa-tools/release020-live-updater-install.log",
+    "target/qa-tools/release020-updated-profile-e2e.log",
+    "target/qa-tools/release020-installed-updater-check.log",
+    "target/qa-tools/publication-final-status.json",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "Build hospedado de release com LLVM/DirectML ainda não validado; Actions desativado até essa verificação.",
+  "observations": "O mesmo executável atualizou a 0.2.0 pelo app; perfil Ollama persistiu; versão instalada consultou feed e mostrou atualizada; release pública não draft tem seis artefatos e manifesto correto.",
+  "procedure": "Executar atualização in-app real do instalador público 0.1.0 para 0.2.0 em pasta/perfil isolados; validar persistência do provedor, consulta posterior do feed e artefatos da release.",
+  "result": "passed",
+  "tested_revision": "local:5b3a0c5f1989a69450193c003d7d328a3399dbeb03e48bbafd61161410754a28",
+  "ticket": null,
+  "timestamp": "2026-10-06T02:18:14+00:00"
+}

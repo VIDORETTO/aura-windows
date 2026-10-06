@@ -16,10 +16,10 @@
     "docs/qa/publicacao-e-chave-permanente.md",
     "specs/037-publicacao-e-chave-permanente/change.md"
   ],
-  "limitations": "Secret no repositório final, reabertura pública, build para endpoint restaurado e nova release ainda pendentes; nenhum upload de release realizado",
+  "limitations": "Secret no repositório final, reabertura pública, build para endpoint restaurado e nova release ainda pendentes; nenhum upload de release realizado Evidence invalidated because an input changed.",
   "observations": "Par novo existente reutilizado, cópia canônica fora do Git, endpoint aura-windows restaurado, guarda de chave e tipos passaram. Chave antiga aposentada.",
   "procedure": "Comparação da pubkey configurada com pública permanente; endpoint estável; node scripts/check-updater-key.mjs; pnpm -C apps/desktop typecheck",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:c929eaa82966889f8d0ff88ee37e1a88158dfad98c191b21b41c088469060349",
   "ticket": null,
   "timestamp": "2026-10-06T01:17:11+00:00"

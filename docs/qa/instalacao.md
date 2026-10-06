@@ -55,9 +55,9 @@ privada carregada no ambiente: o CLI pode imprimir o valor da variável.
 Guarde uma cópia segura: sem ela, as versões instaladas não aceitam atualizações assinadas
 (seria preciso reinstalar). Para o workflow `release.yml`, cadastre o conteúdo do arquivo no
 secret `TAURI_SIGNING_PRIVATE_KEY` do repositório (e `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` vazio).
-O workflow recebe apenas a chave permanente para releases futuras. O candidato 0.2.0
-precisa manter a assinatura de transição antiga no `latest.json` publicado; após a
-instalação, o app passa a verificar releases com a chave permanente.
+O workflow recebe apenas a chave permanente para releases futuras. O release 0.2.0
+usa uma assinatura de transição única no `latest.json`; após atualizar, o app verifica
+releases com a chave permanente.
 
 ## Transição da 0.1.0
 
@@ -65,14 +65,14 @@ A 0.1.0 aponta para `VIDORETTO/aura-windows`. O repositório agora está públic
 endereço e o endpoint funciona sem autenticação. O 0.2.0 é assinado uma vez com a chave
 que a 0.1.0 já confia; o binário 0.2.0 traz a chave permanente nova.
 
-Quem usa a 0.1.0 deve poder verificar e instalar a atualização em Configurações › Sobre ›
-Verificar atualizações, sem reinstalação manual nem remoção dos dados. A migração de dados
-foi testada com executáveis extraídos dos MSI em perfil isolado; o salto pelo updater ainda
-precisa passar no teste ponta a ponta da versão instalada.
+Quem usa a 0.1.0 pode verificar e instalar a atualização em Configurações › Sobre ›
+Verificar atualizações, sem reinstalação manual nem remoção dos dados. O fluxo completo
+foi testado com a versão 0.1.0 instalada em pasta isolada: o app instalou a 0.2.0 no
+mesmo caminho e o perfil do provedor persistiu.
 
 O workflow usa build com motores DirectML e recebe `TAURI_SIGNING_PRIVATE_KEY` permanente
 como secret. A execução automática por tag continua retida; releases futuras exigem
-dispatch manual com uma tag `v*`. Restam validação do salto pelo updater, instalação em
-Windows limpo e testes de acessibilidade/cobertura listados no relatório.
+dispatch manual com uma tag `v*`. Restam validar o build hospedado, instalação em Windows
+limpo e testes de acessibilidade/cobertura listados no relatório.
 Relatórios: [QA 0.2.0](release-020-2026-10-05.md) e
 [publicação e chave permanente](publicacao-e-chave-permanente.md).

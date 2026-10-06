@@ -18,10 +18,10 @@
     "target/qa-tools/public-audit-working-tree.json",
     "specs/037-publicacao-e-chave-permanente/change.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "61 commits, 1857 blobs e snapshot994 arquivos; 20 alertas falsos positivos revisados, nenhum segredo real encontrado. GitHub mantém commit antigo com Gmail por SHA, verificado via API; abertura suspensa até decisão de caches.",
   "procedure": "Gitleaks redigido history e snapshot; revisão de alertas; busca literal e base64 em blobs; artefato bench e metadata release",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:cbe8da963cd7eb0e2e86174734e6064fa1eded901bccc01899264ff69bb466ad",
   "ticket": null,
   "timestamp": "2026-10-06T01:15:35+00:00"

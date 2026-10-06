@@ -14,10 +14,10 @@
     "target/qa-tools/publication-branch.json",
     "specs/037-publicacao-e-chave-permanente/change.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "release/0.2.0 no GitHub e local; árvores iguais; diff não commitado idêntico; nenhum autor/committer Gmail nos refs sanitizados; backup bundle preservado fora da publicação",
   "procedure": "GitHub rename branch API; git-filter-repo em mirror isolado; force-with-lease de branches/tag; comparação de árvores e alinhamento de refs locais",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:e86c1b90bc7e43418d856978bcf6c776092db4f95d285308f95b6c032f84a6c1",
   "ticket": null,
   "timestamp": "2026-10-06T01:15:49+00:00"

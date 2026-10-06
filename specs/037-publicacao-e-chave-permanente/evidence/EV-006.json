@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Verificador Minisign local; Tauri config; GitHub secret metadata",
+  "evidence_refs": [
+    "target/qa-tools/release-020-signature-final.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/tauri.conf.json": "ab6da3df044b15a82d1d285dc1fc02ead3756fe5d06f2dd3ad27eb8dc26881ff",
+    "specs/037-publicacao-e-chave-permanente/change.md": "b221b08b8766045c27ac3bb591d4c6b60dfd4e79c2561f5a24b9741fa53c96b2",
+    "target/qa-tools/permanent-update-probe.bin": "91f70d4126eebd12696f3a1caa775739ec4644a9127362645c25f60225f79192",
+    "target/qa-tools/permanent-update-probe.bin.sig": "ea2910fd45ad7645587c81999f7fb8c9d0a2918074fffab82716f3e7aaf25f84",
+    "target/qa-tools/publication-final-status.json": "cec5ff0ff2b5891262647d7c4a39a15335dd8da066751a8ca9629b5ca12c8b13",
+    "target/qa-tools/release-020-signature-final.log": "5b392b4fb260176eab0b0aaa12efc75a5712fde57fb9eabc1e3b42b98e79cc91"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "target/qa-tools/permanent-update-probe.bin",
+    "target/qa-tools/permanent-update-probe.bin.sig",
+    "target/qa-tools/release-020-signature-final.log",
+    "target/qa-tools/publication-final-status.json",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "",
+  "observations": "Prova assinada validada apenas pela chave permanente; secret TAURI_SIGNING_PRIVATE_KEY configurado; updater endpoint permanece estável.",
+  "procedure": "Verificar assinatura permanente e rejeição pela chave aposentada e bytes adulterados; conferir configuração/manifesto e secret pelo nome cadastrado.",
+  "result": "passed",
+  "tested_revision": "local:ecb85b44ee3148911e8491e3de91779e4b537a4969065954d0d3a8f00405131f",
+  "ticket": null,
+  "timestamp": "2026-10-06T02:18:13+00:00"
+}

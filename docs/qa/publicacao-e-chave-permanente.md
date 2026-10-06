@@ -16,8 +16,9 @@ auditoria completa de segurança do aplicativo.
 
 A versão 0.1.0 e seus quatro artefatos foram restaurados no endereço público; hashes
 dos binários coincidem com a release anterior. O feed anônimo responde HTTP 200.
-O candidato 0.2.0 usa o endpoint definitivo e inclui a chave pública permanente.
-Sua assinatura de transição foi validada com as duas chaves e com dados adulterados.
+A release 0.2.0 também está pública no endpoint definitivo. A assinatura de transição
+foi validada com as duas chaves e com dados adulterados; o 0.2.0 instala e consulta o
+feed com a chave permanente.
 
 # Vulnerabilidades encontradas
 
@@ -56,8 +57,7 @@ global foi adicionada para ocultar detecções futuras.
 
 ## Prioridade 2 - Alta prioridade
 
-- Verificar o update ponta a ponta em instalação 0.1.0 e, depois, confirmar que
-  a versão 0.2.0 verifica um artefato assinado pela chave permanente.
+- Confirmar o update 0.2.0 → próxima versão assinada pela chave permanente.
 - Manter o endpoint `aura-windows/releases/latest/download/latest.json` estável.
 
 ## Prioridade 3 - Revisao estrutural
@@ -83,14 +83,16 @@ Nenhuma captura ou modelo foi incluído no Git.
 # Revisao manual necessaria
 
 O usuário informou ser o único instalador da 0.1.0 e autorizou usar a chave antiga
-uma vez. A assinatura antiga foi testada: ela aceita o instalador 0.2.0; a chave
-permanente rejeita essa assinatura e os bytes alterados também são rejeitados.
-O binário 0.2.0 contém a chave pública permanente, usada em releases seguintes.
+uma vez. A instalação 0.1.0 de QA atualizou pelo botão para 0.2.0; o executável
+avançou de versão e o perfil do provedor persistiu. Não reutilizar a chave antiga.
+O binário 0.2.0 contém a chave pública permanente e uma assinatura de prova foi
+validada somente por esse par.
 
 # Resumo executivo
 
 Branch profissional `release/0.2.0`, autores anonimizados, repositório público no
-endereço original e backup antigo privado/arquivado. Acesso anônimo à release
-0.1.0 e ao feed foi verificado. O candidato 0.2.0 ainda não foi publicado neste
-relatório; o teste de atualização dentro do app continua sendo gate antes de
-declarar a distribuição concluída.
+endereço original e backup antigo privado/arquivado. Acesso anônimo às releases
+0.1.0 e 0.2.0 foi verificado. A jornada real 0.1.0 → 0.2.0 e a consulta posterior
+do feed passaram em perfil isolado. O build hospedado com DirectML e os gates de
+qualidade fora do fluxo de atualização continuam pendentes e estão descritos no
+relatório QA.

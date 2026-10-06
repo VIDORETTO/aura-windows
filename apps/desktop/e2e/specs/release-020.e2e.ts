@@ -10,6 +10,13 @@ describe("0.2.0 Windows release journeys", () => {
     await browser.refresh();
   });
 
+  it("is 0.2.0 after the updater transition and retains the 0.1.0 provider profile", async () => {
+    const diagnostics = await invoke("diagnostics") as any;
+    expect(diagnostics.version).toBe("0.2.0");
+    const providers = await invoke("providers_list") as any[];
+    expect(providers.map((provider) => provider.name)).toContain("Ollama (E2E)");
+  });
+
   it("keeps notes and saved answers across a process restart and searches without accents", async () => {
     await invoke("note_add", { kind: "note", text: "QA renovar seguro em março" });
     await invoke("note_add", { kind: "saved", text: "QA resposta salva" });

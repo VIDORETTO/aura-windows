@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "GitHub API/web anônimo; Windows 11; working tree local",
+  "evidence_refs": [
+    "target/qa-tools/publication-final-status.json"
+  ],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "specs/037-publicacao-e-chave-permanente/change.md": "b221b08b8766045c27ac3bb591d4c6b60dfd4e79c2561f5a24b9741fa53c96b2",
+    "target/qa-tools/publication-final-status.json": "cec5ff0ff2b5891262647d7c4a39a15335dd8da066751a8ca9629b5ca12c8b13",
+    "target/qa-tools/publication-mirror.git/filter-repo/commit-map": "c47c602ebff28cbb598169b95444b2770d9fbd36cc2b0372118653c2acde2f8f"
+  },
+  "input_paths": [
+    "target/qa-tools/publication-final-status.json",
+    "target/qa-tools/publication-mirror.git/filter-repo/commit-map",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "",
+  "observations": "Branch release/0.2.0 publicada; URL nova pública; histórico sem Gmail; endpoint web para commit pessoal antigo retorna HTTP 404; dirs locais preexistentes permanecem.",
+  "procedure": "Consultar branch, autoria remota e acesso anônimo ao SHA pessoal original; confirmar arquivos locais do usuário preservados.",
+  "result": "passed",
+  "tested_revision": "local:86c55abb2e50d3c04e5bb1d73fa399823593243be21b85748dc69eb94e3c04b4",
+  "ticket": null,
+  "timestamp": "2026-10-06T02:18:13+00:00"
+}

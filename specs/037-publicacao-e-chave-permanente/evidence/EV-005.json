@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Gitleaks 8.30.1; snapshot final local; GitHub sem autenticação",
+  "evidence_refs": [
+    "target/qa-tools/publication-final-gitleaks.json"
+  ],
+  "execution_status": "executed",
+  "id": "EV-005",
+  "input_fingerprints": {
+    "specs/037-publicacao-e-chave-permanente/change.md": "b221b08b8766045c27ac3bb591d4c6b60dfd4e79c2561f5a24b9741fa53c96b2",
+    "target/qa-tools/publication-extra-audit-final.json": "b401dcd26c99b74495998d803e540ed5951c7ec916cfdc025714e1045c79860a",
+    "target/qa-tools/publication-final-gitleaks.json": "92ce58f845357118b4350681dfbe2e9767047814b4db5deb7935643dea053d5c",
+    "target/qa-tools/publication-final-status.json": "cec5ff0ff2b5891262647d7c4a39a15335dd8da066751a8ca9629b5ca12c8b13"
+  },
+  "input_paths": [
+    "target/qa-tools/publication-final-gitleaks.json",
+    "target/qa-tools/publication-extra-audit-final.json",
+    "target/qa-tools/publication-final-status.json",
+    "specs/037-publicacao-e-chave-permanente/change.md"
+  ],
+  "limitations": "Os 20 alertas correspondem a fixtures e dados de teste sintéticos classificados; scanner não substitui auditoria integral do aplicativo.",
+  "observations": "20 alertas sintéticos classificados; auditoria adicional sem marcadores; repo e release HTTP 200; feed público anuncia 0.2.0 e URL correta.",
+  "procedure": "Auditar 61 commits/1.914 blobs e snapshot final; executar Gitleaks e revisão adicional de marcadores e chaves.",
+  "result": "passed",
+  "tested_revision": "local:346615056372c2f6279336fb0cb5c851d882009899b367ceba2798ba0fd31070",
+  "ticket": null,
+  "timestamp": "2026-10-06T02:18:13+00:00"
+}
