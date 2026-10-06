@@ -1,86 +1,96 @@
 # Diagnostico geral
 
-Preparação de abertura pública de `VIDORETTO/aura-windows`. A branch foi renomeada
-para `release/0.2.0`. Autoria Gmail removida de branches/tag por reescrita de
-metadados; árvores Git e alterações locais preservadas. Cópia completa anterior
-em `target/qa-tools/pre-publication-repository.bundle`, fora da publicação.
+`VIDORETTO/aura-windows` foi reconstruído com outro ID, histórico anonimizado e
+aberto ao público em 06/10/2026. O repositório anterior está arquivado e privado
+como `aura-windows-private-backup-2026-10`; seus objetos e metadados pessoais não
+fazem parte do novo histórico. O SHA antigo consultado anonimamente no repositório
+público retorna HTTP 404. `main` e `release/0.2.0` apontam para o código revisado.
 
-Gitleaks 8.30.1, pacote oficial com SHA-256 conferido: 61 commits, aproximadamente
-5,15 MB; 20 alertas revisados. Busca adicional em 1.857 blobs por conteúdo das
-chaves privadas reais do updater e chaves privadas codificadas: nenhum resultado.
-Snapshot de 994 arquivos atuais e novos documentos de preparação também revisado.
-Arquivos locais de QA não versionados, modelos, sidecars, `.tauri` e `target`
-não serão enviados. Nenhuma alegação de auditoria geral de todas as vulnerabilidades
-do aplicativo: este escopo é a exposição do repositório e distribuição.
+Gitleaks 8.30.1, pacote oficial com SHA-256 conferido: 61 commits e 1.857 blobs
+de histórico; 20 alertas revisados. Busca adicional pelas chaves privadas reais
+do updater e por chaves privadas codificadas: nenhum resultado. O snapshot final
+contém 999 arquivos; os alertas são os mesmos fixtures e exemplos sintéticos já
+classificados. `.tauri`, `target`, modelos, sidecars e capturas locais ficaram fora
+do Git. Esta análise cobre exposição de conteúdo e distribuição, não substitui uma
+auditoria completa de segurança do aplicativo.
+
+A versão 0.1.0 e seus quatro artefatos foram restaurados no endereço público; hashes
+dos binários coincidem com a release anterior. O feed anônimo responde HTTP 200.
+O candidato 0.2.0 usa o endpoint definitivo e inclui a chave pública permanente.
+Sua assinatura de transição foi validada com as duas chaves e com dados adulterados.
 
 # Vulnerabilidades encontradas
 
 ## Critico
 
-Nenhuma credencial operacional confirmada no histórico/arquivos auditados.
+Nenhuma credencial operacional foi confirmada nos arquivos ou no histórico público
+novo. A cópia arquivada que contém os objetos antigos permanece privada.
 
 ## Alto
 
-A chave anterior do updater foi exposta na conversa anterior, fora do Git.
-Está aposentada. A nova chave já gerada será a permanente: cópia canônica fora
-do repositório em `%USERPROFILE%\.tauri\aura-updater-permanent.key`. A pública
-em `tauri.conf.json` é a mesma do candidato novo; não gerar outro par por release.
+A chave privada anterior do updater foi exposta na conversa. O usuário autorizou
+seu uso único para assinar a atualização 0.2.0, permitindo que instalações 0.1.0
+verifiquem o salto. Essa chave fica aposentada imediatamente depois. A chave
+permanente nova já está cadastrada em `TAURI_SIGNING_PRIVATE_KEY` no repositório e
+sua pública embutida no binário 0.2.0; não gerar outro par a cada release.
 
 ## Medio
 
-O GitHub ainda guarda os objetos antigos com autoria pessoal, consultáveis por
-SHA mesmo após force-push. A visibilidade não pode mudar sem resolver este ponto
-ou aceitar expressamente essa exposição. O usuário pediu anonimização.
+O histórico antigo permanece armazenado apenas na cópia privada arquivada. O novo
+repositório tem outro ID; a consulta anônima pelo SHA com e-mail pessoal retorna
+404. O histórico público foi reescrito com `Aura contributor` e endereço noreply.
 
 ## Baixo
 
 O scanner acusa uma chave RSA exclusiva da fixture de OAuth local, exemplos
 sintéticos de logging/diagnóstico, chave pública sintética e hashes SHA-256 de
-evidências. Os 20 alertas são falsos positivos de credenciais operacionais;
-nenhuma exceção global foi adicionada para silenciar futuras detecções.
+evidências. Esses 20 alertas não são credenciais operacionais; nenhuma exceção
+global foi adicionada para ocultar detecções futuras.
 
 # TO-DO DE SEGURANCA E CORRECAO DE VULNERABILIDADES
 
 ## Prioridade 1 - Corrigir imediatamente
 
-- Resolver objetos antigos retidos pelo GitHub antes de abrir o repositório.
-- Manter a chave antiga aposentada; proteger e guardar backup offline da permanente.
+- Não usar mais a chave exposta após a única assinatura de transição 0.2.0.
+- Proteger cópias offline da chave permanente em `%USERPROFILE%\.tauri\aura-updater-permanent.key`.
 
 ## Prioridade 2 - Alta prioridade
 
-- Configurar o secret da chave permanente no repositório final sem imprimir o valor.
-- Usar `aura-windows/releases/latest/download/latest.json`, mantendo a URL estável.
-- Gerar builds futuros com a mesma pubkey e testar update assinado de ponta a ponta.
+- Verificar o update ponta a ponta em instalação 0.1.0 e, depois, confirmar que
+  a versão 0.2.0 verifica um artefato assinado pela chave permanente.
+- Manter o endpoint `aura-windows/releases/latest/download/latest.json` estável.
 
 ## Prioridade 3 - Revisao estrutural
 
-- Ajustar o workflow para voz local e impedir publicação acidental de tags históricas.
-- Manter o workflow de release desativado até preparar a nova release explicitamente.
+- Workflow corrigido para incluir engines DirectML e LLVM 20.1.8 com hash fixo.
+  O workflow do repositório fica desativado até validar o build hospedado; o
+  gatilho de release permanece manual e exige uma tag `v*`.
+- Quando ativado, testar a saída do workflow contra a chave permanente antes de
+  publicar futuras versões.
 
 ## Prioridade 4 - Auditoria avancada
 
-- Completar gates Windows da QA 036 antes de chamar o app de pronto para distribuição.
+- Fechar os gates de Windows da QA 036: instalação em Windows limpo, acesso real
+  de ChatGPT, notificação de lembrete e verificações de acessibilidade/foco/DPI.
 
 # Vulnerabilidades potenciais a investigar
 
-Não há garantia de que scanners detectem todo segredo possível. A chave real foi
-buscada literalmente, e conteúdos dos alertas foram revisados. Logs/caches antigos
-de CI podem reter referências a commits com autoria pessoal; não expô-los junto
-com o repositório limpo. Binários distribuídos não contêm credenciais de usuários:
-elas são obtidas em runtime e guardadas no cofre; nenhuma captura/modelo foi
-incluída no Git. A chave de teste não é usada pelo host de produção.
+Scanners não detectam todos os segredos possíveis. A chave real foi buscada
+literalmente e os alertas foram examinados. Logs antigos de CI no backup privado
+podem conter referências aos commits anteriores; não tornar esse backup público.
+Nenhuma captura ou modelo foi incluído no Git.
 
 # Revisao manual necessaria
 
-O usuário informou ser o único instalador da 0.1.0 e autorizou os ajustes necessários.
-Recomendação: migrar essa instalação única para o app com a chave permanente nova,
-sem reutilizar a chave exposta. A partir da primeira versão pública com a nova
-chave, manter o par e o endpoint em todas as releases. Não prometer atualização
-entre chaves distintas sem uma versão de transição assinada pela anterior.
+O usuário informou ser o único instalador da 0.1.0 e autorizou usar a chave antiga
+uma vez. A assinatura antiga foi testada: ela aceita o instalador 0.2.0; a chave
+permanente rejeita essa assinatura e os bytes alterados também são rejeitados.
+O binário 0.2.0 contém a chave pública permanente, usada em releases seguintes.
 
 # Resumo executivo
 
-Branch e metadados preparados; nenhum segredo operacional encontrado no escopo
-auditado. A abertura pública depende da decisão sobre o cache de commits antigos.
-A release não foi criada nem publicada. Preparação posterior não torna os
-instaladores anteriores, que apontam para outro canal, atuais automaticamente.
+Branch profissional `release/0.2.0`, autores anonimizados, repositório público no
+endereço original e backup antigo privado/arquivado. Acesso anônimo à release
+0.1.0 e ao feed foi verificado. O candidato 0.2.0 ainda não foi publicado neste
+relatório; o teste de atualização dentro do app continua sendo gate antes de
+declarar a distribuição concluída.

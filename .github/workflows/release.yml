@@ -12,7 +12,7 @@ jobs:
   windows:
     # A manual run must select a version tag; a branch name is not a release version.
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@master
@@ -27,8 +27,26 @@ jobs:
           node-version: 22
       - run: pnpm install --frozen-lockfile
         working-directory: apps/desktop
+      - name: Install pinned LLVM libraries for DirectML engines
+        shell: pwsh
+        run: |
+          $version = '20.1.8'
+          $installer = Join-Path $env:RUNNER_TEMP "LLVM-$version-win64.exe"
+          $url = "https://github.com/llvm/llvm-project/releases/download/llvmorg-$version/LLVM-$version-win64.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installer
+          $sha256 = (Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($sha256 -ne '3197846a2b19063687dd56e93e34cd941e3548d907f23a6131571321bdf9fe7b') {
+            throw 'LLVM installer checksum mismatch'
+          }
+          $llvmRoot = Join-Path $env:RUNNER_TEMP "llvm-$version"
+          $install = Start-Process -FilePath $installer -ArgumentList @('/S', "/D=$llvmRoot") -Wait -PassThru -WindowStyle Hidden
+          $libclang = Join-Path $llvmRoot 'bin'
+          if ($install.ExitCode -ne 0 -or -not (Test-Path (Join-Path $libclang 'libclang.dll'))) {
+            throw 'Pinned LLVM install did not provide libclang.dll'
+          }
+          Add-Content -Path $env:GITHUB_ENV -Value "LIBCLANG_PATH=$libclang"
       - shell: pwsh
-        run: ./scripts/prepare-sidecars.ps1 -Release
+        run: ./scripts/prepare-sidecars.ps1 -Release -DirectML
       # Updates must be verifiable: no placeholder key, no unsigned artifacts (QA-038).
       - run: node scripts/check-updater-key.mjs
         env:

@@ -14,9 +14,9 @@ and [Semantic Versioning](https://semver.org/).
   15 seconds, and release the native update resource after inspection.
 
 ### Distribution
-- 0.2.0 remains a local candidate. Publication is held following updater-key
-  rotation. A separate public binary channel is planned; 0.1.0 users will need
-  a transition reinstall because their updater targets a private repository.
+- The repository is public at its existing URL. Version 0.1.0 can update in-app
+  through one transition release; version 0.2.0 embeds the permanent updater key,
+  which signs every subsequent update.
 
 ### Added
 - Meetings (opt-in): panel in the Overlay with Preparo in three speeds, live

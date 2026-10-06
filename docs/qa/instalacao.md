@@ -46,33 +46,33 @@ assinar o `setup.exe` (Azure Trusted Signing ou certificado OV/EV) — ver `taur
 
 ## Chave do updater
 
-O par atual foi gerado em 05/10/2026: a pública está em `tauri.conf.json` (`plugins.updater.pubkey`);
-a privada fica **fora do repositório** em `%USERPROFILE%\.tauri\aura-updater-2026-10.key` (sem senha).
-O par anterior (`aura-updater.key`) está aposentado após exposição na saída da ferramenta;
-nunca use a chave anterior para novas releases. Não execute a ajuda do CLI com uma chave
+O par permanente foi gerado em 05/10/2026: a pública está em `tauri.conf.json` (`plugins.updater.pubkey`);
+a privada fica **fora do repositório** em `%USERPROFILE%\.tauri\aura-updater-permanent.key` (sem senha).
+O par anterior (`aura-updater.key`) foi exposto na saída da ferramenta e só pode assinar
+a transição 0.2.0 para permitir que a 0.1.0 atualize pelo app. Nunca o use depois dessa
+versão. Não execute a ajuda do CLI com uma chave
 privada carregada no ambiente: o CLI pode imprimir o valor da variável.
 Guarde uma cópia segura: sem ela, as versões instaladas não aceitam atualizações assinadas
 (seria preciso reinstalar). Para o workflow `release.yml`, cadastre o conteúdo do arquivo no
 secret `TAURI_SIGNING_PRIVATE_KEY` do repositório (e `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` vazio).
-Falta o teste de atualização de ponta a ponta (010 AC-004): publicar a versão N, instalar,
-publicar N+1 e atualizar pelo botão.
+O workflow recebe apenas a chave permanente para releases futuras. O candidato 0.2.0
+precisa manter a assinatura de transição antiga no `latest.json` publicado; após a
+instalação, o app passa a verificar releases com a chave permanente.
 
-## Transição da 0.1.0 — publicação retida
+## Transição da 0.1.0
 
-A 0.1.0 aponta para `VIDORETTO/aura-windows`, que é privado: o endpoint do updater retorna
-404 para acesso anônimo. Em 05/10 o usuário decidiu manter o código privado, interromper
-a publicação, trocar a chave e usar um canal público separado para binários.
-O endereço preparado no candidato é `VIDORETTO/aura-releases`; o canal ainda precisa ser
-criado/configurado e receber os artefatos. Não há atualização automática funcional ainda.
+A 0.1.0 aponta para `VIDORETTO/aura-windows`. O repositório agora está público no mesmo
+endereço e o endpoint funciona sem autenticação. O 0.2.0 é assinado uma vez com a chave
+que a 0.1.0 já confia; o binário 0.2.0 traz a chave permanente nova.
 
-Quem usa a 0.1.0 deverá encerrar o Aura e executar o instalador de transição por cima da
-instalação existente, sem desinstalar nem apagar os dados. O identifier continua
-`app.aura.desktop` e a migração de dados foi testada com o executável extraído do MSI
-publicado, em perfil isolado. A instalação por cima e a atualização posterior pelo updater
-ainda precisam de QA real antes de divulgar esse procedimento aos usuários.
+Quem usa a 0.1.0 deve poder verificar e instalar a atualização em Configurações › Sobre ›
+Verificar atualizações, sem reinstalação manual nem remoção dos dados. A migração de dados
+foi testada com executáveis extraídos dos MSI em perfil isolado; o salto pelo updater ainda
+precisa passar no teste ponta a ponta da versão instalada.
 
-Para liberar: conferir o canal público sem autenticação, configurar secrets com a chave
-nova, adaptar o workflow ao repositório de distribuição e compilar o worker com motores
-locais, validar o instalador em Windows limpo e sobre a 0.1.0, e testar uma atualização
-assinada entre duas versões de transição. O workflow está sem gatilho automático por tag.
-Relatório e evidências: [QA 0.2.0](release-020-2026-10-05.md).
+O workflow usa build com motores DirectML e recebe `TAURI_SIGNING_PRIVATE_KEY` permanente
+como secret. A execução automática por tag continua retida; releases futuras exigem
+dispatch manual com uma tag `v*`. Restam validação do salto pelo updater, instalação em
+Windows limpo e testes de acessibilidade/cobertura listados no relatório.
+Relatórios: [QA 0.2.0](release-020-2026-10-05.md) e
+[publicação e chave permanente](publicacao-e-chave-permanente.md).
