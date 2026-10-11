@@ -1,0 +1,48 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-101"
+  ],
+  "execution_status": "executed",
+  "id": "EV-109",
+  "input_fingerprints": {
+    "apps/desktop/src": "bb7548dc94469de007e3238678a5e8a9816c02961ad5f2c87e44952cf08fbc1f",
+    "crates/aura-app": "71531618cef2c6f6413a044eac60cfdfbd54e73f433bcaa3be4c5ff6a87098ed",
+    "crates/aura-codex": "06e2cb351814195f4dbe9bf31b424857edaea960718d0ee86056cf4dc62e7dcb",
+    "crates/aura-gateway": "9f2e4822ca4bfc872d77c878d983c4105904963bfff518a569e59a1aeb879fdf",
+    "crates/aura-mcp": "effd0579c18eaae67b664e0b58f17443153604f65b8011692712626eb18e5be7",
+    "crates/aura-web": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+    "specs/041-publicacao-github-030/canonical-revalidation.json": "a2c2cc066176eda11104601a91ca5a1cabb9b4d0853d2b946bfbc35d03edd433",
+    "specs/041-publicacao-github-030/input-revalidation.json": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923"
+  },
+  "input_paths": [
+    "apps/desktop/src",
+    "crates/aura-app",
+    "crates/aura-codex",
+    "crates/aura-gateway",
+    "crates/aura-mcp",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/041-publicacao-github-030/input-revalidation.json",
+    "specs/041-publicacao-github-030/canonical-revalidation.json"
+  ],
+  "limitations": "No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.",
+  "observations": "All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.",
+  "procedure": "Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.",
+  "result": "passed",
+  "tested_revision": "local:2e71100885d5faa6bbd3236bda33dea79ea02054d93d72e6739db4384295b531",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-11T04:32:40+00:00"
+}

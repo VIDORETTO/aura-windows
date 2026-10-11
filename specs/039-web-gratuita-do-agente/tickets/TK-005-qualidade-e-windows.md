@@ -5,7 +5,7 @@ id: TK-005
 effort: 039-web-gratuita-do-agente
 type: delivery
 status: done
-ticket_revision: 19
+ticket_revision: 22
 requires: ["TK-004", "TK-006"]
 requirement_refs: ["FR-001", "FR-006", "FR-008"]
 acceptance_refs: ["AC-001", "AC-009", "AC-013", "AC-014"]
@@ -13,8 +13,11 @@ spec_revision: 1
 plan_revision: 11
 owned_areas: ["crates/aura-app/tests/web_research.rs", "crates/aura-app/tests/real_app_server.rs", "apps/desktop/e2e/specs/web-research.e2e.ts", "apps/desktop/src-tauri/src/main.rs", "apps/desktop/src-tauri/src/e2e_web.rs", "apps/desktop/src-tauri/Cargo.toml", "Cargo.lock", "specs/039-web-gratuita-do-agente/evidence"]
 verification_status: passed
-last_update: "Version0.3 client-metadata impact explicitly revalidated with exact original backend fingerprint and fresh local checks; native/live proofs remain historical, limits preserved in effort041 QA."
+last_update: Git LF normalization explicitly revalidated; exact original fingerprints recoverable without behavioral edits. Canonical evidence/current0.3 release documented in041.
 ---
+
+
+
 
 
 

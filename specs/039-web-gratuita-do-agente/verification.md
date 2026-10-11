@@ -1172,7 +1172,7 @@
 - Evidence refs: `EV-089`
 - Limitations: Synthetic representative ciphertext, no vendor cryptographic format claimed; no compressed frames produced by Codex. SIWC3journeys ephemeral delivery proof only; native UI/browser gates separate. Initial handshake failure preserved in EV089. Evidence invalidated because an input changed.
 
-## EV-091 — passed
+## EV-091 — stale
 
 - Ticket: `TK-004`
 - Acceptance: `AC-008`, `AC-009`, `AC-010`, `AC-011`, `AC-012`
@@ -1183,7 +1183,7 @@
 - Timestamp: `2026-10-10T22:07:21+00:00`
 - Observations: Native3/3 passed4.5s: two read sources/inline citations and history restore without requests, pending stop, global Settings toggle cancellation/no further reads/reenable. Screenshot inspected: model picker,42/12/30 answer and W1/W2 links/read metadata fit. Current reducer/i18n/IPC/parity/unsafeURL regressions passed; privacy persistent source metadata gates retained. Standards/Spec review no blocker within TK004 scope.
 - Evidence refs: `EV-089`, `EV-090`
-- Limitations: Native opener action executed; destination in external browser still unverified (TK005). Scripted provider/web adapters do not substitute SIWC3journeys or live search12/10; no DPI150/200 approval.
+- Limitations: Native opener action executed; destination in external browser still unverified (TK005). Scripted provider/web adapters do not substitute SIWC3journeys or live search12/10; no DPI150/200 approval. Evidence invalidated because an input changed.
 
 ## EV-092 — stale
 
@@ -1211,7 +1211,7 @@
 - Evidence refs: `EV-087`, `EV-089`, `EV-092`
 - Limitations: Free service availability/quota not guaranteed; no new quality queries. Existing ChatGPT subscription supplies inference; no new search credential or paid search route. Native destination/DPI separate. Evidence invalidated because an input changed.
 
-## EV-094 — passed
+## EV-094 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-001`, `AC-013`, `AC-014`
@@ -1222,9 +1222,9 @@
 - Timestamp: `2026-10-10T22:09:23+00:00`
 - Observations: SIWC3/3 real:15.185/33.661/13.022sec completed and evaluated. WCAG fourprinciples W1 read/cited; Python/Rust separate official pages W6/W1 read/cited; Museu official snippet W3 with unsupported-content caveat, not page read. UI sources/history/stop/toggle3/3; deterministic5/5; privacy real pin current. FD004 resolved; native gate external destination remains separate.
 - Evidence refs: `EV-089`, `EV-090`, `EV-091`, `EV-092`, `EV-093`
-- Limitations: Other commercial models not synthesized; source registry events not guaranteed to produce every answer correct. Backend12/10 data explicitly revalidated from actual same-code same-day run, not new queries. AC009 opener destination pending;038DPI/resize separate.
+- Limitations: Other commercial models not synthesized; source registry events not guaranteed to produce every answer correct. Backend12/10 data explicitly revalidated from actual same-code same-day run, not new queries. AC009 opener destination pending;038DPI/resize separate. Evidence invalidated because an input changed.
 
-## EV-095 — partial
+## EV-095 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-009`
@@ -1235,7 +1235,7 @@
 - Timestamp: `2026-10-10T22:09:23+00:00`
 - Observations: Real UI read sources,citations/history,interrupt,Settings off/reenable passed. Native opener received source action; browser final address unavailable to permitted tools.
 - Evidence refs: `EV-091`
-- Limitations: Requires manual confirmation or supported external-browser inspection to approve destination; do not infer it from link href or opener invocation.
+- Limitations: Requires manual confirmation or supported external-browser inspection to approve destination; do not infer it from link href or opener invocation. Evidence invalidated because an input changed.
 
 ## EV-096 — stale
 
@@ -1263,7 +1263,7 @@
 - Evidence refs: `EV-096`
 - Limitations: No installer/publication/installation; native150/200DPI and external-browser destination remain unverified. Compile alone is not broad runtime approval. Evidence invalidated because an input changed.
 
-## EV-098 — passed
+## EV-098 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-009`
@@ -1274,9 +1274,9 @@
 - Timestamp: `2026-10-11T01:45:51+00:00`
 - Observations: Usuário respondeu explicitamente: Sim, cliquei na fonte e abriu esse endereço. URL HTTP(S) da fonte e destino coincidem. Complementa EV091/095 sem inferir destino apenas do href.
 - Evidence refs: `EV-095`
-- Limitations: Atestado manual do usuário; automação do navegador continuou impedida pela ferramenta. Não prova DPI150/200.
+- Limitations: Atestado manual do usuário; automação do navegador continuou impedida pela ferramenta. Não prova DPI150/200. Evidence invalidated because an input changed.
 
-## EV-099 — passed
+## EV-099 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-001`, `AC-002`, `AC-003`, `AC-012`
@@ -1287,9 +1287,9 @@
 - Timestamp: `2026-10-11T04:24:58+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-087`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-100 — passed
+## EV-100 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-004`, `AC-005`, `AC-006`, `AC-012`
@@ -1300,9 +1300,9 @@
 - Timestamp: `2026-10-11T04:24:58+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-088`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-101 — passed
+## EV-101 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-001`, `AC-007`, `AC-008`, `AC-011`, `AC-014`
@@ -1313,9 +1313,9 @@
 - Timestamp: `2026-10-11T04:24:59+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-089`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-102 — passed
+## EV-102 — stale
 
 - Ticket: `TK-007`
 - Acceptance: `AC-008`, `AC-009`, `AC-010`, `AC-011`, `AC-012`, `AC-014`
@@ -1326,9 +1326,9 @@
 - Timestamp: `2026-10-11T04:24:59+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-090`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-103 — passed
+## EV-103 — stale
 
 - Ticket: `TK-006`
 - Acceptance: `AC-013`
@@ -1339,9 +1339,9 @@
 - Timestamp: `2026-10-11T04:24:59+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-092`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-104 — passed
+## EV-104 — stale
 
 - Ticket: `TK-006`
 - Acceptance: `AC-001`
@@ -1352,9 +1352,9 @@
 - Timestamp: `2026-10-11T04:24:59+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-093`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-105 — passed
+## EV-105 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-014`
@@ -1365,9 +1365,9 @@
 - Timestamp: `2026-10-11T04:25:00+00:00`
 - Observations: Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.
 - Evidence refs: `EV-096`
-- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.
+- Limitations: No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.
 
-## EV-106 — passed
+## EV-106 — stale
 
 - Ticket: `TK-005`
 - Acceptance: `AC-014`
@@ -1378,4 +1378,95 @@
 - Timestamp: `2026-10-11T04:25:00+00:00`
 - Observations: Normal production app and both signed installers built without demo/e2e. NSIS/MSI signatures verify, corrupted bytes reject, resources report 0.3.0; permanent key/endpoint identical to shipped0.2.
 - Evidence refs: none
-- Limitations: No new native runtime or clean-machine installer test; original runtime evidence remains historical.
+- Limitations: No new native runtime or clean-machine installer test; original runtime evidence remains historical. Evidence invalidated because an input changed.
+
+## EV-107 — passed
+
+- Ticket: `TK-001`
+- Acceptance: `AC-001`, `AC-002`, `AC-003`, `AC-012`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:ed37d89b34945cca2c7aa6dc30f6cdc9d93729c89e39dc696c32e661cb4c708c`
+- Timestamp: `2026-10-11T04:32:39+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-099`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-108 — passed
+
+- Ticket: `TK-002`
+- Acceptance: `AC-004`, `AC-005`, `AC-006`, `AC-012`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:fce0e29f9c029a7eda155601e364a31a481794803e77143937c3dba939708f6f`
+- Timestamp: `2026-10-11T04:32:39+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-100`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-109 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-001`, `AC-007`, `AC-008`, `AC-011`, `AC-014`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:2e71100885d5faa6bbd3236bda33dea79ea02054d93d72e6739db4384295b531`
+- Timestamp: `2026-10-11T04:32:40+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-101`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-110 — passed
+
+- Ticket: `TK-007`
+- Acceptance: `AC-008`, `AC-009`, `AC-010`, `AC-011`, `AC-012`, `AC-014`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:770fc359900fc46a4f452ba523da1907265237b82ab29d5f3b1344347d123d14`
+- Timestamp: `2026-10-11T04:32:41+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-102`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-111 — passed
+
+- Ticket: `TK-004`
+- Acceptance: `AC-008`, `AC-009`, `AC-010`, `AC-011`, `AC-012`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:5c712e509403fba89f321414bf36149c31944dbbda58f16197d4bdf616f648b6`
+- Timestamp: `2026-10-11T04:32:41+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-091`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-112 — passed
+
+- Ticket: `TK-006`
+- Acceptance: `AC-001`, `AC-013`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:691e72ec5965ab7a76cc6ce70acaab056e6e09a57c857a22ac674ce143f100c4`
+- Timestamp: `2026-10-11T04:32:42+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-103`, `EV-104`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.
+
+## EV-113 — passed
+
+- Ticket: `TK-005`
+- Acceptance: `AC-001`, `AC-009`, `AC-013`, `AC-014`
+- Procedure: `Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.`
+- Execution: `executed`
+- Environment: OS=Windows-11-10.0.26200-SP0; Python=3.14.2
+- Tested revision: `local:85ec3a9bfd324a4f1ed912e44c7e5b1c9c06bca83c5871904f8e7ae58b02e260`
+- Timestamp: `2026-10-11T04:32:42+00:00`
+- Observations: All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.
+- Evidence refs: `EV-094`, `EV-095`, `EV-098`, `EV-105`, `EV-106`
+- Limitations: No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.

@@ -1,0 +1,48 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-091"
+  ],
+  "execution_status": "executed",
+  "id": "EV-111",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+    "apps/desktop/src": "bb7548dc94469de007e3238678a5e8a9816c02961ad5f2c87e44952cf08fbc1f",
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/src/web_history.rs": "edc87685415d4fee6048ba5d4312e4d72edbc18f7f3754564310002332a854fd",
+    "crates/aura-app/src/web_history_tests.rs": "43f57970a4bd92bbeff66644728c9266212d20bea7fc0e5ea99ba0652011ef85",
+    "crates/aura-app/tests/real_app_server.rs": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+    "crates/aura-core/src/settings.rs": "2ba5801e3d9ffc329651188b7d9ad217cc911e767789e5f5c3a9b9a4d89eb4d5",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+    "specs/041-publicacao-github-030/canonical-revalidation.json": "a2c2cc066176eda11104601a91ca5a1cabb9b4d0853d2b946bfbc35d03edd433"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "apps/desktop/src",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/web_history.rs",
+    "crates/aura-app/src/web_history_tests.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-core/src/settings.rs",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/041-publicacao-github-030/canonical-revalidation.json"
+  ],
+  "limitations": "No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.",
+  "observations": "All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.",
+  "procedure": "Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.",
+  "result": "passed",
+  "tested_revision": "local:5c712e509403fba89f321414bf36149c31944dbbda58f16197d4bdf616f648b6",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-11T04:32:41+00:00"
+}

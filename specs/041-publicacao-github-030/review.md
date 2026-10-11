@@ -29,3 +29,5 @@ Não fechar os aceites remotos com evidência apenas local. Próxima ação: pub
 - Actions continua enabled=false, verificado após publicação. Limitações anteriores permanecem explícitas, sem alteração de comportamento ou dispensa de QA.
 
 Standards e Spec: sem achado bloqueante restante no escopo de publicação. Artefatos: change.md r1, qa.md, input-revalidation.json e public-verification.json. Resultado `completed`; evidência final pelo runner; o commit seguinte publica apenas os registros de fechamento, sem alterar os binários da tag.
+
+Revisão complementar de canonicalização: o Git normalizou LF/CRLF em arquivos novos após o build, sem editar comportamento. Comparação exata documentada em canonical-revalidation.json; reavaliação039 EV107–113 e checkpoints atualizados pelo runner. Nenhum diff de código/manifests em relação à tag. A API de latest mantém os sete digests publicados e somente main; nenhuma nova execução de download/native/live é atribuída a esta revisão editorial. Limitações de QA preservadas.

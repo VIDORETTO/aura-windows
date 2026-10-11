@@ -36,10 +36,10 @@
     "specs/039-web-gratuita-do-agente/spec.md",
     "specs/039-web-gratuita-do-agente/plan.md"
   ],
-  "limitations": "Other commercial models not synthesized; source registry events not guaranteed to produce every answer correct. Backend12/10 data explicitly revalidated from actual same-code same-day run, not new queries. AC009 opener destination pending;038DPI/resize separate.",
+  "limitations": "Other commercial models not synthesized; source registry events not guaranteed to produce every answer correct. Backend12/10 data explicitly revalidated from actual same-code same-day run, not new queries. AC009 opener destination pending;038DPI/resize separate. Evidence invalidated because an input changed.",
   "observations": "SIWC3/3 real:15.185/33.661/13.022sec completed and evaluated. WCAG fourprinciples W1 read/cited; Python/Rust separate official pages W6/W1 read/cited; Museu official snippet W3 with unsupported-content caveat, not page read. UI sources/history/stop/toggle3/3; deterministic5/5; privacy real pin current. FD004 resolved; native gate external destination remains separate.",
   "procedure": "Current product native e2e build; unchanged three SIWC questions on existing ChatGPT/gpt-6-luna without prototype overrides; public Host events/source metadata evaluated against independent official pages; deterministic web_research5/5 and native web3/3; backend quality same-code semantic revalidation EV092/093.",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:af6887fd680e33846353a9ca992547597f24c6c7b5c8d4ce4a3eb44e82989005",
   "ticket": "TK-005",
   "timestamp": "2026-10-10T22:09:23+00:00"

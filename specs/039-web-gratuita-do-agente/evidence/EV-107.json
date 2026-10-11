@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-099"
+  ],
+  "execution_status": "executed",
+  "id": "EV-107",
+  "input_fingerprints": {
+    "Cargo.lock": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc",
+    "Cargo.toml": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1",
+    "crates/aura-web": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+    "specs/041-publicacao-github-030/canonical-revalidation.json": "a2c2cc066176eda11104601a91ca5a1cabb9b4d0853d2b946bfbc35d03edd433",
+    "specs/041-publicacao-github-030/input-revalidation.json": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923"
+  },
+  "input_paths": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/041-publicacao-github-030/input-revalidation.json",
+    "specs/041-publicacao-github-030/canonical-revalidation.json"
+  ],
+  "limitations": "No new live searches, synthesis, browser clicks or native runtime claimed; previous executed proofs remain historical. Does not approve DPI150/200 or clean Windows.",
+  "observations": "All changed input bytes are line-ending normalization only; source directories match the pre-publication indexed code. No algorithm/contract/oracle changed. Latest installer hashes/signatures and publication are verified separately in041.",
+  "procedure": "Executed canonical line-ending revalidation after Git checkout: recover exact recorded file bytes via LF/CRLF conversion; compare all tracked source-directory contents to exact pre-publication index snapshot; review inherited current0.3 checks and historical proofs explicitly.",
+  "result": "passed",
+  "tested_revision": "local:ed37d89b34945cca2c7aa6dc30f6cdc9d93729c89e39dc696c32e661cb4c708c",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-11T04:32:39+00:00"
+}

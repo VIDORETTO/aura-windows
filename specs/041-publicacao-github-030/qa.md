@@ -60,4 +60,8 @@ Commit da release: `15c11ff913ff4f28ab768d99e8e4164438ee6043`, alcançável pela
 
 O snapshot final antes do commit tinha **1.245 arquivos**, zero privadas operacionais/Gmail e as mesmas 20 linhas de fixture/placeholder/hashes do audit anterior; Gitleaks exit1 classificado explicitamente. `git -c core.whitespace=-blank-at-eof diff --cached --check` passou: linhas vazias ao fim de documentos históricos foram mantidas para preservar fingerprints; formatação Rust passa pelo rustfmt. `git diff --quiet` passou antes do commit.
 
-Relatório público sem dados operacionais em `public-verification.json`. A confirmação HTTP/hash não substitui instalação limpa nem execução real do updater; esses limites continuam declarados acima. Os registros de fechamento podem deixar main à frente da tag por um commit de documentação, sem alteração no código compilado da 0.3.0.
+Relatório público sem dados operacionais em `public-verification.json`. A confirmação HTTP/hash não substitui instalação limpa nem execução real do updater; esses limites continuam declarados acima. Os registros de fechamento deixam main à frente da tag por commits de documentação, sem alteração no código compilado da 0.3.0.
+
+## Canonicalização Git após publicação
+
+O checkout/fast-forward materializou arquivos novos com LF conforme `.gitattributes`; alguns fingerprints anteriores mediam CRLF. `canonical-revalidation.json` comprova a recuperação exata dos bytes registrados por conversão LF/CRLF e a igualdade de todos os arquivos versionados dos diretórios afetados com o snapshot do índice anterior à publicação. EV-107 a EV-113 do esforço 039 registram essa reavaliação explícita pelo runner, sem afirmar novas consultas ou testes nativos. Após atualização, invalidate039 retornou changed_inputs={} e stale_evidence=[]; invalidate040 também retornou vazio. Nenhum código de crates/apps/manifests difere da tag v0.3.0. O gate DPI150/200 do esforço 038 permanece pendente.

@@ -5,7 +5,7 @@ id: TK-004
 effort: 039-web-gratuita-do-agente
 type: delivery
 status: done
-ticket_revision: 33
+ticket_revision: 36
 requires: ["TK-003", "TK-007"]
 requirement_refs: ["FR-005", "FR-006", "FR-007"]
 acceptance_refs: ["AC-008", "AC-009", "AC-010", "AC-011", "AC-012"]
@@ -13,8 +13,11 @@ spec_revision: 1
 plan_revision: 11
 owned_areas: ["crates/aura-core/src/settings.rs", "crates/aura-app/src/events.rs", "crates/aura-app/src/host.rs", "crates/aura-app/src/web.rs", "crates/aura-app/src/web_history.rs", "crates/aura-app/src/web_history_tests.rs", "crates/aura-app/src/lib.rs", "crates/aura-codex/src/service.rs", "crates/aura-app/tests/real_app_server.rs", "crates/aura-app/tests/ipc_contract.rs", "crates/aura-web", "apps/desktop/src", "apps/desktop/src-tauri/src/commands.rs"]
 verification_status: passed
-last_update: Plan11 scoped UI/source/toggle proof renewed. No new UI implementation required.
+last_update: Git LF normalization explicitly revalidated; exact original fingerprints recoverable without behavioral edits. Canonical evidence/current0.3 release documented in041.
 ---
+
+
+
 
 
 

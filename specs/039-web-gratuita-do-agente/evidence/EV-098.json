@@ -22,10 +22,10 @@
     "specs/039-web-gratuita-do-agente/spec.md",
     "specs/039-web-gratuita-do-agente/plan.md"
   ],
-  "limitations": "Atestado manual do usuário; automação do navegador continuou impedida pela ferramenta. Não prova DPI150/200.",
+  "limitations": "Atestado manual do usuário; automação do navegador continuou impedida pela ferramenta. Não prova DPI150/200. Evidence invalidated because an input changed.",
   "observations": "Usuário respondeu explicitamente: Sim, cliquei na fonte e abriu esse endereço. URL HTTP(S) da fonte e destino coincidem. Complementa EV091/095 sem inferir destino apenas do href.",
   "procedure": "Teste manual orientado: usuário pediu leitura WCAG no Aura, clicou na fonte W1 e confirmou que o navegador abriu https://www.w3.org/WAI/standards-guidelines/wcag/; endereço copiado da barra após o clique.",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:e096b5182e99195f0f0bd57c0650495fd400b0cc15bc6f9c078cb43e6f053721",
   "ticket": "TK-005",
   "timestamp": "2026-10-11T01:45:51+00:00"

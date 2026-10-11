@@ -1,0 +1,46 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-002"
+  ],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "Cargo.lock": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc",
+    "Cargo.toml": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1",
+    "README.md": "3f5171b12e69a9537d3bff5928bb9fc74738803a91c17684de35d0afdff24b60",
+    "apps/desktop/package.json": "8cc1fcd4de1bdc78512ef1ebe70c4a0f41e8fdbb9f25ecde912cc5574459b8f3",
+    "apps/desktop/src-tauri/tauri.conf.json": "27d9ed50799634390dd05edf0f2fe6db7174bd0c501e8b8a3628c7c52da4439f",
+    "specs/041-publicacao-github-030/canonical-revalidation.json": "a2c2cc066176eda11104601a91ca5a1cabb9b4d0853d2b946bfbc35d03edd433",
+    "specs/041-publicacao-github-030/change.md": "965212c95be1c5bcdb0fb1cb0b62b1b060a97523a589ef2098e72c670dfa97e6",
+    "specs/041-publicacao-github-030/public-verification.json": "29c211252d2dcf5221bedc45188462815beba85a04aeeb0e266cc452d2b225aa",
+    "specs/041-publicacao-github-030/qa.md": "b5255a0ea9d99ae47c4d81b9944d3bfc74a168f49b24b8c6a808fce548e5b266",
+    "specs/041-publicacao-github-030/review.md": "e4678dcd529bbad93bb34eb95bd84d32e28a0c20d65a226614924b1450a69527",
+    "target/release-030-assets": "7bcea073c0c690ab9cd90fbd7641bbb8320c2732b6cccc6d2aa2d0138b99474b"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "README.md",
+    "apps/desktop/package.json",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "specs/041-publicacao-github-030/change.md",
+    "specs/041-publicacao-github-030/qa.md",
+    "specs/041-publicacao-github-030/review.md",
+    "specs/041-publicacao-github-030/public-verification.json",
+    "specs/041-publicacao-github-030/canonical-revalidation.json",
+    "target/release-030-assets"
+  ],
+  "limitations": "No new live/native/download run in this editorial pass. Prior real download/signature checks documented inEV002; DPI150/200 and cleanWindows remain pending.",
+  "observations": "All release behavior/assets/keys/endpoints/tag unchanged; main documentation-only ahead;039 invalidate empty after exact canonical revalidation,040 empty;published seven digests match actual previously downloaded verified packages;branches onlymain. Same executed release gates remain representative; editorial records updated.",
+  "procedure": "Executed final editorial/canonical revalidation of EV002: exact byte equivalence after LF/CRLF Git normalization; no crates/apps/manifest diff to tag; latest GitHub seven digests and only-main inventory unchanged; inherited prior executed anonymous downloads/signatures/ancestor checks explicitly reviewed, no new download run claimed.",
+  "result": "passed",
+  "tested_revision": "local:a8ac9638b2dad26e1dcaa3e2984c94ea34fe864449f3115a4a7f7a7de7ad26bd",
+  "ticket": null,
+  "timestamp": "2026-10-11T04:35:14+00:00"
+}

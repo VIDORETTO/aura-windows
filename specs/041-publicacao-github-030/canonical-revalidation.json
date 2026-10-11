@@ -1,0 +1,284 @@
+{
+  "cause": "Git switch/fast-forward materialized new tracked files with canonical LF per .gitattributes, after the real checks/build; historical raw-byte fingerprints used mixed CRLF.",
+  "checks": [
+    {
+      "evidence": "EV-091",
+      "ticket": "TK-004",
+      "changes": [
+        {
+          "path": "apps/desktop/src",
+          "old": "be1506368809f7e0a0e36c99666d72c8f6bbe367434ddc746d73def359608694",
+          "current": "bb7548dc94469de007e3238678a5e8a9816c02961ad5f2c87e44952cf08fbc1f",
+          "classification": "all tracked files canonically identical to the exact pre-publication index snapshot; no source edits after build"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-094",
+      "ticket": "TK-005",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+          "old": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+          "current": "d99f09f75f8dfc69813429d8ee11d3a85b583957724c8fd8b850c0866d62fd23",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+          "old": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+          "current": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-095",
+      "ticket": "TK-005",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-098",
+      "ticket": "TK-005",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json",
+          "old": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2",
+          "current": "17158072bcc6eb01f503d0ba06588c7c384bdb88d436e6692466c5b0caa60098",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-099",
+      "ticket": "TK-001",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-100",
+      "ticket": "TK-002",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-101",
+      "ticket": "TK-003",
+      "changes": [
+        {
+          "path": "apps/desktop/src",
+          "old": "be1506368809f7e0a0e36c99666d72c8f6bbe367434ddc746d73def359608694",
+          "current": "bb7548dc94469de007e3238678a5e8a9816c02961ad5f2c87e44952cf08fbc1f",
+          "classification": "all tracked files canonically identical to the exact pre-publication index snapshot; no source edits after build"
+        },
+        {
+          "path": "crates/aura-codex",
+          "old": "f0c3aa0390675b7d7a24aeb6c2b02da573ff8dafa4047efdc85f35cfa4b54d95",
+          "current": "06e2cb351814195f4dbe9bf31b424857edaea960718d0ee86056cf4dc62e7dcb",
+          "classification": "all tracked files canonically identical to the exact pre-publication index snapshot; no source edits after build"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+          "old": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+          "current": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-102",
+      "ticket": "TK-007",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json",
+          "old": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+          "current": "a2d673141d4878995b3670f9bbcc6668dd1c8b8f3dfe0b8be6c45c978abd352f",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-103",
+      "ticket": "TK-006",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+          "old": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+          "current": "d99f09f75f8dfc69813429d8ee11d3a85b583957724c8fd8b850c0866d62fd23",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json",
+          "old": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+          "current": "472db049649b87dc6ed1251afd1efa08ff86646ab7feffb8a90590fb2d78d1e3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-104",
+      "ticket": "TK-006",
+      "changes": [
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+          "old": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+          "current": "d99f09f75f8dfc69813429d8ee11d3a85b583957724c8fd8b850c0866d62fd23",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+          "old": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+          "current": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-105",
+      "ticket": "TK-005",
+      "changes": [
+        {
+          "path": "apps/desktop/src-tauri/Cargo.toml",
+          "old": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+          "current": "33b16e9befaf733b06dde8ac5b13ff7d351b0ca404ea6ae04cafe93f2aefd9dd",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    },
+    {
+      "evidence": "EV-106",
+      "ticket": "TK-005",
+      "changes": [
+        {
+          "path": "apps/desktop/src-tauri/Cargo.toml",
+          "old": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+          "current": "33b16e9befaf733b06dde8ac5b13ff7d351b0ca404ea6ae04cafe93f2aefd9dd",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/039-web-gratuita-do-agente/spec.md",
+          "old": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+          "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        },
+        {
+          "path": "specs/041-publicacao-github-030/input-revalidation.json",
+          "old": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+          "current": "c31bd7ead4673d67ce61b452ad2505fcc206907545fcdce28442cb906dd4d923",
+          "classification": "exact original bytes recovered by LF/CRLF conversion only"
+        }
+      ]
+    }
+  ],
+  "source_unchanged": true,
+  "classification": "Formatting-only revalidation; every changed file recovers exact recorded bytes by line-ending conversion, and every changed source directory matches the pre-publication index snapshot.",
+  "limitations": "No new tests/live/native execution claimed. Runtime/quality proofs remain historical; installer downloads and signatures separately executed for0.3."
+}

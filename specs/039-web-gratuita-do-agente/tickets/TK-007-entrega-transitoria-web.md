@@ -5,7 +5,7 @@ id: TK-007
 effort: 039-web-gratuita-do-agente
 type: delivery
 status: done
-ticket_revision: 37
+ticket_revision: 40
 requires: ["TK-003"]
 requirement_refs: ["FR-005", "FR-006", "FR-007", "FR-008"]
 acceptance_refs: ["AC-008", "AC-009", "AC-010", "AC-011", "AC-012", "AC-014"]
@@ -13,8 +13,11 @@ spec_revision: 1
 plan_revision: 11
 owned_areas: ["crates/aura-gateway/src/server.rs", "crates/aura-gateway/src/lib.rs", "crates/aura-gateway/src/tool_results.rs", "crates/aura-gateway/src/private_calls.rs", "crates/aura-gateway/src/sse.rs", "crates/aura-gateway/tests/private_calls.rs", "crates/aura-gateway/tests/tool_results.rs", "crates/aura-web", "crates/aura-app/src/web.rs", "crates/aura-app/src/host.rs", "crates/aura-app/tests/web_tools.rs", "crates/aura-app/tests/real_app_server.rs", "docs/adr/0010-entrega-transitoria-de-resultados-web.md"]
 verification_status: passed
-last_update: "Version0.3 client-metadata impact explicitly revalidated with exact original backend fingerprint and fresh local checks; native/live proofs remain historical, limits preserved in effort041 QA."
+last_update: Git LF normalization explicitly revalidated; exact original fingerprints recoverable without behavioral edits. Canonical evidence/current0.3 release documented in041.
 ---
+
+
+
 
 
 

@@ -5,7 +5,7 @@ id: TK-006
 effort: 039-web-gratuita-do-agente
 type: delivery
 status: done
-ticket_revision: 29
+ticket_revision: 32
 requires: ["TK-003"]
 requirement_refs: ["FR-001", "FR-003", "FR-008"]
 acceptance_refs: ["AC-001", "AC-013"]
@@ -13,8 +13,11 @@ spec_revision: 1
 plan_revision: 11
 owned_areas: ["crates/aura-web/examples/quality.rs", "specs/039-web-gratuita-do-agente/quality.md", "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json", "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json", "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json", "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json"]
 verification_status: passed
-last_update: "Version0.3 client-metadata impact explicitly revalidated with exact original backend fingerprint and fresh local checks; native/live proofs remain historical, limits preserved in effort041 QA."
+last_update: Git LF normalization explicitly revalidated; exact original fingerprints recoverable without behavioral edits. Canonical evidence/current0.3 release documented in041.
 ---
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "eb7f12357718ac9e2d11affa0661f8ea7e73972f265b964221aa48215845c11b",
+  "docs/project/backlog.md": "36399d6553e6379fbbf5c059041f96193d99c158166f5b3ac9ffa247a691025b",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -51,8 +51,8 @@
   "specs/038-restaurar-seletores-modelo-raciocinio/todo.md": "e748c5813a9effd03893af80c9e79a529ea6264b227e3335a23921c474704b69",
   "specs/038-restaurar-seletores-modelo-raciocinio/verification.md": "4f7045051d66605e937cb8e211822351f79f2549ca9f03d37d27488a6302065a",
   "specs/039-web-gratuita-do-agente/todo.md": "06b70b66b59e1e1da0b91fbc25ec207f86d3de402342ae1c55e032e01067398a",
-  "specs/039-web-gratuita-do-agente/verification.md": "1ac9365976ccbacde78ff008e5499e66a2feced9b9d779d65259ae42006baf5d",
+  "specs/039-web-gratuita-do-agente/verification.md": "9c465bf137a703fcd355af18917dc53a5e2a43108e0437ae4a08627591afea58",
   "specs/040-overlay-estavel-no-monitor/todo.md": "222d00faf0daa32645f167b56572701373ea8e63e50ebc3d28dae44e25088ded",
   "specs/040-overlay-estavel-no-monitor/verification.md": "84c0c75b53ccdfb68f7dd2d70d620ea3756342a61f75472f955ead2a025d3b51",
-  "specs/041-publicacao-github-030/verification.md": "f1eb94b3e8402a57e4600982713aa06c6bce98c037f302885a98d94afaec922c"
+  "specs/041-publicacao-github-030/verification.md": "0e7c4dfc09e4a265cbe8f3ee6ddec365d61b8be066bd64db275f1644ca4a057e"
 }

@@ -26,10 +26,10 @@
     "specs/039-web-gratuita-do-agente/plan.md",
     "specs/041-publicacao-github-030/input-revalidation.json"
   ],
-  "limitations": "No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.",
+  "limitations": "No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation. Evidence invalidated because an input changed.",
   "observations": "Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.",
   "procedure": "Executed explicit version-0.3 input revalidation: exact directory fingerprint after reversing only HTTP/MCP client metadata in memory; compare all other prior inputs; execute workspace508/UI253/typecheck/fmt/Clippy/licenses-sources and signed production build.",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:cd880b8eafbe70755a3e6511ff80cbbf4d54d174496ad8f0d0d017b8bf513664",
   "ticket": "TK-006",
   "timestamp": "2026-10-11T04:24:59+00:00"

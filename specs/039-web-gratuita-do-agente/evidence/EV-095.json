@@ -22,10 +22,10 @@
     "specs/039-web-gratuita-do-agente/spec.md",
     "specs/039-web-gratuita-do-agente/plan.md"
   ],
-  "limitations": "Requires manual confirmation or supported external-browser inspection to approve destination; do not infer it from link href or opener invocation.",
+  "limitations": "Requires manual confirmation or supported external-browser inspection to approve destination; do not infer it from link href or opener invocation. Evidence invalidated because an input changed.",
   "observations": "Real UI read sources,citations/history,interrupt,Settings off/reenable passed. Native opener received source action; browser final address unavailable to permitted tools.",
   "procedure": "Native web-research.e2e.ts3/3 and screenshot inspection after native e2e build; native opener invoked by source link; external-browser destination could not be observed under available Windows browser tooling.",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:fe9d53d2cb1615ee4bb093bfc35225a37ba84562d31b64303b675a05c7b96d06",
   "ticket": "TK-005",
   "timestamp": "2026-10-10T22:09:23+00:00"

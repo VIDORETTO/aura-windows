@@ -31,10 +31,10 @@
     "specs/041-publicacao-github-030/input-revalidation.json",
     "specs/041-publicacao-github-030/change.md"
   ],
-  "limitations": "Push/release/download remoto/branches pendentes; DPI150/200 e Windows limpo não testados.",
+  "limitations": "Push/release/download remoto/branches pendentes; DPI150/200 e Windows limpo não testados. Evidence invalidated because an input changed.",
   "observations": "Todos os checks locais passaram; 39Rust opt-in ignorados; zero novos segredos e todos os 20findings correspondem às linhas previamente auditadas. Instalação0.3, hashes e assinaturas corretos. Remotos ainda não publicados.",
   "procedure": "Rust508/UI253/typecheck/fmt/Clippy/licenses-sources; production DirectML build; MSI/PE0.3 and permanent-key independent signature/tamper verification; source snapshot+Gitleaks classification",
-  "result": "partial",
+  "result": "stale",
   "tested_revision": "local:2b7d17cb7848807c770fe9263a6faf05dd9e9e083dd413e76ad264420eb5b4eb",
   "ticket": null,
   "timestamp": "2026-10-11T04:25:37+00:00"

@@ -14,21 +14,40 @@
       "revision": 1
     },
     "qa": {
-      "fingerprint": "94b3ce2a6ace7d8fbde75050531725dc97dccd29de17a7cd3438d077375d26c6",
+      "fingerprint": "b5255a0ea9d99ae47c4d81b9944d3bfc74a168f49b24b8c6a808fce548e5b266",
       "path": "specs/041-publicacao-github-030/qa.md"
     },
     "review": {
-      "fingerprint": "a45bdb253d754ad7dfc2da7a5e45d0801e411a6e02aa7fcb69064704968f1218",
+      "fingerprint": "e4678dcd529bbad93bb34eb95bd84d32e28a0c20d65a226614924b1450a69527",
       "path": "specs/041-publicacao-github-030/review.md"
     }
   },
-  "last_evidence": "EV-002",
+  "last_evidence": "EV-003",
+  "last_invalidation": {
+    "evidence": [
+      "EV-001",
+      "EV-002"
+    ],
+    "inputs": {
+      "qa": {
+        "current": "b5255a0ea9d99ae47c4d81b9944d3bfc74a168f49b24b8c6a808fce548e5b266",
+        "path": "specs/041-publicacao-github-030/qa.md",
+        "recorded": "94b3ce2a6ace7d8fbde75050531725dc97dccd29de17a7cd3438d077375d26c6"
+      },
+      "review": {
+        "current": "e4678dcd529bbad93bb34eb95bd84d32e28a0c20d65a226614924b1450a69527",
+        "path": "specs/041-publicacao-github-030/review.md",
+        "recorded": "a45bdb253d754ad7dfc2da7a5e45d0801e411a6e02aa7fcb69064704968f1218"
+      }
+    },
+    "timestamp": "2026-10-11T04:35:13+00:00"
+  },
   "mode": "compact",
-  "next_action": "Publicação0.3 concluída; somentemain. DPI150/200 e Windowslimpo continuam como limites de QA nos esforços próprios.",
+  "next_action": "Release0.3 publicada e GitHub consolidado emmain; canonização documentada. QA150/200 e Windowslimpo continuam pendentes.",
   "pending_questions": [],
   "phase": "closed",
-  "revision": 2,
+  "revision": 4,
   "schema_version": "1.0",
   "status": "complete",
-  "updated_at": "2026-10-11T04:29:48+00:00"
+  "updated_at": "2026-10-11T04:35:14+00:00"
 }

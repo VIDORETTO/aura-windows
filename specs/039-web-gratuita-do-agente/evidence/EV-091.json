@@ -37,10 +37,10 @@
     "specs/039-web-gratuita-do-agente/spec.md",
     "specs/039-web-gratuita-do-agente/plan.md"
   ],
-  "limitations": "Native opener action executed; destination in external browser still unverified (TK005). Scripted provider/web adapters do not substitute SIWC3journeys or live search12/10; no DPI150/200 approval.",
+  "limitations": "Native opener action executed; destination in external browser still unverified (TK005). Scripted provider/web adapters do not substitute SIWC3journeys or live search12/10; no DPI150/200 approval. Evidence invalidated because an input changed.",
   "observations": "Native3/3 passed4.5s: two read sources/inline citations and history restore without requests, pending stop, global Settings toggle cancellation/no further reads/reenable. Screenshot inspected: model picker,42/12/30 answer and W1/W2 links/read metadata fit. Current reducer/i18n/IPC/parity/unsafeURL regressions passed; privacy persistent source metadata gates retained. Standards/Spec review no blocker within TK004 scope.",
   "procedure": "Current workspace505 and UI253/typecheck; fixed-pin history/privacy matrix24+one handshake retry; normal native e2e build; web-research.e2e.ts on isolated profile with real fixed-pin/gateway/MCP/WebService and external scripted adapters; inspect native-research.png.",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:ddce689eefb6b7fd1ffda3899c980cbad13da9c63564c1dd8f8cd5756ed7027c",
   "ticket": "TK-004",
   "timestamp": "2026-10-10T22:07:21+00:00"

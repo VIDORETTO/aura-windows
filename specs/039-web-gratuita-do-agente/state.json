@@ -21,7 +21,7 @@
       "path": "specs/039-web-gratuita-do-agente/findings/FD-005.json"
     },
     "code_mode_probe": {
-      "fingerprint": "a7cf3c8a36daf526eddd4b1efa196984bb867108ce345b30b472283f66c8ac90",
+      "fingerprint": "c3b8110c49d871490e858f85b40508dbbd119b88c23bcf51dfe04321348a9aed",
       "path": "specs/039-web-gratuita-do-agente/experiments/code-mode-delivery-probe-2026-10-10.json"
     },
     "codex_service": {
@@ -33,7 +33,7 @@
       "path": "crates/aura-codex/tests/service.rs"
     },
     "contract": {
-      "fingerprint": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+      "fingerprint": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
       "path": "specs/039-web-gratuita-do-agente/spec.md",
       "revision": 1
     },
@@ -42,7 +42,7 @@
       "path": "specs/039-web-gratuita-do-agente/contracts.md"
     },
     "crypto_plan11": {
-      "fingerprint": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+      "fingerprint": "a2d673141d4878995b3670f9bbcc6668dd1c8b8f3dfe0b8be6c45c978abd352f",
       "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json"
     },
     "discovery": {
@@ -50,7 +50,7 @@
       "path": "specs/039-web-gratuita-do-agente/discovery.md"
     },
     "encrypted_reasoning_plan10_result": {
-      "fingerprint": "4e7bd4b5d4a683a07dd7c8d19d6323beefa186d8e0847d390f1ff0923ff3f4ca",
+      "fingerprint": "0f1b48c01fdaefc3fee2c1e9b70914620e2020ce9a9ff21e6ca030972227e277",
       "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan10-result.json"
     },
     "encrypted_reasoning_probe": {
@@ -58,7 +58,7 @@
       "path": "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1"
     },
     "encrypted_reasoning_result": {
-      "fingerprint": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+      "fingerprint": "a2d673141d4878995b3670f9bbcc6668dd1c8b8f3dfe0b8be6c45c978abd352f",
       "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-final-result.json"
     },
     "gateway_private_calls": {
@@ -90,7 +90,7 @@
       "path": "apps/desktop/src-tauri/src/main.rs"
     },
     "native_web_manifest": {
-      "fingerprint": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+      "fingerprint": "33b16e9befaf733b06dde8ac5b13ff7d351b0ca404ea6ae04cafe93f2aefd9dd",
       "path": "apps/desktop/src-tauri/Cargo.toml"
     },
     "persistence_adr": {
@@ -98,11 +98,11 @@
       "path": "docs/adr/0010-entrega-transitoria-de-resultados-web.md"
     },
     "persistence_probe": {
-      "fingerprint": "8b6ba344861bbdc8493fdd10692863afa693e15dbd6a6c08426032c45d416a47",
+      "fingerprint": "a7bf0cc4b29c08ebc3e7f2ab56a5b2eb332484bdaeb7c8e755e6358080be0bfe",
       "path": "specs/039-web-gratuita-do-agente/experiments/private_result_probe.py"
     },
     "persistence_probe_result": {
-      "fingerprint": "d3c81e053da14c5cf82c8334996362c53f8b364785e2303daae91a0f22050822",
+      "fingerprint": "7b5a69dcadbb0c78bf439443f68602ef9a20ad6a6bf93547e7596ad00b0dcc5c",
       "path": "specs/039-web-gratuita-do-agente/experiments/private-result-result.json"
     },
     "persistence_research": {
@@ -123,7 +123,7 @@
       "path": "specs/039-web-gratuita-do-agente/experiments/private-arguments-schema-result.json"
     },
     "production_binary": {
-      "fingerprint": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2",
+      "fingerprint": "17158072bcc6eb01f503d0ba06588c7c384bdb88d436e6692466c5b0caa60098",
       "path": "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json"
     },
     "progress_tk4": {
@@ -135,23 +135,23 @@
       "path": "specs/039-web-gratuita-do-agente/quality.md"
     },
     "quality_r10_results": {
-      "fingerprint": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+      "fingerprint": "472db049649b87dc6ed1251afd1efa08ff86646ab7feffb8a90590fb2d78d1e3",
       "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json"
     },
     "quality_r8_results": {
-      "fingerprint": "2c4348bc490945cf9875e8dcfa83a4c11812c997f9968271ad0a1f8a757d4c11",
+      "fingerprint": "e2ab127181cdc450179d5fada7f2f8f89963e4bd1f7981419ac0e15bf1ae83d7",
       "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json"
     },
     "quality_r9_results": {
-      "fingerprint": "f9308331eeaf495240df029e10bdf12007e8ce4c1ed86aa49ac017a60115b4fa",
+      "fingerprint": "3a86635ab6e0104b2a602536d736712f13bfb1c5e9676e9a3c68a8185adc11e8",
       "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json"
     },
     "quality_results": {
-      "fingerprint": "200ca48dd11e7d15b306d0ac8462d5eacffac2fac14ec8858a84d030ab9a08ba",
+      "fingerprint": "a785a9a9db47261500c749fcc53875f4efa199a06bc3277f5e215000da2cfbde",
       "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json"
     },
     "quality_revalidation11": {
-      "fingerprint": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+      "fingerprint": "d99f09f75f8dfc69813429d8ee11d3a85b583957724c8fd8b850c0866d62fd23",
       "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json"
     },
     "research": {
@@ -159,19 +159,19 @@
       "path": "specs/039-web-gratuita-do-agente/research.md"
     },
     "review": {
-      "fingerprint": "eac7546b602dbd641c7481f638541b051a300a1e7e2132c94f7b679d98444f43",
+      "fingerprint": "c2ab50b4833962ff1963b538aca28424153b3236b3bcc4054a8d8599b99dae7a",
       "path": "specs/039-web-gratuita-do-agente/review.md"
     },
     "siwc_plan11": {
-      "fingerprint": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+      "fingerprint": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
       "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json"
     },
     "siwc_synthesis_result": {
-      "fingerprint": "25909bb309cfb2edd572fca8ebd91cc187b6b1a11a9c7f94b2f880df6675c030",
+      "fingerprint": "b4d4189cbf034666cf4f6f4b34cf1d8f33ef6f4fc4119523ed1f30be6b8eae95",
       "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-2026-10-10.json"
     },
     "storage_arguments_audit_result": {
-      "fingerprint": "120502ab37b8bccdff558c3f8210f94fd97d64358d808246b6dadcb5a4cd183f",
+      "fingerprint": "cd62d46aa530e6e1b09dcbd63103548640f2339c239783b515b971310f7d27ac",
       "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json"
     },
     "storage_audit": {
@@ -183,15 +183,15 @@
       "path": "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py"
     },
     "storage_audit_result": {
-      "fingerprint": "bcb2036b82e6d4458dc787a997fa0d07f6517f9f039d00b98c05237b984ee3b4",
+      "fingerprint": "b8eae1caa4e6e36f65fcd6544173fb78b4df84620e15127e984f345a81d0b26d",
       "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-formatted-result.json"
     },
     "storage_reasoning_compaction_result": {
-      "fingerprint": "c2ff7edc67995d15a5740b86c15d05c420b612a5231b1c44ad74e32b4974065f",
+      "fingerprint": "03a7625360488b240539b8ac3268fcb50e19708c18f0dc933a547125607f575f",
       "path": "specs/039-web-gratuita-do-agente/experiments/reasoning-compaction-storage-result.json"
     },
     "tdd": {
-      "fingerprint": "9b20e15ebe8ca00842c67d763f11b4b67a529e019d9c81ce7e0c1528e7ca7138",
+      "fingerprint": "1ddf42d08d5d29b6a9da394ad66bd00b29af51b3740bea6d7aec0d772307a82f",
       "path": "specs/039-web-gratuita-do-agente/tdd.md"
     },
     "test_web_research": {
@@ -199,31 +199,31 @@
       "path": "crates/aura-app/tests/web_research.rs"
     },
     "ticket1": {
-      "fingerprint": "f1ccd8bdd887cbe06037adfb2eedd13ce50a37b8bceeac10d56ca216c0fdac78",
+      "fingerprint": "16f1f7aaabb1868b7bc219275667fcde5f4b6800b5efe8428f648821e418d365",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-001-busca-sem-chave.md"
     },
     "ticket2": {
-      "fingerprint": "655842eba5f64db874a2c1784c44118b825e62ab675bfff92d45abddaf594fcc",
+      "fingerprint": "9b834deab7fad330be7407326eaf939a8dc8fb07301c333ac38415638e8bb12b",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-002-leitura-segura.md"
     },
     "ticket3": {
-      "fingerprint": "7d2a633eafcacfc892c22bab4acc01353fbe56f97ec22d3705e7bc85fd6715b4",
+      "fingerprint": "cf190628f254b92ea111b9d34823572e5d51917b3747096f3361292824784222",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-003-agente-e-modos.md"
     },
     "ticket4": {
-      "fingerprint": "aa05e7dc458269cf05e8e806c1a460b7aef6f4b8fcf5b9ec9280f5d733d6d0c7",
+      "fingerprint": "16c0a33ffba23186ba5991cc903e087d1ef17e9dd486c1ac54682a292c66f996",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-004-fontes-e-controle.md"
     },
     "ticket5": {
-      "fingerprint": "877ff5ac44a3af5683d57f32df4911e08f18b21a0cad6eb6aeb1dd8b8f509cb8",
+      "fingerprint": "15bb70d0110efb83ff86cce488f01587da019f0be07b5450a47464d4f959e940",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-005-qualidade-e-windows.md"
     },
     "ticket6": {
-      "fingerprint": "e86fd02acd8af4b8e17e475563606f02dcb828eb94aa5b0e7394c5b82622b657",
+      "fingerprint": "f2b327bdde0874ea92b9353dc5c7b9e80bd9f0448a3367356f1fc1502f3b6b1c",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-006-qualidade-busca-extracao.md"
     },
     "ticket7": {
-      "fingerprint": "7f2791e9da1ca64c368f20c2ae6661a474ee70fd6c211e512bb1d5bc30a32bea",
+      "fingerprint": "5536cc626ab6202a5016559caf3f51c051992ab8a5e1798f6e38038684dbd0a0",
       "path": "specs/039-web-gratuita-do-agente/tickets/TK-007-entrega-transitoria-web.md"
     },
     "web_delivery": {
@@ -235,27 +235,167 @@
       "path": "crates/aura-web/tests/delivery.rs"
     }
   },
-  "last_evidence": "EV-106",
+  "last_evidence": "EV-113",
   "last_invalidation": {
     "evidence": [
-      "EV-087",
-      "EV-088",
-      "EV-089",
-      "EV-090",
-      "EV-092",
-      "EV-093",
-      "EV-096",
-      "EV-097"
+      "EV-091",
+      "EV-094",
+      "EV-095",
+      "EV-098",
+      "EV-099",
+      "EV-100",
+      "EV-101",
+      "EV-102",
+      "EV-103",
+      "EV-104",
+      "EV-105",
+      "EV-106"
     ],
-    "inputs": {},
-    "timestamp": "2026-10-11T04:24:13+00:00"
+    "inputs": {
+      "code_mode_probe": {
+        "current": "c3b8110c49d871490e858f85b40508dbbd119b88c23bcf51dfe04321348a9aed",
+        "path": "specs/039-web-gratuita-do-agente/experiments/code-mode-delivery-probe-2026-10-10.json",
+        "recorded": "a7cf3c8a36daf526eddd4b1efa196984bb867108ce345b30b472283f66c8ac90"
+      },
+      "contract": {
+        "current": "aa7fe52aa12f9667147ae05950c7b601f2dca2c9c21d67bc63d316d02a3c01f3",
+        "path": "specs/039-web-gratuita-do-agente/spec.md",
+        "recorded": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+      },
+      "crypto_plan11": {
+        "current": "a2d673141d4878995b3670f9bbcc6668dd1c8b8f3dfe0b8be6c45c978abd352f",
+        "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json",
+        "recorded": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6"
+      },
+      "encrypted_reasoning_plan10_result": {
+        "current": "0f1b48c01fdaefc3fee2c1e9b70914620e2020ce9a9ff21e6ca030972227e277",
+        "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan10-result.json",
+        "recorded": "4e7bd4b5d4a683a07dd7c8d19d6323beefa186d8e0847d390f1ff0923ff3f4ca"
+      },
+      "encrypted_reasoning_result": {
+        "current": "a2d673141d4878995b3670f9bbcc6668dd1c8b8f3dfe0b8be6c45c978abd352f",
+        "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-final-result.json",
+        "recorded": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6"
+      },
+      "native_web_manifest": {
+        "current": "33b16e9befaf733b06dde8ac5b13ff7d351b0ca404ea6ae04cafe93f2aefd9dd",
+        "path": "apps/desktop/src-tauri/Cargo.toml",
+        "recorded": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d"
+      },
+      "persistence_probe": {
+        "current": "a7bf0cc4b29c08ebc3e7f2ab56a5b2eb332484bdaeb7c8e755e6358080be0bfe",
+        "path": "specs/039-web-gratuita-do-agente/experiments/private_result_probe.py",
+        "recorded": "8b6ba344861bbdc8493fdd10692863afa693e15dbd6a6c08426032c45d416a47"
+      },
+      "persistence_probe_result": {
+        "current": "7b5a69dcadbb0c78bf439443f68602ef9a20ad6a6bf93547e7596ad00b0dcc5c",
+        "path": "specs/039-web-gratuita-do-agente/experiments/private-result-result.json",
+        "recorded": "d3c81e053da14c5cf82c8334996362c53f8b364785e2303daae91a0f22050822"
+      },
+      "production_binary": {
+        "current": "17158072bcc6eb01f503d0ba06588c7c384bdb88d436e6692466c5b0caa60098",
+        "path": "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json",
+        "recorded": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2"
+      },
+      "quality_r10_results": {
+        "current": "472db049649b87dc6ed1251afd1efa08ff86646ab7feffb8a90590fb2d78d1e3",
+        "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json",
+        "recorded": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa"
+      },
+      "quality_r8_results": {
+        "current": "e2ab127181cdc450179d5fada7f2f8f89963e4bd1f7981419ac0e15bf1ae83d7",
+        "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json",
+        "recorded": "2c4348bc490945cf9875e8dcfa83a4c11812c997f9968271ad0a1f8a757d4c11"
+      },
+      "quality_r9_results": {
+        "current": "3a86635ab6e0104b2a602536d736712f13bfb1c5e9676e9a3c68a8185adc11e8",
+        "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json",
+        "recorded": "f9308331eeaf495240df029e10bdf12007e8ce4c1ed86aa49ac017a60115b4fa"
+      },
+      "quality_results": {
+        "current": "a785a9a9db47261500c749fcc53875f4efa199a06bc3277f5e215000da2cfbde",
+        "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json",
+        "recorded": "200ca48dd11e7d15b306d0ac8462d5eacffac2fac14ec8858a84d030ab9a08ba"
+      },
+      "quality_revalidation11": {
+        "current": "d99f09f75f8dfc69813429d8ee11d3a85b583957724c8fd8b850c0866d62fd23",
+        "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+        "recorded": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054"
+      },
+      "review": {
+        "current": "c2ab50b4833962ff1963b538aca28424153b3236b3bcc4054a8d8599b99dae7a",
+        "path": "specs/039-web-gratuita-do-agente/review.md",
+        "recorded": "eac7546b602dbd641c7481f638541b051a300a1e7e2132c94f7b679d98444f43"
+      },
+      "siwc_plan11": {
+        "current": "2a089b33f6c6dca3293b772f8145745a6539529f4746705e26fa1d5bad29d287",
+        "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+        "recorded": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda"
+      },
+      "siwc_synthesis_result": {
+        "current": "b4d4189cbf034666cf4f6f4b34cf1d8f33ef6f4fc4119523ed1f30be6b8eae95",
+        "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-2026-10-10.json",
+        "recorded": "25909bb309cfb2edd572fca8ebd91cc187b6b1a11a9c7f94b2f880df6675c030"
+      },
+      "storage_arguments_audit_result": {
+        "current": "cd62d46aa530e6e1b09dcbd63103548640f2339c239783b515b971310f7d27ac",
+        "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json",
+        "recorded": "120502ab37b8bccdff558c3f8210f94fd97d64358d808246b6dadcb5a4cd183f"
+      },
+      "storage_audit_result": {
+        "current": "b8eae1caa4e6e36f65fcd6544173fb78b4df84620e15127e984f345a81d0b26d",
+        "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-formatted-result.json",
+        "recorded": "bcb2036b82e6d4458dc787a997fa0d07f6517f9f039d00b98c05237b984ee3b4"
+      },
+      "storage_reasoning_compaction_result": {
+        "current": "03a7625360488b240539b8ac3268fcb50e19708c18f0dc933a547125607f575f",
+        "path": "specs/039-web-gratuita-do-agente/experiments/reasoning-compaction-storage-result.json",
+        "recorded": "c2ff7edc67995d15a5740b86c15d05c420b612a5231b1c44ad74e32b4974065f"
+      },
+      "tdd": {
+        "current": "1ddf42d08d5d29b6a9da394ad66bd00b29af51b3740bea6d7aec0d772307a82f",
+        "path": "specs/039-web-gratuita-do-agente/tdd.md",
+        "recorded": "9b20e15ebe8ca00842c67d763f11b4b67a529e019d9c81ce7e0c1528e7ca7138"
+      },
+      "ticket1": {
+        "current": "f764e48e5e3bd0dffbd1581b8bb0f84939d45909fa4cf1584cb87fc74e82b63e",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-001-busca-sem-chave.md",
+        "recorded": "f1ccd8bdd887cbe06037adfb2eedd13ce50a37b8bceeac10d56ca216c0fdac78"
+      },
+      "ticket2": {
+        "current": "ca5bb372fd7f30671a729e953dd2b5873978709c690a6e5f65a2c3d1c86e0af7",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-002-leitura-segura.md",
+        "recorded": "655842eba5f64db874a2c1784c44118b825e62ab675bfff92d45abddaf594fcc"
+      },
+      "ticket3": {
+        "current": "3ecd38f7e1ff04483f626f5a942f574584992dfcb89a093ceb00a3edd6895e27",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-003-agente-e-modos.md",
+        "recorded": "7d2a633eafcacfc892c22bab4acc01353fbe56f97ec22d3705e7bc85fd6715b4"
+      },
+      "ticket5": {
+        "current": "980cfb83633239845287fc71131fddd016c3a77a87abe9101de2adaa079d05d3",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-005-qualidade-e-windows.md",
+        "recorded": "877ff5ac44a3af5683d57f32df4911e08f18b21a0cad6eb6aeb1dd8b8f509cb8"
+      },
+      "ticket6": {
+        "current": "4b5884ae9180ceaac965ee0dd560d56e68827872bd425cad63dd198678c9391b",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-006-qualidade-busca-extracao.md",
+        "recorded": "e86fd02acd8af4b8e17e475563606f02dcb828eb94aa5b0e7394c5b82622b657"
+      },
+      "ticket7": {
+        "current": "0b8318e90a5962a8854fe77cb24a2f97976c38e800269c59beeb4a43fe6bc55d",
+        "path": "specs/039-web-gratuita-do-agente/tickets/TK-007-entrega-transitoria-web.md",
+        "recorded": "7f2791e9da1ca64c368f20c2ae6661a474ee70fd6c211e512bb1d5bc30a32bea"
+      }
+    },
+    "timestamp": "2026-10-11T04:32:38+00:00"
   },
   "mode": "standard",
-  "next_action": "Versão0.3 verificada e reavaliada no esforço041; 038DPI150/200 continua pendente.",
+  "next_action": "Web0.3 published; metadata and canonical LF revalidated explicitly in041; DPI150/200 remains pending in038.",
   "pending_questions": [],
   "phase": "closed",
-  "revision": 93,
+  "revision": 95,
   "schema_version": "1.0",
   "status": "complete",
-  "updated_at": "2026-10-11T04:25:37+00:00"
+  "updated_at": "2026-10-11T04:32:42+00:00"
 }

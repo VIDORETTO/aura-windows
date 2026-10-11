@@ -28,10 +28,10 @@
     "specs/039-web-gratuita-do-agente/spec.md",
     "specs/039-web-gratuita-do-agente/plan.md"
   ],
-  "limitations": "No new native runtime or clean-machine installer test; original runtime evidence remains historical.",
+  "limitations": "No new native runtime or clean-machine installer test; original runtime evidence remains historical. Evidence invalidated because an input changed.",
   "observations": "Normal production app and both signed installers built without demo/e2e. NSIS/MSI signatures verify, corrupted bytes reject, resources report 0.3.0; permanent key/endpoint identical to shipped0.2.",
   "procedure": "pnpm -C apps/desktop tauri build --ci --bundles 'nsis,msi'; terminal exit0; independent permanent-key signature verification and PE/MSI literal version 0.3.0 inspection.",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:ab9956335db4afbe8bef54d280d66427afc69aec1fa08cf23120404afd84ad5c",
   "ticket": "TK-005",
   "timestamp": "2026-10-11T04:25:00+00:00"

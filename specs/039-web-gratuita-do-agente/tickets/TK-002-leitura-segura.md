@@ -5,7 +5,7 @@ id: TK-002
 effort: 039-web-gratuita-do-agente
 type: delivery
 status: done
-ticket_revision: 46
+ticket_revision: 49
 requires: ["TK-001"]
 requirement_refs: ["FR-003", "FR-004", "FR-007"]
 acceptance_refs: ["AC-004", "AC-005", "AC-006", "AC-012"]
@@ -13,8 +13,11 @@ spec_revision: 1
 plan_revision: 11
 owned_areas: ["crates/aura-web", "Cargo.lock"]
 verification_status: passed
-last_update: "Version0.3 client-metadata impact explicitly revalidated with exact original backend fingerprint and fresh local checks; native/live proofs remain historical, limits preserved in effort041 QA."
+last_update: Git LF normalization explicitly revalidated; exact original fingerprints recoverable without behavioral edits. Canonical evidence/current0.3 release documented in041.
 ---
+
+
+
 
 
 
