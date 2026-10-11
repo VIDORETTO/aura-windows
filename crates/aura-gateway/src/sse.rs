@@ -8,7 +8,7 @@ pub struct SseEvent {
 
 #[derive(Default)]
 pub struct SseParser {
-    buf: String,
+    buf: Vec<u8>,
 }
 
 impl SseParser {
@@ -18,14 +18,20 @@ impl SseParser {
 
     /// Feeds bytes and returns complete events.
     pub fn push(&mut self, chunk: &[u8]) -> Vec<SseEvent> {
-        self.buf.push_str(&String::from_utf8_lossy(chunk));
-        if self.buf.contains('\r') {
-            self.buf = self.buf.replace("\r\n", "\n");
-        }
+        self.buf.extend_from_slice(chunk);
         let mut out = Vec::new();
-        while let Some(pos) = self.buf.find("\n\n") {
-            let block: String = self.buf.drain(..pos + 2).collect();
-            if let Some(ev) = parse_block(&block) {
+        while let Some((pos, delimiter)) = self.buf.iter().enumerate().find_map(|(pos, _)| {
+            let tail = &self.buf[pos..];
+            if tail.starts_with(b"\n\n") {
+                Some((pos, 2))
+            } else if tail.starts_with(b"\r\n\r\n") {
+                Some((pos, 4))
+            } else {
+                None
+            }
+        }) {
+            let block: Vec<u8> = self.buf.drain(..pos + delimiter).collect();
+            if let Some(ev) = parse_block(&String::from_utf8_lossy(&block)) {
                 out.push(ev);
             }
         }
@@ -35,7 +41,7 @@ impl SseParser {
     /// Flushes a trailing event without the final blank line.
     pub fn finish(&mut self) -> Option<SseEvent> {
         let rest = std::mem::take(&mut self.buf);
-        parse_block(&rest)
+        parse_block(&String::from_utf8_lossy(&rest))
     }
 }
 
@@ -68,6 +74,22 @@ fn parse_block(block: &str) -> Option<SseEvent> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn unicode_codepoints_split_across_network_bytes_are_preserved() {
+        let mut parser = SseParser::new();
+        let mut events = Vec::new();
+        for byte in "data: ação 🦋\r\n\r\n".as_bytes() {
+            events.extend(parser.push(&[*byte]));
+        }
+        assert_eq!(
+            events,
+            vec![SseEvent {
+                event: None,
+                data: "ação 🦋".into()
+            }]
+        );
+    }
 
     #[test]
     fn split_across_chunks_and_crlf() {

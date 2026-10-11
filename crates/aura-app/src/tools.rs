@@ -219,6 +219,7 @@ pub fn mcp_spec_from_args(args: &Value) -> Result<McpServerSpec, String> {
 pub struct HostTools {
     /// The user's extensions (017); empty until the host is built.
     pub extensions: ExtensionsSlot,
+    pub web: crate::web::WebSlot,
     pub platform: Platform,
     pub policy: Arc<RwLock<Policy>>,
     pub grants: Arc<RwLock<Grants>>,
@@ -785,6 +786,12 @@ impl ToolHandler for HostTools {
     fn call<'a>(&'a self, tool: &'a str, args: Value, ctx: CallContext) -> BoxFut<'a, ToolOutput> {
         Box::pin(async move {
             match tool {
+                aura_mcp::tools::WEB_SEARCH | aura_mcp::tools::WEB_FETCH => {
+                    let Some(access) = self.web.get().and_then(Weak::upgrade) else {
+                        return ToolOutput::error("unavailable", "The web service is unavailable");
+                    };
+                    access.call_web(tool, args, ctx).await
+                }
                 SCREEN_CAPTURE => self.screen_capture(args, ctx).await,
                 ACTIVE_WINDOW_INFO => self.active_window_info(),
                 SCREEN_TEXT => self.screen_text(args, ctx).await,

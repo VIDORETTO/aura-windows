@@ -17,6 +17,12 @@ pub enum HostEvent {
     /// The payload deliberately contains no credentials or provider details.
     ProvidersChanged {},
     Conversation(ConversationEvent),
+    /// Verified provenance only; full pages remain in the memory cache.
+    WebSource {
+        thread_id: String,
+        turn_id: String,
+        source: aura_web::WebSource,
+    },
     Login(LoginProgress),
     /// The agent asked for a source with permission "Ask" (004 AC-008).
     Consent(ConsentRequest),

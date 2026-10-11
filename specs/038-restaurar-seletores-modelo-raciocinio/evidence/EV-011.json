@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-011",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n": "cf346d2699422d63e84f3dbad069e9a67afa6d0080e0a27f97ed845d4d3146ac",
+    "apps/desktop/src/overlay/Composer.test.tsx": "16c901f1a0b7db5466c93d435e5e5e41cef7fa83409f45bcf2e9ccd832a70ee5",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "52d1229fc634cad3b85934738a6d01c380ca2ec401b5162c6899a0c93d3a994f",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/tests/host.rs": "1b1435e57937c26d9d3fc0d50746b081a02af41e58486c0b34991d3ea4ccfe4c",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/Composer.test.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/i18n",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Does not approve AC008/009 nativewindow,150/200DPI,resize,SIWC or commercialmodel availability. Nativebuild38814 still running; prior100percent QA separate.",
+  "observations": "UI253/33files26.66s,typecheckpassed;Host74/74in1.82s including diskrestart preferences. Original selectors/catalog/presets/startup/send oracles passed;web config metadata independent. Standards/Spec no blocker for selectedACs;no productchange inrenewal.",
+  "procedure": "pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo test -p aura-app --test host; cargo fmt --all -- --check; git diff --check; fixedbaseline Standards/Spec review including shared web changes",
+  "result": "passed",
+  "tested_revision": "local:c9b58afb26f568237e808d5a0dfdbb3839847f6be4530f718a7759a2fa28926b",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T21:16:28+00:00"
+}

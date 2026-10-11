@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-068"
+  ],
+  "execution_status": "executed",
+  "id": "EV-073",
+  "input_fingerprints": {
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json": "f9308331eeaf495240df029e10bdf12007e8ce4c1ed86aa49ac017a60115b4fa",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json"
+  ],
+  "limitations": "Aprova apenas backendTK006. Requisicoes de inspecao independente nao sao contadas pelo transporteAura. Amostra nao garante SLA/disponibilidade continua/equivalencia proprietaria. Sintese3jornadas/E2EWindows/SIWC real/DPI nao aprovados;FD002/003 menores abertos. Evidence invalidated because an input changed.",
+  "observations": "10/12 fontes relevantes pelo conteudo;8/10 literais/origens extraidos;58HTTP/422s,exit0/phasecomplete. IBGE nao verificado403;Tauri tema errado eunsupported_content;SearXNG SearchAPI ausente mantidos. Uma sessao,semconta/chave/pago;limiares originais. Standards/Spec revisados sem bloqueante;produto/harness inalterados.",
+  "procedure": "cargo run -p aura-web --example quality -- 'C:/Users/gabri/AppData/Local/Temp/aura-039-quality-r9-1791663097282/report.json' 'C:/Users/gabri/AppData/Local/Temp/aura-039-quality-r9-1791663097282/targets.json'; doze buscas originais; inspecao independente; manifesto de dez HTML publicado antes de extrair; handle22833 aguardado ate exit0; git diff --check; hybrid validate",
+  "result": "stale",
+  "tested_revision": "local:b057afbcf051bbdf41b5340c395b438bc07c1c7354da2d9e59132ff80d83d318",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-10T20:20:58+00:00"
+}

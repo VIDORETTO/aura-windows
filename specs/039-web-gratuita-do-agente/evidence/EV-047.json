@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "Windows11; app-server fixado rust-v0.159.0; fixtures externas sintéticas; código local após rustfmt",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-047",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "a383312849cb9ed42f7ce9080b0c4ab063b7c38bfcb877865b157b988a585ed2",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Não aprova retenção integral, raciocínio, compactação, qualidade live ou janela Windows atual. Sandbox1/1 eUI253/typecheck passaram antes da formatação, sem mudança produtiva funcional posterior. Evidence invalidated because an input changed.",
+  "observations": "Após rustfmt,304/304 testes passaram; WebService61 inclui busca25/leitura29/entrega7. Clippy/fmt/diff check passaram. Reaprova somente escopo original da busca conforme revisão.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; cargo clippy -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp --all-targets -- -D warnings; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:4b5e3f700693aa1bbc535096c0b9105a60891a79700352837bd1a4e421528b34",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T18:17:08+00:00"
+}

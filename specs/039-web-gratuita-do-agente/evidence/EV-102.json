@@ -1,0 +1,53 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-090"
+  ],
+  "execution_status": "executed",
+  "id": "EV-102",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/tests/real_app_server.rs": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+    "crates/aura-app/tests/web_tools.rs": "6753c505f3257956716057257b0891f628941d43be29b1a884193eb2959f49fc",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "crates/aura-gateway": "9f2e4822ca4bfc872d77c878d983c4105904963bfff518a569e59a1aeb879fdf",
+    "crates/aura-web": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+    "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1": "778a5483b273faa7b498faa7cb80f97e8e2e9d23e32f8ff412f4734ee198dd03",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py": "f59affc397ac05ec98039c8cec9d7cf134205e04a53332ed040f1ecc0b1bd452",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+    "specs/041-publicacao-github-030/input-revalidation.json": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446"
+  },
+  "input_paths": [
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex/src/service.rs",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json",
+    "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/041-publicacao-github-030/input-revalidation.json"
+  ],
+  "limitations": "No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.",
+  "observations": "Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.",
+  "procedure": "Executed explicit version-0.3 input revalidation: exact directory fingerprint after reversing only HTTP/MCP client metadata in memory; compare all other prior inputs; execute workspace508/UI253/typecheck/fmt/Clippy/licenses-sources and signed production build.",
+  "result": "passed",
+  "tested_revision": "local:9cc42d24fb345d1a5b3cc7fa818dbe6946b9e7a53660412e1041b0def425ef28",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-11T04:24:59+00:00"
+}

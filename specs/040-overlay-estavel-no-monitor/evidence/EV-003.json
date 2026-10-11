@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010"
+  ],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/overlay.rs": "7a020efa9eb02c017d6a8fa3db7ed0191795e7bdfd83b996c6cfd7fdac9935ec",
+    "crates/aura-core/src/placement.rs": "f9789b91cc7b27dc12d24916947488069b22d058ea116099ceb511a7babd901e",
+    "crates/aura-win/examples/qa_foreground.rs": "fe0d506ff8d5e492a707a3c8cc7f2a464bc5b7955bd8cb4589f2e08597a60586",
+    "crates/aura-win/examples/qa_resize.rs": "e49ee17b0f7768cfbb68e471e335b3d91094a134302b6f1f9dd2e5a43e2f7301",
+    "specs/040-overlay-estavel-no-monitor/plan.md": "5f16bf4a3d28f38cebc1ca35c95a5aba713ac1889edfffef12c3a5a81aa6090d",
+    "specs/040-overlay-estavel-no-monitor/qa.md": "ac294d9496443ae131f83e862729d5b47444bf259fddbea9e1254fe71c7de45f",
+    "specs/040-overlay-estavel-no-monitor/spec.md": "3eb1554270b4795a8826dc63499eb9ac23fdaf6059b2b9cba4f536a65e009635"
+  },
+  "input_paths": [
+    "crates/aura-core/src/placement.rs",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-win/examples/qa_foreground.rs",
+    "crates/aura-win/examples/qa_resize.rs",
+    "specs/040-overlay-estavel-no-monitor/spec.md",
+    "specs/040-overlay-estavel-no-monitor/plan.md",
+    "specs/040-overlay-estavel-no-monitor/qa.md"
+  ],
+  "limitations": "Desconexão física e WebView2 nativo150/200 não executados; modelos/performance fora desta mudança de geometria.",
+  "observations": "Core56/56 incluindo11placement; desktop1/1; UI253/253em33arquivos; types/clippy/fmt/diff verdes. Oráculos literais de origem negativa, DPI distintos, maior área, desempate, ausência e regressão de DPI/mínimos/fallback; integração mantém fallback somente sem interseção.",
+  "procedure": "cargo test -p aura-core; cargo test -p aura-desktop; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo clippy -p aura-core -p aura-win -p aura-desktop --all-targets -- -D warnings; cargo fmt --all -- --check; git diff --check.",
+  "result": "passed",
+  "tested_revision": "local:bb0d75e80b206a08a564ea6322e0c1fcfae512679e6b9b11a194bd86729aaa97",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-11T02:20:10+00:00"
+}

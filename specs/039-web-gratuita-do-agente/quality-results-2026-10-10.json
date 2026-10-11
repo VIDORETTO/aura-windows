@@ -1,0 +1,903 @@
+{
+  "elapsedSeconds": 239,
+  "http": 58,
+  "phase": "complete",
+  "reads": [
+    {
+      "chars": 430,
+      "elapsedMs": 128,
+      "extractor": "dom_fallback",
+      "finalUrl": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "inspection": "Official static HTML inspected independently before extraction: ownership introduction.",
+      "matched": true,
+      "needle": "without needing a garbage collector",
+      "query": 1,
+      "title": "Understanding Ownership - The Rust Programming Language",
+      "truncated": false,
+      "url": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html",
+      "warnings": []
+    },
+    {
+      "elapsedMs": 1188,
+      "error": "unsupported_content",
+      "inspection": "Official static HTML inspected independently: List of Commands section. Search relevance remains failed.",
+      "matched": false,
+      "needle": "List of Commands",
+      "query": 2,
+      "url": "https://v2.tauri.app/reference/cli/"
+    },
+    {
+      "chars": 20000,
+      "elapsedMs": 665,
+      "extractor": "readability",
+      "finalUrl": "https://react.dev/reference/react/useEffect",
+      "inspection": "Official HTML inspected independently: opening definition of useEffect.",
+      "matched": true,
+      "needle": "synchronize a component with an external system",
+      "query": 3,
+      "title": "useEffect – React - This feature is available in the latest Experimental version of React - This feature is available in the latest Experimental version of React",
+      "truncated": true,
+      "url": "https://react.dev/reference/react/useEffect",
+      "warnings": []
+    },
+    {
+      "chars": 8511,
+      "elapsedMs": 307,
+      "extractor": "readability",
+      "finalUrl": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/",
+      "inspection": "Official HTML inspected independently: opening description of embedded web technologies.",
+      "matched": true,
+      "needle": "HTML, CSS, and JavaScript",
+      "query": 4,
+      "title": "Introduction to Microsoft Edge WebView2 - Microsoft Edge Developer documentation | Microsoft Learn",
+      "truncated": false,
+      "url": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/",
+      "warnings": []
+    },
+    {
+      "chars": 20000,
+      "elapsedMs": 800,
+      "extractor": "readability",
+      "finalUrl": "https://docs.python.org/3/library/pathlib.html",
+      "inspection": "Official static HTML inspected independently: Pure paths section.",
+      "matched": true,
+      "needle": "Pure paths",
+      "query": 5,
+      "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+      "truncated": true,
+      "url": "https://docs.python.org/3/library/pathlib.html",
+      "warnings": []
+    },
+    {
+      "chars": 20000,
+      "elapsedMs": 1226,
+      "extractor": "readability",
+      "finalUrl": "https://sqlite.org/foreignkeys.html",
+      "inspection": "Official static HTML inspected independently: section 2.",
+      "matched": true,
+      "needle": "Enabling Foreign Key Support",
+      "query": 6,
+      "title": "SQLite Foreign Key Support",
+      "truncated": true,
+      "url": "https://sqlite.org/foreignkeys.html",
+      "warnings": []
+    },
+    {
+      "chars": 2052,
+      "elapsedMs": 350,
+      "extractor": "readability",
+      "finalUrl": "https://data.inpe.br/queimadas/portal/dados-abertos/index.html",
+      "inspection": "Official static HTML inspected independently: main heading, CSV/KML data.",
+      "matched": true,
+      "needle": "Focos de Queimadas e Incêndios",
+      "query": 8,
+      "title": "Dados Abertos • Programa Queimadas • INPE",
+      "truncated": false,
+      "url": "https://data.inpe.br/queimadas/portal/dados-abertos/index.html",
+      "warnings": []
+    },
+    {
+      "chars": 20000,
+      "elapsedMs": 1230,
+      "extractor": "readability",
+      "finalUrl": "https://www.w3.org/TR/WCAG22/",
+      "inspection": "Official static HTML inspected independently: recommendation status section.",
+      "matched": true,
+      "needle": "Status of This Document",
+      "query": 10,
+      "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+      "truncated": true,
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "warnings": [
+        "document_truncated"
+      ]
+    },
+    {
+      "chars": 16997,
+      "elapsedMs": 656,
+      "extractor": "readability",
+      "finalUrl": "https://developers.openai.com/api/docs/guides/tools-web-search",
+      "inspection": "Official HTML inspected independently: web_search tool in the guide.",
+      "matched": true,
+      "needle": "web_search",
+      "query": 11,
+      "title": "Web search | OpenAI API",
+      "truncated": false,
+      "url": "https://developers.openai.com/api/docs/guides/tools-web-search",
+      "warnings": []
+    },
+    {
+      "chars": 2811,
+      "elapsedMs": 656,
+      "extractor": "readability",
+      "finalUrl": "https://docs.searxng.org/dev/search_api.html",
+      "inspection": "Official static HTML inspected independently: Search API main heading and API parameters.",
+      "matched": false,
+      "needle": "Search API",
+      "query": 12,
+      "title": "Search API - SearXNG Documentation (2026.10.9+f4822b3fc)ContentsMenuExpandLight modeDark modeAuto light/dark, in light modeAuto light/dark, in dark mode",
+      "truncated": false,
+      "url": "https://docs.searxng.org/dev/search_api.html",
+      "warnings": []
+    }
+  ],
+  "searches": [
+    {
+      "case": 1,
+      "domain": "rust-lang.org",
+      "elapsedMs": 2750,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para Rust ownership official book",
+          "queries": [
+            "Rust ownership official book"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:41Z",
+            "sourceId": "W1",
+            "title": "Ownership",
+            "url": "https://doc.rust-lang.org/book/ownership.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:41Z",
+            "sourceId": "W2",
+            "title": "Ownership - The Rust Programming Language",
+            "url": "https://web.mit.edu/rust-lang_v1.25/arch/amd64_ubuntu1404/share/doc/rust/html/book/first-edition/ownership.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:41Z",
+            "sourceId": "W3",
+            "title": "Ownership - The Rust Programming Language",
+            "url": "https://doc.rust-lang.org/book/first-edition/ownership.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:41Z",
+            "sourceId": "W4",
+            "title": "The (old) Rust Ownership Guide",
+            "url": "https://doc.rust-lang.org/guide-ownership.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:41Z",
+            "sourceId": "W5",
+            "title": "Understanding Ownership - The Rust Programming Language",
+            "url": "https://doc.rust-lang.org/book/ch04-00-understanding-ownership.html"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:41Z",
+        "warnings": []
+      },
+      "query": "Rust ownership official book"
+    },
+    {
+      "case": 2,
+      "domain": "v2.tauri.app",
+      "elapsedMs": 2839,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para Tauri v2 invoke commands",
+          "queries": [
+            "Tauri v2 invoke commands"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:44Z",
+            "sourceId": "W6",
+            "title": "Command Line Interface | Tauri",
+            "url": "https://v2.tauri.app/reference/cli/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:44Z",
+            "sourceId": "W7",
+            "title": "Command Line Interface | Tauri",
+            "url": "https://v2.tauri.app/es/reference/cli"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:44Z",
+            "sourceId": "W8",
+            "title": "tauri/packages/api/src/core.ts at dev · tauri-apps/tauri · GitHub",
+            "url": "https://github.com/tauri-apps/tauri/blob/dev/packages/api/src/core.ts"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:44Z",
+            "sourceId": "W9",
+            "title": "tauri-skills/tauri-v2/rules/commands.md at main · lispking/tauri-skills · GitHub",
+            "url": "https://github.com/lispking/tauri-skills/blob/main/tauri-v2/rules/commands.md"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:44Z",
+            "sourceId": "W10",
+            "title": "tauri-cli@1.1.0 | Tauri - v2.tauri.app",
+            "url": "https://v2.tauri.app/release/tauri-cli/v1.1.0"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:44Z",
+        "warnings": []
+      },
+      "query": "Tauri v2 invoke commands"
+    },
+    {
+      "case": 3,
+      "domain": "react.dev",
+      "elapsedMs": 2704,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para React useEffect documentation",
+          "queries": [
+            "React useEffect documentation"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:46Z",
+            "sourceId": "W11",
+            "title": "useEffect – React",
+            "url": "https://react.dev/reference/react/useEffect"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:46Z",
+            "sourceId": "W12",
+            "title": "react.dev/src/content/reference/react/useEffect.md at main · reactjs/react.dev · GitHub",
+            "url": "https://github.com/reactjs/react.dev/blob/main/src/content/reference/react/useEffect.md"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:46Z",
+            "sourceId": "W13",
+            "title": "useEffect – React 中文文档",
+            "url": "https://zh-hans.react.dev/reference/react/useEffect"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:46Z",
+            "sourceId": "W14",
+            "title": "useEffect – React",
+            "url": "https://he.react.dev/reference/react/useEffect"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:46Z",
+            "sourceId": "W15",
+            "title": "useEffect – React",
+            "url": "https://ko.react.dev/reference/react/useEffect"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:46Z",
+        "warnings": []
+      },
+      "query": "React useEffect documentation"
+    },
+    {
+      "case": 4,
+      "domain": "learn.microsoft.com",
+      "elapsedMs": 2674,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para Microsoft WebView2 introduction",
+          "queries": [
+            "Microsoft WebView2 introduction"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:49Z",
+            "sourceId": "W16",
+            "title": "WebView2 Win32 C++ ICoreWebView2 | Microsoft Learn",
+            "url": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-1.0.3912.50"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:49Z",
+            "sourceId": "W17",
+            "title": "Introduction to Microsoft Edge WebView2 - Microsoft Edge Developer documentation | Microsoft Learn",
+            "url": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:49Z",
+            "sourceId": "W18",
+            "title": "WebView2 Win32 C++ ICoreWebView2 | Microsoft Learn",
+            "url": "https://learn.microsoft.com/nb-no/microsoft-edge/webview2/reference/win32/icorewebview2?view=webview2-0.9.488"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:49Z",
+            "sourceId": "W19",
+            "title": "WebView2 documentation - Microsoft Edge Developer documentation | Microsoft Learn",
+            "url": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/landing/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:49Z",
+            "sourceId": "W20",
+            "title": "edge-developer/microsoft-edge/webview2/index.md at main · MicrosoftDocs/edge-developer · GitHub",
+            "url": "https://github.com/MicrosoftDocs/edge-developer/blob/main/microsoft-edge/webview2/index.md"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:49Z",
+        "warnings": []
+      },
+      "query": "Microsoft WebView2 introduction"
+    },
+    {
+      "case": 5,
+      "domain": "docs.python.org",
+      "elapsedMs": 2844,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para Python pathlib documentation",
+          "queries": [
+            "Python pathlib documentation"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:52Z",
+            "sourceId": "W21",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.10.22 documentation",
+            "url": "https://docs.python.org/3.10/library/pathlib.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:52Z",
+            "sourceId": "W22",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.12.15 documentation",
+            "url": "https://docs.python.org/3.12/library/pathlib.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:52Z",
+            "sourceId": "W23",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:52Z",
+            "sourceId": "W24",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.8.20 documentation",
+            "url": "https://docs.python.org/3.8/library/pathlib.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:52Z",
+            "sourceId": "W25",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.13.15 documentation",
+            "url": "https://docs.python.org/3.13/library/pathlib.html"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:52Z",
+        "warnings": []
+      },
+      "query": "Python pathlib documentation"
+    },
+    {
+      "case": 6,
+      "domain": "sqlite.org",
+      "elapsedMs": 2717,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para SQLite foreign keys documentation",
+          "queries": [
+            "SQLite foreign keys documentation"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:55Z",
+            "sourceId": "W26",
+            "title": "SQLite Foreign Key Support",
+            "url": "https://sqlite.org//foreignkeys.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:55Z",
+            "sourceId": "W27",
+            "title": "Documentation - SQLite",
+            "url": "https://sqlite.org/docs.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:55Z",
+            "sourceId": "W28",
+            "title": "SQLite Foreign Key Support",
+            "url": "https://www2.sqlite.org/matrix/foreignkeys.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:55Z",
+            "sourceId": "W29",
+            "title": "foreign-key-clause - SQLite Syntax",
+            "url": "https://www.sqlite.org/syntax/foreign-key-clause.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:55Z",
+            "sourceId": "W30",
+            "title": "SQLite Foreign Key Support",
+            "url": "https://sqlite.org/foreignkeys.html"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:55Z",
+        "warnings": []
+      },
+      "query": "SQLite foreign keys documentation"
+    },
+    {
+      "case": 7,
+      "domain": "ibge.gov.br",
+      "elapsedMs": 2798,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para IBGE Censo 2022 resultados",
+          "queries": [
+            "IBGE Censo 2022 resultados"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:57Z",
+            "sourceId": "W31",
+            "title": "2022 Census | IBGE",
+            "url": "https://www.ibge.gov.br/en/statistics/social/population/22836-2022-census-3.html?edicao=42205"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": "2023-06-27",
+            "retrievedAt": "2026-10-10T16:53:57Z",
+            "sourceId": "W32",
+            "title": "Censo Demográfico 2022 - IBGE",
+            "url": "https://www.ibge.gov.br/biblioteca/visualizacao/livros/liv102011.pdf"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:57Z",
+            "sourceId": "W33",
+            "title": "IBGE | Portal do IBGE  | IBGE",
+            "url": "https://www.ibge.gov.br/censos"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:57Z",
+            "sourceId": "W34",
+            "title": "Censo 2022 | IBGE",
+            "url": "https://www.ibge.gov.br/estatisticas/sociais/populacao/22827-censo-demografico-2022.html?edicao=43582&t=downloads"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:53:57Z",
+            "sourceId": "W35",
+            "title": "2022 Census | IBGE",
+            "url": "https://www.ibge.gov.br/en/statistics/social/labor/22836-2022-census-3.html?edicao=42280"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:53:57Z",
+        "warnings": []
+      },
+      "query": "IBGE Censo 2022 resultados"
+    },
+    {
+      "case": 8,
+      "domain": "inpe.br",
+      "elapsedMs": 2873,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para INPE programa queimadas dados",
+          "queries": [
+            "INPE programa queimadas dados"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:00Z",
+            "sourceId": "W36",
+            "title": "Dados Abertos • Programa Queimadas • INPE",
+            "url": "https://data.inpe.br/queimadas/portal/dados-abertos/index.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:00Z",
+            "sourceId": "W37",
+            "title": "Dados Abertos • Programa Queimadas • INPE",
+            "url": "https://data.inpe.br/queimadas/dados-abertos/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:00Z",
+            "sourceId": "W38",
+            "title": "Dados Abertos • Programa Queimadas • INPE",
+            "url": "https://data.inpe.br/queimadas/portal/pages/secao_downloads/dados-abertos/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:00Z",
+            "sourceId": "W39",
+            "title": "Programa Queimadas • INPE",
+            "url": "https://terrabrasilis.dpi.inpe.br/queimadas/portal"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:00Z",
+            "sourceId": "W40",
+            "title": "Programa Queimadas • INPE",
+            "url": "https://data.inpe.br/queimadas/queimadas/"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:54:00Z",
+        "warnings": []
+      },
+      "query": "INPE programa queimadas dados"
+    },
+    {
+      "case": 9,
+      "domain": "museudoamanha.org.br",
+      "elapsedMs": 2798,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para Museu do Amanhã horário visita",
+          "queries": [
+            "Museu do Amanhã horário visita"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:03Z",
+            "sourceId": "W41",
+            "title": "Museu do Amanhã",
+            "url": "https://www.museudoamanha.org.br/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:03Z",
+            "sourceId": "W42",
+            "title": "Horários e Ingressos | Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/visite/horarios-e-ingressos"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:03Z",
+            "sourceId": "W43",
+            "title": "Museu do Amanhã: Home",
+            "url": "https://museudoamanha.org.br/en"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:03Z",
+            "sourceId": "W44",
+            "title": "Fale conosco | Fale com a gente - Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/info/atendimento/fale-com-a-gente"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:03Z",
+            "sourceId": "W45",
+            "title": "MUSEU DO AMANHÃ",
+            "url": "https://site.bileto.sympla.com.br/museudoamanha"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:54:03Z",
+        "warnings": []
+      },
+      "query": "Museu do Amanhã horário visita"
+    },
+    {
+      "case": 10,
+      "domain": "w3.org",
+      "elapsedMs": 2840,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para W3C WCAG 2.2 recommendation",
+          "queries": [
+            "W3C WCAG 2.2 recommendation"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:06Z",
+            "sourceId": "W46",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/WCAG22/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:06Z",
+            "sourceId": "W47",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/2022/CR-WCAG22-20220906"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:06Z",
+            "sourceId": "W48",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/2023/PR-WCAG22-20230720/"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:06Z",
+            "sourceId": "W49",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/2023/CRD-WCAG22-20230125"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:06Z",
+            "sourceId": "W50",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/2020/WD-WCAG22-20200227"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:54:06Z",
+        "warnings": []
+      },
+      "query": "W3C WCAG 2.2 recommendation"
+    },
+    {
+      "case": 11,
+      "domain": "developers.openai.com",
+      "elapsedMs": 2773,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para OpenAI web search tools documentation",
+          "queries": [
+            "OpenAI web search tools documentation"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:09Z",
+            "sourceId": "W51",
+            "title": "developers.openai.com",
+            "url": "https://developers.openai.com/api/docs/guides/tools-web-search.md"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:09Z",
+            "sourceId": "W52",
+            "title": "\n  Web search | OpenAI API\n",
+            "url": "https://developers.openai.com/api/docs/guides/tools-web-search"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:09Z",
+            "sourceId": "W53",
+            "title": "Web search | OpenAI API",
+            "url": "https://developers.openai.com/docs/guides/tools-web-search?api-mode=chat"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:09Z",
+            "sourceId": "W54",
+            "title": "Web search | OpenAI API",
+            "url": "https://developers.openai.com/api/docs/guides/agents-api/tools/web-search"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:09Z",
+            "sourceId": "W55",
+            "title": "Tools | OpenAI Developers",
+            "url": "https://developers.openai.com/resources/tools"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:54:09Z",
+        "warnings": []
+      },
+      "query": "OpenAI web search tools documentation"
+    },
+    {
+      "case": 12,
+      "domain": "docs.searxng.org",
+      "elapsedMs": 2679,
+      "output": {
+        "cached": false,
+        "degraded": false,
+        "provider": "parallel",
+        "queryContext": {
+          "maxResults": 5,
+          "objective": "Encontrar a fonte oficial para SearXNG search API JSON",
+          "queries": [
+            "SearXNG search API JSON"
+          ],
+          "refresh": true
+        },
+        "results": [
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:11Z",
+            "sourceId": "W56",
+            "title": "Search API - SearXNG Documentation (2026.10.4+d48c4b555)",
+            "url": "https://docs.searxng.org//dev/search_api.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:11Z",
+            "sourceId": "W57",
+            "title": "docs.searxng.org",
+            "url": "https://docs.searxng.org/_sources/dev/search_api.rst.txt"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:11Z",
+            "sourceId": "W58",
+            "title": "JSON Engine - SearXNG Documentation (2026.8.22+9fea41204)",
+            "url": "https://docs.searxng.org//dev/engines/json_engine.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:11Z",
+            "sourceId": "W59",
+            "title": "Search API - SearXNG Documentation (2026.10.4+d48c4b555)",
+            "url": "https://docs.searxng.org/dev/search_api.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "publishedAt": null,
+            "retrievedAt": "2026-10-10T16:54:11Z",
+            "sourceId": "W60",
+            "title": "searxng/docs/dev/search_api.rst at master · searxng/searxng · GitHub",
+            "url": "https://github.com/searxng/searxng/blob/master/docs/dev/search_api.rst?plain=true"
+          }
+        ],
+        "searchedAt": "2026-10-10T16:54:11Z",
+        "warnings": []
+      },
+      "query": "SearXNG search API JSON"
+    }
+  ],
+  "startedAt": "2026-10-10T13:53:38.588025-03:00"
+}

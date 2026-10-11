@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-089",
+  "input_fingerprints": {
+    "apps/desktop/src": "be1506368809f7e0a0e36c99666d72c8f6bbe367434ddc746d73def359608694",
+    "crates/aura-app": "71531618cef2c6f6413a044eac60cfdfbd54e73f433bcaa3be4c5ff6a87098ed",
+    "crates/aura-codex": "f0c3aa0390675b7d7a24aeb6c2b02da573ff8dafa4047efdc85f35cfa4b54d95",
+    "crates/aura-gateway": "9f2e4822ca4bfc872d77c878d983c4105904963bfff518a569e59a1aeb879fdf",
+    "crates/aura-mcp": "effd0579c18eaae67b664e0b58f17443153604f65b8011692712626eb18e5be7",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-codex",
+    "crates/aura-app",
+    "crates/aura-mcp",
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "apps/desktop/src",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Initial matrix attempt lacked QA parent directory and ran no behavior; later one handshake failure retained. Other real models not synthesized. Native source destination and038DPI/resize separate; three journeys do not approve backend12/10gate or general absence of all derived private information. Evidence invalidated because an input changed.",
+  "observations": "Both genuine missing-directive reds then green;19service/505workspace/253UI.24/25matrix first run; remaining case passed on isolated retry after initial handshake closed (before consumer behavior).5/5 integrated. SIWCgpt-6-luna3/3: comparison reads two official domains,WCAG correct W1,Museum explicit unsupported-content caveat with valid snippet citation. Fixed-baseline Standards/Spec review no blocker for this correction; direct tools preserve gateway privacy seam.",
+  "procedure": "Two public CodexService red/green cases (empty caller namespace then idle resume); cargo test --workspace --exclude aura-desktop; real_app_server web:: matrix plus one handshake-only case retry; cargo test -p aura-app --test web_research -- --ignored --test-threads=1; UI tests/typecheck; workspace clippy; fmt/diff; native e2e build; normal installed pin and existing ChatGPT three unchanged questions without overrides.",
+  "result": "stale",
+  "tested_revision": "local:88a6f5c7aa5ca8f503519f43620b7a93da71cdcdd2b0c4f955f9cf852a5444e0",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T22:04:16+00:00"
+}

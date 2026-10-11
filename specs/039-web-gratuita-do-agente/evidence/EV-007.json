@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-007",
+  "input_fingerprints": {
+    "Cargo.lock": "150747b1f59fc5866a5127295fc2e6b68583a94134902eff2432ae5c7b480de3",
+    "crates/aura-web/src/fetch.rs": "853cd88a083c5f6f2acf8af89b35e546f09a6901be52b28b5741cec8adf29173",
+    "crates/aura-web/src/lib.rs": "87570c0ed35bf59e32a7fb3f5d49486d7fad031003e001425f0268fce80d3f8d",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.lock",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Mesmos limites escopoTK002; root completo nao aprovado. Smoke HTML anterior historico, essa execucao offline. Evidence invalidated because an input changed.",
+  "observations": "29fetch+18search verdes; planr4 acrescenta seam de integracao/observador TK003, sem mudanca da leitura/transport/pin/oracles aprovados na revisao r3.",
+  "procedure": "cargo test -p aura-web",
+  "result": "stale",
+  "tested_revision": "local:8195e20bc8dda02c64069954cd03b89b6cace30136b4ae1a3e13c1510659235d",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-08T07:03:18+00:00"
+}

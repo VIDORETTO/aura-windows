@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-055",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "a383312849cb9ed42f7ce9080b0c4ab063b7c38bfcb877865b157b988a585ed2",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente escopo original deste predecessor; não aprova TK007,gate integralW2,raciocínio,compactação,qualidade ou Windows. Evidence invalidated because an input changed.",
+  "observations": "Busca sem chave, parsing/proveniência e budget:25 casos de search e suite304,0falhas. Renovação após plano9,sem mudança de comportamento produtivo nesta execução.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; paraTK003 cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 --skip web_fetched_but_uncited_source_url, AURA_CODEX_BIN fixado e AURA_E2E_DIR TEMP.",
+  "result": "stale",
+  "tested_revision": "local:bca801c16148e7c33873e5ce3702def50cde67b4b54e34d6454d1e6e944ba7e2",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T19:00:40+00:00"
+}

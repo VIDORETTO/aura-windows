@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "Windows11; rust-v0.159.0 cached, SHA256 executável68cc2280bfd6fd682f3399790526b35aae29c9395ff2bc4efd652a768fc97ac5; perfis/sandbox TEMP próprios",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-043",
+  "input_fingerprints": {
+    "apps/desktop/src": "be1506368809f7e0a0e36c99666d72c8f6bbe367434ddc746d73def359608694",
+    "crates/aura-app/src": "c5b835e767ba7cc5b98d0931efccbf949445fffe5e9858d7f4c9af22257bf884",
+    "crates/aura-app/tests/real_app_server.rs": "5d6e9de390eff2949df2812e3ca1cc003eb2743c6dee8f6bc8fdcc1a7f21e9d6",
+    "crates/aura-app/tests/web_tools.rs": "b079cfe2bc9e0a9df244fbd9b0cd496dcaf7c76f3d68b8d92b1d58e04c672d65",
+    "crates/aura-codex": "27512ba202c5f3c62986d93b52c92f0a39742c9d0600082ff42af2a36c0399ac",
+    "crates/aura-gateway": "8aee93d233107d105afdd2beac8a780696ecc8774e7d7ac103f1498ba14f7f91",
+    "crates/aura-mcp": "effd0579c18eaae67b664e0b58f17443153604f65b8011692712626eb18e5be7",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/src",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-codex",
+    "crates/aura-gateway",
+    "crates/aura-mcp",
+    "apps/desktop/src",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Providers/páginas scripted. Passagem do literal de página não aprova privacidade integral de URLs não citadas/argumentos/raciocínio, compactação ou TK007/TK004. SIWC e QA nativo atuais não executados. Evidence invalidated because an input changed.",
+  "observations": "Rust304/304; fixado17/17 em14,59s incluindo nove protocolos/modos, retomada/cache e histórico; sandbox1/1 em22,42s; UI253/253; typecheck passou. Renova escopo original da integração conforme review.md.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; AURA_CODEX_BIN fixado/AURA_E2E_DIR TEMP: cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1; AURA_SBX_OUTSIDE TEMP UUID: cargo test -p aura-app --test real_app_server real_app_server_task_mode_confines_writes -- --ignored --test-threads=1; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck",
+  "result": "stale",
+  "tested_revision": "local:e3f68d4ad7e49f8d940c1396d75e4ec9f9eb7fa1242154397fd97cb7a31df105",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T18:03:31+00:00"
+}

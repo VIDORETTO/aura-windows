@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { freshApp } from "../test/harness";
 import { setBridge } from "../ipc/bridge";
 import { OverlayApp } from "./OverlayApp";
+import type { ModelInfo, Settings } from "../ipc/types";
 
 type Bridge = Awaited<ReturnType<typeof freshApp>>;
 
@@ -161,6 +162,293 @@ describe("composer menus (015)", () => {
 });
 
 describe("model picker", () => {
+  it("reads legacy default effort and preserves its other modes when saving a model choice (038 AC-006)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("settings_update", { patch: { effortPresets: { "aura-chatgpt-plan::default": { chat: "high", plan: "low" } } } });
+    const catalog: ModelInfo[] = [{ id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true }];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? catalog as R : bridge.invoke<R>(cmd, args),
+    });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelo QA reasoner, esforço Alto" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Baixo" }));
+    await waitFor(async () => {
+      const settings = await bridge.invoke<Settings>("settings_get");
+      expect(settings.effortPresets).toEqual({
+        "aura-chatgpt-plan::qa-reasoner": { chat: "low" },
+        "aura-chatgpt-plan::default": { plan: "low" },
+      });
+    });
+  });
+
+  it("remembers effort by actual model and mode across model changes and a fresh Overlay (038 AC-006)", async () => {
+    const catalog: ModelInfo[] = [
+      { id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true },
+      { id: "qa-fast", displayName: "QA fast", efforts: [], defaultEffort: null, inputModalities: ["text"], isDefault: false },
+    ];
+    const bridge = await freshApp({ signedIn: true });
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? catalog as R : bridge.invoke<R>(cmd, args),
+    });
+    const user = userEvent.setup();
+    const view = render(<OverlayApp />);
+    await screen.findByRole("button", { name: "Modelo QA reasoner" });
+    await user.click(screen.getByRole("button", { name: "Expandir" }));
+    await user.click(screen.getByRole("button", { name: /^Modelo QA reasoner, modo Chat/ }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Baixo" }));
+    await user.click(screen.getByRole("menuitemradio", { name: /Tarefa/ }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Máximo" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "QA fast" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "QA reasoner" }));
+    expect(screen.getByRole("button", { name: "Modelo QA reasoner, modo Tarefa, esforço Máximo" })).toBeInTheDocument();
+    await user.click(screen.getByRole("menuitemradio", { name: "Chat" }));
+    expect(screen.getByRole("button", { name: "Modelo QA reasoner, modo Chat, esforço Baixo" })).toBeInTheDocument();
+    await waitFor(async () => {
+      const settings = await bridge.invoke<Settings>("settings_get");
+      expect(settings.effortPresets["aura-chatgpt-plan::qa-reasoner"]).toEqual({ chat: "low", task: "max" });
+    });
+    const persisted = await bridge.invoke<Settings>("settings_get");
+    view.unmount();
+    const restarted = await freshApp({ signedIn: true });
+    await restarted.invoke("settings_update", { patch: { effortPresets: persisted.effortPresets } });
+    setBridge({ ...restarted, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? catalog as R : restarted.invoke<R>(cmd, args),
+    });
+    render(<OverlayApp />);
+    expect(await screen.findByRole("button", { name: "Modelo QA reasoner, esforço Baixo" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Modo: Chat" }));
+    await user.click(screen.getByRole("menuitemradio", { name: /Tarefa/ }));
+    expect(screen.getByRole("button", { name: "Modelo QA reasoner, esforço Máximo" })).toBeInTheDocument();
+  });
+
+  it("explains why the effort resets when switching to a model without reasoning (038 AC-007)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const catalog: ModelInfo[] = [
+      { id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true },
+      { id: "qa-fast", displayName: "QA fast", efforts: [], defaultEffort: null, inputModalities: ["text"], isDefault: false },
+    ];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? catalog as R : bridge.invoke<R>(cmd, args),
+    });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelo QA reasoner" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Máximo" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "QA fast" }));
+    expect(screen.getByRole("button", { name: "Modelo QA fast" })).toBeInTheDocument();
+    expect(screen.getByText("Este modelo não tem esforço de raciocínio configurável.")).toBeInTheDocument();
+    expect(screen.getByText("O esforço anterior não está disponível neste modelo. Usando o padrão do modelo.")).toBeInTheDocument();
+  });
+
+  it("revalidates the captured effort if capabilities change while starting the conversation (038 AC-007)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let catalog: ModelInfo[] = [{ id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true }];
+    let finishStart!: () => void;
+    const starting = new Promise<void>((resolve) => { finishStart = resolve; });
+    let began = false;
+    const efforts: (string | null)[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "models_list") return catalog as R;
+      if (cmd === "conversation_start") {
+        began = true;
+        const result = await bridge.invoke<R>(cmd, args);
+        await starting;
+        return result;
+      }
+      if (cmd === "conversation_send") efforts.push((args.request as { options: { effort: string | null } }).options.effort);
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelo QA reasoner" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "QA reasoner" }));
+    await user.click(screen.getByRole("menuitemradio", { name: "Máximo" }));
+    await user.keyboard("{Escape}");
+    await user.type(screen.getByRole("combobox"), "oi{Enter}");
+    await waitFor(() => expect(began).toBe(true));
+    catalog = [{ ...catalog[0], efforts: ["low", "high"] }];
+    act(() => bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} }));
+    await screen.findByText("O esforço anterior não está disponível neste modelo. Usando o padrão do modelo.");
+    await act(async () => { finishStart(); });
+    await waitFor(() => expect(efforts).toEqual([null]));
+  });
+
+  it("announces a removed effort and never sends it after a confirmed catalog change (038 AC-007)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let catalog: ModelInfo[] = [{ id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true }];
+    const sent: { model: string | null; effort: string | null }[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "models_list") return catalog as R;
+      if (cmd === "conversation_send") sent.push((args.request as { options: { model: string | null; effort: string | null } }).options);
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelo QA reasoner" }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    await user.click(within(picker).getByRole("menuitemradio", { name: "QA reasoner" }));
+    await user.click(within(picker).getByRole("menuitemradio", { name: "Máximo" }));
+    catalog = [{ ...catalog[0], efforts: ["low", "high"] }];
+    act(() => bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} }));
+    expect(await screen.findByText("O esforço anterior não está disponível neste modelo. Usando o padrão do modelo.")).toBeInTheDocument();
+    expect(within(picker).queryByRole("menuitemradio", { name: "Máximo" })).toBeNull();
+    await user.keyboard("{Escape}");
+    await user.type(screen.getByRole("combobox"), "oi{Enter}");
+    await waitFor(() => expect(sent).toEqual([{ model: "qa-reasoner", effort: null }]));
+  });
+
+  it("restores the default model's saved effort when its catalog arrives (038 AC-006 AC-007)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("settings_update", { patch: { defaultModel: "qa-reasoner", effortPresets: { "aura-chatgpt-plan::qa-reasoner": { chat: "max" } } } });
+    let finish!: (value: unknown) => void;
+    const pending = new Promise((resolve) => { finish = resolve; });
+    const catalog: ModelInfo[] = [{ id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true }];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? await pending as R : bridge.invoke<R>(cmd, args),
+    });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: /^Modelo/ }));
+    await act(async () => { finish(catalog); });
+    expect(await screen.findByRole("button", { name: "Modelo QA reasoner, esforço Máximo" })).toBeInTheDocument();
+    expect(screen.getByRole("menuitemradio", { name: "Máximo" })).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("allows the next model and effort in a conversation while keeping its provider fixed (038 AC-002)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("providers_save", { draft: { name: "Other provider", preset: "ollama" }, credential: null });
+    const s = spy(bridge, true);
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await screen.findByRole("button", { name: "Modelo GPT-6 Luna" });
+    await user.type(screen.getByRole("combobox"), "primeiro{Enter}");
+    await waitFor(() => expect(s.sent()).toEqual(["primeiro"]));
+    await user.click(screen.getByRole("button", { name: /^Modelo GPT-6 Luna, modo Chat/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e modo" });
+    const providers = within(picker).getByRole("menu", { name: "Provedor" });
+    expect(within(providers).getAllByRole("menuitemradio").map((p) => p.textContent)).toEqual(["ChatGPT"]);
+    expect(within(picker).getByText("Para trocar de provedor, comece uma nova conversa.")).toBeInTheDocument();
+    await user.click(within(picker).getByRole("menuitemradio", { name: "GPT-6 Astra" }));
+    await user.click(within(picker).getByRole("menuitemradio", { name: "Alto" }));
+    expect(screen.getByRole("button", { name: "Modelo GPT-6 Astra, modo Chat, esforço Alto" })).toBeInTheDocument();
+    const start = s.calls.find((c) => c.cmd === "conversation_start")!.args.options as { model: string };
+    const first = s.calls.find((c) => c.cmd === "conversation_send")!.args.request as { options: { model: string | null; effort: string | null } };
+    expect(start.model).toBe("gpt-6-luna");
+    // A null per-turn override inherits the model fixed at conversation/start.
+    expect(first.options).toEqual({ model: null, effort: null });
+    expect(s.sent()).toEqual(["primeiro"]);
+  });
+
+  it("keeps BYOK models available despite a plan failure and a failed provider refresh (038 AC-004)", async () => {
+    const bridge = await freshApp({ signedIn: false });
+    bridge.state.providers = [{ id: "qa", name: "QA", preset: "custom", wire: "responses", baseUrl: "http://127.0.0.1:9/v1", auth: "none", extraHeaders: {}, credentialHint: null, status: "verified", lastError: null, quirks: { noParallelToolCalls: false, reasoningEffort: false, noStreamOptions: false },
+      models: [{ id: "qa-reasoner", displayName: "QA reasoner", contextWindow: null, maxOutput: null, supportsImages: false, supportsTools: true, supportsReasoning: true, estimated: false, manual: true, efforts: ["low", "high", "max"], defaultEffort: "high" }] }];
+    let providerUnavailable = false;
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) => {
+      if (cmd === "models_list" || (cmd === "providers_list" && providerUnavailable)) throw { code: "agent_unavailable", message: "Unavailable" };
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await screen.findByRole("combobox");
+    await user.click(screen.getByRole("button", { name: /^Modelo/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    await user.click(await within(picker).findByRole("menuitemradio", { name: "QA reasoner" }));
+    await user.click(within(picker).getByRole("menuitemradio", { name: "Máximo" }));
+    providerUnavailable = true;
+    act(() => bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} }));
+    expect(await within(picker).findByText("Não foi possível carregar os modelos.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Modelo QA reasoner, esforço Máximo" })).toBeInTheDocument();
+    expect(within(picker).getByRole("menuitemradio", { name: "QA reasoner" })).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("does not let an older model response replace a newer catalog (038 AC-004)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let finishOld!: (value: unknown) => void;
+    const old = new Promise((resolve) => { finishOld = resolve; });
+    const newer: ModelInfo[] = [{ id: "qa-new", displayName: "New catalog model", efforts: [], defaultEffort: null, inputModalities: ["text"], isDefault: true }];
+    let requests = 0;
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) => {
+      if (cmd === "models_list") return (++requests === 1 ? await old : newer) as R;
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: /^Modelo/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    act(() => bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} }));
+    expect(await within(picker).findByRole("menuitemradio", { name: "New catalog model" })).toBeInTheDocument();
+    await act(async () => { finishOld([{ ...newer[0], id: "old", displayName: "Obsolete model" }]); });
+    expect(within(picker).getByRole("menuitemradio", { name: "New catalog model" })).toBeInTheDocument();
+    expect(within(picker).queryByRole("menuitemradio", { name: "Obsolete model" })).toBeNull();
+  });
+
+  it("keeps known models and effort after a failed refresh and updates the open picker on retry (038 AC-004)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let catalog: ModelInfo[] = [{ id: "qa-reasoner", displayName: "QA reasoner", efforts: ["low", "high", "max"], defaultEffort: "high", inputModalities: ["text"], isDefault: true }];
+    let unavailable = false;
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) => {
+      if (cmd === "models_list") {
+        if (unavailable) throw { code: "agent_unavailable", message: "Unavailable" };
+        return catalog as R;
+      }
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: "Modelo QA reasoner" }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    await user.click(within(picker).getByRole("menuitemradio", { name: "QA reasoner" }));
+    await user.click(within(picker).getByRole("menuitemradio", { name: "Máximo" }));
+    unavailable = true;
+    act(() => bridge.emitLocal!("aura://event", { channel: "providersChanged", event: {} }));
+    expect(await within(picker).findByText("Não foi possível carregar os modelos.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Modelo QA reasoner, esforço Máximo" })).toBeInTheDocument();
+    expect(within(picker).getByRole("menuitemradio", { name: "QA reasoner" })).toBeInTheDocument();
+    unavailable = false;
+    catalog = [{ id: "qa-fast", displayName: "QA fast", efforts: [], defaultEffort: null, inputModalities: ["text"], isDefault: true }];
+    await user.click(within(picker).getByRole("button", { name: "Tentar novamente" }));
+    expect(await within(picker).findByRole("menuitemradio", { name: "QA fast" })).toBeInTheDocument();
+    expect(within(picker).queryByRole("menuitemradio", { name: "QA reasoner" })).toBeNull();
+  });
+
+  it("distinguishes a pending catalog from a successful empty catalog (038 AC-003)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let finish!: (value: unknown) => void;
+    const pending = new Promise((resolve) => { finish = resolve; });
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) =>
+      cmd === "models_list" ? await pending as R : bridge.invoke<R>(cmd, args),
+    });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: /^Modelo/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    expect(within(picker).getByText("Carregando modelos…")).toBeInTheDocument();
+    await act(async () => { finish([]); });
+    expect(await within(picker).findByText("Nenhum modelo disponível neste provedor.")).toBeInTheDocument();
+    expect(within(picker).queryByText("Carregando modelos…")).toBeNull();
+  });
+
+  it("recovers a failed model catalog from the compact picker (038 AC-003)", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    let unavailable = true;
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args?: Record<string, unknown>) => {
+      if (cmd === "models_list" && unavailable) throw { code: "agent_unavailable", message: "Unavailable" };
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.click(await screen.findByRole("button", { name: /^Modelo/ }));
+    const picker = screen.getByRole("dialog", { name: "Modelo e esforço" });
+    expect(await within(picker).findByText("Não foi possível carregar os modelos.")).toBeInTheDocument();
+    unavailable = false;
+    await user.click(within(picker).getByRole("button", { name: "Tentar novamente" }));
+    expect(await within(picker).findByRole("menuitemradio", { name: "GPT-6 Luna" })).toBeInTheDocument();
+    expect(within(picker).queryByText("Não foi possível carregar os modelos.")).toBeNull();
+  });
+
   it("names the model that 'default' stands for", async () => {
     const bridge = await freshApp({ signedIn: true });
     const user = userEvent.setup();

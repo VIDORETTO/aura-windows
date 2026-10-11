@@ -3,7 +3,7 @@ import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from "rea
 import { api, errorMessage } from "../ipc/commands";
 import type { Approval, Block, Thread, ToolItem } from "../state/conversation";
 import { useConversation } from "../state/conversation";
-import type { ConsentRequest, TurnError } from "../ipc/types";
+import type { ConsentRequest, TurnError, WebSource } from "../ipc/types";
 import { useT, type MessageKey } from "../i18n";
 import { hasCode, loadHighlighter, renderMarkdown } from "../lib/markdown";
 import { durationMs } from "../lib/format";
@@ -13,16 +13,32 @@ import { Button, cx } from "../ui/primitives";
 import { ChipList } from "./ChipList";
 import { useSession } from "./session";
 import { UserInputCard } from "./UserInputCard";
+import { WebSources } from "./WebSources";
+import { webSourceUrl } from "../lib/webSources";
 
 const MANAGE_USAGE_URL = "https://chatgpt.com/settings/usage";
 
-function Markdown({ text, streaming }: { text: string; streaming: boolean }) {
+const NO_SOURCES: readonly WebSource[] = [];
+function Markdown({ text, streaming, sources = NO_SOURCES }: { text: string; streaming: boolean; sources?: readonly WebSource[] }) {
+  const t = useT();
   const [hl, setHl] = useState(false);
   useEffect(() => {
     if (!streaming && hasCode(text)) void loadHighlighter().then(() => setHl(true));
   }, [streaming, text]);
-  const html = useMemo(() => renderMarkdown(text, { streaming }), [text, streaming, hl]);
+  const html = useMemo(() => renderMarkdown(text, {
+    streaming, sources,
+    sourceLabel: (source) => t("web.openSource", { id: source.sourceId, title: source.title }),
+    unverifiedLabel: (id) => t("web.unverifiedSource", { id }),
+  }), [text, streaming, hl, sources, t]);
   const onClick = (e: React.MouseEvent) => {
+    const web = (e.target as HTMLElement).closest("button[data-web-source]");
+    if (web) {
+      e.preventDefault();
+      const source = sources.find((entry) => entry.sourceId === web.getAttribute("data-web-source"));
+      const url = source && webSourceUrl(source);
+      if (url) void api.openExternal(url).catch((error) => useApp.getState().notify("error", errorMessage(error)));
+      return;
+    }
     const cite = (e.target as HTMLElement).closest("button[data-cite]");
     if (cite) {
       e.preventDefault();
@@ -139,11 +155,12 @@ function ReplaceButton({ text }: { text: string }) {
   );
 }
 
-const Assistant = memo(function Assistant({ text, streaming, last = false }: { text: string; streaming: boolean; last?: boolean }) {
+const Assistant = memo(function Assistant({ text, streaming, last = false, sources = NO_SOURCES }: { text: string; streaming: boolean; last?: boolean; sources?: readonly WebSource[] }) {
   const t = useT();
   return (
     <div className="group" data-answer>
-      <Markdown text={text} streaming={streaming} />
+      <Markdown text={text} streaming={streaming} sources={sources} />
+      {!streaming && <WebSources sources={sources} />}
       {!streaming && text && (
         <div className={cx("mt-1 flex flex-wrap gap-1 transition-opacity focus-within:opacity-100", !last && "opacity-0 group-hover:opacity-100")}>
           <CopyButton text={text} />
@@ -167,6 +184,9 @@ const Assistant = memo(function Assistant({ text, streaming, last = false }: { t
 
 function ToolCard({ item }: { item: ToolItem }) {
   const t = useT();
+  const web = /(?:^|[._\s])web_(search|fetch)\b/.exec(item.title)?.[1];
+  const title = web === "search" ? t(item.status === "inProgress" ? "web.searching" : "web.search")
+    : web === "fetch" ? t(item.status === "inProgress" ? "web.reading" : "web.read") : item.title;
   const [open, setOpen] = useState(false);
   const icon =
     item.status === "inProgress" ? <Loader2 size={13} className="animate-spin" /> : item.status === "completed" ? <Check size={13} className="text-success" /> : <X size={13} className="text-danger" />;
@@ -177,7 +197,7 @@ function ToolCard({ item }: { item: ToolItem }) {
       <button type="button" className="flex w-full items-center gap-1.5 rounded px-1 py-0.5 text-left hover:bg-hover" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
         <ChevronRight size={12} className={cx("transition-transform", open && "rotate-90")} />
         <Wrench size={12} />
-        <span className="truncate font-mono text-[12px] text-fg">{item.title}</span>
+        <span className={cx("truncate text-[12px] text-fg", !web && "font-mono")}>{title}</span>
         {icon}
         <span className="ml-auto shrink-0 text-[11px]">{item.detail ?? took ?? label}</span>
       </button>
@@ -356,12 +376,12 @@ function UserMessage({ block }: { block: Extract<Block, { type: "user" }> }) {
   );
 }
 
-function BlockView({ block, last }: { block: Block; last: boolean }) {
+function BlockView({ block, last, streamingSources }: { block: Block; last: boolean; streamingSources: readonly WebSource[] }) {
   switch (block.type) {
     case "user":
       return <UserMessage block={block} />;
     case "assistant":
-      return <Assistant text={block.text} streaming={block.streaming} last={last} />;
+      return <Assistant text={block.text} streaming={block.streaming} last={last} sources={block.sources ?? (block.streaming ? streamingSources : NO_SOURCES)} />;
     case "reasoning":
       return <details className="text-[12px] text-muted"><summary className="cursor-pointer">…</summary><p className="selectable whitespace-pre-wrap">{block.text}</p></details>;
     case "tool":
@@ -414,8 +434,9 @@ export function MessageList({ thread }: { thread: Thread }) {
       }}
     >
       {thread.blocks.map((b) => (
-        <BlockView key={b.type === "tool" ? b.item.id : b.type === "approval" ? b.approval.requestId : b.type === "input" ? b.requestId : b.id} block={b} last={b === lastAnswer} />
+        <BlockView key={b.type === "tool" ? b.item.id : b.type === "approval" ? b.approval.requestId : b.type === "input" ? b.requestId : b.id} block={b} last={b === lastAnswer} streamingSources={Object.values(thread.webSources ?? {})} />
       ))}
+      {thread.running && thread.webSourceTurn?.turnId === thread.turnId && <WebSources sources={thread.webSourceTurn.sources} />}
       {thread.plan && thread.plan.steps.length > 0 && <PlanPanel plan={thread.plan} />}
       {consents.map((c) => (
         <ConsentCard key={c.id} request={c} />

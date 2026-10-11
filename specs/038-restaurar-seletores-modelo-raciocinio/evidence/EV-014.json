@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-038-final-native-20261010-181914"
+  ],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/e2e/specs/resize.e2e.ts": "cf60582ede20f279d8217cc15b1d60b6b89ff6e5f20631c30e64b15a6bf02dc2",
+    "apps/desktop/src-tauri/src/overlay.rs": "533239d89655024228ed3cebd410cd22d2e8bf2155c0a22c0a593091503527de",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "1075f6e09e01d53baba514538fd08fe8eb554c30efce0cca4bafb48cc0fac916",
+    "apps/desktop/src/ui/Popover.tsx": "94ba13a984ba508f576498dcf0aaaa4ef393f512a0dfa14aa14b6258fe030703",
+    "apps/desktop/src/ui/floating.tsx": "9c8536a36bf1894698d725368e184c110cec4c0008a5d8b280e4a5c16b25d7af",
+    "crates/aura-win/examples/qa_resize.rs": "e078e34550718418192d67e83558beadfe0e8de1692b1af0886bdca435ac8d1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/ui/Popover.tsx",
+    "apps/desktop/src/ui/floating.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "crates/aura-win/examples/qa_resize.rs",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Actual150/200DPI unavailable; complete resize not approved. First drag failure remains unclassified; fresh mouse cases stopped before input because target lacked foreground. Public model/protocol regression scripted is not commercial LLM proof. Evidence invalidated because an input changed.",
+  "observations": "480logicalpx/native100percent: compact/expanded accessible full name, positive label/arrow, hit test, no overlap, menu within monitor; keyboard passed EV013. Resize firstEast-120 width900 unchanged expectedbelow850; subsequent8 casespassed. Freshprofile6passed/3 refusedforeground. No guard/oracle weakened.",
+  "procedure": "Native build e2e no demo exit0 2m57s. model-picker-recovery2/2; composer/model-effort/model-efforts/profile-model4/4; resize8/9 then isolated new-profile resize6/9; native images inspected.",
+  "result": "stale",
+  "tested_revision": "local:0aeaeea345513c51357ba7901ffdb244430df312f4271b0826511b7454f62718",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T21:32:06+00:00"
+}

@@ -1,0 +1,47 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-089",
+    "EV-090"
+  ],
+  "execution_status": "executed",
+  "id": "EV-091",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+    "apps/desktop/src": "be1506368809f7e0a0e36c99666d72c8f6bbe367434ddc746d73def359608694",
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/src/web_history.rs": "edc87685415d4fee6048ba5d4312e4d72edbc18f7f3754564310002332a854fd",
+    "crates/aura-app/src/web_history_tests.rs": "43f57970a4bd92bbeff66644728c9266212d20bea7fc0e5ea99ba0652011ef85",
+    "crates/aura-app/tests/real_app_server.rs": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+    "crates/aura-core/src/settings.rs": "2ba5801e3d9ffc329651188b7d9ad217cc911e767789e5f5c3a9b9a4d89eb4d5",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "apps/desktop/src",
+    "crates/aura-core/src/settings.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/web_history.rs",
+    "crates/aura-app/src/web_history_tests.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Native opener action executed; destination in external browser still unverified (TK005). Scripted provider/web adapters do not substitute SIWC3journeys or live search12/10; no DPI150/200 approval.",
+  "observations": "Native3/3 passed4.5s: two read sources/inline citations and history restore without requests, pending stop, global Settings toggle cancellation/no further reads/reenable. Screenshot inspected: model picker,42/12/30 answer and W1/W2 links/read metadata fit. Current reducer/i18n/IPC/parity/unsafeURL regressions passed; privacy persistent source metadata gates retained. Standards/Spec review no blocker within TK004 scope.",
+  "procedure": "Current workspace505 and UI253/typecheck; fixed-pin history/privacy matrix24+one handshake retry; normal native e2e build; web-research.e2e.ts on isolated profile with real fixed-pin/gateway/MCP/WebService and external scripted adapters; inspect native-research.png.",
+  "result": "passed",
+  "tested_revision": "local:ddce689eefb6b7fd1ffda3899c980cbad13da9c63564c1dd8f8cd5756ed7027c",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-10T22:07:21+00:00"
+}

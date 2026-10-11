@@ -12,9 +12,11 @@
 pub mod codex_config;
 pub mod discovery;
 pub mod errors;
+mod private_calls;
 pub mod registry;
 pub mod server;
 pub mod sse;
+pub mod tool_results;
 pub mod translate;
 pub mod upstream;
 

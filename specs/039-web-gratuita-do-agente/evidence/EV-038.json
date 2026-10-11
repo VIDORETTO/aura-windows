@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-038",
+  "input_fingerprints": {
+    "crates/aura-app/tests/real_app_server.rs": "5d6e9de390eff2949df2812e3ca1cc003eb2743c6dee8f6bc8fdcc1a7f21e9d6",
+    "crates/aura-codex/src/service.rs": "7c3aa375f10005f7f5b05b94eae062f09dffda9224c2fee319e35bdea7fbb5d3",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex/src/service.rs"
+  ],
+  "limitations": "Prova da falha atual; não avalia a proposta TK007. Nenhum esperado foi dispensado. Evidence invalidated because an input changed.",
+  "observations": "0/1 em0,74s, exit101: Codex rollout persisted uncited web page content. Código de produção permanece anterior ao protótipo. Oráculo inalterado e sem falha de ambiente.",
+  "procedure": "AURA_CODEX_BIN fixado/AURA_E2E_DIR TEMP; cargo test -p aura-app --test real_app_server web::web_normal_research -- --ignored --test-threads=1; saída TEMP/aura-039-r8-normal-retention.log",
+  "result": "stale",
+  "tested_revision": "local:c6763f5087800ed87bb5a1d71119f54fc02320d6fc135adf6ff40c3a3c5cd146",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-10T17:29:54+00:00"
+}

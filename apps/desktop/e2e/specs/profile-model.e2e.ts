@@ -33,10 +33,11 @@ describe("Profile default model (QA-036)", () => {
     const settings = (await browser.getWindowHandles()).find((h) => h !== overlay)!;
     await browser.switchToWindow(settings);
     await (await $("button=Add")).click();
-    const fields = await $$("input");
-    await fields[0].setValue("QA target");
-    await fields[1].setValue("powershell.exe");
-    await fields[2].setValue("QA Insert Target");
+    // The Settings search field is outside this form. Select each public
+    // label instead of treating every input in the window as a profile field.
+    await (await $('//label[span[normalize-space()="Name"]]/input')).setValue("QA target");
+    await (await $('//label[span[normalize-space()="Process"]]/input')).setValue("powershell.exe");
+    await (await $('//label[span[normalize-space()="Window title contains (optional)"]]/input')).setValue("QA Insert Target");
     const model = await $('select[aria-label="Default model"]');
     await browser.waitUntil(async () => (await model.getText()).includes("QA model · qa-other"), { timeout: 15_000 });
     await model.selectByVisibleText("QA model · qa-other");
@@ -45,6 +46,8 @@ describe("Profile default model (QA-036)", () => {
     const saved = (await invoke("profiles_list"))[0];
     console.log("Native profile", JSON.stringify({ processPattern: saved.processPattern, titleGlob: saved.titleGlob, defaultModel: saved.defaultModel.replace(/aura-[^:]+::/, "aura-<provider>::") }));
     expect(saved.defaultModel).toMatch(/^aura-qa-model-[0-9a-f]+::qa-other$/);
+    expect(saved.processPattern).toBe("powershell.exe");
+    expect(saved.titleGlob).toBe("QA Insert Target");
     await browser.closeWindow();
 
     // Overlay opened over the QA app with the global shortcut.

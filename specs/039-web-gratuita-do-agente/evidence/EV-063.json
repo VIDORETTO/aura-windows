@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-063",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "0a576f2413cf050de35136467e4a8d3111a60d3b44a4f13a0c204ad1449919f5",
+    "crates/aura-app/tests/real_app_server.rs": "a4bad5971eee8def7a139e46675d4a26c15bef028be3ea52797a186dcbeca640",
+    "crates/aura-gateway": "eada29f37d5bee52cc56a5dfa8cb19c30bdc7b6af94eed9697b606fd08ca3f95",
+    "crates/aura-web": "c81f62d71696c357ab540db911fbb5acd197a5ac2be267a198be4e060196e9ba",
+    "specs/039-web-gratuita-do-agente/experiments/reasoning-storage-red-result.json": "6b3d0a1ed95723d442b4be9ca190aadffc2421597eacee071da29c052c6cac6c",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/experiments/reasoning-storage-red-result.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Fixture de raciocínio sintético,semcriptografia comercial/compactação. Auditor antigo temlimitação fixa reasoningnotexercised, inaplicável a esta variante; corpo das reasoning foi emitido pelo fixture eURLpersistiu. Registra falha real, não erro ambiente. Evidence invalidated because an input changed.",
+  "observations": "Red real0,72s: mesmo fluxo4calls/6HTTP/fatos W1/W2/resposta somenteW1 confirmado, URLnão citada em2arquivos sem function_call persistido. Provedor adiciona reasoning summary eopaque field sintético após web; etapa deargumentos jáverde não protege raciocínio.",
+  "procedure": "cargo test -p aura-app --test real_app_server web_reasoning_does_not -- --ignored --test-threads=1 com pin AURA_CODEX_BIN e ownTEMP; audit_synthetic_storage.py no perfil .tmprigQbw/Aura",
+  "result": "stale",
+  "tested_revision": "local:e3a780d67f3906c72d78c98ee010e92a55b24a8d9b71a5474b03b090e7c7e0e7",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T19:27:23+00:00"
+}

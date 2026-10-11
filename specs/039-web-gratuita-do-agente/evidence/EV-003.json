@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "Cargo.lock": "150747b1f59fc5866a5127295fc2e6b68583a94134902eff2432ae5c7b480de3",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web/Cargo.toml": "214d03984ec3d9dacaf77f3099756c06f6e61e693ba9753f061be47a1683f635",
+    "crates/aura-web/src/lib.rs": "87570c0ed35bf59e32a7fb3f5d49486d7fad031003e001425f0268fce80d3f8d",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fixtures/parallel-tools.json": "d81890ff2dd71c019c39b884351ee0ab8ffc8be984dc3d171b3617d9ddef98ac",
+    "crates/aura-web/tests/search.rs": "abf123ca508cbafefa2e6f983774d3fcabdae833f5219e2830664ab233d7c8cf",
+    "specs/039-web-gratuita-do-agente/plan.md": "5f40037162e9f82428baa2ff949cc78b62f0c4f107eeeda187ec95da283d377d",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/aura-web/Cargo.toml",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "crates/aura-web/tests/fixtures/parallel-tools.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "EscopoTK001 e parcelas explicitas dos ACs compartilhados. Host/modelo,UI/desativacao/cache de busca e qualidade/fixado/Windows pendentes nos sucessores. Evidence invalidated because an input changed.",
+  "observations": "Renovacao planr3 depois de mudancas compartilhadas:18offline search verdes;liveparallel5fontes/degradedfalse passou;47offline total incluindo29fetch;clippy/fmt/licenses verdes.",
+  "procedure": "cargo test -p aura-web; cargo test -p aura-web --test search live_anonymous_search -- --ignored --nocapture; cargo clippy -p aura-web --all-targets -- -D warnings; cargo fmt --all -- --check; cargo deny check licenses",
+  "result": "stale",
+  "tested_revision": "local:9b8ac0ddf576fb750e48279468ee547fabb55968922c4481c873f68f1ac6299b",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-08T06:56:00+00:00"
+}

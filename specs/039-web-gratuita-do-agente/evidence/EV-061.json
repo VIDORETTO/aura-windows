@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-061",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "c81f62d71696c357ab540db911fbb5acd197a5ac2be267a198be4e060196e9ba",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Escopo originalTK002; privacidade integral/raciocínio/compactação e qualidade não aprovados. Evidence invalidated because an input changed.",
+  "observations": "316casos;fetch29/delivery8,paginação/DNS/redirects/oráculos e orçamento preservados. Nenhum parser/fonte/limiar de qualidade alterado.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; cargo clippy cinco crates --all-targets -- -D warnings; fmt/diff check.",
+  "result": "stale",
+  "tested_revision": "local:f161ce354fe8f0ba2c96ffb75322ff2526d58660d43b4ce21f208f7240f2c450",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T19:19:06+00:00"
+}

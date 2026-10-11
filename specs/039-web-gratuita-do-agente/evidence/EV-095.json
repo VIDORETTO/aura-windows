@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-091"
+  ],
+  "execution_status": "executed",
+  "id": "EV-095",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+    "apps/desktop/src/lib/webSources.ts": "07302e304ab1da72072475287066e4811ce483d62f439eec52c15309940757f5",
+    "apps/desktop/src/overlay/WebSources.tsx": "259c522cb7f766d8fd71f32166edb0c4763dc87ca350c653afee318affd41e7b",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "apps/desktop/src/overlay/WebSources.tsx",
+    "apps/desktop/src/lib/webSources.ts",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Requires manual confirmation or supported external-browser inspection to approve destination; do not infer it from link href or opener invocation.",
+  "observations": "Real UI read sources,citations/history,interrupt,Settings off/reenable passed. Native opener received source action; browser final address unavailable to permitted tools.",
+  "procedure": "Native web-research.e2e.ts3/3 and screenshot inspection after native e2e build; native opener invoked by source link; external-browser destination could not be observed under available Windows browser tooling.",
+  "result": "partial",
+  "tested_revision": "local:fe9d53d2cb1615ee4bb093bfc35225a37ba84562d31b64303b675a05c7b96d06",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T22:09:23+00:00"
+}

@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-009",
+    "AC-013",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-084",
+  "input_fingerprints": {
+    "Cargo.lock": "94079a8950a61f5137230246559091ba6195c4b6aeb40117dfaac17688118a12",
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/e2e_web.rs": "3a9810127861fae22d4c6d907571613118ac4f888ce1a2fada98b4731d41993e",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-app/tests/web_research.rs": "498c309ce404919c3aa0825a5f2bf4dd17327e79dc623ee9e90225de19be89bc",
+    "specs/039-web-gratuita-do-agente/plan.md": "9832d78faf5af32576273e6e326e0586dc6da2881685068dee1590627ac02485",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/e2e_web.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "Cargo.lock",
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "crates/aura-app/tests/web_research.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Scripted model does not prove3liveLLM synthesis journeys. Browserclick executed but destination not independently confirmed. SIWC/DPI remain pending. GlobalE2E tsc preexisting errors; cargo-deny ownQA installation session31736 still running. Native web-disabled proposal suppression differs from directRPC error JSON; no error code fabricated. Evidence invalidated because an input changed.",
+  "observations": "Native3/3passed4.2s,integrated5/5passed3.43s,releasebuild2m54s,featurecheck/clippy and scopedTS passed. Real UI/model input/history/keyboard/no-refetch/pendingcancel/toggle/off attempted read with noHTTP/reenable covered; only external network/model fixtures, actual pinned chain. Failed harness runs preserved; selectors/timing/DTO corrected without product change.",
+  "procedure": "pnpm -C apps/desktop tauri build --no-bundle --features demo,e2e; cargo check/clippy -p aura-desktop --features demo,e2e -- -D warnings; scoped E2E tsc; pnpm -C apps/desktop/e2e test -- --spec ./specs/web-research.e2e.ts in TEMP/aura-039-native-web-r10-run12-20261010 using rust-v0.159.0 and WebView2 154.0.4258.62; cargo test -p aura-app --test web_research -- --ignored --test-threads=1 with TEMP/aura-039-plan10-integrated-final",
+  "result": "stale",
+  "tested_revision": "local:fcda78e561e3fccc94cb80381ceb4b4cdb0edf5ac731c8cb8d56288ee5396060",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T21:11:24+00:00"
+}

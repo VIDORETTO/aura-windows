@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "Windows 11; fixado rust-v0.159.0 cached; upstream/páginas scripted; sandbox target TEMP aleatório próprio",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-037",
+  "input_fingerprints": {
+    "crates/aura-app/src": "7140dccb917664e0fcdf9cfdef7435fc62921ddc7fa1431f171fb832a8477ed6",
+    "crates/aura-app/tests/real_app_server.rs": "5d6e9de390eff2949df2812e3ca1cc003eb2743c6dee8f6bc8fdcc1a7f21e9d6",
+    "crates/aura-codex": "27512ba202c5f3c62986d93b52c92f0a39742c9d0600082ff42af2a36c0399ac",
+    "crates/aura-gateway": "f2bb9b60eaf01c9e1db0afaf56898da99c55ca504fc460c4046f5e61666cb5b5",
+    "crates/aura-mcp": "effd0579c18eaae67b664e0b58f17443153604f65b8011692712626eb18e5be7",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/review.md": "08d8e174aa56eb57c1bbadccfdfd22919dc864b95f3f8607ef1b87e6e68ac80c",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/review.md",
+    "crates/aura-app/src",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex",
+    "crates/aura-gateway",
+    "crates/aura-mcp"
+  ],
+  "limitations": "Não aprova TK007, retenção normal falha, qualidade live, SIWC real ou Windows/UI. Providers e páginas scripted; acurácia de síntese depende do modelo. Evidence invalidated because an input changed.",
+  "observations": "288 testes dos cinco crates passaram (app144, Codex/gateway/MCP90, WebService54); integrações16/16 em22,17s, sandbox1/1 em23,02s. Escopo original da integração, código inalterado nesta rodada. Primeiro filtro de sandbox rodou0; só a execução corrigida1/1 aprova.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; AURA_CODEX_BIN fixado/AURA_E2E_DIR TEMP: cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 --skip web_normal_research; AURA_SBX_OUTSIDE TEMP UUID: cargo test -p aura-app --test real_app_server real_app_server_task_mode_confines_writes -- --ignored --test-threads=1",
+  "result": "stale",
+  "tested_revision": "local:3f49f6cecddbbd96399b3772bc43c2004408cf36b4f61a74f6093efb99397451",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T17:29:05+00:00"
+}

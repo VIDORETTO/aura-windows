@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-095"
+  ],
+  "execution_status": "executed",
+  "id": "EV-098",
+  "input_fingerprints": {
+    "apps/desktop/src/lib/webSources.ts": "07302e304ab1da72072475287066e4811ce483d62f439eec52c15309940757f5",
+    "apps/desktop/src/overlay/WebSources.tsx": "259c522cb7f766d8fd71f32166edb0c4763dc87ca350c653afee318affd41e7b",
+    "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/WebSources.tsx",
+    "apps/desktop/src/lib/webSources.ts",
+    "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Atestado manual do usuário; automação do navegador continuou impedida pela ferramenta. Não prova DPI150/200.",
+  "observations": "Usuário respondeu explicitamente: Sim, cliquei na fonte e abriu esse endereço. URL HTTP(S) da fonte e destino coincidem. Complementa EV091/095 sem inferir destino apenas do href.",
+  "procedure": "Teste manual orientado: usuário pediu leitura WCAG no Aura, clicou na fonte W1 e confirmou que o navegador abriu https://www.w3.org/WAI/standards-guidelines/wcag/; endereço copiado da barra após o clique.",
+  "result": "passed",
+  "tested_revision": "local:e096b5182e99195f0f0bd57c0650495fd400b0cc15bc6f9c078cb43e6f053721",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-11T01:45:51+00:00"
+}

@@ -38,6 +38,8 @@ pub mod speech_stats;
 pub mod tokens;
 pub mod tools;
 pub mod voice;
+pub mod web;
+pub mod web_history;
 pub mod webview;
 
 pub use error::{HostError, HostResult};

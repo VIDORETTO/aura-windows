@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-023",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c11649aa2b7efe6f9b89adac3210764f82a7b357260907b7baa4e6b90a1cee9f",
+    "crates/aura-app/src/web_history.rs": "c86d6a3fb3dfa5bc60b81bb81893c04c5c529a0e4593c144ce8fec6cea2c5f0f",
+    "crates/aura-app/tests/real_app_server.rs": "918ca7b03257891d836d8ee1281b23c22278368684df361f3edf1729858367fc",
+    "crates/aura-codex/src/service.rs": "7c3aa375f10005f7f5b05b94eae062f09dffda9224c2fee319e35bdea7fbb5d3",
+    "specs/039-web-gratuita-do-agente/plan.md": "e0433a139519bc1f6394e705b1c8dad16f041347a3a9b43181a10d9aea05e3e4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/web_history.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-codex/src/service.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Persistencia seletiva no Aura nao impede escrita do sidecar normal; requer solucao arquitetural antes de done. Nao alterar oraculo nem atualizar sidecar automaticamente. Evidence invalidated because an input changed.",
+  "observations": "Fixado real rust-v0.159.0 concluiu pesquisa/leitura/resposta,shutdown; inspeccao dos arquivos isolados encontrou trecho de pagina nao citado no rollout. Falha comportamental0/1; sem dumps de conteudo/segredos.",
+  "procedure": "cargo test -p aura-app --test real_app_server web::web_normal_research -- --ignored",
+  "result": "stale",
+  "tested_revision": "local:e5c4d3d08d495ee606117323ff47d421f64ffc641a32bd7a48af1559d9484a4c",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-10T16:11:20+00:00"
+}

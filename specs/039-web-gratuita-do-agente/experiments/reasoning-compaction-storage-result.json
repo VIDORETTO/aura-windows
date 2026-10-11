@@ -1,0 +1,16 @@
+{
+  "profile": "explicit synthetic test profile",
+  "files": 88,
+  "sqliteRows": 139,
+  "compressedValues": 0,
+  "hits": [],
+  "limitations": [
+    "Only four predefined synthetic literals; not a general data-loss proof",
+    "No compressed frames observed; decompression branch not exercised",
+    "Provider reasoning fields exercised by the referenced scripted fixture; no commercial model execution"
+  ],
+  "fixtureModes": [
+    "compaction",
+    "reasoning"
+  ]
+}

@@ -68,6 +68,9 @@ export function GeneralSection() {
           <Switch label={t("general.attachScreen")} checked={s.attachScreenOnOpen} onChange={(v) => void updateSettings({ attachScreenOnOpen: v })} />
         </Row>
         <AccentRow />
+        <Row label={t("web.enabled")} hint={t("web.enabled.hint")}>
+          <Switch label={t("web.enabled")} checked={s.webEnabled} onChange={(v) => void updateSettings({ webEnabled: v })} />
+        </Row>
         <Row label={t("general.defaultModel")}>
           <Select aria-label={t("general.defaultModel")} value={s.defaultModel ?? ""} onChange={(e) => void updateSettings({ defaultModel: e.target.value || null })}>
             <option value="">—</option>

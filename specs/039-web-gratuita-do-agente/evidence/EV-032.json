@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-032",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "00528e295f2d336f8aea4260e9db4b7372adfd569bfcaf1a12140a1ed04b3d2a",
+    "crates/aura-app/src/web_history.rs": "edc87685415d4fee6048ba5d4312e4d72edbc18f7f3754564310002332a854fd",
+    "crates/aura-app/tests/real_app_server.rs": "5d6e9de390eff2949df2812e3ca1cc003eb2743c6dee8f6bc8fdcc1a7f21e9d6",
+    "crates/aura-codex/codex-version.toml": "0318ddbbfb74c9ab58af727d65706fd19684a479585211083c98f4f3d581471d",
+    "crates/aura-codex/src/service.rs": "7c3aa375f10005f7f5b05b94eae062f09dffda9224c2fee319e35bdea7fbb5d3",
+    "specs/039-web-gratuita-do-agente/plan.md": "20a584715c54fd4e85d292dbb7de99a16d24adee3718b8fcd932e39aeaff7c9d",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web_history.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-codex/codex-version.toml",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Nenhuma solucao produtiva para retencao normal nesta fatia; manter esperado e versao fixada. Efemero passou separadamente e nao dispensa normal. Evidence invalidated because an input changed.",
+  "observations": "0/1 em0.69s no r7; teste falhou por Codex rollout persisted uncited web page content. Infra completou pesquisa/leitura/resposta; nao e erro de ambiente.",
+  "procedure": "AURA_CODEX_BIN=TEMP/aura-038-model-picker-production/profile/bin/codex/rust-v0.159.0/bin/codex-app-server.exe; AURA_E2E_DIR=TEMP; cargo test -p aura-app --test real_app_server web::web_normal_research -- --ignored --test-threads=1",
+  "result": "stale",
+  "tested_revision": "local:ece45f14598a61e76a426e19487f317be7b2f93b2b7a517f305b95d55e5977c3",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-10T16:50:35+00:00"
+}

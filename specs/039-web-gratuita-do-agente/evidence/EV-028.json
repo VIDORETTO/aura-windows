@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-028",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "95bae233c3f8c349214333b9263917681e5a2ed28f34fd67010dd18df545dc15",
+    "crates/aura-web/src/lib.rs": "0a0f580dd018a1911f2a91d3911942e3e472b9e94e9db7c77def1407e7e580b4",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/search.rs": "e63b20fef32c657d5c5c47d7834bd7b9a5cbdea63950a3d8363deaa08eb56809",
+    "specs/039-web-gratuita-do-agente/plan.md": "20a584715c54fd4e85d292dbb7de99a16d24adee3718b8fcd932e39aeaff7c9d",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Qualidade, privacidade normal e Windows ainda pendentes; ACs compartilhados so escopo do ticket. Evidence invalidated because an input changed.",
+  "observations": "54offline(25busca,29leitura) passaram no r7, que apenas decompõe qualidade independente. Revisao Standards/Spec libera somente escopo TK001.",
+  "procedure": "cargo test -p aura-web --test search --test fetch --quiet",
+  "result": "stale",
+  "tested_revision": "local:10e517b20f7fd42e746027254de12979cc232e8126d0f4b31e031cb4142e07d3",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T16:49:36+00:00"
+}

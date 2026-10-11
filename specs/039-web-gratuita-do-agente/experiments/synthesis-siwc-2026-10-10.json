@@ -1,0 +1,126 @@
+{
+  "schema": "aura/web-synthesis-qa",
+  "date": "2026-10-10",
+  "startedAt": "2026-10-10T21:30:32.39Z",
+  "finishedAt": "2026-10-10T21:32:06.474Z",
+  "model": "gpt-6-luna",
+  "runtime": "Native Windows e2e build without demo; default installed rust-v0.159.0 including code-mode-host; AURA_CODEX_BIN unset",
+  "account": "Existing ChatGPT account; signed-in and plan-enabled via public IPC; no account identifiers or tokens",
+  "procedure": "Native Windows Aura Host IPC -> pinned app-server -> real SIWC/gateway -> real free search/fetch -> real model. No settings/provider/account mutations; isolated ephemeral QA conversations.",
+  "outcome": "failed",
+  "limitations": [
+    "Three terminal-completed turns do not imply quality passed",
+    "Current-fact site was unsupported_content; explicit caveat preserved",
+    "Successful page reads reached registry but model reported opaque identifiers; exact native provider shape still requires investigation",
+    "No HTTP request counter or model-provider request-body capture in this probe",
+    "External browser destination and real DPI150/200 remain unverified"
+  ],
+  "cases": [
+    {
+      "id": "current-fact",
+      "question": "Pesquise na internet e informe os dias, os horários de funcionamento e a última entrada do Museu do Amanhã conforme o site oficial atual. Cite a página que você leu e indique incertezas. Responda em até 120 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação.",
+      "turnStatus": "completed",
+      "durationMs": 40192,
+      "answers": [
+        {
+          "text": "Não consegui confirmar os horários: a busca não retornou resultados legíveis e a ferramenta de leitura recusou as páginas do site oficial como conteúdo não suportado. Portanto, não posso informar os dias, o horário de funcionamento ou a última entrada, nem citar uma página que não consegui ler.[[aura-source:W1]]"
+        }
+      ],
+      "readSources": [],
+      "toolCompletions": [
+        {
+          "title": "aura.web_search",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_search",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_fetch",
+          "status": "failed"
+        },
+        {
+          "title": "aura.list_mcp_resources",
+          "status": "failed"
+        },
+        {
+          "title": "aura.web_fetch",
+          "status": "failed"
+        }
+      ]
+    },
+    {
+      "id": "comparison",
+      "question": "Compare a leitura de arquivos de texto em Python (Path.read_text) e Rust (std::fs::read_to_string), principalmente codificação e erros. Pesquise e leia a documentação oficial dos dois projetos; cite ao menos uma fonte de cada domínio. Responda em até 160 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação.",
+      "turnStatus": "completed",
+      "durationMs": 27918,
+      "answers": [
+        {
+          "text": "Não consegui ler o conteúdo das páginas: a ferramenta retornou apenas identificadores opacos, sem texto nem `sourceId` citável. Como você pediu para não inventar citações, não posso apresentar a comparação como verificada nem citar essas páginas."
+        }
+      ],
+      "readSources": [
+        {
+          "kind": "pageContent",
+          "sourceId": "W8",
+          "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+          "url": "https://docs.python.org/3/library/pathlib.html"
+        },
+        {
+          "kind": "pageContent",
+          "sourceId": "W7",
+          "title": "read_to_string in std::fs - Rust",
+          "url": "https://doc.rust-lang.org/std/fs/fn.read_to_string.html"
+        }
+      ],
+      "toolCompletions": [
+        {
+          "title": "aura.web_search",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_search",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_fetch",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_fetch",
+          "status": "completed"
+        }
+      ]
+    },
+    {
+      "id": "specific-url",
+      "question": "Abra e leia https://www.w3.org/TR/WCAG22/ . Quais são os quatro princípios de acessibilidade? Cite a página que você leu. Responda em até 100 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação.",
+      "turnStatus": "completed",
+      "durationMs": 22873,
+      "answers": [
+        {
+          "text": "Não consegui ler o conteúdo: as ferramentas web retornaram apenas identificadores internos, sem texto da página nem um `sourceId` citável. Portanto, não posso confirmar os princípios nem citar a leitura sem inventar."
+        }
+      ],
+      "readSources": [
+        {
+          "kind": "pageContent",
+          "sourceId": "W1",
+          "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+          "url": "https://www.w3.org/TR/WCAG22/"
+        }
+      ],
+      "toolCompletions": [
+        {
+          "title": "aura.web_fetch",
+          "status": "completed"
+        },
+        {
+          "title": "aura.web_search",
+          "status": "completed"
+        }
+      ]
+    }
+  ]
+}

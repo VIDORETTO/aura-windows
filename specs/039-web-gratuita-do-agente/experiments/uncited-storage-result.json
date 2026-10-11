@@ -1,0 +1,36 @@
+{
+  "profile": "explicit synthetic test profile",
+  "files": 88,
+  "sqliteRows": 128,
+  "compressedValues": 0,
+  "hits": [
+    {
+      "location": "codex-home\\thread_history_1.sqlite",
+      "format": "sqlite_cell",
+      "markers": [
+        "uncited_url"
+      ],
+      "table": "thread_items",
+      "column": "item_json"
+    },
+    {
+      "location": "codex-home\\thread_history_1.sqlite-wal",
+      "format": "file_bytes",
+      "markers": [
+        "uncited_url"
+      ]
+    },
+    {
+      "location": "codex-home\\sessions\\2026\\10\\10\\rollout-2026-10-10T15-05-17-01a126fd-9e99-7133-a8e2-1231d3cbefa0.jsonl",
+      "format": "file_bytes",
+      "markers": [
+        "uncited_url"
+      ]
+    }
+  ],
+  "limitations": [
+    "Only four predefined synthetic literals; not a general data-loss proof",
+    "Reasoning outputs and compaction are not exercised by this fixture",
+    "No compressed frames observed; decompression branch not exercised"
+  ]
+}

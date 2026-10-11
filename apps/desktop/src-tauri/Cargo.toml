@@ -16,6 +16,8 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 aura-app.workspace = true
+aura-web = { workspace = true, optional = true }
+futures = { workspace = true, optional = true }
 base64.workspace = true
 aura-core.workspace = true
 aura-codex.workspace = true
@@ -48,9 +50,9 @@ webview2-com = "0.39"
 windows = "0.62"
 
 [features]
-# Enables loopback-only authorization for native E2E cancellation tests.
-# Not part of production or demo builds.
-e2e = []
+# Enables opt-in external network fixtures and loopback authorization for QA.
+# Not part of production or default demo builds.
+e2e = ["dep:aura-web", "dep:futures"]
 # Runs the host with the in-process fake app-server and synthetic OS adapters
 # (no ChatGPT account, no Windows APIs needed) — for UI work and demos.
 demo = []

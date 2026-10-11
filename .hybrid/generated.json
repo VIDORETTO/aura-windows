@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "e0a6293ba403844639dcfe586b7df3178ae01f8ed3fdb1e4dac071f7de488c8a",
+  "docs/project/backlog.md": "3d37d102b6d144e25ab75ed036188db4a832866d2880d44fc12b79062432e096",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -47,5 +47,12 @@
   "specs/034-lembretes-e-notas-na-ui/verification.md": "a1431f326b8a377afd539945400bc6e243b5c693016c00e31ce2b6df1a119649",
   "specs/035-habitos-em-sugestoes/verification.md": "a949d262abd0136394bfc1427b80c69b46822928d70c15c2160a78b8ca8b1ef8",
   "specs/036-qa-windows-release-020/verification.md": "c64702e2912aecacf0652fee6e4942e5df476c031f5d4a6bdb84f10a47333eef",
-  "specs/037-publicacao-e-chave-permanente/verification.md": "5d7b391c9574013ec32280a995dfc1bf7452942385ba1ceb1448fe05565bb3ed"
+  "specs/037-publicacao-e-chave-permanente/verification.md": "5d7b391c9574013ec32280a995dfc1bf7452942385ba1ceb1448fe05565bb3ed",
+  "specs/038-restaurar-seletores-modelo-raciocinio/todo.md": "e748c5813a9effd03893af80c9e79a529ea6264b227e3335a23921c474704b69",
+  "specs/038-restaurar-seletores-modelo-raciocinio/verification.md": "4f7045051d66605e937cb8e211822351f79f2549ca9f03d37d27488a6302065a",
+  "specs/039-web-gratuita-do-agente/todo.md": "06b70b66b59e1e1da0b91fbc25ec207f86d3de402342ae1c55e032e01067398a",
+  "specs/039-web-gratuita-do-agente/verification.md": "1ac9365976ccbacde78ff008e5499e66a2feced9b9d779d65259ae42006baf5d",
+  "specs/040-overlay-estavel-no-monitor/todo.md": "222d00faf0daa32645f167b56572701373ea8e63e50ebc3d28dae44e25088ded",
+  "specs/040-overlay-estavel-no-monitor/verification.md": "84c0c75b53ccdfb68f7dd2d70d620ea3756342a61f75472f955ead2a025d3b51",
+  "specs/041-publicacao-github-030/verification.md": "449d373589313fa494c7df107b3cdfc0a3f0022a32356670e98eaa408611f6ca"
 }

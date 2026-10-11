@@ -3,6 +3,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+#[cfg(feature = "e2e")]
+mod e2e_web;
 mod overlay;
 #[cfg(windows)]
 mod shortcuts;
@@ -275,6 +277,7 @@ fn host_config() -> HostConfig {
             siwc: Default::default(),
             in_memory_store: false,
             recent: None,
+            web: None,
             asr: match worker {
                 Some(program) => AsrBackend::Worker {
                     program,
@@ -307,6 +310,9 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(feature = "e2e")]
     let cfg = {
         let mut cfg = cfg;
+        if std::env::var("AURA_E2E_WEB").as_deref() == Ok("1") {
+            e2e_web::configure(&mut cfg)?;
+        }
         if let Ok(port) = std::env::var("AURA_E2E_AUTH_PORT") {
             let port: u16 = port.parse()?;
             if port == 0 {

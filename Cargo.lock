@@ -153,6 +153,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "async-compression"
+version = "0.4.50"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee19bd99b43e3691acbad4e840420a4881cea6c0b66a208125a824f8fd53f5a1"
+dependencies = [
+ "compression-codecs",
+ "compression-core",
+ "pin-project-lite",
+ "tokio",
+]
+
+[[package]]
 name = "async-executor"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -300,7 +312,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "aura-app"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-asr",
  "aura-audio",
@@ -314,8 +326,10 @@ dependencies = [
  "aura-mcp",
  "aura-policy",
  "aura-store",
+ "aura-web",
  "axum",
  "base64 0.22.1",
+ "futures",
  "getrandom 0.4.3",
  "hound",
  "regex",
@@ -334,7 +348,7 @@ dependencies = [
 
 [[package]]
 name = "aura-asr"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-audio",
  "aura-core",
@@ -356,7 +370,7 @@ dependencies = [
 
 [[package]]
 name = "aura-audio"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-capture",
  "aura-core",
@@ -374,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "aura-auth"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-core",
  "aura-store",
@@ -397,7 +411,7 @@ dependencies = [
 
 [[package]]
 name = "aura-bench"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-app",
  "aura-capture",
@@ -412,7 +426,7 @@ dependencies = [
 
 [[package]]
 name = "aura-capture"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-core",
  "aura-policy",
@@ -430,7 +444,7 @@ dependencies = [
 
 [[package]]
 name = "aura-codex"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "aura-core",
@@ -454,7 +468,7 @@ dependencies = [
 
 [[package]]
 name = "aura-core"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "regex",
  "serde",
@@ -469,7 +483,7 @@ dependencies = [
 
 [[package]]
 name = "aura-desktop"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-app",
  "aura-asr",
@@ -483,8 +497,10 @@ dependencies = [
  "aura-ingest",
  "aura-policy",
  "aura-store",
+ "aura-web",
  "aura-win",
  "base64 0.22.1",
+ "futures",
  "serde",
  "serde_json",
  "tauri",
@@ -504,7 +520,7 @@ dependencies = [
 
 [[package]]
 name = "aura-extensions"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-codex",
  "aura-core",
@@ -521,11 +537,12 @@ dependencies = [
 
 [[package]]
 name = "aura-gateway"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-codex",
  "aura-core",
  "aura-store",
+ "aura-web",
  "axum",
  "base64 0.22.1",
  "bytes",
@@ -547,7 +564,7 @@ dependencies = [
 
 [[package]]
 name = "aura-ingest"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-core",
  "calamine",
@@ -570,7 +587,7 @@ dependencies = [
 
 [[package]]
 name = "aura-mcp"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-core",
  "axum",
@@ -585,7 +602,7 @@ dependencies = [
 
 [[package]]
 name = "aura-policy"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-core",
  "serde",
@@ -594,7 +611,7 @@ dependencies = [
 
 [[package]]
 name = "aura-store"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aes-gcm",
  "aura-core",
@@ -610,8 +627,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "aura-web"
+version = "0.3.0"
+dependencies = [
+ "chrono",
+ "dom_query",
+ "dom_smoothie",
+ "encoding_rs",
+ "futures",
+ "getrandom 0.4.3",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+ "url",
+ "uuid",
+]
+
+[[package]]
 name = "aura-win"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-audio",
  "aura-capture",
@@ -627,7 +664,7 @@ dependencies = [
 
 [[package]]
 name = "aura-worker"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "aura-asr",
  "aura-core",
@@ -1177,6 +1214,24 @@ dependencies = [
  "bytes",
  "memchr",
 ]
+
+[[package]]
+name = "compression-codecs"
+version = "0.4.45"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "98fc98460ba0ad5317075d3632b8dfc45d0be8c4a49347c2a38272019717614a"
+dependencies = [
+ "brotli",
+ "compression-core",
+ "flate2",
+ "memchr",
+]
+
+[[package]]
+name = "compression-core"
+version = "0.4.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e8ccc4ea9f6acc32d102c0f6d471d11d913ad15f20c04de743374861fa1d414"
 
 [[package]]
 name = "concurrent-queue"
@@ -1818,9 +1873,28 @@ dependencies = [
  "cssparser",
  "foldhash",
  "html5ever",
+ "nom 8.0.0",
  "precomputed-hash",
  "selectors",
  "tendril",
+]
+
+[[package]]
+name = "dom_smoothie"
+version = "0.18.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1afbed996f0bcb119c068504c7c504d625700d58c8bd862d6f66abd7ae7d3859"
+dependencies = [
+ "dom_query",
+ "flagset",
+ "foldhash",
+ "gjson",
+ "html-escape",
+ "once_cell",
+ "phf",
+ "tendril",
+ "thiserror 2.0.21",
+ "unicode-segmentation",
 ]
 
 [[package]]
@@ -2128,6 +2202,12 @@ name = "find-msvc-tools"
 version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aedcfb3409746eddb02b9e19ebda1c3394f759a152e48ee875a0844d1b955484"
+
+[[package]]
+name = "flagset"
+version = "0.4.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b7ac824320a75a52197e8f2d787f6a38b6718bb6897a35142d749af3c0e8f4fe"
 
 [[package]]
 name = "flate2"
@@ -2501,6 +2581,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "gjson"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43503cc176394dd30a6525f5f36e838339b8b5619be33ed9a7783841580a97b6"
+
+[[package]]
 name = "glib"
 version = "0.18.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2731,6 +2817,12 @@ name = "hound"
 version = "3.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62adaabb884c94955b19907d60019f4e145d091c75345379e70d1ee696f7854f"
+
+[[package]]
+name = "html-escape"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c9356095b4b41197bba32173600e1582792cda618f65d12f68e2e77d273413c5"
 
 [[package]]
 name = "html5ever"
@@ -6568,6 +6660,7 @@ dependencies = [
  "bytes",
  "futures-core",
  "futures-sink",
+ "futures-util",
  "pin-project-lite",
  "tokio",
 ]
@@ -6690,12 +6783,17 @@ version = "0.6.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4cfcf7e2740e6fc6d4d688b4ef00650406bb94adf4731e43c096c3a19fe40840"
 dependencies = [
+ "async-compression",
  "bitflags 2.13.2",
  "bytes",
+ "futures-core",
  "futures-util",
  "http",
  "http-body",
+ "http-body-util",
  "pin-project-lite",
+ "tokio",
+ "tokio-util",
  "tower",
  "tower-layer",
  "tower-service",

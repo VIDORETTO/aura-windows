@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-069",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Renovacao somente do escopo original do predecessor. UI/live/sintese/Windows/DPI e inferencia comercial nao aprovados. Ultimo ajuste so na fixture de erro deprivate_calls teve16HTTP afetados ecaso diagnostico reexecutados explicitamente. Evidence invalidated because an input changed.",
+  "observations": "504workspace verdes,34 ambientais ignoradas;25/25web reais26,17s;Clippy/fmt/diff verdes. Escopo original busca/fallback/proveniencia/limites preservado no codigo pos-fmt. Revisao atual emreview.md;gate sucessor TK007 separado emEV068.",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 com pin rust-v0.159.0 e ownTEMP; cargo clippy --workspace --all-targets --exclude aura-desktop -- -D warnings; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:e610d5eabba750dbc82f6ba4480a37160a460787795750edf465622789b7d6f1",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T20:03:31+00:00"
+}

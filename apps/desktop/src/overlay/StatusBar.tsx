@@ -13,7 +13,7 @@ import { Button } from "../ui/primitives";
 const MANAGE_USAGE_URL = "https://chatgpt.com/settings/usage";
 
 /** Capture/privacy state: must stay visible in every Overlay state. */
-export function StatusBadges() {
+export function StatusBadges({ compact = false }: { compact?: boolean }) {
   const t = useT();
   const privacy = useApp((x) => x.privacy);
   const recording = useApp((x) => x.recording);
@@ -21,8 +21,9 @@ export function StatusBadges() {
   return (
     <>
       {privacy?.paused && (
-        <span className="flex shrink-0 items-center gap-1 text-warning" title={t("header.paused")}>
-          <PauseCircle size={13} /> {t("header.paused")}
+        <span className="flex shrink-0 items-center gap-1 text-warning" title={t("header.paused")} aria-label={t("header.paused")}>
+          <PauseCircle size={13} className="shrink-0" aria-hidden />
+          <span className={compact ? "hidden min-[600px]:inline" : undefined}>{t("header.paused")}</span>
         </span>
       )}
       {ephemeral && (

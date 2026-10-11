@@ -37,6 +37,23 @@ pub struct Monitor {
     pub dpi: u32,
 }
 
+/// Monitor containing the largest visible portion of a physical window rect.
+/// Returns None when no work area intersects the window.
+pub fn monitor_for_rect(monitors: &[Monitor], rect: Rect) -> Option<&Monitor> {
+    let mut best = None;
+    let mut largest_area = 0;
+    for monitor in monitors {
+        if let Some(intersection) = rect.intersect(&monitor.work_area) {
+            let area = i64::from(intersection.w) * i64::from(intersection.h);
+            if area > largest_area {
+                best = Some(monitor);
+                largest_area = area;
+            }
+        }
+    }
+    best
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub enum OverlayMode {
@@ -137,6 +154,60 @@ mod tests {
                 dpi: 144,
             },
         ]
+    }
+
+    #[test]
+    fn current_window_on_negative_origin_monitor_does_not_follow_previous_app() {
+        let monitors = vec![
+            Monitor {
+                id: "A".into(),
+                work_area: Rect::new(0, 0, 1920, 1040),
+                dpi: 96,
+            },
+            Monitor {
+                id: "B".into(),
+                work_area: Rect::new(-2560, 0, 2560, 1400),
+                dpi: 144,
+            },
+        ];
+        assert_eq!(
+            monitor_for_rect(&monitors, Rect::new(-1000, 100, 640, 100))
+                .map(|monitor| monitor.id.as_str()),
+            Some("B")
+        );
+    }
+
+    #[test]
+    fn straddling_window_uses_largest_overlap_in_physical_pixels() {
+        let monitors = vec![
+            Monitor {
+                id: "B".into(),
+                work_area: Rect::new(-2560, 0, 2560, 1400),
+                dpi: 192,
+            },
+            Monitor {
+                id: "A".into(),
+                work_area: Rect::new(0, 0, 1920, 1040),
+                dpi: 96,
+            },
+        ];
+        // 100px in B, 540px in A; native DPI does not change physical overlap.
+        assert_eq!(
+            monitor_for_rect(&monitors, Rect::new(-100, 100, 640, 100)).map(|m| m.id.as_str()),
+            Some("A")
+        );
+        // Equal visible area keeps inventory order, independent of DPI.
+        assert_eq!(
+            monitor_for_rect(&monitors, Rect::new(-320, 100, 640, 100)).map(|m| m.id.as_str()),
+            Some("B")
+        );
+    }
+
+    #[test]
+    fn absent_or_disconnected_monitor_has_no_current_window_target() {
+        assert!(monitor_for_rect(&[], Rect::new(80, 80, 640, 64)).is_none());
+        assert!(monitor_for_rect(&monitors(), Rect::new(-2000, -1000, 640, 64)).is_none());
+        assert!(monitor_for_rect(&monitors(), Rect::new(4480, 0, 640, 64)).is_none());
     }
 
     #[test]

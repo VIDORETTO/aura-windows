@@ -494,6 +494,80 @@ async fn idle_stop_and_transparent_resume() {
 }
 
 #[tokio::test(start_paused = true)]
+async fn free_web_stays_disabled_and_correlated_when_a_thread_resumes() {
+    let h = default_harness();
+    let mut events = h.svc.events();
+    let conversation = h
+        .svc
+        .start(StartOptions {
+            config_overrides: serde_json::Map::from_iter([("web_search".into(), json!("live"))]),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    h.svc
+        .send(&conversation.thread_id, &text("oi"), Default::default())
+        .await
+        .unwrap();
+    until_turn_completed(&mut events).await;
+    tokio::time::sleep(Duration::from_secs(20 * 60)).await;
+    assert_eq!(h.svc.supervisor().status().await, AppServerState::Stopped);
+    h.svc
+        .send(
+            &conversation.thread_id,
+            &text("pesquise novamente"),
+            Default::default(),
+        )
+        .await
+        .unwrap();
+    until_turn_completed(&mut events).await;
+    assert_eq!(
+        sent(&h.record, "thread/start")[0]["config"]["web_search"],
+        "disabled"
+    );
+    let resume = &sent(&h.record, "thread/resume")[0];
+    assert_eq!(
+        resume["config"]["features.code_mode.direct_only_tool_namespaces"],
+        json!(["mcp__aura"])
+    );
+    assert_eq!(resume["config"]["web_search"], "disabled");
+    assert_eq!(
+        resume["config"]["mcp_servers.aura.http_headers"]["X-Aura-Conversation"],
+        conversation.conversation_uuid
+    );
+    h.svc.shutdown().await;
+}
+
+#[tokio::test]
+async fn aura_mcp_starts_direct_even_when_the_caller_removes_the_namespace() {
+    let h = default_harness();
+    h.svc
+        .start(StartOptions {
+            model: Some("gpt-6-luna".into()),
+            provider: "aura-chatgpt-plan".into(),
+            config_overrides: serde_json::Map::from_iter([
+                (
+                    "features.code_mode.direct_only_tool_namespaces".into(),
+                    json!([]),
+                ),
+                ("features.code_mode.enabled".into(), json!(true)),
+            ]),
+            ..Default::default()
+        })
+        .await
+        .unwrap();
+    let start = &sent(&h.record, "thread/start")[0];
+    assert_eq!(
+        start["config"]["features.code_mode.direct_only_tool_namespaces"],
+        json!(["mcp__aura"])
+    );
+    assert_eq!(start["config"]["features.code_mode.enabled"], true);
+    assert_eq!(start["model"], "gpt-6-luna");
+    assert_eq!(start["modelProvider"], "aura-chatgpt-plan");
+    h.svc.shutdown().await;
+}
+
+#[tokio::test(start_paused = true)]
 async fn crash_fails_the_turn_restarts_with_backoff_then_gives_up() {
     let h = harness(
         FakeConfig {

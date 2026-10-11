@@ -1,0 +1,51 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-014"
+  ],
+  "environment": "Windows; branch release/0.2.0; alterações locais sem commit; baseline ed9a9654c6e76e48186fc010a12eba77023b00f5",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-040",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "298a9768cc48945c0345e70ca4336a6d0edb6ee6157c7998dcc917d461f0e476",
+    "crates/aura-gateway/Cargo.toml": "1ba620f2a2c5e6ab37dcaef68d09e29009e93b6f4782a309dbc490a957a80545",
+    "crates/aura-gateway/src/lib.rs": "afb0eb1743be5a60f3af8ad9a6d8189560380bf74849d4c2a0d050996ecbab46",
+    "crates/aura-gateway/src/server.rs": "c84e1248acc0a309c597f876afe41140a175015745a10a784bc397286deb7a77",
+    "crates/aura-gateway/src/tool_results.rs": "a8b2e994985c31525f22a5a68556fa163fb7fe64305ad00f38735f41940fe180",
+    "crates/aura-gateway/tests/tool_results.rs": "fe203f8922ced77a633fe8a6ccdbe7355007f391143dc467d7ee5cd6fe61cf6b",
+    "crates/aura-web/Cargo.toml": "ef9d6599fd191db803619fbe19eafd685f91c77ed9d6abfecc6e8ece8b03ab3a",
+    "crates/aura-web/src/cache.rs": "12e0e81da484b022050fb4897b94bf43d3bcd6e155e3af9bfa3cbec5dce9c245",
+    "crates/aura-web/src/delivery.rs": "897753b1e9ce147d543aa5d9ae5ce6d07329b3972ce9893be8e090fdfc17db21",
+    "crates/aura-web/src/lib.rs": "f1ea06cba96411312bf56a4bd55be24e51f8524b733077218c653de861ac16fd",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-gateway/src/tool_results.rs",
+    "crates/aura-gateway/src/server.rs",
+    "crates/aura-gateway/src/lib.rs",
+    "crates/aura-gateway/tests/tool_results.rs",
+    "crates/aura-gateway/Cargo.toml",
+    "crates/aura-web/src/delivery.rs",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/Cargo.toml",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/host.rs",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Provedor externo simulado; usa WebService real. Não cobre o gate integral com app-server fixado, reinício, compactação, nove combinações de protocolos/modos, URLs não citadas/argumentos/raciocínio nem armazenamento comprimido/SQLite. Regressoes anteriores afetadas marcadas stale; não aprova TK007, TK004 nem ADR0010. Evidence invalidated because an input changed.",
+  "observations": "9/9 testes HTTP passaram em 0.01s: expansão exata, JSON escapado, escopo de thread, headers duplicados, mensagens/terceiros/outputs sem chamada, envelopes inexatos, namespace achatado, cancelamento e ausência de expansão recursiva. Nenhum processo cargo ficou ativo.",
+  "procedure": "cargo test -p aura-gateway --test tool_results",
+  "result": "stale",
+  "tested_revision": "local:56013a19d86b2c7970c05ff48b684d488845d7d1e00e7a1081260f09c89ba9fd",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T17:56:39+00:00"
+}

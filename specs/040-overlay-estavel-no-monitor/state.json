@@ -1,0 +1,67 @@
+{
+  "active_ticket": "TK-001",
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "ed9a9654c6e76e48186fc010a12eba77023b00f5"
+  },
+  "blockers": [],
+  "effort_id": "040-overlay-estavel-no-monitor",
+  "inputs": {
+    "contract": {
+      "fingerprint": "3eb1554270b4795a8826dc63499eb9ac23fdaf6059b2b9cba4f536a65e009635",
+      "path": "specs/040-overlay-estavel-no-monitor/spec.md",
+      "revision": 1
+    },
+    "core": {
+      "fingerprint": "f9789b91cc7b27dc12d24916947488069b22d058ea116099ceb511a7babd901e",
+      "path": "crates/aura-core/src/placement.rs"
+    },
+    "foreground_qa": {
+      "fingerprint": "fe0d506ff8d5e492a707a3c8cc7f2a464bc5b7955bd8cb4589f2e08597a60586",
+      "path": "crates/aura-win/examples/qa_foreground.rs"
+    },
+    "native_test": {
+      "fingerprint": "c5630f9c1a53c8da180ee816837cfd4f0932ab28c5f9e0b608869b9879051087",
+      "path": "apps/desktop/e2e/specs/monitor-stability.e2e.ts"
+    },
+    "plan": {
+      "fingerprint": "5f16bf4a3d28f38cebc1ca35c95a5aba713ac1889edfffef12c3a5a81aa6090d",
+      "path": "specs/040-overlay-estavel-no-monitor/plan.md",
+      "revision": 1
+    },
+    "qa": {
+      "fingerprint": "ac294d9496443ae131f83e862729d5b47444bf259fddbea9e1254fe71c7de45f",
+      "path": "specs/040-overlay-estavel-no-monitor/qa.md"
+    },
+    "resize_qa": {
+      "fingerprint": "e49ee17b0f7768cfbb68e471e335b3d91094a134302b6f1f9dd2e5a43e2f7301",
+      "path": "crates/aura-win/examples/qa_resize.rs"
+    },
+    "review": {
+      "fingerprint": "c8276a2c2d19c5624205820f663275e7f4accbc37c8188d5884733a0ac92f1f9",
+      "path": "specs/040-overlay-estavel-no-monitor/review.md"
+    },
+    "shell": {
+      "fingerprint": "7a020efa9eb02c017d6a8fa3db7ed0191795e7bdfd83b996c6cfd7fdac9935ec",
+      "path": "apps/desktop/src-tauri/src/overlay.rs"
+    },
+    "tdd": {
+      "fingerprint": "d881f720bf86a3fdcc3daf7353d4eb3662a19b2c48d429c58d31a254304260de",
+      "path": "specs/040-overlay-estavel-no-monitor/tdd.md"
+    },
+    "ticket1": {
+      "fingerprint": "a68b915a84ca34ecefbdcb7c1737a30ecf7a76156050623d302415668bde34dd",
+      "path": "specs/040-overlay-estavel-no-monitor/tickets/TK-001-estabilidade-de-monitor.md"
+    }
+  },
+  "last_evidence": "EV-004",
+  "mode": "standard",
+  "next_action": "Correção entregue em target/release/aura-monitor-fix.exe; abrir após Sair da versão anterior. SC002 observação cotidiana posterior.",
+  "pending_questions": [],
+  "phase": "closed",
+  "revision": 7,
+  "schema_version": "1.0",
+  "status": "complete",
+  "updated_at": "2026-10-11T02:21:14+00:00"
+}

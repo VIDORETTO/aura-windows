@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013"
+  ],
+  "environment": "Windows11; spec1/plan8; WebService/ReqwestTransport reais; uma sessão,sem conta/chave de busca",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-053",
+  "input_fingerprints": {
+    "crates/aura-web": "a383312849cb9ed42f7ce9080b0c4ab063b7c38bfcb877865b157b988a585ed2",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json": "2c4348bc490945cf9875e8dcfa83a4c11812c997f9968271ad0a1f8a757d4c11",
+    "specs/039-web-gratuita-do-agente/quality.md": "964beed55e106593c4cc95b383d72eb23af299de1412cb35f2b27927dae9155e",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/quality.md",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Só backend; não aprova síntese,privacidade de rollout,compactação ou Windows. Inspeção pelo browser fora do contador do Aura. Não substituiu/repetiu queries/alvos depois de falha. Títulos de leitura limitados,sem snippets/corpos no report do git. Evidence invalidated because an input changed.",
+  "observations": "Nova execução terminal exit0/complete:10/12 fontes confirmadas,8/10 extrações,58 HTTP/242s. Doze buscas48 HTTP/33s,seguidas por10 leituras de alvos inspecionados/fixados antes de extrair. IBGE não verificado ficou fora da aprovação,Tauri tema incorreto; duas falhas de leitura mantidas. Review Standards/Spec em review.md.",
+  "procedure": "cargo run -p aura-web --example quality -- 'C:/Users/gabri/AppData/Local/Temp/aura-039-quality-r8-1791656334857-report.json' 'C:/Users/gabri/AppData/Local/Temp/aura-039-quality-r8-1791656334857-targets.json'; inspeção independente e manifesto antes de extrair, conforme quality.md",
+  "result": "stale",
+  "tested_revision": "local:5cb02953762e486f23df4eddce01915321a0b57e8ad4df1d9d6af967dd6a119e",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-10T18:32:25+00:00"
+}

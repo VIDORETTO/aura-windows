@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "Windows 11; app-server rust-v0.159.0 fixado; provider e MCP loopback controlados; perfil sintetico exclusivo TEMP; nenhuma inferencia paga",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-064",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "2244a536d592d2a0b82ac88fdf0cead18cdfd8d4e90bb11d8b4e30ec4ad3e035",
+    "crates/aura-app/tests/real_app_server.rs": "e8529d05086ada19a957d9b0e5a4c33e01a792a78d073bc8647710c61e202556",
+    "crates/aura-gateway": "06a95a47810f4b8515cebf62a9c3caf6a1f39a77561d47f9eae56cadcd5e4120",
+    "crates/aura-web": "e0fe2b4404dbf9df896da5b0ceb1c4c6e1b2e4d66a8eb24fddf2786c0c037b20",
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py": "75f699b3c50dd81e0190a772924e7c832a77511f79ab38c5dc1b6f842ed865e9",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py": "f59affc397ac05ec98039c8cec9d7cf134205e04a53332ed040f1ecc0b1bd452",
+    "specs/039-web-gratuita-do-agente/experiments/reasoning-compaction-storage-result.json": "c2ff7edc67995d15a5740b86c15d05c420b612a5231b1c44ad74e32b4974065f",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py",
+    "specs/039-web-gratuita-do-agente/experiments/reasoning-compaction-storage-result.json"
+  ],
+  "limitations": "Partial: campo opaco sintetico sem criptografia comercial; novos raciocinio/compactacao somente Responses; zero frames comprimidos na fixture Codex. Controle de compressao valida auditor separadamente. Faltam campo criptografado representativo,ciclo de vida adicional,regressoes finais e revisao. Nenhuma conclusao geral de ausencia de toda informacao derivada. Evidence invalidated because an input changed.",
+  "observations": "14/14 HTTP,9/9 delivery e21/21 web real verdes; suite real19,07s. Original reasoning summary e campo opaco restaurados somente no provider. Reinicio,novo Turno e compactacao publica preservam resposta/fontes W1. Auditor:88arquivos/139registros SQLite/zero quatro marcadores. Controles positivos:2arquivos gzip/zstd e2celulas SQLite,3marcadores em cada local. Logs TEMP aura-039-status-native e aura-039-status-private.",
+  "procedure": "cargo test -p aura-gateway --test private_calls; cargo test -p aura-web --test delivery; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 com AURA_CODEX_BIN rust-v0.159.0 e AURA_E2E_DIR TEMP; audit_synthetic_storage.py no perfil sintetico .tmp6Zzqzt/Aura com --reasoning --compaction; python specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py",
+  "result": "stale",
+  "tested_revision": "local:ec8a1b5064cf492bccf98116c720484ebfd77f6ddbeb3dcb3f4a4c4c16eed21c",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T19:46:14+00:00"
+}

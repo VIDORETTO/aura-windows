@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "Cargo.lock": "150747b1f59fc5866a5127295fc2e6b68583a94134902eff2432ae5c7b480de3",
+    "crates/aura-web/Cargo.toml": "214d03984ec3d9dacaf77f3099756c06f6e61e693ba9753f061be47a1683f635",
+    "crates/aura-web/src/fetch.rs": "853cd88a083c5f6f2acf8af89b35e546f09a6901be52b28b5741cec8adf29173",
+    "crates/aura-web/src/lib.rs": "87570c0ed35bf59e32a7fb3f5d49486d7fad031003e001425f0268fce80d3f8d",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "crates/aura-web/tests/fixtures/report.html": "582319ebbe9b77c702c00ad8d4a4963aa3a1ee667b68ef60e111d31b95eae7b6",
+    "specs/039-web-gratuita-do-agente/plan.md": "5f40037162e9f82428baa2ff949cc78b62f0c4f107eeeda187ec95da283d377d",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.lock",
+    "crates/aura-web/Cargo.toml",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "crates/aura-web/tests/fixtures/report.html",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente TK002; cache de documentos provado, cache de busca/registry global/Settings/Host nao nesta fatia. Rebinding na seam observa IPs aprovados no request; production resolve_to_addrs e peer revisados, smoke positivo real separado. Gates qualidade/fixado/Windows pendentes. Evidence invalidated because an input changed.",
+  "observations": "29offline fetch+18search verdes; literal42/12/30/lista/tabela,ABC-DE/emoji,versao/expiry/LRU,DOM/100k/2MiB/30s/cancel,URL/pin/DNS/redirect,tipos/bloqueio/charset comprovados. Clippy/fmt/licencas verdes.",
+  "procedure": "cargo test -p aura-web; cargo clippy -p aura-web --all-targets -- -D warnings; cargo fmt --all -- --check; cargo deny check licenses",
+  "result": "stale",
+  "tested_revision": "local:a15989b460b6d9d274d08fafcf926e08797500eaad4f9f9bd7455ca3d477fde7",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-08T06:56:01+00:00"
+}

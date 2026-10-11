@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-045",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "298a9768cc48945c0345e70ca4336a6d0edb6ee6157c7998dcc917d461f0e476",
+    "crates/aura-app/tests/real_app_server.rs": "c9131d2c0a18e27e0ed2d2a9973b99f24c50481f5726a0bdabd503ec30334693",
+    "crates/aura-gateway/src/tool_results.rs": "a8b2e994985c31525f22a5a68556fa163fb7fe64305ad00f38735f41940fe180",
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py": "c06148d0f822601c94458d8e1065ec33edad7b7e3846107b8a2f35ca86c95225",
+    "specs/039-web-gratuita-do-agente/experiments/uncited-storage-result.json": "f404b738f130c8b9ae6ca9186a12926ef952fba0229869f0916e4aacb5709fa4",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py",
+    "specs/039-web-gratuita-do-agente/experiments/uncited-storage-result.json",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-gateway/src/tool_results.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente4 literais sintéticos; zero frames comprimidos observados, logo branch gzip/zstd não comprovada nesta fixture; raciocínio e compactação pendentes. Diagnóstico do bloqueio, não aprovação. Evidence invalidated because an input changed.",
+  "observations": "Inspeção de88 arquivos e128 linhas SQLite confirmou uncited_url no rollout, no WAL e em thread_history_1.sqlite/thread_items/item_json. Nenhum corpo/snippet ou nonce foi incluído no relatório.",
+  "procedure": "python specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py C:\\Users\\gabri\\AppData\\Local\\Temp\\.tmp6a0iUM\\Aura specs/039-web-gratuita-do-agente/experiments/uncited-storage-result.json",
+  "result": "stale",
+  "tested_revision": "local:f456b341f9d7787aef697bfec82c442475506b1e545c7bde8130d241e0acd245",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T18:12:19+00:00"
+}

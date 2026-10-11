@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    ".gitignore": "960ca5b90be3212a3bbb26eaeb99a6193fca12f28f1ed8368f01e420d23f1c10",
+    "Cargo.lock": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc",
+    "Cargo.toml": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1",
+    "README.md": "6c071dc0833598508eaefbe5327291e11d0ff01b92864d85517a31d9da13f34f",
+    "apps/desktop/package.json": "8cc1fcd4de1bdc78512ef1ebe70c4a0f41e8fdbb9f25ecde912cc5574459b8f3",
+    "apps/desktop/src-tauri/tauri.conf.json": "27d9ed50799634390dd05edf0f2fe6db7174bd0c501e8b8a3628c7c52da4439f",
+    "crates/aura-web": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+    "specs/041-publicacao-github-030/change.md": "e6342be69954c4c0cb7ac3ed445ef436cd6cdf96cdca93028aa11ad70909750c",
+    "specs/041-publicacao-github-030/input-revalidation.json": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+    "target/release-030-assets": "7bcea073c0c690ab9cd90fbd7641bbb8320c2732b6cccc6d2aa2d0138b99474b"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "apps/desktop/package.json",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "README.md",
+    ".gitignore",
+    "crates/aura-web",
+    "target/release-030-assets",
+    "specs/041-publicacao-github-030/input-revalidation.json",
+    "specs/041-publicacao-github-030/change.md"
+  ],
+  "limitations": "Push/release/download remoto/branches pendentes; DPI150/200 e Windows limpo não testados.",
+  "observations": "Todos os checks locais passaram; 39Rust opt-in ignorados; zero novos segredos e todos os 20findings correspondem às linhas previamente auditadas. Instalação0.3, hashes e assinaturas corretos. Remotos ainda não publicados.",
+  "procedure": "Rust508/UI253/typecheck/fmt/Clippy/licenses-sources; production DirectML build; MSI/PE0.3 and permanent-key independent signature/tamper verification; source snapshot+Gitleaks classification",
+  "result": "partial",
+  "tested_revision": "local:2b7d17cb7848807c770fe9263a6faf05dd9e9e083dd413e76ad264420eb5b4eb",
+  "ticket": null,
+  "timestamp": "2026-10-11T04:25:37+00:00"
+}

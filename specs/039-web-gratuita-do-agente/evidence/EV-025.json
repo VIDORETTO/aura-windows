@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-025",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "95bae233c3f8c349214333b9263917681e5a2ed28f34fd67010dd18df545dc15",
+    "crates/aura-web/src/lib.rs": "0a0f580dd018a1911f2a91d3911942e3e472b9e94e9db7c77def1407e7e580b4",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/search.rs": "e63b20fef32c657d5c5c47d7834bd7b9a5cbdea63950a3d8363deaa08eb56809",
+    "specs/039-web-gratuita-do-agente/plan.md": "d1e4fe799060cbb9bc24da81cc605eae701d35967f55c4c26935a86ad6d9ec53",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "ACs compartilhados aprovados somente no escopo TK001. Qualidade live, privacidade rollout normal e Windows atual continuam pendentes nos sucessores. Evidence invalidated because an input changed.",
+  "observations": "Workspace passou; servico 54 offline (25 buscas,29 leituras), Clippy/fmt/diff passaram. Renovacao no plano r6 do escopo TK001, revista em review.md. Admissao de metadata e slots nao alteram gratuidade/normalizacao/fallback.",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo clippy --workspace --exclude aura-desktop --all-targets -- -D warnings; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:bf77423b1b9fbaf812627ace4616d837fb3021746e5e5cc8a0a96ebb8f22dc8e",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T16:40:33+00:00"
+}

@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-018",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "a3abfe1d2c85087018d411681d261a90d666b1470537380fa1fc514e5aa945cd",
+    "crates/aura-web/src/fetch.rs": "bd06ae70fc4bfc1435401431c5e7aaa147c53d08e1d1e3daa0a29e7302f878b3",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "crates/aura-web/tests/fixtures/report.html": "582319ebbe9b77c702c00ad8d4a4963aa3a1ee667b68ef60e111d31b95eae7b6",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "crates/aura-web/tests/fixtures/report.html",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Renova escopo TK002. Registry/historico/UI e agregacao incluindo registry continuam TK004; nao aprova qualidade ao vivo. Evidence invalidated because an input changed.",
+  "observations": "29 leituras offline passaram, incluindo SSRF,paginacao Unicode,limites de documento,cancelamento e eviccao de documentos.21 buscas passaram na mesma execucao.",
+  "procedure": "cargo test -p aura-web --test search --test fetch",
+  "result": "stale",
+  "tested_revision": "local:2d25fa464a2f4ec72633cc3f7a1f0f69bba6ffd767c26efe6652a18cfff0bce7",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T15:49:42+00:00"
+}

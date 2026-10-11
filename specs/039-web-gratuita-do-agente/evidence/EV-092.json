@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-013"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-082"
+  ],
+  "execution_status": "executed",
+  "id": "EV-092",
+  "input_fingerprints": {
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json",
+    "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Executed revalidation, not fresh live queries. Original measurement2026-10-10T20:46:18Z; continuous service availability not guaranteed. Does not approve native browser/DPI/resize. Evidence invalidated because an input changed.",
+  "observations": "Original same-day backend run actual; current backend/harness identical SHA.12queries10HTML,10relevant8matched,58HTTP193s. Accepted cases/targets unchanged; no backend behavior/dependency change. EV082 remains historical stale; new classification explicit, current synthesis separateEV089.",
+  "procedure": "Explicit semantic revalidation of executed EV082/quality-results-2026-10-10-r10.json: compare exact aura-web and report input fingerprints, recount12searches/10reads and original10/12+8/10 thresholds, verify58HTTP/193s caps; classify consumer-only plan11 impact and fixed-baseline review. No new live network run.",
+  "result": "stale",
+  "tested_revision": "local:0686bcf2f44c3d37b53ce95fe780d6102c3aaa3ccbd765e5e8bfc578be9b3a8f",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-10T22:07:55+00:00"
+}

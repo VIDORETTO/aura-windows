@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-096"
+  ],
+  "execution_status": "executed",
+  "id": "EV-097",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+    "target/release/aura.exe": "340cee21fc66030d6a3bb2455d5610bb36d944e08fba5d99cfd2f034203a510f"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "crates/aura-codex/src/service.rs",
+    "target/release/aura.exe",
+    "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "No installer/publication/installation; native150/200DPI and external-browser destination remain unverified. Compile alone is not broad runtime approval. Evidence invalidated because an input changed.",
+  "observations": "Normal default-feature native executable built3m08; no demo/e2e/bundle. Frontend typecheck/Vite and releaseRust succeeded. Complements runtime/fixed-pin/model/UI evidence, current artifact available for review.",
+  "procedure": "pnpm -C apps/desktop tauri build --no-bundle; session77227 observed terminal exit0; hash/size of actual target/release/aura.exe recorded after completion",
+  "result": "stale",
+  "tested_revision": "local:5f47c6e4db36334d418806395b6f7853d6a1a71828ef6cece6d7cc7c1da418e0",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T22:22:08+00:00"
+}

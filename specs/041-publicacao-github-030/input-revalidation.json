@@ -1,0 +1,110 @@
+{
+  "changes": [
+    {
+      "id": "EV-087",
+      "ticket": "TK-001",
+      "changed": [
+        {
+          "path": "Cargo.lock",
+          "before": "94079a8950a61f5137230246559091ba6195c4b6aeb40117dfaac17688118a12",
+          "current": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc"
+        },
+        {
+          "path": "Cargo.toml",
+          "before": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+          "current": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1"
+        },
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-088",
+      "ticket": "TK-002",
+      "changed": [
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-089",
+      "ticket": "TK-003",
+      "changed": [
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-090",
+      "ticket": "TK-007",
+      "changed": [
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-092",
+      "ticket": "TK-006",
+      "changed": [
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-093",
+      "ticket": "TK-006",
+      "changed": [
+        {
+          "path": "crates/aura-web",
+          "before": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "current": "0ba0ed840152236291677f4305cec21ee9191be49380f409a2faadce33bad82f",
+          "after_reversing_only_client_metadata": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+          "exact_prior_match": true
+        }
+      ]
+    },
+    {
+      "id": "EV-096",
+      "ticket": "TK-005",
+      "changed": [
+        {
+          "path": "Cargo.lock",
+          "before": "94079a8950a61f5137230246559091ba6195c4b6aeb40117dfaac17688118a12",
+          "current": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc"
+        },
+        {
+          "path": "Cargo.toml",
+          "before": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+          "current": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1"
+        }
+      ]
+    }
+  ],
+  "classification": "Workspace version and client version metadata only; existing opt-in/live evidence remains historical and is not claimed as a new live run.",
+  "fresh_checks": "508 Rust tests, 253 UI tests, typecheck, fmt, workspace Clippy, licenses/sources and signed production build."
+}

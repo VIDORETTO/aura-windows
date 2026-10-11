@@ -1,0 +1,16 @@
+{
+  "area": "aura-web.fetch",
+  "consequence": "Nao bloqueia limiar8/10 observado, mas degrada fidelidade/legibilidade de fontes; reproduzir com fixture sintetica antes da correcao.",
+  "created_at": "2026-10-10T17:02:19+00:00",
+  "dedupe_key": "039-web-gratuita-do-agente|spec|extraction_fidelity|aura-web.fetch|live_heading_title_noise",
+  "effort": "039-web-gratuita-do-agente",
+  "evidence_location": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json",
+  "fix_ticket": "TK-002",
+  "gap_type": "extraction_fidelity",
+  "id": "FD-002",
+  "origin": "spec",
+  "severity": "minor",
+  "source_ref": "AC-004",
+  "state": "open",
+  "summary": "Avaliacao live: Readability remove cabecalho Search API do texto e titulo React/SearXNG inclui ruido de acessibilidade/navegacao."
+}

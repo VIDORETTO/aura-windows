@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-026",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "95bae233c3f8c349214333b9263917681e5a2ed28f34fd67010dd18df545dc15",
+    "crates/aura-web/src/fetch.rs": "32a40cf16fab3527136adf504ce466bd3c85146b32013cc99b80acb2869e9ff3",
+    "crates/aura-web/src/lib.rs": "0a0f580dd018a1911f2a91d3911942e3e472b9e94e9db7c77def1407e7e580b4",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "specs/039-web-gratuita-do-agente/plan.md": "d1e4fe799060cbb9bc24da81cc605eae701d35967f55c4c26935a86ad6d9ec53",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente escopo TK002, sem aprovacao de qualidade live, UI Windows ou privacidade dos rollouts normais. Evidence invalidated because an input changed.",
+  "observations": "Workspace passou; servico54 offline (25busca,29leitura), checks passaram. Renovacao r6 do escopo leitura segura/paginacao/DNS/limits revisado em review.md.",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo clippy --workspace --exclude aura-desktop --all-targets -- -D warnings; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:7e02b57065af12a828053c9c2c929946cf9e62a68591916049429363f91f6122",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T16:40:35+00:00"
+}

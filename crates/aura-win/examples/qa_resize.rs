@@ -74,14 +74,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let corner = (edge.contains("North") || edge.contains("South"))
         && (edge.contains("East") || edge.contains("West"));
     let inset = if corner { 5 } else { 3 };
-    let x = if edge.contains("West") {
+    let mut x = if edge.contains("West") {
         inset
     } else if edge.contains("East") {
         width - inset
     } else {
         width / 2
     };
-    let y = if edge == "Move" {
+    let mut y = if edge == "Move" {
         16
     } else if edge.contains("North") {
         // With undecorated shadows Tao reserves y<=SM_CYFRAME for HTTOP.
@@ -92,6 +92,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         height / 2
     };
+    // A populated header can have a button at its center. Tests may supply a
+    // point measured on the actual drag region, still inside this QA window.
+    if edge == "Move" && args.len() == 7 {
+        x = args[5].parse()?;
+        y = args[6].parse()?;
+        if x < 8 || x >= width - 8 || y < 8 || y >= height {
+            return Err("QA move start must be inside the native client area".into());
+        }
+    }
     let send = |flags| {
         let input = INPUT {
             r#type: INPUT_MOUSE,

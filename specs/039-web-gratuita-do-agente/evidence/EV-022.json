@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-022",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c11649aa2b7efe6f9b89adac3210764f82a7b357260907b7baa4e6b90a1cee9f",
+    "crates/aura-app/src/web.rs": "d98e922278324de9572c07f6f724b8734598567e628482a3f37a98704651f346",
+    "crates/aura-app/tests/real_app_server.rs": "918ca7b03257891d836d8ee1281b23c22278368684df361f3edf1729858367fc",
+    "crates/aura-app/tests/web_tools.rs": "0457063dc8a605d92d702cb3a5deaf8b179f979654420c0182e0a89464093bf2",
+    "crates/aura-codex/src/service.rs": "7c3aa375f10005f7f5b05b94eae062f09dffda9224c2fee319e35bdea7fbb5d3",
+    "crates/aura-mcp/src/tools.rs": "e2bbaf2a0aa77ecff7ccd2c4f5d9f4720b7b7d552714c9ce55627a9a559367d1",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "specs/039-web-gratuita-do-agente/plan.md": "e0433a139519bc1f6394e705b1c8dad16f041347a3a9b43181a10d9aea05e3e4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-mcp/src/tools.rs",
+    "crates/aura-web/src/lib.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Novos gates de historico/privacidade TK004 sao separados:historico e efemero passaram; rollout normal falhou. UI/memoria/live ainda pendentes. Nao aprova TK004. Evidence invalidated because an input changed.",
+  "observations": "90app+90Codex/gateway/MCP,12 integracoes web com fixado real em8.95s e sandbox separado1/1 em23.79s passaram. Tarefa mantem network false/approval; contexto e ferramentas sem mudanca. Somente ids internos do transcript acrescentados sem serializar.",
+  "procedure": "cargo test -p aura-app --test web_tools --test host --test ipc_contract; cargo test -p aura-codex -p aura-gateway -p aura-mcp; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 --skip web_history_restores --skip web_ephemeral_research --skip web_normal_research; cargo test -p aura-app --test real_app_server real_app_server_task_mode_confines_writes -- --ignored",
+  "result": "stale",
+  "tested_revision": "local:f536f86107d577d494959d8fbf1f8bf73c7ea7863d7052c15e5b0211ddb9cdcc",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T16:11:19+00:00"
+}

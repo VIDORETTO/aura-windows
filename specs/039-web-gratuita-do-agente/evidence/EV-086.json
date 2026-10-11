@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-039-live-chatgpt-20261010-182133/synthesis-result.json"
+  ],
+  "execution_status": "executed",
+  "id": "EV-086",
+  "input_fingerprints": {
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-codex/src/service.rs": "7c3aa375f10005f7f5b05b94eae062f09dffda9224c2fee319e35bdea7fbb5d3",
+    "crates/aura-gateway/src/private_calls.rs": "4a612ba96d4b0906c8a0c996e38d1bd2a6a91e361e6b3cdfd9b37ba91406f929",
+    "crates/aura-gateway/src/tool_results.rs": "9e680f19fa8753c920e11895d2a9d374d726e9402059d95fb6d6ee6bf98d13c0",
+    "crates/aura-web/src/delivery.rs": "e17529a897b5291842c564dfb1ecb315b5085d2deff0eabd4651ac6952472777",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-2026-10-10.json": "25909bb309cfb2edd572fca8ebd91cc187b6b1a11a9c7f94b2f880df6675c030",
+    "specs/039-web-gratuita-do-agente/plan.md": "9832d78faf5af32576273e6e326e0586dc6da2881685068dee1590627ac02485",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-gateway/src/private_calls.rs",
+    "crates/aura-gateway/src/tool_results.rs",
+    "crates/aura-web/src/delivery.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-2026-10-10.json"
+  ],
+  "limitations": "Code-mode output rehydration is a hypothesis; exact real provider output shape not captured. Initial incomplete-runtime/harness attempts preserved and excluded from quality approval. No HTTP-counter claims. UI external-browser destination, fullresize and real150/200DPI remain pending. Evidence invalidated because an input changed.",
+  "observations": "Actual auth/inference/tools worked;3completed in40.2/27.9/22.9s. Museum readings unsupported; explicit caveat. Python/Rust2official pageContent and WCAG1pageContent succeeded, but model reported opaque identifiers without text/sourceId and no verified answer/citation. Synthesis gatefailed; terminalcompleted is not testpass. No settings/provider/account mutation or credential export.",
+  "procedure": "Public auth_status/settings_get/models_list/diagnostics probe; native Windows build e2e no demo exit0 2m57s. pnpm -C apps/desktop/e2e exec node TEMP/aura-039-live-chatgpt-20261010-182133/synthesis.mjs; actual SIWC gpt-6-luna/default installed0.159.0, no AURA_CODEX_BIN override, three fixed ephemeral questions; messageCompleted/webSource public events; close own ephemeral conversations.",
+  "result": "stale",
+  "tested_revision": "local:164ff6be97180fd7df7ac7591fff973593a788ec47d2df286ab5aeb421ebca5c",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T21:34:30+00:00"
+}

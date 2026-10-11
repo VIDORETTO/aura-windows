@@ -181,6 +181,19 @@ fn build() -> Value {
             },
             HostEvent::Voice(PttState::Listening),
             HostEvent::ProvidersChanged {},
+            HostEvent::WebSource {
+                thread_id: "thr_1".into(),
+                turn_id: "turn-1".into(),
+                source: aura_web::WebSource {
+                    source_id: "W1".into(),
+                    title: "Relatório público".into(),
+                    url: "https://news.example/report".into(),
+                    snippet: "Produção: 42 unidades.".into(),
+                    published_at: None,
+                    retrieved_at: "2026-10-10T15:00:00Z".into(),
+                    kind: "pageContent".into(),
+                },
+            },
             HostEvent::AudioLevel {
                 source: aura_audio::AudioSourceKind::Mic,
                 dbfs: -12.5,
@@ -282,6 +295,14 @@ fn build() -> Value {
             text: "Sim, com corte de 10%".into(),
         },
         "speechStats": aura_app::speech_stats::compute(&[]),
+        "transcript": [
+            aura_app::web_history::TranscriptMessage { role: "user".into(), text: "Verifique a produção".into(), sources: vec![] },
+            aura_app::web_history::TranscriptMessage { role: "assistant".into(), text: "Produção: 42 [[aura-source:W1]]".into(), sources: vec![aura_web::WebSource {
+                source_id: "W1".into(), title: "Relatório público".into(), url: "https://news.example/report".into(), snippet: String::new(),
+                published_at: None, retrieved_at: "2026-10-10T15:00:00Z".into(), kind: "pageContent".into(),
+            }] },
+            aura_app::web_history::TranscriptMessage { role: "assistant".into(), text: "Resposta antiga".into(), sources: vec![] },
+        ],
         "recipe": aura_app::recipes::builtins().into_iter().next(),
         "chip": chip,
         "attachmentChip": attachment_chip,

@@ -32,6 +32,7 @@ const DEFAULT_SETTINGS: T.Settings = {
   appServerIdleMinutes: 15,
   workerIdleMinutes: 2,
   memories: false,
+  webEnabled: true,
   asrLanguage: null,
   asrVocabulary: [],
   cloudAsrProvider: null,

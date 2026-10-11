@@ -20,6 +20,12 @@ apps/desktop/src-tauri/binaries/
 !crates/aura-auth/tests/fixtures/test-signing-key.pem
 # Hybrid runtime artifacts that are machine-specific
 .hybrid/packets/
+__pycache__/
+*.pyc
+# Native QA profiles contain SQLite, rollouts and downloaded tools, not source.
+/crates/aura-app/aura-*/
+# Local screen captures must not be published (AGENTS.md).
+/docs/qa/evidencias-2026-10-02/
 # Benchmarks outputs (baseline is versioned)
 bench/latest.json
 bench/report.md

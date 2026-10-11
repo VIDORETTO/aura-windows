@@ -31,8 +31,7 @@ use aura_codex::launcher::{InMemoryLauncher, Launcher};
 use aura_codex::models::ModelInfo;
 use aura_codex::modes::ConversationMode;
 use aura_codex::service::{
-    CodexService, HistoryPage, HistoryQuery, StartOptions, StartedConversation, TranscriptMessage,
-    TurnOptions,
+    CodexService, HistoryPage, HistoryQuery, StartOptions, StartedConversation, TurnOptions,
 };
 use aura_codex::supervisor::{AppServerSupervisor, SupervisorConfig};
 use aura_core::context::{ChipKind, ChipPayload, ContextChip, ContextTray, TurnInput};
@@ -568,6 +567,8 @@ pub struct HostConfig {
     /// `:memory:` store (tests).
     pub in_memory_store: bool,
     pub recent: Option<Arc<dyn RecentMedia>>,
+    /// Public-web service; None composes the production DNS/HTTP adapters.
+    pub web: Option<Arc<aura_web::WebService>>,
     pub asr: AsrBackend,
     pub hardware: Hardware,
     pub disk: Arc<dyn DiskSpace>,
@@ -585,6 +586,7 @@ impl HostConfig {
             siwc: SiwcConfig::default(),
             in_memory_store: false,
             recent: None,
+            web: None,
             asr: AsrBackend::Fake {
                 text: "texto ditado de exemplo".into(),
             },
@@ -725,6 +727,7 @@ pub struct Host {
     pub paths: AppPaths,
     platform: Platform,
     store: Store,
+    web_history: crate::web_history::WebHistory,
     vault: Arc<Vault>,
     settings: RwLock<Settings>,
     /// Inverse patches of the settings the agent changed (022), newest last.
@@ -744,6 +747,7 @@ pub struct Host {
     gateway: GatewayHandle,
     http: reqwest::Client,
     codex: Arc<CodexService>,
+    pub(crate) web: Arc<crate::web::WebTurns>,
     launch_state: Arc<RwLock<LaunchState>>,
     attachments: Arc<AttachmentService>,
     trays: Mutex<HashMap<String, ContextTray>>,
@@ -1028,8 +1032,16 @@ impl Host {
             cfg.capture_interval,
         );
         let extensions_slot: crate::tools::ExtensionsSlot = Arc::default();
+        let web_slot: crate::web::WebSlot = Arc::default();
+        let web = Arc::new(crate::web::WebTurns::new(
+            cfg.web
+                .clone()
+                .unwrap_or_else(|| Arc::new(aura_web::WebService::live())),
+        ));
+        routes.set_tool_results(web.clone());
         let tools = Arc::new(HostTools {
             extensions: extensions_slot.clone(),
+            web: web_slot.clone(),
             vault: vault.clone(),
             platform: cfg.platform.clone(),
             policy: policy.clone(),
@@ -1056,6 +1068,7 @@ impl Host {
             base: BaseConfig {
                 gateway_port: gateway.port,
                 mcp_port: Some(gateway.port),
+                web_search: false,
                 memories: false,
                 aura_prompt_tools: aura_mcp::tools::WRITE_TOOLS
                     .iter()
@@ -1119,6 +1132,7 @@ impl Host {
         let host = Arc::new(Host {
             paths: cfg.paths,
             platform: cfg.platform,
+            web_history: crate::web_history::WebHistory::new(store.clone())?,
             store,
             vault,
             settings: RwLock::new(settings),
@@ -1138,6 +1152,7 @@ impl Host {
             gateway,
             http,
             codex,
+            web,
             launch_state,
             attachments,
             trays: Mutex::new(HashMap::new()),
@@ -1161,6 +1176,67 @@ impl Host {
         let weak: std::sync::Weak<dyn crate::tools::ExtensionsAccess> =
             Arc::downgrade(&host) as std::sync::Weak<dyn crate::tools::ExtensionsAccess>;
         let _ = extensions_slot.set(weak);
+        let web_access: Arc<dyn crate::web::WebAccess> = host.clone();
+        let _ = web_slot.set(Arc::downgrade(&web_access));
+        let weak = Arc::downgrade(&host);
+        host.codex.set_event_observer(Arc::new(move |event| {
+            let Some(host) = weak.upgrade() else {
+                return;
+            };
+            match event {
+                aura_codex::ConversationEvent::TurnStarted { thread_id, turn_id } => {
+                    if let Some((uuid, _)) = host.conversation_of(thread_id) {
+                        host.web.started(thread_id, &uuid, turn_id);
+                        let mut restored = true;
+                        let result = host.web_history.restore(thread_id, |last_id, sources| {
+                            let accepted = host.web.restore(thread_id, last_id, sources);
+                            restored &= accepted;
+                            accepted
+                        });
+                        if result.is_err() {
+                            host.web.restore_failed(thread_id);
+                            host.push_event(HostEvent::Notice {
+                                level: "warning".into(),
+                                message: "web_history_unavailable".into(),
+                            });
+                        } else if !restored {
+                            host.push_event(HostEvent::Notice {
+                                level: "warning".into(),
+                                message: "web_history_restore_limited".into(),
+                            });
+                        }
+                    }
+                }
+                aura_codex::ConversationEvent::TurnCompleted {
+                    thread_id, turn_id, ..
+                } => host.web.finished(thread_id, turn_id),
+                aura_codex::ConversationEvent::MessageCompleted {
+                    thread_id,
+                    item_id,
+                    text,
+                } => {
+                    if let Some((turn, sources)) = host.web.cited_sources(thread_id, text)
+                        && host
+                            .web_history
+                            .record(thread_id, &turn, item_id, sources)
+                            .is_err()
+                    {
+                        host.push_event(HostEvent::Notice {
+                            level: "warning".into(),
+                            message: "web_history_unavailable".into(),
+                        });
+                    }
+                }
+                aura_codex::ConversationEvent::AppServerState {
+                    state:
+                        aura_codex::events::AppServerState::Stopped
+                        | aura_codex::events::AppServerState::Starting
+                        | aura_codex::events::AppServerState::Restarting { .. }
+                        | aura_codex::events::AppServerState::Failed { .. },
+                } => host.web.cancel_active(),
+                _ => {}
+            }
+        }));
         host.apply_runtime_settings(&host.settings());
         host.spawn_forwarders();
         host.reconcile_capture();
@@ -1205,6 +1281,9 @@ impl Host {
 
     pub fn subscribe(&self) -> broadcast::Receiver<HostEvent> {
         self.events.subscribe()
+    }
+    pub(crate) fn push_event(&self, event: HostEvent) {
+        let _ = self.events.send(event);
     }
 
     fn notice(&self, level: &str, message: impl Into<String>) {
@@ -1530,6 +1609,7 @@ impl Host {
 
     /// Settings that configure running services (memories, cloud ASR).
     fn apply_runtime_settings(&self, s: &Settings) {
+        self.web.set_enabled(s.web_enabled);
         // Texts Aura adds to turns (mode announcements) follow the UI language.
         self.codex.set_language(match s.language {
             aura_core::settings::Language::PtBr => aura_codex::modes::UiLanguage::PtBr,
@@ -1988,6 +2068,12 @@ impl Host {
             if let Some(model) = &opts.model {
                 opts.config_overrides
                     .extend(aura_gateway::codex_config::thread_overrides(&p, model));
+                if p.models
+                    .iter()
+                    .any(|spec| spec.id == *model && !spec.supports_tools && !spec.estimated)
+                {
+                    self.notice("warning", "web_tools_unsupported");
+                }
             }
         }
         let started = self.codex.start(opts).await?;
@@ -2032,6 +2118,7 @@ impl Host {
     }
 
     pub async fn interrupt(&self, thread_id: &str) -> HostResult<()> {
+        self.web.interrupt(thread_id);
         Ok(self.codex.interrupt(thread_id).await?)
     }
 
@@ -2047,10 +2134,34 @@ impl Host {
         Ok(self.codex.list(q).await?)
     }
 
-    pub async fn open_conversation(&self, thread_id: &str) -> HostResult<Vec<TranscriptMessage>> {
+    pub async fn open_conversation(
+        &self,
+        thread_id: &str,
+    ) -> HostResult<Vec<crate::web_history::TranscriptMessage>> {
         let t = self.codex.open(thread_id).await?;
         let _ = self.conversation_of(thread_id);
-        Ok(t)
+        t.into_iter()
+            .map(|message| {
+                let sources = if message.role == "assistant" {
+                    self.web_history
+                        .sources(thread_id, &message.turn_id, &message.item_id)?
+                } else {
+                    vec![]
+                };
+                Ok(crate::web_history::TranscriptMessage {
+                    role: message.role,
+                    text: message.text,
+                    sources,
+                })
+            })
+            .collect()
+    }
+    pub(crate) fn observe_web_source_id(
+        &self,
+        thread: &str,
+        source: &aura_web::WebSource,
+    ) -> aura_store::Result<()> {
+        self.web_history.observe_id(thread, &source.source_id)
     }
 
     pub async fn rename(&self, thread_id: &str, name: &str) -> HostResult<()> {
@@ -2071,6 +2182,7 @@ impl Host {
 
     pub async fn delete_conversation(&self, thread_id: &str) -> HostResult<()> {
         if let Some((uuid, _)) = self.conversation_of(thread_id) {
+            self.web.close(thread_id, &uuid);
             self.attachments.forget_conversation(&uuid);
             let _ = self.privacy.revoke_conversation(&uuid);
             self.grants.write().unwrap().revoke_conversation(&uuid);
@@ -2082,6 +2194,7 @@ impl Host {
 
     pub async fn close_ephemeral(&self, thread_id: &str) -> HostResult<()> {
         if let Some((uuid, _)) = self.conversation_of(thread_id) {
+            self.web.close(thread_id, &uuid);
             self.attachments.forget_conversation(&uuid);
             self.grants.write().unwrap().revoke_conversation(&uuid);
         }
@@ -4043,6 +4156,7 @@ impl Host {
     }
 
     pub async fn shutdown(&self) {
+        self.web.shutdown();
         self.capture.shutdown().await;
         self.voice.shutdown().await;
         self.codex.shutdown().await;

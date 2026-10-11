@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-038-final-native-20261010-181914/model-picker.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/src-tauri/src/overlay.rs": "533239d89655024228ed3cebd410cd22d2e8bf2155c0a22c0a593091503527de",
+    "apps/desktop/src/i18n": "cf346d2699422d63e84f3dbad069e9a67afa6d0080e0a27f97ed845d4d3146ac",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "1075f6e09e01d53baba514538fd08fe8eb554c30efce0cca4bafb48cc0fac916",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "apps/desktop/src/ui/Popover.tsx": "94ba13a984ba508f576498dcf0aaaa4ef393f512a0dfa14aa14b6258fe030703",
+    "apps/desktop/src/ui/floating.tsx": "9c8536a36bf1894698d725368e184c110cec4c0008a5d8b280e4a5c16b25d7af",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/ui/Popover.tsx",
+    "apps/desktop/src/ui/floating.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src/i18n",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Only AC009 approved; physical150/200 and complete resize regression not approved. Long previousApp context was synthetic after actual monitor move; no assertion of screen capture or real LLM by these tests. Evidence invalidated because an input changed.",
+  "observations": "Native2/2 in5.2s. Keyboard Tab/Enter opens and selects low; Escape closes and returns model focus, Overlay/input retained in ptBR/en. Actual OS scale1; images inspected.",
+  "procedure": "Native build e2e without demo exit0 2m57s; pnpm -C apps/desktop/e2e test -- --spec ./specs/model-picker-recovery.e2e.ts; inspect native compact/expanded screenshots; fresh UI253/typecheck parity already passed.",
+  "result": "stale",
+  "tested_revision": "local:72d7c15774f2749d0be1eff0c83590dfb6567db5eb0a455a2d4d2c33384218be",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T21:31:48+00:00"
+}

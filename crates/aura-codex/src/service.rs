@@ -42,6 +42,8 @@ pub enum ServiceError {
 
 pub const MAX_MESSAGE_CHARS: usize = 100_000;
 pub const SERVICE_NAME: &str = "aura_desktop";
+/// Synchronous, lightweight consumer bookkeeping before event broadcast.
+pub type EventObserver = Arc<dyn Fn(&ConversationEvent) + Send + Sync>;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
@@ -119,6 +121,11 @@ pub struct TranscriptMessage {
     /// `user` or `assistant`.
     pub role: String,
     pub text: String,
+    /// Host correlation only; these protocol identifiers stay out of the UI DTO.
+    #[serde(skip)]
+    pub item_id: String,
+    #[serde(skip)]
+    pub turn_id: String,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -156,6 +163,7 @@ pub struct CodexService {
     workspaces_root: PathBuf,
     /// Skill folders besides Codex's own roots (Aura-managed skills).
     skill_roots: std::sync::Mutex<Vec<PathBuf>>,
+    event_observer: std::sync::RwLock<Option<EventObserver>>,
 }
 
 /// One skill as the app-server sees it (`skills/list`).
@@ -212,6 +220,7 @@ impl CodexService {
             store,
             workspaces_root,
             skill_roots: std::sync::Mutex::new(Vec::new()),
+            event_observer: std::sync::RwLock::new(None),
         });
         svc.clone().spawn_router(incoming_rx);
         svc.clone().spawn_supervisor_listener();
@@ -231,7 +240,15 @@ impl CodexService {
     }
 
     fn emit(&self, e: ConversationEvent) {
+        let observer = self.event_observer.read().unwrap().clone();
+        if let Some(observer) = observer {
+            observer(&e);
+        }
         let _ = self.events.send(e);
+    }
+
+    pub fn set_event_observer(&self, observer: EventObserver) {
+        *self.event_observer.write().unwrap() = Some(observer);
     }
 
     fn spawn_router(self: Arc<Self>, mut rx: mpsc::UnboundedReceiver<Incoming>) {
@@ -399,6 +416,15 @@ impl CodexService {
             previous_summary: opts.previous_summary.clone(),
         };
         let mut config = opts.config_overrides.clone();
+        // Aura supplies free public web tools over MCP. Hosted search must not
+        // be enabled by either a caller override or a restored thread config.
+        config.insert("web_search".into(), json!("disabled"));
+        // Native code-mode models must call Aura MCP directly so the gateway
+        // can protect arguments and restore transient web results by tool scope.
+        config.insert(
+            "features.code_mode.direct_only_tool_namespaces".into(),
+            json!(["mcp__aura"]),
+        );
         config.insert(
             "mcp_servers.aura.http_headers".into(),
             json!({ "X-Aura-Conversation": uuid }),
@@ -490,8 +516,16 @@ impl CodexService {
         if self.shared.loaded.lock().await.contains(thread_id) {
             return Ok(());
         }
-        peer.request("thread/resume", json!({"threadId": thread_id}))
-            .await?;
+        let (meta, _, _) = self.context(thread_id).await?;
+        peer.request(
+            "thread/resume",
+            json!({"threadId": thread_id,"config":{
+                "web_search":"disabled",
+                "features.code_mode.direct_only_tool_namespaces":["mcp__aura"],
+                "mcp_servers.aura.http_headers":{"X-Aura-Conversation":meta.conversation_uuid}
+            }}),
+        )
+        .await?;
         self.shared
             .loaded
             .lock()
@@ -781,11 +815,15 @@ impl CodexService {
                         out.push(TranscriptMessage {
                             role: "user".into(),
                             text,
+                            item_id: item["id"].as_str().unwrap_or_default().into(),
+                            turn_id: turn["id"].as_str().unwrap_or_default().into(),
                         });
                     }
                     Some("agentMessage") => out.push(TranscriptMessage {
                         role: "assistant".into(),
                         text: item["text"].as_str().unwrap_or_default().to_string(),
+                        item_id: item["id"].as_str().unwrap_or_default().into(),
+                        turn_id: turn["id"].as_str().unwrap_or_default().into(),
                     }),
                     _ => {}
                 }

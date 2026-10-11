@@ -1,0 +1,261 @@
+{
+  "active_ticket": "TK-005",
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "ed9a9654c6e76e48186fc010a12eba77023b00f5"
+  },
+  "blockers": [],
+  "effort_id": "039-web-gratuita-do-agente",
+  "inputs": {
+    "app_real_web_tests": {
+      "fingerprint": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+      "path": "crates/aura-app/tests/real_app_server.rs"
+    },
+    "app_web": {
+      "fingerprint": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+      "path": "crates/aura-app/src/web.rs"
+    },
+    "browser_gate": {
+      "fingerprint": "0132fbcb6a04b4e036f3fe5e784dc3d839cd022c2cd25c68037dead805c4b884",
+      "path": "specs/039-web-gratuita-do-agente/findings/FD-005.json"
+    },
+    "code_mode_probe": {
+      "fingerprint": "a7cf3c8a36daf526eddd4b1efa196984bb867108ce345b30b472283f66c8ac90",
+      "path": "specs/039-web-gratuita-do-agente/experiments/code-mode-delivery-probe-2026-10-10.json"
+    },
+    "codex_service": {
+      "fingerprint": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+      "path": "crates/aura-codex/src/service.rs"
+    },
+    "codex_service_tests": {
+      "fingerprint": "4ea705365bee8c4db73cc6e228cbbff0076989ef25cad4e060a25ebf95bcc878",
+      "path": "crates/aura-codex/tests/service.rs"
+    },
+    "contract": {
+      "fingerprint": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+      "path": "specs/039-web-gratuita-do-agente/spec.md",
+      "revision": 1
+    },
+    "contracts": {
+      "fingerprint": "16e43588d5092c9179249fc31bdb6986d80cf3c52c8ca401e391cbb7985cfb64",
+      "path": "specs/039-web-gratuita-do-agente/contracts.md"
+    },
+    "crypto_plan11": {
+      "fingerprint": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+      "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json"
+    },
+    "discovery": {
+      "fingerprint": "0987c090d4fe101366e9308c636b1bfac09cdcf6b48687618f04155535c51605",
+      "path": "specs/039-web-gratuita-do-agente/discovery.md"
+    },
+    "encrypted_reasoning_plan10_result": {
+      "fingerprint": "4e7bd4b5d4a683a07dd7c8d19d6323beefa186d8e0847d390f1ff0923ff3f4ca",
+      "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan10-result.json"
+    },
+    "encrypted_reasoning_probe": {
+      "fingerprint": "778a5483b273faa7b498faa7cb80f97e8e2e9d23e32f8ff412f4734ee198dd03",
+      "path": "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1"
+    },
+    "encrypted_reasoning_result": {
+      "fingerprint": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+      "path": "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-final-result.json"
+    },
+    "gateway_private_calls": {
+      "fingerprint": "4a612ba96d4b0906c8a0c996e38d1bd2a6a91e361e6b3cdfd9b37ba91406f929",
+      "path": "crates/aura-gateway/src/private_calls.rs"
+    },
+    "gateway_private_calls_tests": {
+      "fingerprint": "9758b538f1d3220d7edf750bb38bd4f373bf3825c015be4c8faf06d9d7ebf16a",
+      "path": "crates/aura-gateway/tests/private_calls.rs"
+    },
+    "gateway_sse": {
+      "fingerprint": "a7ed1a8f29363f6f7ffa8dfed03c81093908f23f43681481b889fad75cdbc579",
+      "path": "crates/aura-gateway/src/sse.rs"
+    },
+    "gateway_tool_results": {
+      "fingerprint": "9e680f19fa8753c920e11895d2a9d374d726e9402059d95fb6d6ee6bf98d13c0",
+      "path": "crates/aura-gateway/src/tool_results.rs"
+    },
+    "native_web_e2e": {
+      "fingerprint": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+      "path": "apps/desktop/e2e/specs/web-research.e2e.ts"
+    },
+    "native_web_fixture": {
+      "fingerprint": "3a9810127861fae22d4c6d907571613118ac4f888ce1a2fada98b4731d41993e",
+      "path": "apps/desktop/src-tauri/src/e2e_web.rs"
+    },
+    "native_web_main": {
+      "fingerprint": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+      "path": "apps/desktop/src-tauri/src/main.rs"
+    },
+    "native_web_manifest": {
+      "fingerprint": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+      "path": "apps/desktop/src-tauri/Cargo.toml"
+    },
+    "persistence_adr": {
+      "fingerprint": "96217d4c162daae0fd389883b0a6f2589902d79b51607ee36a16c3886795b392",
+      "path": "docs/adr/0010-entrega-transitoria-de-resultados-web.md"
+    },
+    "persistence_probe": {
+      "fingerprint": "8b6ba344861bbdc8493fdd10692863afa693e15dbd6a6c08426032c45d416a47",
+      "path": "specs/039-web-gratuita-do-agente/experiments/private_result_probe.py"
+    },
+    "persistence_probe_result": {
+      "fingerprint": "d3c81e053da14c5cf82c8334996362c53f8b364785e2303daae91a0f22050822",
+      "path": "specs/039-web-gratuita-do-agente/experiments/private-result-result.json"
+    },
+    "persistence_research": {
+      "fingerprint": "60ac438a80759afa5cccc2fbc3ab5e3597205f7939a72d63eba5aa0331ca817e",
+      "path": "specs/039-web-gratuita-do-agente/persistence-research.md"
+    },
+    "plan": {
+      "fingerprint": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+      "path": "specs/039-web-gratuita-do-agente/plan.md",
+      "revision": 11
+    },
+    "private_arguments_probe": {
+      "fingerprint": "fc0402eb4dc3847e79101dd5db05292def550178dea5df73d39d643725e645d8",
+      "path": "specs/039-web-gratuita-do-agente/experiments/private_arguments_probe.py"
+    },
+    "private_arguments_probe_result": {
+      "fingerprint": "bda41de09bbdb0dbd3db7a6a380ff38a183e2bc271d1fe63d9aa32809afce738",
+      "path": "specs/039-web-gratuita-do-agente/experiments/private-arguments-schema-result.json"
+    },
+    "production_binary": {
+      "fingerprint": "31a2c5e4877b2439ee394caa473757928e9ea7ebfa06573a7ea7497ff2a8e3a2",
+      "path": "specs/039-web-gratuita-do-agente/experiments/production-binary-2026-10-10.json"
+    },
+    "progress_tk4": {
+      "fingerprint": "e1b1c8938ff5e168e7e4f171230ebb3b2068f725432adb066b3236fb8484c2e7",
+      "path": "specs/039-web-gratuita-do-agente/progress-tk004.md"
+    },
+    "quality": {
+      "fingerprint": "0902e6c015ef247defcc63e7f43c71bea81c156a9e21c56485501171da226048",
+      "path": "specs/039-web-gratuita-do-agente/quality.md"
+    },
+    "quality_r10_results": {
+      "fingerprint": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+      "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json"
+    },
+    "quality_r8_results": {
+      "fingerprint": "2c4348bc490945cf9875e8dcfa83a4c11812c997f9968271ad0a1f8a757d4c11",
+      "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r8.json"
+    },
+    "quality_r9_results": {
+      "fingerprint": "f9308331eeaf495240df029e10bdf12007e8ce4c1ed86aa49ac017a60115b4fa",
+      "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r9.json"
+    },
+    "quality_results": {
+      "fingerprint": "200ca48dd11e7d15b306d0ac8462d5eacffac2fac14ec8858a84d030ab9a08ba",
+      "path": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json"
+    },
+    "quality_revalidation11": {
+      "fingerprint": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+      "path": "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json"
+    },
+    "research": {
+      "fingerprint": "e2dea085944c13d6423431f7619fa3df5cbd067154192736e6ec43785d388e65",
+      "path": "specs/039-web-gratuita-do-agente/research.md"
+    },
+    "review": {
+      "fingerprint": "eac7546b602dbd641c7481f638541b051a300a1e7e2132c94f7b679d98444f43",
+      "path": "specs/039-web-gratuita-do-agente/review.md"
+    },
+    "siwc_plan11": {
+      "fingerprint": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+      "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json"
+    },
+    "siwc_synthesis_result": {
+      "fingerprint": "25909bb309cfb2edd572fca8ebd91cc187b6b1a11a9c7f94b2f880df6675c030",
+      "path": "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-2026-10-10.json"
+    },
+    "storage_arguments_audit_result": {
+      "fingerprint": "120502ab37b8bccdff558c3f8210f94fd97d64358d808246b6dadcb5a4cd183f",
+      "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json"
+    },
+    "storage_audit": {
+      "fingerprint": "75f699b3c50dd81e0190a772924e7c832a77511f79ab38c5dc1b6f842ed865e9",
+      "path": "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py"
+    },
+    "storage_audit_controls": {
+      "fingerprint": "f59affc397ac05ec98039c8cec9d7cf134205e04a53332ed040f1ecc0b1bd452",
+      "path": "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py"
+    },
+    "storage_audit_result": {
+      "fingerprint": "bcb2036b82e6d4458dc787a997fa0d07f6517f9f039d00b98c05237b984ee3b4",
+      "path": "specs/039-web-gratuita-do-agente/experiments/uncited-storage-formatted-result.json"
+    },
+    "storage_reasoning_compaction_result": {
+      "fingerprint": "c2ff7edc67995d15a5740b86c15d05c420b612a5231b1c44ad74e32b4974065f",
+      "path": "specs/039-web-gratuita-do-agente/experiments/reasoning-compaction-storage-result.json"
+    },
+    "tdd": {
+      "fingerprint": "9b20e15ebe8ca00842c67d763f11b4b67a529e019d9c81ce7e0c1528e7ca7138",
+      "path": "specs/039-web-gratuita-do-agente/tdd.md"
+    },
+    "test_web_research": {
+      "fingerprint": "498c309ce404919c3aa0825a5f2bf4dd17327e79dc623ee9e90225de19be89bc",
+      "path": "crates/aura-app/tests/web_research.rs"
+    },
+    "ticket1": {
+      "fingerprint": "f1ccd8bdd887cbe06037adfb2eedd13ce50a37b8bceeac10d56ca216c0fdac78",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-001-busca-sem-chave.md"
+    },
+    "ticket2": {
+      "fingerprint": "655842eba5f64db874a2c1784c44118b825e62ab675bfff92d45abddaf594fcc",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-002-leitura-segura.md"
+    },
+    "ticket3": {
+      "fingerprint": "7d2a633eafcacfc892c22bab4acc01353fbe56f97ec22d3705e7bc85fd6715b4",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-003-agente-e-modos.md"
+    },
+    "ticket4": {
+      "fingerprint": "aa05e7dc458269cf05e8e806c1a460b7aef6f4b8fcf5b9ec9280f5d733d6d0c7",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-004-fontes-e-controle.md"
+    },
+    "ticket5": {
+      "fingerprint": "877ff5ac44a3af5683d57f32df4911e08f18b21a0cad6eb6aeb1dd8b8f509cb8",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-005-qualidade-e-windows.md"
+    },
+    "ticket6": {
+      "fingerprint": "e86fd02acd8af4b8e17e475563606f02dcb828eb94aa5b0e7394c5b82622b657",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-006-qualidade-busca-extracao.md"
+    },
+    "ticket7": {
+      "fingerprint": "7f2791e9da1ca64c368f20c2ae6661a474ee70fd6c211e512bb1d5bc30a32bea",
+      "path": "specs/039-web-gratuita-do-agente/tickets/TK-007-entrega-transitoria-web.md"
+    },
+    "web_delivery": {
+      "fingerprint": "e17529a897b5291842c564dfb1ecb315b5085d2deff0eabd4651ac6952472777",
+      "path": "crates/aura-web/src/delivery.rs"
+    },
+    "web_delivery_tests": {
+      "fingerprint": "f1a9f67bcf9a37d48ecf2552bbf939d277a37d18844a790b7d34d3adcb6774b2",
+      "path": "crates/aura-web/tests/delivery.rs"
+    }
+  },
+  "last_evidence": "EV-106",
+  "last_invalidation": {
+    "evidence": [
+      "EV-087",
+      "EV-088",
+      "EV-089",
+      "EV-090",
+      "EV-092",
+      "EV-093",
+      "EV-096",
+      "EV-097"
+    ],
+    "inputs": {},
+    "timestamp": "2026-10-11T04:24:13+00:00"
+  },
+  "mode": "standard",
+  "next_action": "Versão0.3 verificada e reavaliada no esforço041; 038DPI150/200 continua pendente.",
+  "pending_questions": [],
+  "phase": "closed",
+  "revision": 93,
+  "schema_version": "1.0",
+  "status": "complete",
+  "updated_at": "2026-10-11T04:25:37+00:00"
+}

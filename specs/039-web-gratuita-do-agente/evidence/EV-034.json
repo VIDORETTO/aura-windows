@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "Windows 11; Python 3.14; app-server rust-v0.159.0; MCP e provider Responses locais scripted; CODEX_HOME isolado novo",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-034",
+  "input_fingerprints": {
+    "docs/adr/0010-entrega-transitoria-de-resultados-web.md": "ba79208dbdccd1d27cfa1ae0c28bb2dd58bd4787ab6f6f3bc1b3b00496b27aa1",
+    "specs/039-web-gratuita-do-agente/experiments/private-result-result.json": "d3c81e053da14c5cf82c8334996362c53f8b364785e2303daae91a0f22050822",
+    "specs/039-web-gratuita-do-agente/experiments/private_result_probe.py": "8b6ba344861bbdc8493fdd10692863afa693e15dbd6a6c08426032c45d416a47",
+    "specs/039-web-gratuita-do-agente/persistence-research.md": "c31ccc6aaf29296c55edec2b8413fe0e275df9073cac3be5dc889dbd0fe5226b",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/persistence-research.md",
+    "specs/039-web-gratuita-do-agente/experiments/private_result_probe.py",
+    "specs/039-web-gratuita-do-agente/experiments/private-result-result.json",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "docs/adr/0010-entrega-transitoria-de-resultados-web.md",
+    "specs/039-web-gratuita-do-agente/spec.md"
+  ],
+  "limitations": "Prova de viabilidade somente: não demonstra escopo/cancelamento/TTL/budget/compactação/URLs/raciocínio, adapters do Aura, ausência em conteúdo comprimido nem gate integral. Parser recursivo do protótipo não será usado na implementação. Tentativas anteriores falharam na configuração MCP, sem aprovação de comportamento. Evidence invalidated because an input changed.",
+  "observations": "Protótipo completou turno; 2 requests simulados, 1 MCP, 1 expansão; literal integral de página ausente nos arquivos examinados, handle presente; mesmo threadId e resposta após reinício; headers thread-id/session-id correspondem ao ID. A aplicação não foi corrigida.",
+  "procedure": "AURA_CODEX_BIN fixado; python %TEMP%/aura-039-persistence-probe/private_result_probe.py; comparação da cópia em experiments com o script executado; fontes rust-v0.159.0 baixadas por curl.exe e inspecionadas",
+  "result": "stale",
+  "tested_revision": "local:5dc3d97f62d94dea2502bf207e69d08b690ab62affdcff0ca316b9bd810debdc",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T17:26:45+00:00"
+}

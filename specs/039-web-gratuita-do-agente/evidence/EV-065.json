@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-065",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "e0fe2b4404dbf9df896da5b0ceb1c4c6e1b2e4d66a8eb24fddf2786c0c037b20",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Renova somente escopo original TK001,nao gate integral TK007/qualidade live/sintese/UI/Windows. Evidence invalidated because an input changed.",
+  "observations": "321 regressões passaram,29 ambientais ignoradas;Clippy all-targets semavisos. Busca/fallback/proveniencia/budget originais preservados apos kindReasoning e frescor. Revisao atual emreview.md.",
+  "procedure": "cargo test -p aura-web -p aura-gateway -p aura-app -p aura-codex -p aura-mcp; cargo clippy -p aura-web -p aura-gateway -p aura-app -p aura-codex -p aura-mcp --all-targets -- -D warnings",
+  "result": "stale",
+  "tested_revision": "local:bdc0f4ba19e22387054bf7a6e718ea7f9c78e3a1b8ce415bd3d0d81ad6c36ef5",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T19:48:49+00:00"
+}

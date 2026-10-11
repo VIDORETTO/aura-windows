@@ -1,0 +1,17 @@
+{
+  "area": "windows-qa",
+  "consequence": "Resolved by explicit user manual confirmation after the requested native source-click procedure, EV098; no browser automation restriction was bypassed.",
+  "created_at": "2026-10-10T22:18:37+00:00",
+  "dedupe_key": "039-web-gratuita-do-agente|convergence|unverified_external_browser|windows-qa|native-external-url-destination",
+  "effort": "039-web-gratuita-do-agente",
+  "evidence_location": "specs/039-web-gratuita-do-agente/evidence/EV-095.json",
+  "fix_ticket": "TK-005",
+  "gap_type": "unverified_external_browser",
+  "id": "FD-005",
+  "origin": "convergence",
+  "severity": "blocker",
+  "source_ref": "AC-009",
+  "state": "resolved",
+  "resolution": "EV-098: usuário confirmou que clicou na fonte W1 no Aura e copiou da barra do navegador https://www.w3.org/WAI/standards-guidelines/wcag/, igual à fonte solicitada.",
+  "summary": "Native source click invoked opener, but external-browser final destination is still unverified; aggregate passed AC009 from narrower ticket seams must not approve this final gate."
+}

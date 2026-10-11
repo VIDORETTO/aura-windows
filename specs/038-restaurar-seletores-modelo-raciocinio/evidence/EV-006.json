@@ -1,0 +1,45 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-006",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n/en.ts": "5fb636354f8945428bedefbe0e83e20504aa265a078dcc0b9eb1a96935771c17",
+    "apps/desktop/src/i18n/pt-BR.ts": "9f8153773a82c6194b863b5f8c441a37d5179a94d16d437cba8a2301ad26d441",
+    "apps/desktop/src/overlay/Composer.test.tsx": "16c901f1a0b7db5466c93d435e5e5e41cef7fa83409f45bcf2e9ccd832a70ee5",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "ed6f4a784755176e8112220d38c7da8afcd16b72402b0a5bab5ffda5e6487a1f",
+    "apps/desktop/src/overlay/StatusBar.tsx": "4f5b2d82c5d067c08b279eab0e5d5ab0585c6506ed09de67733c1151d936388e",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "crates/aura-app/tests/host.rs": "4c9870825978499f6e1373422b3f16b1d05c3a9c6a6f17e3fb83b712d8e8967e",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Composer.test.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/StatusBar.tsx",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "crates/aura-app/tests/host.rs",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Matriz nativa completa em TK-003; nao comprova conta ChatGPT comercial. Evidence invalidated because an input changed.",
+  "observations": "244 UI/33 arquivos,74 Host,typecheck,rustfmt,diff check verdes no codigo e plan r3. Estados de catalogo, retry, corrida e visibilidade por OverlayApp. Logs TEMP/aura-038-ui-final.log.",
+  "procedure": "pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo test -p aura-app --test host; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:3f755830062e871f5337cf5f063b35943bf434821832c24e9ac4447bf8481720",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-08T00:10:55+00:00"
+}

@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-033",
+  "input_fingerprints": {
+    "crates/aura-web/examples/quality.rs": "70e89ba747eb5d3072c094e7b836c740b1b33c2d3d15e5899931268291c12070",
+    "crates/aura-web/src/cache.rs": "95bae233c3f8c349214333b9263917681e5a2ed28f34fd67010dd18df545dc15",
+    "crates/aura-web/src/fetch.rs": "32a40cf16fab3527136adf504ce466bd3c85146b32013cc99b80acb2869e9ff3",
+    "crates/aura-web/src/lib.rs": "0a0f580dd018a1911f2a91d3911942e3e472b9e94e9db7c77def1407e7e580b4",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "specs/039-web-gratuita-do-agente/plan.md": "20a584715c54fd4e85d292dbb7de99a16d24adee3718b8fcd932e39aeaff7c9d",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json": "200ca48dd11e7d15b306d0ac8462d5eacffac2fac14ec8858a84d030ab9a08ba",
+    "specs/039-web-gratuita-do-agente/quality.md": "61f8a9edb08dccbdea914645f164511e6d1407ed6f03da51bb224750aaad1ac6",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/examples/quality.rs",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/transport.rs",
+    "specs/039-web-gratuita-do-agente/quality.md",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "ContadorHTTPmede somente transporteAura; browser da preparacao nao instrumentado. Nao aprova sintese3jornadas/UIWindows/SIWC/disponibilidadecontínua/privacidade normal. DoisachadosmenoresFD002/003 registrados. TK004blockedEV032/FD001. Evidence invalidated because an input changed.",
+  "observations": "12consultas fixas/top5:11relevantes(>=10),Tauriqueryfalhoutema. 10HTML preselecionados/oraculos inspecionados antesfetch:8literal+origem(>=8), Tauriunsupported_content e SearXNGheaderausente mantidos no denominador. Processo exit0/complete,58HTTPAura/239s,sessaounica,semkey/conta;54offline eClippy/fmt/diff passaram. Reviewliberaapenasbackend.",
+  "procedure": "cargo run -p aura-web --example quality -- C:\\Users\\gabri\\AppData\\Local\\Temp\\aura-039-quality-20261010-r7-report.json C:\\Users\\gabri\\AppData\\Local\\Temp\\aura-039-quality-20261010-r7-targets.json; cargo clippy -p aura-web --all-targets -- -D warnings; cargo test -p aura-web --test search --test fetch --quiet; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:7d6f019defb03647f1d54a957882f713e188df5610bd55d5421b5c4c429ab011",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-10T17:02:20+00:00"
+}

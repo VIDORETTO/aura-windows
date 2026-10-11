@@ -6,6 +6,26 @@ import { SettingsApp, pageFromHash } from "./SettingsApp";
 import { useApp } from "../state/app";
 
 describe("Settings", () => {
+  it("controls public web research by keyboard and restores the saved choice", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/general";
+    const user = userEvent.setup();
+    const view = render(<SettingsApp />);
+    const toggle = await screen.findByRole("switch", { name: "Acesso à internet" });
+    expect(toggle).toBeChecked();
+    expect(screen.getByText("O agente pode buscar e ler páginas públicas. Os serviços recebem suas consultas e seu endereço IP, sem o histórico completo da conversa. Desligar cancela as consultas em andamento.")).toBeInTheDocument();
+    toggle.focus();
+    await user.keyboard(" ");
+    await waitFor(() => expect(bridge.state.settings.webEnabled).toBe(false));
+    view.unmount();
+    render(<SettingsApp />);
+    const restored = await screen.findByRole("switch", { name: "Acesso à internet" });
+    expect(restored).not.toBeChecked();
+    restored.focus();
+    await user.keyboard(" ");
+    await waitFor(() => expect(bridge.state.settings.webEnabled).toBe(true));
+  });
+
   it("returns fixed dictation language to automatic without changing the UI language", async () => {
     const bridge = await freshApp({ signedIn: true });
     window.location.hash = "#/settings/voice";
@@ -19,6 +39,19 @@ describe("Settings", () => {
     expect(language).toHaveValue("");
     expect(screen.getByRole("option", { name: "Automático (detectar idioma)" })).toBeInTheDocument();
     expect(bridge.state.settings.language).toBe("ptBr");
+  });
+
+  it("explains and controls internet access in English", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("settings_update", { patch: { language: "en" } });
+    window.location.hash = "#/settings/general";
+    const user = userEvent.setup();
+    render(<SettingsApp />);
+    const toggle = await screen.findByRole("switch", { name: "Internet access" });
+    expect(toggle).toBeChecked();
+    expect(screen.getByText("The agent can search and read public pages. Services receive your queries and IP address, without the full conversation history. Turning this off cancels ongoing requests.")).toBeInTheDocument();
+    await user.click(toggle);
+    await waitFor(() => expect(bridge.state.settings.webEnabled).toBe(false));
   });
 
   beforeEach(() => {

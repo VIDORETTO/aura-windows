@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-003"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010/core-red.log",
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010/native-red-3.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "specs/040-overlay-estavel-no-monitor/plan.md": "5f16bf4a3d28f38cebc1ca35c95a5aba713ac1889edfffef12c3a5a81aa6090d",
+    "specs/040-overlay-estavel-no-monitor/qa.md": "ac294d9496443ae131f83e862729d5b47444bf259fddbea9e1254fe71c7de45f",
+    "specs/040-overlay-estavel-no-monitor/spec.md": "3eb1554270b4795a8826dc63499eb9ac23fdaf6059b2b9cba4f536a65e009635"
+  },
+  "input_paths": [
+    "specs/040-overlay-estavel-no-monitor/qa.md",
+    "specs/040-overlay-estavel-no-monitor/spec.md",
+    "specs/040-overlay-estavel-no-monitor/plan.md"
+  ],
+  "limitations": "Erros de origin/foreground anteriores foram ambientais e não contam como red. Esta evidência registra falhas anteriores, não o código corrigido.",
+  "observations": "Reds reais em versões anteriores: stub None vs B; shell anterior devolveu x2000 de B para x1280 em A ao expandir. Relatório distingue os fontes então executados dos fingerprints green atuais.",
+  "procedure": "Antes da correção: cargo test -p aura-core current_window_on_negative_origin_monitor_does_not_follow_previous_app; pnpm -C apps/desktop/e2e test -- --spec ./specs/monitor-stability.e2e.ts (native-red-3.log).",
+  "result": "failed",
+  "tested_revision": "local:3207cee696fe870f5ef84cb38d8f747e8d968b080089bb26a523bc609c03e176",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-11T02:18:54+00:00"
+}

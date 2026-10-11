@@ -8,13 +8,12 @@ use aura_app::consent::ConsentAnswer;
 use aura_app::host::{AuthStatus, Diagnostics, Host, PrivacyView, SendRequest};
 use aura_app::privacy::AccessLogEntry;
 use aura_app::voice::ModelView;
+use aura_app::web_history::TranscriptMessage;
 use aura_asr::ptt::PttState;
 use aura_codex::approvals::Decision;
 use aura_codex::models::ModelInfo;
 use aura_codex::modes::ConversationMode;
-use aura_codex::service::{
-    HistoryPage, HistoryQuery, StartOptions, StartedConversation, TranscriptMessage,
-};
+use aura_codex::service::{HistoryPage, HistoryQuery, StartOptions, StartedConversation};
 use aura_core::context::ContextChip;
 use aura_core::placement::OverlayMode;
 use aura_core::settings::{Settings, SettingsPatch};

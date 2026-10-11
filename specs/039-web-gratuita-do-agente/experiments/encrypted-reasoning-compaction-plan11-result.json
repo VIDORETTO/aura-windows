@@ -1,0 +1,24 @@
+{
+  "nativeTestPassed": true,
+  "algorithm": "AES-256-GCM; external synthetic provider fixture",
+  "ciphertextBytesPreservedAtProvider": true,
+  "independentAuthenticatedDecryption": true,
+  "tamperedTagRejected": true,
+  "nativeRestartAndCompaction": true,
+  "nativePrivateLiteralAndCiphertextScan": "passed",
+  "nativePrivateDiagnosticCount": 0,
+  "gatewayPublicDiagnosticPositiveControl": true,
+  "gatewayPrivateDiagnosticCount": 0,
+  "gatewayPrivateProviderErrorSanitized": true,
+  "independentStorageAudit": {
+    "files": 88,
+    "sqliteRows": 139,
+    "compressedValues": 0,
+    "hits": 0
+  },
+  "limitations": [
+    "Representative encrypted field only; no commercial model execution",
+    "Aura treats ciphertext as opaque; no vendor encryption format is claimed",
+    "Native scan does not establish general absence of all derived information"
+  ]
+}

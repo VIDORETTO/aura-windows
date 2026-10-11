@@ -1,0 +1,1 @@
+{"jsonrpc":"2.0","id":2,"result":{"tools":[{"name":"web_search","inputSchema":{"type":"object","required":["objective","search_queries"],"properties":{"objective":{"type":"string"},"search_queries":{"type":"array","items":{"type":"string"}},"session_id":{"type":"string"},"model_name":{"type":"string"}}}}]}}

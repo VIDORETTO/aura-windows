@@ -1,0 +1,46 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-008",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-016",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "31c4ae7bc602c366ba287f841849c84ea6bfff448f53acb15d6ae9e2b9e24e04",
+    "crates/aura-app/src/web.rs": "67da63326dd442ed62128b91e969612f3b03240c537b34d54bbe71eeab69e378",
+    "crates/aura-app/tests/real_app_server.rs": "6831289aed710aa544c4ec2000f7944bd372b78a42a85a6b9c52b4a3d3c52aba",
+    "crates/aura-codex/persona/en.md": "6b373daed980837ae7fd8d7a04dc442cc0f50f8517ccecb25203e4b53439eb8d",
+    "crates/aura-codex/persona/pt-BR.md": "997a762bafff86361511df6f401c83e2631785b7dedc2644565576d7bcd280b6",
+    "crates/aura-codex/src/service.rs": "cd5690b76519021bf6b20a47cb3ef9357a59c6a7e25d79b39faf5a05657f4aab",
+    "crates/aura-mcp/src/tools.rs": "e2bbaf2a0aa77ecff7ccd2c4f5d9f4720b7b7d552714c9ce55627a9a559367d1",
+    "crates/aura-web/src/cache.rs": "a3abfe1d2c85087018d411681d261a90d666b1470537380fa1fc514e5aa945cd",
+    "crates/aura-web/src/fetch.rs": "bd06ae70fc4bfc1435401431c5e7aaa147c53d08e1d1e3daa0a29e7302f878b3",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-codex/persona/pt-BR.md",
+    "crates/aura-codex/persona/en.md",
+    "crates/aura-mcp/src/tools.rs",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/fetch.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Upstreams de inferencia e paginas scripted; nao prova SIWC, disponibilidade comercial, qualidade ao vivo nem janela Windows. Evidence invalidated because an input changed.",
+  "observations": "12/12 com fixado real passaram em8.44s. Nove transportes/modos, duas fontes42/30, write injetado recusado e retomada; busca e leitura retomadas cached:true,5 requests, conforme AC011.",
+  "procedure": "AURA_CODEX_BIN=executavel rust-v0.159.0 verificado em TEMP; AURA_E2E_DIR=TEMP; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1",
+  "result": "stale",
+  "tested_revision": "local:84d95dc0bd7b5a7a2a941ec0ae670938ad5fd1419ae13cc467d976e86aaf13f8",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T15:49:05+00:00"
+}

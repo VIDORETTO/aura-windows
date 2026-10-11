@@ -1,0 +1,38 @@
+{
+  "acceptance_refs": [
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-094"
+  ],
+  "execution_status": "executed",
+  "id": "EV-096",
+  "input_fingerprints": {
+    "Cargo.lock": "94079a8950a61f5137230246559091ba6195c4b6aeb40117dfaac17688118a12",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/commands.rs": "3c4cfb776365b1d8939f5882923bff4ae91c9d5d1d81a489d32041a1b9995cb7",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "crates/aura-codex/src/service.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Compile/lint evidence complements runtime EV094, does not itself prove SIWC synthesis or external browser destination. AC009 still partialEV095. Evidence invalidated because an input changed.",
+  "observations": "Default production desktop typecheck and fullworkspace alltargets Clippy exit0. Complements prior fixed-pin25 and native integration; optional e2e web adapters are not enabled in this production check. No source change or additional dependency.",
+  "procedure": "cargo check -p aura-desktop; cargo clippy --workspace --all-targets -- -D warnings (including desktop, no demo/e2e flags)",
+  "result": "stale",
+  "tested_revision": "local:e42924d881ab476fa15dffb17cfc0fe82adb17b9690048bd88f9b883fef6bb9a",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T22:16:32+00:00"
+}

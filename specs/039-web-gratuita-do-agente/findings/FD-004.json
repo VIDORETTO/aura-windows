@@ -1,0 +1,18 @@
+{
+  "area": "gateway-real-siwc",
+  "consequence": "Gate de síntese/compatibilidade incompleto. Inspecionar a forma real dos outputs e retornar ao plano antes da correção; não liberar conteúdo bruto ao sidecar ou reduzir os aceites.",
+  "created_at": "2026-10-10T21:35:24+00:00",
+  "dedupe_key": "039-web-gratuita-do-agente|spec|consumer_output|gateway-real-siwc|siwc-real-opaque-output",
+  "effort": "039-web-gratuita-do-agente",
+  "evidence_location": "specs/039-web-gratuita-do-agente/evidence/EV-086.json",
+  "fix_ticket": "TK-003",
+  "gap_type": "consumer_output",
+  "id": "FD-004",
+  "origin": "spec",
+  "resolution": "Plan11 supported direct-only Aura MCP namespace applied at start/resume. EV089 product real SIWC3/3; independent public source/citation verification. Native UI/browser/DPI gates remain separate.",
+  "resolution_evidence": "EV-089",
+  "severity": "blocker",
+  "source_ref": "AC-014",
+  "state": "resolved",
+  "summary": "Modelo SIWC real não consegue usar o conteúdo web: pageContent registrado para Python/Rust/WCAG, mas respostas relatam identificadores opacos sem texto/sourceId."
+}

@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-054",
+  "input_fingerprints": {
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py": "c06148d0f822601c94458d8e1065ec33edad7b7e3846107b8a2f35ca86c95225",
+    "specs/039-web-gratuita-do-agente/experiments/private-arguments-schema-result.json": "bda41de09bbdb0dbd3db7a6a380ff38a183e2bc271d1fe63d9aa32809afce738",
+    "specs/039-web-gratuita-do-agente/experiments/private_arguments_probe.py": "fc0402eb4dc3847e79101dd5db05292def550178dea5df73d39d643725e645d8",
+    "specs/039-web-gratuita-do-agente/plan.md": "2b6bf4e71879755abea98cec175001832e0ac5c2ab5625b395a0cc5874be6d3c",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/experiments/private_arguments_probe.py",
+    "specs/039-web-gratuita-do-agente/experiments/private-arguments-schema-result.json",
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Protótipo, não aplicação. Não cobre blob criptográfico comercial, compactação, orçamento/autorização de produção nem compressão ausente. Gate real EV050/051 continua falho. Evidence invalidated because an input changed.",
+  "observations": "Dois experimentos terminal exit0: schema conforme, 2 requests/1 MCP, argumentos e resultado restituídos upstream, mesmo thread/resposta após restart; 77 arquivos e 84/85 linhas SQLite sem quatro literais. Raciocínio sintético reidratado. Plano r9 escolhido por evidência real.",
+  "procedure": "python specs/039-web-gratuita-do-agente/experiments/private_arguments_probe.py --schema-conforming; mesma chamada com --reasoning --schema-conforming; executável fixado em AURA_CODEX_BIN, perfis TEMP exclusivos, provedor/MCP sintéticos.",
+  "result": "stale",
+  "tested_revision": "local:0cb70006cf2cda4f30906795b20825992a94f94d24b4b0b778cd910844591f68",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T18:58:45+00:00"
+}

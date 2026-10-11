@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-009",
+    "AC-013",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-083",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "99141fa60c055bd463b4b75732f83798792b4607b876a6804dfca7993744ebdf",
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/e2e_web.rs": "3a9810127861fae22d4c6d907571613118ac4f888ce1a2fada98b4731d41993e",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "specs/039-web-gratuita-do-agente/plan.md": "9832d78faf5af32576273e6e326e0586dc6da2881685068dee1590627ac02485",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/e2e_web.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "No native complete approval; external opener not reached; cancel/toggle/live synthesis not executed. Global E2E tsc has preexisting errors; cargo deny unavailable. Evidence invalidated because an input changed.",
+  "observations": "Check/build passed release2m54s; native test reached real citations/activities/two read sources and failed at provider payload assertion line87. Diagnose test output decoding; not valid product red. Session99948 terminalexit1.",
+  "procedure": "cargo check -p aura-desktop --features demo,e2e; pnpm -C apps/desktop tauri build --no-bundle --features demo,e2e; pnpm -C apps/desktop/e2e test -- --spec ./specs/web-research.e2e.ts using isolated TEMP/aura-039-native-web-r10-20261010, cached rust-v0.159.0, compatible WebDriver",
+  "result": "stale",
+  "tested_revision": "local:72972a0faf5c7b6fceee964821bd999f14506ea191dc02a236502e0097b39a42",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T20:52:31+00:00"
+}

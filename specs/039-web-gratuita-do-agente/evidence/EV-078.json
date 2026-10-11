@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-011",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-078",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/tests/real_app_server.rs": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+    "crates/aura-app/tests/web_tools.rs": "6753c505f3257956716057257b0891f628941d43be29b1a884193eb2959f49fc",
+    "crates/aura-gateway": "9f2e4822ca4bfc872d77c878d983c4105904963bfff518a569e59a1aeb879fdf",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "docs/adr/0010-entrega-transitoria-de-resultados-web.md": "96217d4c162daae0fd389883b0a6f2589902d79b51607ee36a16c3886795b392",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan10-result.json": "4e7bd4b5d4a683a07dd7c8d19d6323beefa186d8e0847d390f1ff0923ff3f4ca",
+    "specs/039-web-gratuita-do-agente/plan.md": "9832d78faf5af32576273e6e326e0586dc6da2881685068dee1590627ac02485",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "crates/aura-gateway",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "docs/adr/0010-entrega-transitoria-de-resultados-web.md",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan10-result.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Aprova somente o escopo de TK-007;neonativeE2E/sintese3jornadas/DPI/contaSIWC/comercial naoexercitados. Gatequalidadebackend precisa renovarTK006. Perfilcrypto semframescomprimidos;controlesauditorcomprimidos separados. Testesambientaisignorados nao saoaprovados;matrix25 executada explicitamente. Modelo/rede/OS controlados. Evidence invalidated because an input changed.",
+  "observations": "Renovacao real plan10:workspaceexit0;25fixados/25,48s;UI253/23,14s etypecheck;clippyfmt verdes. AESGCM externo preservado/decrypt/tamper,diagpublicopositivo,auditorgzip/zstd/SQLite passaram;90arquivos/139linhasSQLite sem4marcadores. Revisao Standards/Spec atual sembloqueante no escopo TK-007;semalteracao produtiva antesdestasprovas.",
+  "procedure": "cargo test --workspace --exclude aura-desktop; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 com pin rust-v0.159.0 e TEMP; check_encrypted_reasoning.ps1 -CodexBin pin -Output encrypted-reasoning-compaction-plan10-result.json; python check_storage_auditor.py; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck; cargo clippy --workspace --all-targets --exclude aura-desktop -- -D warnings; cargo fmt --all -- --check; git diff --check",
+  "result": "stale",
+  "tested_revision": "local:e0d85d6dc94d1d6cc742ea56b23682b05c8ac9f55cc64c804ace0908aed1c0f6",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T20:37:45+00:00"
+}

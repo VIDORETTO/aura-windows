@@ -1,0 +1,20 @@
+{
+  "root": "isolated TEMP CODEX_HOME",
+  "kind": "prototype-only",
+  "paid_inference": false,
+  "turn_status": "completed",
+  "private_page_on_disk": false,
+  "handle_on_disk": true,
+  "rollout_files": 1,
+  "same_thread_after_restart": true,
+  "answer_in_restored_history": true,
+  "requests": 2,
+  "mcp_calls": 1,
+  "expanded": 1,
+  "headers_matching_thread": [
+    "x-client-request-id",
+    "session-id",
+    "thread-id"
+  ],
+  "output_type": "list"
+}

@@ -1,0 +1,37 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-017",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "31c4ae7bc602c366ba287f841849c84ea6bfff448f53acb15d6ae9e2b9e24e04",
+    "crates/aura-app/src/web.rs": "67da63326dd442ed62128b91e969612f3b03240c537b34d54bbe71eeab69e378",
+    "crates/aura-app/tests/real_app_server.rs": "6831289aed710aa544c4ec2000f7944bd372b78a42a85a6b9c52b4a3d3c52aba",
+    "crates/aura-codex/src/modes.rs": "3ce9d4911da0be887b5d564d7d323ef06f25611c6ae32d01dfa956b5a9d4454d",
+    "crates/aura-codex/src/service.rs": "cd5690b76519021bf6b20a47cb3ef9357a59c6a7e25d79b39faf5a05657f4aab",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-codex/src/modes.rs",
+    "crates/aura-web/src/lib.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Regressao de sandbox via processo real, sem alegar imunidade LLM geral; nao e validacao da janela Tauri. Evidence invalidated because an input changed.",
+  "observations": "1/1 em28.25s. Escrita fora do workspace impedida; escalada solicitou aprovacao e foi recusada. Target isolado proprio em TEMP.",
+  "procedure": "AURA_CODEX_BIN=fixado rust-v0.159.0 em TEMP; AURA_E2E_DIR=TEMP; AURA_SBX_OUTSIDE=TEMP/aura-039-sandbox-outside-UUID novo; cargo test -p aura-app --test real_app_server real_app_server_task_mode_confines_writes -- --ignored",
+  "result": "stale",
+  "tested_revision": "local:669afd678015582bef6978f49f871c81303271d0b19c65e88cc24874d47ffef9",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T15:49:05+00:00"
+}

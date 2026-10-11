@@ -12,7 +12,9 @@ import type {
   ToolKind,
   TurnError,
   TurnStatus,
+  WebSource,
 } from "../ipc/types";
+import { answerSources, webSourceUrl } from "../lib/webSources";
 
 export interface ToolItem {
   id: string;
@@ -36,7 +38,7 @@ export interface Approval {
 
 export type Block =
   | { type: "user"; id: string; text: string; chips: ContextChip[]; display?: string }
-  | { type: "assistant"; id: string; text: string; streaming: boolean }
+  | { type: "assistant"; id: string; text: string; streaming: boolean; sources?: WebSource[] }
   | { type: "reasoning"; id: string; text: string }
   | { type: "tool"; item: ToolItem }
   | { type: "files"; id: string; changes: FileChangeSummary[]; status: ItemStatus }
@@ -57,6 +59,8 @@ export interface Thread {
   diff: string | null;
   tokens: { used: number; window: number | null } | null;
   lastStatus: TurnStatus | null;
+  webSources?: Record<string, WebSource>;
+  webSourceTurn?: { turnId: string; sources: WebSource[] };
 }
 
 export function emptyThread(id: string): Thread {
@@ -119,17 +123,20 @@ export function reduce(state: ConvState, ev: ConversationEvent): ConvState {
         ),
       };
       break;
-    case "messageCompleted":
+    case "messageCompleted": {
+      const sources = answerSources(ev.text,
+        t.webSourceTurn?.turnId === t.turnId ? t.webSourceTurn.sources : [], Object.values(t.webSources ?? {}));
       next = {
         ...t,
         blocks: upsertBlock(
           t.blocks,
           (b) => b.type === "assistant" && b.id === ev.itemId,
-          () => ({ type: "assistant", id: ev.itemId, text: ev.text, streaming: false }),
-          (b) => (b.type === "assistant" ? { ...b, text: ev.text, streaming: false } : b),
+          () => ({ type: "assistant", id: ev.itemId, text: ev.text, streaming: false, ...(sources.length ? { sources } : {}) }),
+          (b) => (b.type === "assistant" ? { ...b, text: ev.text, streaming: false, ...(sources.length ? { sources } : {}) } : b),
         ),
       };
       break;
+    }
     case "reasoningDelta":
       next = {
         ...t,
@@ -223,9 +230,10 @@ interface Store extends ConvState {
   setActive: (id: string | null) => void;
   addUserMessage: (threadId: string, text: string, chips: ContextChip[], display?: string) => void;
   addModeChange: (threadId: string, mode: "chat" | "task" | "plan") => void;
-  loadTranscript: (threadId: string, messages: { role: string; text: string }[]) => void;
+  loadTranscript: (threadId: string, messages: { role: string; text: string; sources?: WebSource[] }[]) => void;
   markApproval: (requestId: string, how: string) => void;
   apply: (ev: ConversationEvent) => void;
+  addWebSource: (event: { threadId: string; turnId: string; source: WebSource }) => void;
   reset: () => void;
 }
 
@@ -238,6 +246,19 @@ export const useConversation = create<Store>((set, get) => ({
   threads: {},
   requests: {},
   activeId: null,
+  addWebSource: ({ threadId, turnId, source }) => {
+    if (!threadId || !turnId || !webSourceUrl(source)) return;
+    set((s) => {
+      const thread = s.threads[threadId] ?? emptyThread(threadId);
+      const known = thread.webSources?.[source.sourceId];
+      const current = known?.kind === "pageContent" && source.kind === "searchSnippet" ? known : source;
+      const consulted = thread.webSourceTurn?.turnId === turnId ? thread.webSourceTurn.sources : [];
+      return { threads: { ...s.threads, [threadId]: {
+        ...thread, webSources: { ...thread.webSources, [source.sourceId]: current },
+        webSourceTurn: { turnId, sources: [...consulted.filter((entry) => entry.sourceId !== source.sourceId), current] },
+      } } };
+    });
+  },
   setActive: (id) => set({ activeId: id }),
   addUserMessage: (threadId, text, chips, display) =>
     set((s) => {
@@ -257,10 +278,14 @@ export const useConversation = create<Store>((set, get) => ({
         ...s.threads,
         [threadId]: {
           ...emptyThread(threadId),
+          webSources: Object.fromEntries(messages.filter((message) => message.role === "assistant")
+            .flatMap((message) => answerSources(message.text, [], message.sources ?? [])
+              .map((source) => [source.sourceId, source]))),
           blocks: messages.map((m, i): Block =>
             m.role === "user"
               ? { type: "user", id: `h_${i}`, text: m.text, chips: [] }
-              : { type: "assistant", id: `h_${i}`, text: m.text, streaming: false },
+              : { type: "assistant", id: `h_${i}`, text: m.text, streaming: false,
+                  sources: answerSources(m.text, [], m.sources ?? []) },
           ),
         },
       },

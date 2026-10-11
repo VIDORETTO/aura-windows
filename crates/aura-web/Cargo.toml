@@ -1,0 +1,25 @@
+[package]
+name = "aura-web"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+reqwest = { workspace = true, features = ["gzip", "brotli", "deflate"] }
+url.workspace = true
+uuid.workspace = true
+getrandom.workspace = true
+futures.workspace = true
+chrono = { version = "0.4", default-features = false, features = ["std"] }
+dom_query = { version = "0.28", features = ["markdown"] }
+dom_smoothie = "=0.18.2"
+tokio-util = { version = "0.7", features = ["rt"] }
+encoding_rs = "0.8.35"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["test-util"] }

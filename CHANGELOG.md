@@ -5,6 +5,34 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-11
+
+### Added
+- Free web search and public-page reading for the agent, with clickable sources,
+  cancellation and a global on/off setting. No paid search API key is required.
+- Transient delivery of web results and encrypted local research records to keep
+  raw page contents out of the Codex rollout history (ADR 0010).
+
+### Fixed
+- Model and reasoning selectors recover from catalog failures, remain accessible
+  before the first message and respect the capabilities of the selected model.
+- Expanding, collapsing and returning from the Minibar preserve the Overlay's
+  actual monitor and position; saved dimensions are remembered per monitor.
+- Codex namespace tool calls reach the web tools and return usable results for
+  synthesis with the connected ChatGPT account.
+
+### Distribution
+- Version 0.3.0 installers use the existing permanent updater key and endpoint.
+- Updated README, user guide, repository metadata and publication evidence.
+
+### Known limitations
+- Native monitor and selector checks at 100% passed; selector checks at 150% and
+  200% and installation on a clean Windows machine remain pending.
+- Free search/page providers can rate-limit requests or reject pages requiring
+  login, CAPTCHA or JavaScript rendering.
+
+## [0.2.0] - 2026-10-05
+
 ### Fixed
 - Concurrent audio sources no longer race with orphan cleanup while publishing
   encrypted segments, which could drop meeting speech on Windows.
@@ -36,14 +64,10 @@ and [Semantic Versioning](https://semver.org/).
   most-used commands first on the empty Overlay (local, clearable).
 - Broadcast mode (no Windows notifications) and "Test hiding" in Settings.
 
-### Added
 - Setting "Hide from screen sharing and recordings" (Settings › General and the
   Overlay's Appearance menu), on by default: every Aura window stays out of
   screen sharing, recordings and screenshots; turn it off to show Aura in captures.
 
-## [0.2.0] - 2026-10-05
-
-### Added
 - YOLO mode: in Task mode the agent runs without sandbox and never asks for
   permission (commands, file changes, permissions and MCP tool calls are
   accepted). Turned on in Settings › General after a risk warning and typing

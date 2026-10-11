@@ -4,6 +4,8 @@
 
 import DOMPurify from "dompurify";
 import { Marked } from "marked";
+import type { WebSource } from "../ipc/types";
+import { webSourceUrl } from "./webSources";
 
 type Hljs = typeof import("highlight.js/lib/common").default;
 let hljs: Hljs | null = null;
@@ -77,13 +79,61 @@ export function linkCitations(html: string): string {
     .join("");
 }
 
-export function renderMarkdown(md: string, opts: { streaming?: boolean } = {}): string {
+interface MarkdownOptions {
+  streaming?: boolean;
+  sources?: readonly WebSource[];
+  sourceLabel?: (source: WebSource) => string;
+  unverifiedLabel?: (id: string) => string;
+}
+
+function linkWebSources(html: string, opts: MarkdownOptions): string {
+  if (!html.includes("aura-source:")) return html;
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const walker = document.createTreeWalker(template.content, NodeFilter.SHOW_TEXT);
+  const nodes: Text[] = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode as Text);
+  for (const node of nodes) {
+    if (node.parentElement?.closest("pre,code,a,button,kbd,samp")) continue;
+    const text = node.data;
+    const matches = [...text.matchAll(/\[\[aura-source:(W[1-9]\d*)\]\]/g)];
+    if (!matches.length) continue;
+    const fragment = document.createDocumentFragment();
+    let start = 0;
+    for (const match of matches) {
+      fragment.append(document.createTextNode(text.slice(start, match.index)));
+      const id = match[1];
+      const source = opts.sources?.find((entry) => entry.sourceId === id && webSourceUrl(entry));
+      const element = document.createElement(source ? "button" : "span");
+      if (source) {
+        element.className = "cite";
+        element.setAttribute("type", "button");
+        element.setAttribute("data-web-source", id);
+        element.setAttribute("aria-label", opts.sourceLabel?.(source) ?? id);
+        element.textContent = id;
+      } else {
+        element.className = "text-muted";
+        element.textContent = opts.unverifiedLabel?.(id) ?? `Unverified reference: ${id}`;
+      }
+      fragment.append(element);
+      start = match.index + match[0].length;
+    }
+    fragment.append(document.createTextNode(text.slice(start)));
+    node.replaceWith(fragment);
+  }
+  return template.innerHTML;
+}
+
+export function renderMarkdown(md: string, opts: MarkdownOptions = {}): string {
   const source = opts.streaming ? closeOpenFence(md) : md;
   const html = (opts.streaming || !hljs ? plain : highlighted).parse(source, { async: false }) as string;
-  return DOMPurify.sanitize(linkCitations(html), {
+  // Model HTML cannot supply interactive citation controls. Aura adds its own
+  // buttons after sanitization, using trusted provenance or parsed timestamps.
+  const safe = DOMPurify.sanitize(html, {
     ALLOWED_ATTR: ["class", "data-href", "data-lang", "data-cite", "title", "colspan", "rowspan", "align"],
-    FORBID_TAGS: ["style", "iframe", "form", "input", "img", "video", "audio", "object", "embed"],
+    FORBID_TAGS: ["style", "iframe", "form", "input", "button", "img", "video", "audio", "object", "embed"],
   });
+  return linkWebSources(linkCitations(safe), opts);
 }
 
 export function hasCode(md: string): boolean {

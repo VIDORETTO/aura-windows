@@ -39,7 +39,7 @@ export function Header({ compact, subtitle }: { compact: boolean; subtitle?: str
           <ModelPicker compact />
           <ModeBadge />
           {subtitle && (
-            <span data-tauri-drag-region className="min-w-0 truncate text-[11px] text-muted" title={subtitle}>
+            <span data-tauri-drag-region className="hidden min-w-0 truncate text-[11px] text-muted min-[600px]:inline" title={subtitle}>
               · {subtitle}
             </span>
           )}
@@ -57,8 +57,8 @@ export function Header({ compact, subtitle }: { compact: boolean; subtitle?: str
       )}
       <div data-tauri-drag-region className="h-full min-w-4 flex-1" />
       {compact && (
-        <span className="flex items-center gap-2 pr-1 text-[11px]">
-          <StatusBadges />
+        <span className="flex shrink-0 items-center gap-2 pr-1 text-[11px]">
+          <StatusBadges compact />
         </span>
       )}
       {!compact && (

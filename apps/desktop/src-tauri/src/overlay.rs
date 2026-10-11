@@ -3,7 +3,7 @@
 //! 100 ms hotkey→visible budget of 001).
 
 use aura_app::host::{Host, OverlayMode, SavedPlacement};
-use aura_core::placement::{MIN_EXPANDED, Monitor, Rect, place_overlay};
+use aura_core::placement::{MIN_EXPANDED, Monitor, Rect, monitor_for_rect, place_overlay};
 use serde::Serialize;
 use std::sync::Mutex;
 use tauri::{
@@ -191,24 +191,37 @@ pub fn toggle(app: &AppHandle) {
 pub fn set_mode(app: &AppHandle, mode: OverlayMode) {
     *MODE.lock().unwrap() = mode;
     let Some(w) = window(app) else { return };
-    apply_minimum(&w, mode);
+    // Read before changing the minimum, which can itself resize the window.
+    let current = window_rect(&w);
     let h = host(app);
-    let monitor = target_monitor(app, h.previous_app().as_ref());
     let mons = monitors(app);
+    let current_monitor = current.and_then(|rect| monitor_for_rect(&mons, rect));
+    let monitor = current_monitor
+        .map(|monitor| monitor.id.clone())
+        .unwrap_or_else(|| target_monitor(app, h.previous_app().as_ref()));
+    apply_minimum(&w, mode);
     let saved = h.saved_placement(&monitor, mode);
     let Some(mut r) = place_overlay(&mons, &monitor, saved.as_ref(), mode) else {
         return;
     };
-    if saved.is_none()
-        && let Ok(pos) = w.outer_position()
-    {
-        r.x = pos.x;
-        r.y = pos.y;
-        if let Some(m) = mons.iter().find(|m| m.id == monitor) {
-            r = aura_core::placement::clamp_into(r, m.work_area);
-        }
+    if let (Some(current), Some(monitor)) = (current, current_monitor) {
+        // A saved mode supplies its size, never a new anchor during a conversation.
+        r.x = current.x;
+        r.y = current.y;
+        r = aura_core::placement::clamp_into(r, monitor.work_area);
     }
     apply_rect(&w, r);
+}
+
+fn window_rect(w: &WebviewWindow) -> Option<Rect> {
+    let pos = w.outer_position().ok()?;
+    let size = w.inner_size().ok()?;
+    Some(Rect::new(
+        pos.x,
+        pos.y,
+        size.width as i32,
+        size.height as i32,
+    ))
 }
 
 /// Called by the UI after the user moved/resized the Overlay.
@@ -219,7 +232,11 @@ pub fn remember_placement(app: &AppHandle, h: &Host) {
     let (Ok(pos), Ok(size)) = (w.outer_position(), w.inner_size()) else {
         return;
     };
-    let monitor = target_monitor(app, h.previous_app().as_ref());
+    let rect = Rect::new(pos.x, pos.y, size.width as i32, size.height as i32);
+    let mons = monitors(app);
+    let monitor = monitor_for_rect(&mons, rect)
+        .map(|monitor| monitor.id.clone())
+        .unwrap_or_else(|| target_monitor(app, h.previous_app().as_ref()));
     let dpi = w
         .scale_factor()
         .map(|f| (f * 96.0).round() as u32)
@@ -227,7 +244,7 @@ pub fn remember_placement(app: &AppHandle, h: &Host) {
     let mode = *MODE.lock().unwrap();
     let placement = SavedPlacement {
         monitor_id: monitor,
-        rect: Rect::new(pos.x, pos.y, size.width as i32, size.height as i32),
+        rect,
         dpi,
     };
     if let Err(e) = h.save_placement(&placement, mode) {

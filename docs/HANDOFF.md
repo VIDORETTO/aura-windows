@@ -1,5 +1,13 @@
 # HANDOFF — do Linux para o Windows
 
+> **11/10/2026 — fonte da versão 0.3.0:** esforços 038 (seletores), 039
+> (pesquisa web) e 040 (estabilidade do monitor) implementados. Pesquisa
+> validada com ChatGPT conectado e abertura da fonte W1 confirmada pelo usuário.
+> A correção de monitor passou nos cenários nativos em dois monitores a 100%.
+> Escalas 150%/200% dos seletores continuam pendentes em 038. A publicação e
+> seus checks atuais são registrados no [esforço 041](../specs/041-publicacao-github-030/).
+> Os blocos seguintes são históricos; não substituem as evidências recentes.
+
 > **05/10/2026 — QA da branch serene-cori-t5pt94 e distribuição retida:**
 > [relatório atual](qa/release-020-2026-10-05.md), esforço 036. Build local 0.2.0
 > com motores ASR, nova chave do updater e canal público planejado. Publicação

@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "Windows; Vitest/jsdom; Host com store real temporario, plataforma/app-server falsos.",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n/en.ts": "5fb636354f8945428bedefbe0e83e20504aa265a078dcc0b9eb1a96935771c17",
+    "apps/desktop/src/i18n/pt-BR.ts": "9f8153773a82c6194b863b5f8c441a37d5179a94d16d437cba8a2301ad26d441",
+    "apps/desktop/src/overlay/Composer.test.tsx": "16c901f1a0b7db5466c93d435e5e5e41cef7fa83409f45bcf2e9ccd832a70ee5",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "38a5c4ed89d6b2b1c9f5b47bb171c7bbd1bb576eed1f72676ea55b1620f211ad",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "ed6f4a784755176e8112220d38c7da8afcd16b72402b0a5bab5ffda5e6487a1f",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "crates/aura-app/tests/host.rs": "4c9870825978499f6e1373422b3f16b1d05c3a9c6a6f17e3fb83b712d8e8967e",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "73a37d1b4b0213c97d973c31138acbab0d05001ee2dbdbb1393de41fb55cecfe",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Composer.test.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "crates/aura-app/tests/host.rs",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Geometria/DPI nativos em TK-003; nao prova login comercial ChatGPT. Sem alteracao de IPC ou sidecar. Evidence invalidated because an input changed.",
+  "observations": "Evidencia renovada apos TK-002/plan r2: 91 testes UI/i18n, typecheck, 74 Host e rustfmt check passaram; estados, retry, preservacao, corrida de catalogos e provider fixo continuam corretos.",
+  "procedure": "pnpm -C apps/desktop test -- src/overlay/Composer.test.tsx src/overlay/OverlayApp.test.tsx src/i18n; pnpm -C apps/desktop typecheck; cargo test -p aura-app --test host; cargo fmt --all -- --check",
+  "result": "stale",
+  "tested_revision": "local:2af655a192208a8d5ce528c262bd50a6662727905e7a552391d1ad3560be851c",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-07T01:00:17+00:00"
+}

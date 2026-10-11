@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "a3abfe1d2c85087018d411681d261a90d666b1470537380fa1fc514e5aa945cd",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fixtures/parallel-tools.json": "d81890ff2dd71c019c39b884351ee0ab8ffc8be984dc3d171b3617d9ddef98ac",
+    "crates/aura-web/tests/search.rs": "dc28bcd9ae254b363e8faf22852de5a2f3d1a24e9288e9444f3dcf07c5622ef2",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "crates/aura-web/tests/fixtures/parallel-tools.json",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Renova escopo TK001; metadados do registry e byte budget agregado incluindo registry continuam TK004. Nao aprova qualidade ao vivo. Evidence invalidated because an input changed.",
+  "observations": "21 buscas offline passaram, incluindo repeticao cacheada, refresh, TTL15min, isolamento e budget; 29 leituras passaram na mesma execucao.",
+  "procedure": "cargo test -p aura-web --test search --test fetch",
+  "result": "stale",
+  "tested_revision": "local:6695a0342b1c01087aa49886d7167515132105ab5b70e6fa6a0c03528597da24",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T15:49:03+00:00"
+}

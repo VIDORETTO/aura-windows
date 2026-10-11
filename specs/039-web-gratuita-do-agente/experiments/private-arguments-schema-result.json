@@ -1,0 +1,66 @@
+{
+  "arguments": {
+    "kind": "prototype-only",
+    "paidInference": false,
+    "argumentsConformToAdvertisedSchema": true,
+    "reasoningExercised": false,
+    "realProviderEncryptedBlobExercised": false,
+    "productionBudgetAuthorizationExercised": false,
+    "turnStatus": "completed",
+    "sameThreadAfterRestart": true,
+    "answerRestored": true,
+    "storage": {
+      "profile": "explicit synthetic test profile",
+      "files": 77,
+      "sqliteRows": 84,
+      "compressedValues": 0,
+      "hits": [],
+      "limitations": [
+        "Only four predefined synthetic literals; not a general data-loss proof",
+        "Reasoning outputs and compaction are not exercised by this fixture",
+        "No compressed frames observed; decompression branch not exercised"
+      ]
+    },
+    "opaqueArgumentsOnDisk": true,
+    "requests": 2,
+    "mcpCalls": 1,
+    "receivedOpaqueArguments": true,
+    "resolvedOriginalArguments": true,
+    "restoredUpstreamArguments": true,
+    "expandedUpstreamResult": true,
+    "threadScopeMatches": true,
+    "restoredUpstreamReasoning": false
+  },
+  "syntheticReasoning": {
+    "kind": "prototype-only",
+    "paidInference": false,
+    "argumentsConformToAdvertisedSchema": true,
+    "reasoningExercised": true,
+    "realProviderEncryptedBlobExercised": false,
+    "productionBudgetAuthorizationExercised": false,
+    "turnStatus": "completed",
+    "sameThreadAfterRestart": true,
+    "answerRestored": true,
+    "storage": {
+      "profile": "explicit synthetic test profile",
+      "files": 77,
+      "sqliteRows": 85,
+      "compressedValues": 0,
+      "hits": [],
+      "limitations": [
+        "Only four predefined synthetic literals; not a general data-loss proof",
+        "No compressed frames observed; decompression branch not exercised",
+        "Synthetic reasoning/opaque field only; no real cryptographic blob or compaction"
+      ]
+    },
+    "opaqueArgumentsOnDisk": true,
+    "requests": 2,
+    "mcpCalls": 1,
+    "receivedOpaqueArguments": true,
+    "resolvedOriginalArguments": true,
+    "restoredUpstreamArguments": true,
+    "expandedUpstreamResult": true,
+    "threadScopeMatches": true,
+    "restoredUpstreamReasoning": true
+  }
+}

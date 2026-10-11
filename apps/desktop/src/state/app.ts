@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { api } from "../ipc/commands";
 import { accentContrast } from "../lib/format";
 import { onHostEvent } from "../ipc/bridge";
+import { translate } from "../i18n";
 import type {
   AudioSourceKind,
   AppServerState,
@@ -121,6 +122,9 @@ export const useApp = create<AppStore>((set, get) => ({
         if (e.event.type === "appServerState") set({ appServer: e.event.state });
         else useConversation.getState().apply(e.event);
         break;
+      case "webSource":
+        useConversation.getState().addWebSource(e.event);
+        break;
       case "login":
         set({ login: e.event.state === "completed" || e.event.state === "cancelled" ? null : e.event });
         if (e.event.state === "completed") {
@@ -151,7 +155,13 @@ export const useApp = create<AppStore>((set, get) => ({
         }));
         break;
       case "notice":
-        get().notify(e.event.level, e.event.message);
+        get().notify(e.event.level, e.event.message === "web_tools_unsupported"
+          ? translate(get().settings?.language ?? "ptBr", "web.toolsUnsupported")
+          : e.event.message === "web_history_unavailable"
+            ? translate(get().settings?.language ?? "ptBr", "web.historyUnavailable")
+          : e.event.message === "web_history_restore_limited"
+            ? translate(get().settings?.language ?? "ptBr", "web.historyRestoreLimited")
+          : e.event.message);
         break;
       case "openConversation":
         set((s) => ({ conversationRequest: { threadId: e.event.threadId, seq: (s.conversationRequest?.seq ?? 0) + 1 } }));

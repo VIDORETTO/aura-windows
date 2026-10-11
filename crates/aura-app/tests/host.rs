@@ -40,6 +40,36 @@ async fn env() -> Env {
     }
 }
 
+#[tokio::test]
+async fn model_effort_preferences_survive_a_host_restart() {
+    let dir = tempfile::tempdir().unwrap();
+    let paths = AppPaths::new(dir.path().join("Aura"));
+    let (platform, _) = Platform::fake();
+    let host = Host::start(HostConfig::demo(paths.clone(), platform.clone()))
+        .await
+        .unwrap();
+    host.update_settings(
+        serde_json::from_value(json!({
+            "effortPresets": {
+                "aura-qa::qa-reasoner": {"chat": "low", "task": "max"}
+            }
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    host.shutdown().await;
+    drop(host);
+
+    let restarted = Host::start(HostConfig::demo(paths, platform))
+        .await
+        .unwrap();
+    assert_eq!(
+        serde_json::to_value(restarted.settings().effort_presets).unwrap(),
+        json!({"aura-qa::qa-reasoner": {"chat": "low", "task": "max"}})
+    );
+    restarted.shutdown().await;
+}
+
 async fn until<F: Fn(&HostEvent) -> bool>(
     rx: &mut tokio::sync::broadcast::Receiver<HostEvent>,
     f: F,
@@ -529,6 +559,7 @@ fn tools_of(
     let policy = privacy.load().unwrap();
     HostTools {
         extensions: Default::default(),
+        web: Default::default(),
         vault,
         platform: e.platform.clone(),
         policy: Arc::new(std::sync::RwLock::new(policy)),

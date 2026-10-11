@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-036",
+  "input_fingerprints": {
+    "crates/aura-web": "bdafb8a18cb8c0fe92aefb7f02e3f2f9faddf625905e6ef940bac0feebda558c",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "crates/aura-web"
+  ],
+  "limitations": "2 live ignorados. FD002/FD003 menores continuam; sem aprovação do TK007, gate live, privacidade normal ou Windows. Evidence invalidated because an input changed.",
+  "observations": "54 offline WebService: 29 fetch/25 search, sem falhas. Código não mudou nesta rodada; plan r8 renova escopo original de TK002.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; saída TEMP/aura-039-r8-regression.log; escopo serviço search/fetch",
+  "result": "stale",
+  "tested_revision": "local:fafc58bb4ed7c7396f932f07487e7662b32681b8f8ef8a578c21fccc649c8e3a",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T17:28:00+00:00"
+}

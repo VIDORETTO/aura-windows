@@ -51,6 +51,7 @@ export function ModelPicker({ compact = false }: { compact?: boolean }) {
       ? s.models.map((m) => ({ id: m.id, name: m.displayName }))
       : (provider?.models ?? []).map((m) => ({ id: m.id, name: m.displayName ?? m.id }));
   const providerName = s.provider === CHATGPT_PLAN ? "ChatGPT" : (provider?.name ?? s.provider);
+  const catalogStatus = s.provider === CHATGPT_PLAN ? s.catalogStatus.models : s.catalogStatus.providers;
   const settingsDefault = useApp((a) => a.settings?.defaultModel ?? null);
   // "Default" names the model it stands for: the Settings default (when the plan still offers it) or the plan's own default.
   const effective = effectiveModel(s, settingsDefault);
@@ -78,8 +79,8 @@ export function ModelPicker({ compact = false }: { compact?: boolean }) {
         aria-label={label}
         title={label}
         className={cx(
-          "flex min-w-0 items-center gap-1.5 border border-line hover:bg-hover",
-          compact ? "h-5 max-w-[220px] rounded-full px-1.5 text-[11px]" : "h-7 max-w-[300px] rounded-md px-2 text-[12px]",
+          "flex items-center gap-1.5 border border-line hover:bg-hover",
+          compact ? "h-5 min-w-[104px] max-w-[220px] rounded-full px-1.5 text-[11px]" : "h-7 min-w-0 max-w-[300px] rounded-md px-2 text-[12px]",
           pop.open && "bg-hover",
         )}
       >
@@ -116,7 +117,17 @@ export function ModelPicker({ compact = false }: { compact?: boolean }) {
           </>
         )}
         <MenuLabel>{t("picker.model")}</MenuLabel>
-        <div role="menu" aria-label={t("picker.model")} className="max-h-48 overflow-y-auto">
+        {catalogStatus === "loading" && <p role="status" className="px-2 pb-1 text-[12px] text-muted">{t("picker.catalog.loading")}</p>}
+        {catalogStatus === "ready" && models.length === 0 && <p role="status" className="px-2 pb-1 text-[12px] text-muted">{t("picker.catalog.empty")}</p>}
+        {catalogStatus === "error" && (
+          <div className="px-2 pb-1 text-[12px]" role="status">
+            <p className="text-muted">{t("picker.catalog.error")}</p>
+            <button type="button" onClick={() => void s.loadCatalog()} className="mt-1 rounded px-1 py-0.5 text-accent hover:bg-hover">
+              {t("picker.catalog.retry")}
+            </button>
+          </div>
+        )}
+        <div role="menu" aria-label={t("picker.model")} aria-busy={catalogStatus === "loading"} className="max-h-48 overflow-y-auto">
           {s.provider !== CHATGPT_PLAN && (
             <MenuOption selected={!s.model} onSelect={() => s.setModel(null)}>
               {t("general.defaultModel")}

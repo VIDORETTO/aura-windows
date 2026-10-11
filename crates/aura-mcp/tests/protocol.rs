@@ -130,6 +130,8 @@ async fn handshake_list_and_call() {
             "project_save",
             "meeting_set_project",
             "meeting_stats",
+            "web_search",
+            "web_fetch",
         ]
     );
     assert_eq!(v["result"]["tools"][0]["annotations"]["readOnlyHint"], true);
@@ -143,6 +145,57 @@ async fn handshake_list_and_call() {
     let (tool, args, conv) = handler.calls.lock().unwrap()[0].clone();
     assert_eq!((tool.as_str(), conv.as_str()), ("screen_capture", "conv-1"));
     assert_eq!(args["reason"], "ver erro");
+}
+
+#[tokio::test]
+async fn advertises_bounded_read_only_public_web_tools_without_identity_arguments() {
+    let (url, _) = start().await;
+    let output: Value = rpc(
+        &url,
+        json!({"jsonrpc":"2.0","id":1,"method":"tools/list"}),
+        None,
+    )
+    .await
+    .json()
+    .await
+    .unwrap();
+    let list = output["result"]["tools"].as_array().unwrap();
+    for name in ["web_search", "web_fetch"] {
+        let tool = list
+            .iter()
+            .find(|tool| tool["name"] == name)
+            .expect("public web tool must be advertised");
+        assert_eq!(tool["annotations"]["readOnlyHint"], true);
+        assert_eq!(tool["annotations"]["openWorldHint"], true);
+        assert_eq!(tool["annotations"]["destructiveHint"], false);
+        assert_eq!(tool["inputSchema"]["additionalProperties"], false);
+        for forbidden in [
+            "conversationId",
+            "turnId",
+            "sessionId",
+            "headers",
+            "backendUrl",
+        ] {
+            assert!(tool["inputSchema"]["properties"].get(forbidden).is_none());
+        }
+        if name == "web_search" {
+            assert_eq!(
+                tool["inputSchema"]["properties"]["objective"]["maxLength"],
+                2000
+            );
+            assert_eq!(tool["inputSchema"]["properties"]["queries"]["maxItems"], 3);
+            assert_eq!(
+                tool["inputSchema"]["properties"]["maxResults"]["maximum"],
+                10
+            );
+        } else {
+            assert_eq!(tool["inputSchema"]["properties"]["url"]["maxLength"], 2048);
+            assert_eq!(
+                tool["inputSchema"]["properties"]["maxChars"]["maximum"],
+                20000
+            );
+        }
+    }
 }
 
 #[tokio::test]

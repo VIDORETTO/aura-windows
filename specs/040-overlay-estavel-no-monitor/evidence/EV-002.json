@@ -1,0 +1,44 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010/native-final-fit-anchor.log",
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010/regression-final.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/e2e/specs/monitor-stability.e2e.ts": "c5630f9c1a53c8da180ee816837cfd4f0932ab28c5f9e0b608869b9879051087",
+    "apps/desktop/e2e/specs/resize.e2e.ts": "cf60582ede20f279d8217cc15b1d60b6b89ff6e5f20631c30e64b15a6bf02dc2",
+    "apps/desktop/src-tauri/src/overlay.rs": "7a020efa9eb02c017d6a8fa3db7ed0191795e7bdfd83b996c6cfd7fdac9935ec",
+    "crates/aura-core/src/placement.rs": "f9789b91cc7b27dc12d24916947488069b22d058ea116099ceb511a7babd901e",
+    "crates/aura-win/examples/qa_foreground.rs": "fe0d506ff8d5e492a707a3c8cc7f2a464bc5b7955bd8cb4589f2e08597a60586",
+    "crates/aura-win/examples/qa_resize.rs": "e49ee17b0f7768cfbb68e471e335b3d91094a134302b6f1f9dd2e5a43e2f7301",
+    "specs/040-overlay-estavel-no-monitor/plan.md": "5f16bf4a3d28f38cebc1ca35c95a5aba713ac1889edfffef12c3a5a81aa6090d",
+    "specs/040-overlay-estavel-no-monitor/qa.md": "ac294d9496443ae131f83e862729d5b47444bf259fddbea9e1254fe71c7de45f",
+    "specs/040-overlay-estavel-no-monitor/spec.md": "3eb1554270b4795a8826dc63499eb9ac23fdaf6059b2b9cba4f536a65e009635"
+  },
+  "input_paths": [
+    "crates/aura-core/src/placement.rs",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-win/examples/qa_foreground.rs",
+    "crates/aura-win/examples/qa_resize.rs",
+    "apps/desktop/e2e/specs/monitor-stability.e2e.ts",
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/040-overlay-estavel-no-monitor/spec.md",
+    "specs/040-overlay-estavel-no-monitor/plan.md",
+    "specs/040-overlay-estavel-no-monitor/qa.md"
+  ],
+  "limitations": "DPI real100%; 150/200 de038 pendente. Modelo scripted varia somente rede externa. Ativação assistida só de fixtures vazias próprias; não foi encerrada a instância produtiva do usuário.",
+  "observations": "3/3 estabilidade: saved expandido B2000/80 altura500; quatro modos conservam compacto2080/60; A80/80 largura700 e B2000/80 largura820 restauradas; conversa/Minibar real conserva2000/80. Regressão2picker+9resize passou. Guard/oráculos preservados.",
+  "procedure": "pnpm -C apps/desktop/e2e test -- --spec ./specs/monitor-stability.e2e.ts; pnpm -C apps/desktop/e2e test -- --spec ./specs/model-picker-recovery.e2e.ts --spec ./specs/resize.e2e.ts (env QA e procedimento em qa.md).",
+  "result": "passed",
+  "tested_revision": "local:e3867b8b37b5f33ebcbeb043227cc8eea8804b6944eb33a988708bdc78ede126",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-11T02:18:54+00:00"
+}

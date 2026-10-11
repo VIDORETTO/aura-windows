@@ -14,6 +14,7 @@ aura-codex.workspace = true
 aura-auth.workspace = true
 aura-gateway.workspace = true
 aura-mcp.workspace = true
+aura-web.workspace = true
 aura-capture = { workspace = true, features = ["store"] }
 aura-audio = { workspace = true, features = ["store"] }
 aura-asr.workspace = true
@@ -37,6 +38,7 @@ zip = { version = "8", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 tempfile.workspace = true
+futures.workspace = true
 
 [build-dependencies]
 serde_json.workspace = true

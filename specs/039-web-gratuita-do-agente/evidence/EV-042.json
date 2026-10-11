@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "Windows11; rust-v0.159.0 cached, SHA256 executável68cc2280bfd6fd682f3399790526b35aae29c9395ff2bc4efd652a768fc97ac5; perfis/sandbox TEMP próprios",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-042",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "crates/aura-web": "f432e4cc65927f267e648e8e8c737ba91ab4da97b26e60a7380831f0e61bf1ee",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Rede e relógio controlados. Não aprova HTML ao vivo, rollout, entrega transitória completa ou Windows. Evidence invalidated because an input changed.",
+  "observations": "WebService61/61 dentro das regressões304/304; leitura29 inclui extração, continuação, DNS/redirects e limites com o serviço real. Revisão Standards/Spec em review.md; escopo original preservado.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp",
+  "result": "stale",
+  "tested_revision": "local:33c6066ff0724a3e9119a34c0447f895878ae6eedb07808491ab4314627bbad8",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T18:03:30+00:00"
+}

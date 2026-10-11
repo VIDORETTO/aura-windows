@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-10T22:22:08.599829+00:00",
+  "command": "pnpm -C apps/desktop tauri build --no-bundle",
+  "features": [],
+  "result": "passed",
+  "exitCode": 0,
+  "releaseBuildSeconds": 188,
+  "path": "C:\\Users\\gabri\\Documents\\Sistemas\\aura-windows\\target\\release\\aura.exe",
+  "bytes": 36585984,
+  "sha256": "340cee21fc66030d6a3bb2455d5610bb36d944e08fba5d99cfd2f034203a510f",
+  "limits": [
+    "Local executable only; no installer/publication or installation performed.",
+    "Build does not substitute pending native150/200DPI or external-browser destination proof.",
+    "Runtime/current real ChatGPT UI and synthesis evidence recorded separately."
+  ]
+}

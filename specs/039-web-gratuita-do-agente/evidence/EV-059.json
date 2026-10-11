@@ -1,0 +1,37 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-059",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "0a576f2413cf050de35136467e4a8d3111a60d3b44a4f13a0c204ad1449919f5",
+    "crates/aura-app/tests/real_app_server.rs": "647e7b8e931080f846f42eaceeae582914533c23b26dfd63421b409c031098e8",
+    "crates/aura-gateway": "eada29f37d5bee52cc56a5dfa8cb19c30bdc7b6af94eed9697b606fd08ca3f95",
+    "crates/aura-web": "c81f62d71696c357ab540db911fbb5acd197a5ac2be267a198be4e060196e9ba",
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py": "c06148d0f822601c94458d8e1065ec33edad7b7e3846107b8a2f35ca86c95225",
+    "specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json": "120502ab37b8bccdff558c3f8210f94fd97d64358d808246b6dadcb5a4cd183f",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py",
+    "specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Auditoria limitada a quatro literais. Nenhum frame comprimido, raciocínio ou compactação exercitados. Não aprova toda privacidade nem resolveFD001. Evidence invalidated because an input changed.",
+  "observations": "86 arquivos/128 linhasSQLite,zero quatro literais não citados. ContrastaEV051 mesmaestrutura comURLemrollout/WAL/SQLite. FonteW2 foi lida, fato recebido upstream e resposta citouW1; expectedmantido. Último ajuste de associação sequencialcall_id não muda bytes do sidecar,18reais passaram novamente14,46s.",
+  "procedure": "AURA_WEB_KEEP_SYNTHETIC_PROFILE=1: suíte real18/18 pós-fmt em14,06s, own TEMP .tmp9YHTtc; python specs/039-web-gratuita-do-agente/experiments/audit_synthetic_storage.py C:/Users/gabri/AppData/Local/Temp/.tmp9YHTtc/Aura specs/039-web-gratuita-do-agente/experiments/uncited-storage-private-arguments-formatted-result.json.",
+  "result": "stale",
+  "tested_revision": "local:259ca9ff8b61a371cdb5d23720e5f1c90de12fb5a918a72564d5257ece345849",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T19:19:05+00:00"
+}

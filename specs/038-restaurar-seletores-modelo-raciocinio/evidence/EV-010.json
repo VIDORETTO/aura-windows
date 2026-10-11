@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/profile-model.e2e.ts": "e5172e510c16cf521cf327f21632abf4827a58167bc3b63e8c60a7bfa128fa79",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/profile-model.e2e.ts",
+    "apps/desktop/src/overlay/session.ts",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Resultado parcial do gate total AC008: ainda faltam DPI150/200 e resize/foreground. Este procedimento isolado nao aprova geometria toda.",
+  "observations": "Profile-model agora passed: processo powershell.exe/title QA Insert Target,profile_active QA target,botao qa-other e turno upstream model qa-other. 1/1 em2.9s; log TEMP/aura-038-profile-cached-bin.log.",
+  "procedure": "AURA_CODEX_BIN=TEMP/aura-038-model-picker-production/profile/bin/codex/rust-v0.159.0/bin/codex-app-server.exe; build normal atual/perfil QA isolado; pnpm -C apps/desktop/e2e test -- --spec ./specs/profile-model.e2e.ts --logLevel error",
+  "result": "partial",
+  "tested_revision": "local:233c3a453d98f7ab4c01c539416e57e4069f9797372c773fc961d6902c5b55b8",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-08T00:12:14+00:00"
+}

@@ -1,0 +1,29 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-088",
+  "input_fingerprints": {
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Two live tests ignored. Backend fetch scope; synthesis/native gates separate. Evidence invalidated because an input changed.",
+  "observations": "29 fetch and25 search cases passed; review current spec/plan: safe DNS/IPpin/redirect, bounded stream/extraction, versioned Unicode pagination, cancellation/limits unchanged.",
+  "procedure": "cargo test -p aura-web --test search --test fetch",
+  "result": "stale",
+  "tested_revision": "local:958f0bbf2960426151e102121569f6cb0989ed6710f7fb0207f8f64c2c8d44c7",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T21:55:02+00:00"
+}

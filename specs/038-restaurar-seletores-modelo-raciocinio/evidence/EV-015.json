@@ -1,0 +1,37 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-013",
+    "EV-014"
+  ],
+  "execution_status": "executed",
+  "id": "EV-015",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/e2e/specs/resize.e2e.ts": "cf60582ede20f279d8217cc15b1d60b6b89ff6e5f20631c30e64b15a6bf02dc2",
+    "apps/desktop/src-tauri/src/overlay.rs": "533239d89655024228ed3cebd410cd22d2e8bf2155c0a22c0a593091503527de",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Actual available monitors100percent;150/200native scales still unexecuted. Earlier initial unchanged width and foreground refusals retained; origin not conclusively assigned. Current pass approves resizing gate, not every DPI geometry requirement. Evidence invalidated because an input changed.",
+  "observations": "Native resize9/9 passed44sec: compact both sides, multiple widths, height refit, expanded min/every edge+corner, menu fit, width restore, available monitors and legacy clamp. Previous failures did not recur in current fresh profile with current build. Foreground refusal guard and oracles unchanged; no resize/product/helper code edited to make it pass.",
+  "procedure": "Current normal OS native e2e build (no demo), isolated fresh native-resize-profile, existing resize.e2e.ts with unchanged guarded qa_resize helper; full nine-case native suite. Previous model-picker2/2 at480px/100percent remains separate EV013/014.",
+  "result": "stale",
+  "tested_revision": "local:edf1a0685dd4bd5052979ef1dde9c5a234ce6b8b0312bbc32f340eee3d6ec17c",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T22:10:43+00:00"
+}

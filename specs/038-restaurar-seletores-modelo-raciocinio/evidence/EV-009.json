@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-008"
+  ],
+  "environment": "Windows 11; dois monitores 1920x1080 e1366x768, ambos scale1.0; perfil QA isolado; WebView2 154.0.4258.62",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/e2e/specs/profile-model.e2e.ts": "e5172e510c16cf521cf327f21632abf4827a58167bc3b63e8c60a7bfa128fa79",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "1075f6e09e01d53baba514538fd08fe8eb554c30efce0cca4bafb48cc0fac916",
+    "apps/desktop/src/overlay/StatusBar.tsx": "4f5b2d82c5d067c08b279eab0e5d5ab0585c6506ed09de67733c1151d936388e",
+    "apps/desktop/src/ui/Popover.tsx": "94ba13a984ba508f576498dcf0aaaa4ef393f512a0dfa14aa14b6258fe030703",
+    "apps/desktop/src/ui/floating.tsx": "9c8536a36bf1894698d725368e184c110cec4c0008a5d8b280e4a5c16b25d7af",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "apps/desktop/e2e/specs/profile-model.e2e.ts",
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/StatusBar.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/ui/Popover.tsx",
+    "apps/desktop/src/ui/floating.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "AC008 parcial: faltam DPI150/200 reais. Nao simular layout nem reduzir aceite. Regressao total ainda nao aprovada. Logs TEMP/aura-038-native-final.log e aura-038-production-regression.log; screenshots TEMP/aura-038-model-picker-production.",
+  "observations": "Build normal passou. Native480 compact/expandido passou com label108.5/91.45px, seta visivel, overlap[], clique e menu dentro da area util do monitor menor. Inspecao screenshots confirms. Model-effort/efforts reais passaram high/max/reinicio. Resize falhou por foreground refusal; perfil tinha fixture de inputs deslocados pela busca Settings, correcao e rerun em andamento. Composer necessita demo, onde passou.",
+  "procedure": "pnpm -C apps/desktop tauri build --no-bundle; E2E model-picker-recovery no build normal/perfil isolado; regressao composer,model-effort,model-efforts,profile-model,resize no build normal; composer previamente no demo",
+  "result": "partial",
+  "tested_revision": "local:8bd56b5ad5277cfb00fc4a2ef8f5f6d825041ec2bfa41115ef99010c7a0ebcba",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-08T00:10:56+00:00"
+}

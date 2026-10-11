@@ -56,6 +56,8 @@ pub struct Settings {
     pub worker_idle_minutes: u32,
     /// Codex memories (008 TK-006): the agent may remember facts across conversations.
     pub memories: bool,
+    /// Free public-web search and reading (039). Independent of capture/command permissions.
+    pub web_enabled: bool,
     /// Dictation language (ISO 639-1); `None` = the UI language.
     pub asr_language: Option<String>,
     /// Names and terms the speech model should get right (006 TK-005).
@@ -144,6 +146,7 @@ impl Default for Settings {
             app_server_idle_minutes: 15,
             worker_idle_minutes: 2,
             memories: false,
+            web_enabled: true,
             asr_language: None,
             asr_vocabulary: Vec::new(),
             cloud_asr_provider: None,
@@ -200,6 +203,7 @@ pub struct SettingsPatch {
     pub app_server_idle_minutes: Option<u32>,
     pub worker_idle_minutes: Option<u32>,
     pub memories: Option<bool>,
+    pub web_enabled: Option<bool>,
     #[serde(
         default,
         deserialize_with = "nullable_patch",
@@ -384,6 +388,9 @@ impl Settings {
         }
         if let Some(v) = patch.memories {
             next.memories = v;
+        }
+        if let Some(v) = patch.web_enabled {
+            next.web_enabled = v;
         }
         if let Some(v) = &patch.asr_language {
             if v.as_deref().is_some_and(|l| {

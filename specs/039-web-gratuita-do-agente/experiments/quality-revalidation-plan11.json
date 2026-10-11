@@ -1,0 +1,31 @@
+{
+  "kind": "Explicit semantic revalidation of original executed live backend evaluation; no new live run",
+  "planRevision": 11,
+  "specRevision": 1,
+  "originalEvidence": "EV-082 (stale solely after plan revision)",
+  "originalExecutionTimestamp": "2026-10-10T20:46:18+00:00",
+  "originalReport": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json",
+  "originalReportSha256": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+  "backendFingerprint": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+  "unchangedInputs": {
+    "crates/aura-web": true,
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json": true,
+    "specs/039-web-gratuita-do-agente/spec.md": true
+  },
+  "classification": "Plan11 changes only CodexService consumer tool exposure. WebService search/fetch/extractor/quality harness and accepted12/10queries/targets are unchanged. Original same-day measurement remains representative of this exact backend. New SIWC synthesis validated separately EV089.",
+  "checks": {
+    "searches": 12,
+    "reads": 10,
+    "relevant": 10,
+    "matched": 8,
+    "http": 58,
+    "elapsedSeconds": 193,
+    "thresholdsUnchanged": true
+  },
+  "result": "passed",
+  "limitations": [
+    "No claim of a fresh network evaluation; original run2026-10-10T20:46:18+00:00 reviewed explicitly.",
+    "Availability of free search is not guaranteed continuously.",
+    "Does not approve synthesis, opener, resize or DPI."
+  ]
+}

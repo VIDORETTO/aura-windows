@@ -1,0 +1,51 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-089"
+  ],
+  "execution_status": "executed",
+  "id": "EV-090",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/tests/real_app_server.rs": "73f724982b85ce06eac96cba5b423dec90d90252d0c16fcb0265bf4160a72e71",
+    "crates/aura-app/tests/web_tools.rs": "6753c505f3257956716057257b0891f628941d43be29b1a884193eb2959f49fc",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "crates/aura-gateway": "9f2e4822ca4bfc872d77c878d983c4105904963bfff518a569e59a1aeb879fdf",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1": "778a5483b273faa7b498faa7cb80f97e8e2e9d23e32f8ff412f4734ee198dd03",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py": "f59affc397ac05ec98039c8cec9d7cf134205e04a53332ed040f1ecc0b1bd452",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json": "d962e319e948485ff8dbe6314944326a3a0a85ac470716eaa9db2ab33dc8f3c6",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-codex/src/service.rs",
+    "specs/039-web-gratuita-do-agente/experiments/encrypted-reasoning-compaction-plan11-result.json",
+    "specs/039-web-gratuita-do-agente/experiments/check_encrypted_reasoning.ps1",
+    "specs/039-web-gratuita-do-agente/experiments/check_storage_auditor.py",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Synthetic representative ciphertext, no vendor cryptographic format claimed; no compressed frames produced by Codex. SIWC3journeys ephemeral delivery proof only; native UI/browser gates separate. Initial handshake failure preserved in EV089. Evidence invalidated because an input changed.",
+  "observations": "Current privacy gates preserved with direct Aura MCP: output/arguments/reasoning authorized transient delivery, scope/budget/cancel/expiry, normal history/restart/compaction. AESGCM external decrypt passed,tamper rejected;88files139SQLite rows0markers;public diagnostic positive/private absent;gzip/zstd auditor positive control passed. No raw fallback or broader resolver added.",
+  "procedure": "Current workspace505, fixed-pin matrix24+one handshake-only retry, public gateway tests; check_encrypted_reasoning.ps1 -CodexBin normal rust-v0.159.0 -Output encrypted-reasoning-compaction-plan11-result.json; python check_storage_auditor.py; fixed-baseline Standards/Spec review.",
+  "result": "stale",
+  "tested_revision": "local:6bacc394edaf496731cafeb4a75aca0650a87967e2b1e4f4c3ccfa445f8d1d6e",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T22:05:20+00:00"
+}

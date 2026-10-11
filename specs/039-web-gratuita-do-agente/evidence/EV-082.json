@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-080"
+  ],
+  "execution_status": "executed",
+  "id": "EV-082",
+  "input_fingerprints": {
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "9832d78faf5af32576273e6e326e0586dc6da2881685068dee1590627ac02485",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json": "8b65a2d215b2beaca47a9065bb3d123b36d7ea4d9fdb727fc40d13a7e3491efa",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/039-web-gratuita-do-agente/quality-results-2026-10-10-r10.json"
+  ],
+  "limitations": "Backend only; independent inspection HTTP outside Aura counter. Not continuous availability,SLA,live synthesis,SIWC,nativeWindows or DPI proof. FD002/003 minor open. Evidence invalidated because an input changed.",
+  "observations": "10/12 relevant,8/10 extraction literals and origins,58AuraHTTP/193s,phasecomplete/exit0. Museum body independently confirmed20:44:59UTC within30min; extraction targets unchanged. IBGE unverified,Tauri wrongtopic/unsupported_content,SearXNG literal absent retained. Standards/Spec no blocker.",
+  "procedure": "cargo run -p aura-web --example quality -- C:/Users/gabri/AppData/Local/Temp/aura-039-quality-plan10-1791664733872/report.json C:/Users/gabri/AppData/Local/Temp/aura-039-quality-plan10-1791664733872/targets.json; process7974 observed terminal exit0; independent official sources inspected; immutable ten-target manifest; metadata sanitization check; fixed-baseline Standards/Spec review",
+  "result": "stale",
+  "tested_revision": "local:46942c35bd8932752209b23719dd03176b12b6b21533a9028ddc06ba341d01fb",
+  "ticket": "TK-006",
+  "timestamp": "2026-10-10T20:46:18+00:00"
+}

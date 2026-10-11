@@ -8,6 +8,7 @@ members = [
   "crates/aura-auth",
   "crates/aura-gateway",
   "crates/aura-mcp",
+  "crates/aura-web",
   "crates/aura-capture",
   "crates/aura-audio",
   "crates/aura-asr",
@@ -29,6 +30,7 @@ default-members = [
   "crates/aura-auth",
   "crates/aura-gateway",
   "crates/aura-mcp",
+  "crates/aura-web",
   "crates/aura-capture",
   "crates/aura-audio",
   "crates/aura-asr",
@@ -41,11 +43,11 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 rust-version = "1.98"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/aura-desktop/aura"
+repository = "https://github.com/VIDORETTO/aura-windows"
 authors = ["Aura contributors"]
 
 [workspace.dependencies]
@@ -56,6 +58,7 @@ aura-codex = { path = "crates/aura-codex" }
 aura-auth = { path = "crates/aura-auth" }
 aura-gateway = { path = "crates/aura-gateway" }
 aura-mcp = { path = "crates/aura-mcp" }
+aura-web = { path = "crates/aura-web" }
 aura-capture = { path = "crates/aura-capture", default-features = false }
 aura-audio = { path = "crates/aura-audio", default-features = false }
 aura-asr = { path = "crates/aura-asr" }

@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-058",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "0a576f2413cf050de35136467e4a8d3111a60d3b44a4f13a0c204ad1449919f5",
+    "crates/aura-app/tests/real_app_server.rs": "647e7b8e931080f846f42eaceeae582914533c23b26dfd63421b409c031098e8",
+    "crates/aura-app/tests/web_tools.rs": "6753c505f3257956716057257b0891f628941d43be29b1a884193eb2959f49fc",
+    "crates/aura-gateway": "eada29f37d5bee52cc56a5dfa8cb19c30bdc7b6af94eed9697b606fd08ca3f95",
+    "crates/aura-web": "c81f62d71696c357ab540db911fbb5acd197a5ac2be267a198be4e060196e9ba",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-gateway",
+    "crates/aura-web",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-app/tests/real_app_server.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Parcial: raciocínio, blob criptográfico de provedor, compactação e gate integral ainda pendentes. Suíte316 antecedeu somente variáveis de comparação no novo teste; os10casos desse arquivo foram reexecutados após esse ajuste. UI/native/workspace inteiro não renovados. Evidence invalidated because an input changed.",
+  "observations": "316 regressões;10HTTP novos atuais;18/18 casos reais em14,46s, incluindo gateW2 antes falho. Args/resultados kind separados no mesmo budget; scope capturado antes deawait; semnonce/URL bruto no stream de ferramentas. RedW2 antes da correção0,81s/doisarquivos; green sem alterarexpected. Unicode ecall_id históricos corrigidos após reds próprios.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; cargo test -p aura-gateway --test private_calls após ajuste somente de comparação literal no teste; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 com pin AURA_CODEX_BIN e TEMP; clippy cinco crates --all-targets -- -D warnings; fmt/diff check.",
+  "result": "stale",
+  "tested_revision": "local:7f5f3bb5e20aeb47b8e543ceaeecf3d510186ba5f999c198aff090ea4d9a5e6f",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T19:19:04+00:00"
+}

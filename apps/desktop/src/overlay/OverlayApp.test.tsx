@@ -7,6 +7,114 @@ import { useApp } from "../state/app";
 import { filterMenu, insertAtCaret } from "./InputBar";
 
 describe("Overlay", () => {
+  it("restores a cited source from History and opens it by keyboard without starting research", async () => {
+    const bridge = await freshApp({ signedIn: true });
+    const calls: string[] = [];
+    const opened: string[] = [];
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      calls.push(cmd);
+      if (cmd === "conversation_open") return [
+        { role: "user", text: "Verifique a produção" },
+        { role: "assistant", text: "Produção: 42 [[aura-source:W1]]", sources: [{
+          sourceId: "W1", title: "Relatório salvo", url: "https://news.example/report", snippet: "",
+          publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+        }] },
+      ] as R;
+      if (cmd === "open_external") { opened.push(String(args.url)); return undefined as R; }
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await screen.findByRole("button", { name: "Expandir" });
+    act(() => useApp.getState().handle({ channel: "openConversation", event: { threadId: "saved-research" } }));
+    const panel = await screen.findByRole("group", { name: "Fontes consultadas" });
+    expect(within(panel).getByText("Relatório salvo")).toBeInTheDocument();
+    expect(within(panel).getByText("Página lida")).toBeInTheDocument();
+    expect(opened).toEqual([]);
+    const citation = screen.getAllByRole("button", { name: "Abrir fonte W1: Relatório salvo" })
+      .find((button) => !panel.contains(button));
+    expect(citation).toBeDefined();
+    citation!.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(opened).toEqual(["https://news.example/report"]));
+    expect(calls.filter((cmd) => cmd === "conversation_send" || cmd.startsWith("web_"))).toEqual([]);
+    act(() => {
+      bridge.emitLocal!("aura://event", { channel: "conversation", event: { type: "turnStarted", threadId: "saved-research", turnId: "followup" } });
+      bridge.emitLocal!("aura://event", { channel: "conversation", event: { type: "messageCompleted", threadId: "saved-research", itemId: "followup-answer", text: "Como vimos: 42 [[aura-source:W1]]" } });
+      bridge.emitLocal!("aura://event", { channel: "conversation", event: { type: "turnCompleted", threadId: "saved-research", turnId: "followup", status: "completed", error: null } });
+    });
+    await waitFor(() => expect(screen.getAllByRole("group", { name: "Fontes consultadas" })).toHaveLength(2));
+    expect(screen.queryByText("Referência não verificada: W1")).not.toBeInTheDocument();
+  });
+  it.each([
+    { language: "ptBr", activity: "Buscando na internet", panelLabel: "Fontes consultadas", read: "Página lida", snippet: "Trecho da busca", unknown: "Referência não verificada: W999", citation: "Abrir fonte W1: <em>Relatório público</em>" },
+    { language: "en", activity: "Searching the internet", panelLabel: "Consulted sources", read: "Page read", snippet: "Search snippet", unknown: "Unverified reference: W999", citation: "Open source W1: <em>Relatório público</em>" },
+  ])("shows consulted sources in $language and opens a verified citation only on user activation", async ({ language, activity, panelLabel, read, snippet, unknown, citation: citationLabel }) => {
+    const bridge = await freshApp({ signedIn: true });
+    await bridge.invoke("settings_update", { patch: { language } });
+    const opened: string[] = [];
+    let threadId = "";
+    let finishResearch: () => void = () => { throw new Error("research has not started"); };
+    setBridge({ ...bridge, invoke: async <R,>(cmd: string, args: Record<string, unknown> = {}) => {
+      if (cmd === "conversation_start") {
+        const result = await bridge.invoke<R>(cmd, args);
+        threadId = (result as { threadId: string }).threadId;
+        return result;
+      }
+      if (cmd === "conversation_send") {
+        const emit = (event: unknown) => bridge.emitLocal!("aura://event", event);
+        emit({ channel: "conversation", event: { type: "turnStarted", threadId, turnId: "turn-web" } });
+        emit({ channel: "conversation", event: { type: "toolCall", threadId, itemId: "search-web", kind: "mcp", title: "mcp__aura__web_search", status: "inProgress", detail: null } });
+        finishResearch = () => {
+          emit({ channel: "conversation", event: { type: "toolCall", threadId, itemId: "search-web", kind: "mcp", title: "mcp__aura__web_search", status: "completed", detail: null } });
+          emit({ channel: "webSource", event: { threadId, turnId: "turn-web", source: {
+            sourceId: "W1", title: "<em>Relatório público</em>", url: "https://news.example/report", snippet: "Produção: 42 unidades.",
+            publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+          } } });
+          emit({ channel: "webSource", event: { threadId: "another-conversation", turnId: "other-turn", source: {
+            sourceId: "W1", title: "Outra conversa", url: "https://foreign.example/report", snippet: "Outro fato.",
+            publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+          } } });
+          emit({ channel: "webSource", event: { threadId, turnId: "turn-web", source: {
+            sourceId: "W3", title: "Arquivo local inválido", url: "file:///C:/private.txt", snippet: "Não abrir.",
+            publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+          } } });
+          emit({ channel: "webSource", event: { threadId, turnId: "turn-web", source: {
+            sourceId: "W2", title: "Outro resultado", url: "https://independent.example/report", snippet: "Apenas um trecho.",
+            publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "searchSnippet",
+          } } });
+          emit({ channel: "conversation", event: { type: "messageCompleted", threadId, itemId: "answer-web", text: 'Produção: 42 [[aura-source:W1]]. Referência desconhecida [[aura-source:W999]]. <button data-web-source="W999" aria-label="Referência falsa">W999</button>' } });
+          emit({ channel: "conversation", event: { type: "turnCompleted", threadId, turnId: "turn-web", status: "completed", error: null } });
+        };
+        return undefined as R;
+      }
+      if (cmd === "open_external") { opened.push(String(args.url)); return undefined as R; }
+      return bridge.invoke<R>(cmd, args);
+    } });
+    const user = userEvent.setup();
+    render(<OverlayApp />);
+    await user.type(await screen.findByRole("combobox"), "Pesquise a produção{Enter}");
+    expect(await screen.findByText(activity)).toBeInTheDocument();
+    act(() => finishResearch());
+    const panel = await screen.findByRole("group", { name: panelLabel });
+    expect(within(panel).getByText("<em>Relatório público</em>")).toBeInTheDocument();
+    expect(panel.querySelector("em")).toBeNull();
+    expect(within(panel).getByText("news.example")).toBeInTheDocument();
+    expect(within(panel).getByText(read)).toBeInTheDocument();
+    expect(within(panel).getByText(snippet)).toBeInTheDocument();
+    expect(screen.getByText(unknown)).toBeInTheDocument();
+    expect(screen.queryByText("Arquivo local inválido")).not.toBeInTheDocument();
+    expect(screen.queryByText("Outra conversa")).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /(?:Abrir fonte|Open source) W999/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Referência falsa" })).not.toBeInTheDocument();
+    expect(opened).toEqual([]);
+    const citation = screen.getAllByRole("button", { name: citationLabel }).find((button) => !panel.contains(button));
+    expect(citation).toBeDefined();
+    citation!.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(opened).toEqual(["https://news.example/report"]));
+  });
+
   it("does not activate the button with Ctrl+Space while the OS shortcut handles it", async () => {
     const bridge = await freshApp({ signedIn: true });
     const commands: string[] = [];

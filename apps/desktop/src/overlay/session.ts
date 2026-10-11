@@ -14,6 +14,7 @@ export const DRAFT = "draft";
 export const CHATGPT_PLAN = PLAN_PROVIDER;
 
 export type ModeKey = ConversationMode["mode"];
+type CatalogStatus = "idle" | "loading" | "ready" | "error";
 
 /** What losing focus does (009 TK-002): answers keep going in the Minibar. */
 export function blurAction(o: { busy: boolean; keepOpen: boolean; pendingConsent: boolean }): "hide" | "minibar" | "stay" {
@@ -43,6 +44,7 @@ interface Session {
   setMinibar: (on: boolean) => void;
   models: ModelInfo[];
   providers: Provider[];
+  catalogStatus: { models: CatalogStatus; providers: CatalogStatus };
   /** Enabled quick command names (unknown `/words` are sent as typed). */
   quickNames: string[];
   sending: boolean;
@@ -95,6 +97,10 @@ function report(e: unknown) {
   useApp.getState().notify("error", errorMessage(e));
 }
 
+function announceEffortReset() {
+  useApp.getState().notify("warning", translate(useApp.getState().settings?.language ?? "ptBr", "picker.effort.reset"));
+}
+
 let catalogRequest = 0;
 
 export const useSession = create<Session>((set, get) => ({
@@ -114,6 +120,7 @@ export const useSession = create<Session>((set, get) => ({
   minibar: false,
   models: [],
   providers: [],
+  catalogStatus: { models: "idle", providers: "idle" },
   quickNames: [],
   sending: false,
   queued: null,
@@ -150,7 +157,13 @@ export const useSession = create<Session>((set, get) => ({
   },
 
   setProvider: (provider, model) => set((s) => ({ provider, model, effort: presetEffort({ ...s, provider, model }) ?? keepEffort({ ...s, provider, model }) })),
-  setModel: (model) => set((s) => ({ model, effort: presetEffort({ ...s, model }) ?? keepEffort({ ...s, model }) })),
+  setModel: (model) => {
+    const s = get();
+    const next = { ...s, model };
+    const effort = presetEffort(next) ?? keepEffort(next);
+    set({ model, effort });
+    if (s.effort !== null && effort === null) announceEffortReset();
+  },
   setEffort: (effort) => {
     set({ effort });
     void rememberEffort(get(), effort);
@@ -253,6 +266,7 @@ export const useSession = create<Session>((set, get) => ({
 
   send: async (raw) => {
     const s = get();
+    const chosenModel = effectiveModel(s, useApp.getState().settings?.defaultModel ?? null);
     let text = raw.trim();
     let display: string | undefined;
     if (!text && s.chips.length === 0) return false;
@@ -289,8 +303,7 @@ export const useSession = create<Session>((set, get) => ({
       let threadId = s.threadId;
       if (!threadId) {
         // The plan always starts with an explicit catalog model (017).
-        const model = effectiveModel(s, useApp.getState().settings?.defaultModel ?? null);
-        const opts: StartOptions = { mode: modeValue(s.mode, s.granted), provider: s.provider, model, ephemeral: s.ephemeral };
+        const opts: StartOptions = { mode: modeValue(s.mode, s.granted), provider: s.provider, model: chosenModel, ephemeral: s.ephemeral };
         const started = await api.conversationStart(opts);
         threadId = started.threadId;
         await api.trayMove(DRAFT, threadId);
@@ -302,7 +315,10 @@ export const useSession = create<Session>((set, get) => ({
       set({ chips: [] });
       get().setOverlayMode("expanded");
       const accepts = acceptsImages(get());
-      await api.conversationSend({ threadId, text, tray: threadId, acceptsImages: accepts, options: { model: s.model, effort: s.effort } });
+      // Startup/attachment work can await a newer catalog. Keep the user's model
+      // choice for this turn, but never send an effort it no longer supports.
+      const effort = keepEffort({ ...get(), provider: s.provider, model: chosenModel, effort: s.effort });
+      await api.conversationSend({ threadId, text, tray: threadId, acceptsImages: accepts, options: { model: s.model, effort } });
       return true;
     } catch (e) {
       if (errorCode(e) === "context") useApp.getState().notify("warning", errorMessage(e));
@@ -386,13 +402,22 @@ export const useSession = create<Session>((set, get) => ({
 
   loadCatalog: async () => {
     const request = ++catalogRequest;
-    const [providers, models, quick] = await Promise.all([
-      api.providersList().catch(() => [] as Provider[]),
-      api.modelsList().catch(() => [] as ModelInfo[]),
-      api.quickList().catch(() => []),
+    set({ catalogStatus: { models: "loading", providers: "loading" } });
+    const [providerResult, modelResult, quickResult] = await Promise.allSettled([
+      api.providersList(),
+      api.modelsList(),
+      api.quickList(),
     ]);
     if (request !== catalogRequest) return;
-    set({ providers, models, quickNames: quick.filter((q) => q.enabled).map((q) => q.name) });
+    const providers = providerResult.status === "fulfilled" ? providerResult.value : get().providers;
+    const models = modelResult.status === "fulfilled" ? modelResult.value : get().models;
+    set({ providers, models,
+      catalogStatus: {
+        providers: providerResult.status === "fulfilled" ? "ready" : "error",
+        models: modelResult.status === "fulfilled" ? "ready" : "error",
+      },
+      ...(quickResult.status === "fulfilled" ? { quickNames: quickResult.value.filter((q) => q.enabled).map((q) => q.name) } : {}),
+    });
     const s = get();
     if (!s.threadId) {
       const hasAccount = !!useApp.getState().auth?.active?.signedIn;
@@ -405,6 +430,13 @@ export const useSession = create<Session>((set, get) => ({
         // A model the plan no longer offers (e.g. GPT-5.x after 017).
         set({ model: null, effort: null });
       }
+    }
+    const refreshed = get();
+    const confirmed = refreshed.provider === CHATGPT_PLAN ? modelResult.status === "fulfilled" : providerResult.status === "fulfilled";
+    if (confirmed) {
+      const invalidated = s.effort !== null && keepEffort({ ...refreshed, effort: s.effort }) === null;
+      set({ effort: invalidated ? null : keepEffort(refreshed) ?? presetEffort(refreshed) });
+      if (invalidated) announceEffortReset();
     }
   },
 }));
@@ -465,16 +497,28 @@ export function effortKey(provider: string, model: string | null): string {
 
 /** Effort remembered for this provider, model and mode, if the model accepts it. */
 function presetEffort(s: Pick<Session, "provider" | "model" | "models" | "providers" | "mode">): string | null {
-  const saved = useApp.getState().settings?.effortPresets?.[effortKey(s.provider, s.model)]?.[s.mode] ?? null;
-  return saved && modelCapabilities(s, s.model)?.efforts.includes(saved) ? saved : null;
+  const settings = useApp.getState().settings;
+  const model = effectiveModel(s, settings?.defaultModel ?? null);
+  const saved = settings?.effortPresets?.[effortKey(s.provider, model)]?.[s.mode]
+    ?? (s.model === null ? settings?.effortPresets?.[effortKey(s.provider, null)]?.[s.mode] : null);
+  return saved && modelCapabilities(s, model)?.efforts.includes(saved) ? saved : null;
 }
 
 /** Saves the picker choice as this model's effort in the current mode. */
-async function rememberEffort(s: Pick<Session, "provider" | "model" | "mode">, effort: string | null) {
+async function rememberEffort(s: Pick<Session, "provider" | "model" | "models" | "mode">, effort: string | null) {
   const settings = useApp.getState().settings;
   if (!settings) return;
-  const key = effortKey(s.provider, s.model);
+  const model = effectiveModel(s, settings.defaultModel);
+  const key = effortKey(s.provider, model);
   const presets = { ...(settings.effortPresets ?? {}) };
+  if (s.model === null && model !== null) {
+    // Replace a legacy default alias only for this mode; other preferences stay.
+    const legacyKey = effortKey(s.provider, null);
+    const legacy = { ...(presets[legacyKey] ?? {}) };
+    delete legacy[s.mode];
+    if (Object.values(legacy).some(Boolean)) presets[legacyKey] = legacy;
+    else delete presets[legacyKey];
+  }
   const entry = { ...(presets[key] ?? {}), [s.mode]: effort };
   if (!effort) delete entry[s.mode];
   if (Object.values(entry).some(Boolean)) presets[key] = entry;
@@ -489,7 +533,8 @@ async function rememberEffort(s: Pick<Session, "provider" | "model" | "mode">, e
 /** The chosen effort survives a model change only when the new model supports it. */
 function keepEffort(s: Pick<Session, "provider" | "model" | "models" | "providers" | "effort">): string | null {
   if (!s.effort) return null;
-  return modelCapabilities(s, s.model)?.efforts.includes(s.effort) ? s.effort : null;
+  const model = effectiveModel(s, useApp.getState().settings?.defaultModel ?? null);
+  return modelCapabilities(s, model)?.efforts.includes(s.effort) ? s.effort : null;
 }
 
 function acceptsImages(s: Session): boolean {

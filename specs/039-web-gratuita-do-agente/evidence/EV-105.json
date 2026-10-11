@@ -1,0 +1,40 @@
+{
+  "acceptance_refs": [
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-096"
+  ],
+  "execution_status": "executed",
+  "id": "EV-105",
+  "input_fingerprints": {
+    "Cargo.lock": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc",
+    "Cargo.toml": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1",
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/commands.rs": "3c4cfb776365b1d8939f5882923bff4ae91c9d5d1d81a489d32041a1b9995cb7",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+    "specs/041-publicacao-github-030/input-revalidation.json": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/src/commands.rs",
+    "crates/aura-codex/src/service.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "specs/041-publicacao-github-030/input-revalidation.json"
+  ],
+  "limitations": "No fresh live-provider quality/synthesis/native run. Existing external measurements remain historical; free-service availability is not guaranteed. Does not approve 150/200 DPI or clean Windows installation.",
+  "observations": "Only workspace/package metadata and two client identifiers changed. Every backend algorithm, consumer, privacy policy, oracle and historical external result matches its previously tested fingerprint. Fresh local suites passed; historical external/native results are explicitly revalidated, not claimed as rerun.",
+  "procedure": "Executed explicit version-0.3 input revalidation: exact directory fingerprint after reversing only HTTP/MCP client metadata in memory; compare all other prior inputs; execute workspace508/UI253/typecheck/fmt/Clippy/licenses-sources and signed production build.",
+  "result": "passed",
+  "tested_revision": "local:6059a1d1a40df0556640b61a9fc695cc60d5879413bf74d5d0cacfe0b1f7ac26",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-11T04:25:00+00:00"
+}

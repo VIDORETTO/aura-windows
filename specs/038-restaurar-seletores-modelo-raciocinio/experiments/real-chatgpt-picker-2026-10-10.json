@@ -1,0 +1,102 @@
+{
+  "timestamp": "2026-10-10T22:15:32.917Z",
+  "procedure": "Actual signed-in ChatGPT catalog and native ModelPicker. Local UI model/provider selection only; no effort selection, settings/provider writes, inference, capture or external-browser operation.",
+  "signedIn": true,
+  "catalog": [
+    {
+      "id": "gpt-6-luna",
+      "displayName": "GPT-6 Luna",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "medium",
+      "isDefault": true
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "displayName": "GPT-6.1 Sol",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "defaultEffort": "medium",
+      "isDefault": false
+    },
+    {
+      "id": "gpt-6-astra",
+      "displayName": "GPT-6 Astra",
+      "efforts": [
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max",
+        "ultra"
+      ],
+      "defaultEffort": "low",
+      "isDefault": false
+    }
+  ],
+  "initialUi": {
+    "catalogStatusText": "Não foi possível carregar os modelos.Tentar novamente",
+    "modelLabels": []
+  },
+  "catalogRetriedThroughUi": true,
+  "ui": {
+    "dpr": 1,
+    "efforts": [
+      {
+        "checked": "true",
+        "disabled": false,
+        "label": "Padrão do modelo (médio)"
+      },
+      {
+        "checked": "false",
+        "disabled": false,
+        "label": "Baixo"
+      },
+      {
+        "checked": "false",
+        "disabled": false,
+        "label": "Médio"
+      },
+      {
+        "checked": "false",
+        "disabled": false,
+        "label": "Alto"
+      },
+      {
+        "checked": "false",
+        "disabled": false,
+        "label": "Muito alto"
+      },
+      {
+        "checked": "false",
+        "disabled": false,
+        "label": "Máximo"
+      }
+    ],
+    "modelLabels": [
+      "GPT-6 LunaImagem · Ferramentas · Raciocínio",
+      "GPT-6.1 SolImagem · Ferramentas · Raciocínio",
+      "GPT-6 AstraImagem · Ferramentas · Raciocínio"
+    ],
+    "pickerLabel": "Modelo GPT-6 Luna",
+    "viewportWidth": 640,
+    "visible": true
+  },
+  "settingsUnchanged": true,
+  "result": "passed",
+  "limitations": [
+    "Read-only UI/provider/model choices local to Session; no effort selection or model inference.",
+    "Only actual100percent available; not150/200native geometry or exhaustive compact/expanded proof.",
+    "First harness attempted provider control before catalog recovery; preserved inTEMP as harness failure, not product TDD red."
+  ]
+}

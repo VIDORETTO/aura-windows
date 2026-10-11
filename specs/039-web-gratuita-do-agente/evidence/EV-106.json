@@ -1,0 +1,38 @@
+{
+  "acceptance_refs": [
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-106",
+  "input_fingerprints": {
+    "Cargo.lock": "a0b8470f06134d630e8d9f6e9322b74b220998468ffd39683d696594cf4230bc",
+    "Cargo.toml": "ad5c3210895c87b6a7f61f33a0cad88c20b84516d211f7eec268b8fce2379ca1",
+    "apps/desktop/src-tauri/Cargo.toml": "8d51f306aeb58894b1ab37bed4bd3b34fa7527a3750d96b4af478a051d647f8d",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "apps/desktop/src-tauri/tauri.conf.json": "27d9ed50799634390dd05edf0f2fe6db7174bd0c501e8b8a3628c7c52da4439f",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c",
+    "specs/041-publicacao-github-030/input-revalidation.json": "1baef2bcbbd9bab4496e07de522a71d91fa00e481ffe9352e5325e4d4ed79446",
+    "target/release/aura.exe": "264a7ad8893ab8a1ef8f5cd108457368be7fb8c4ebb65a0a9ffd2f789cfaf550"
+  },
+  "input_paths": [
+    "apps/desktop/src-tauri/src/main.rs",
+    "apps/desktop/src-tauri/Cargo.toml",
+    "Cargo.toml",
+    "Cargo.lock",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "target/release/aura.exe",
+    "specs/041-publicacao-github-030/input-revalidation.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "No new native runtime or clean-machine installer test; original runtime evidence remains historical.",
+  "observations": "Normal production app and both signed installers built without demo/e2e. NSIS/MSI signatures verify, corrupted bytes reject, resources report 0.3.0; permanent key/endpoint identical to shipped0.2.",
+  "procedure": "pnpm -C apps/desktop tauri build --ci --bundles 'nsis,msi'; terminal exit0; independent permanent-key signature verification and PE/MSI literal version 0.3.0 inspection.",
+  "result": "passed",
+  "tested_revision": "local:ab9956335db4afbe8bef54d280d66427afc69aec1fa08cf23120404afd84ad5c",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-11T04:25:00+00:00"
+}

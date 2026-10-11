@@ -1,0 +1,3250 @@
+{
+  "startedAt": "2026-10-10T22:01:33.070Z",
+  "procedure": "Native Windows Aura Host IPC -> pinned app-server -> real SIWC/gateway -> real free search/fetch -> real model. No settings/provider/account mutations; isolated ephemeral QA conversations.",
+  "model": "gpt-6-luna",
+  "questions": [
+    {
+      "id": "current-fact",
+      "text": "Pesquise na internet e informe os dias, os horários de funcionamento e a última entrada do Museu do Amanhã conforme o site oficial atual. Cite a página que você leu e indique incertezas. Responda em até 120 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação."
+    },
+    {
+      "id": "comparison",
+      "text": "Compare a leitura de arquivos de texto em Python (Path.read_text) e Rust (std::fs::read_to_string), principalmente codificação e erros. Pesquise e leia a documentação oficial dos dois projetos; cite ao menos uma fonte de cada domínio. Responda em até 160 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação."
+    },
+    {
+      "id": "specific-url",
+      "text": "Abra e leia https://www.w3.org/TR/WCAG22/ . Quais são os quatro princípios de acessibilidade? Cite a página que você leu. Responda em até 100 palavras. Use somente as ferramentas de pesquisa e leitura web do Aura; não acesse tela, áudio ou arquivos. Não invente citações; se não conseguir ler, informe essa limitação."
+    }
+  ],
+  "results": [
+    {
+      "id": "current-fact",
+      "status": "completed",
+      "error": null,
+      "durationMs": 15185,
+      "events": [
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "turnStarted"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W1",
+            "title": "Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W2",
+            "title": "Hours and Tickets | Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/en/welcome/hours-and-tickets"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W3",
+            "title": "Horários e Ingressos | Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/visite/horarios-e-ingressos"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W4",
+            "title": "https://museudoamanha.org.br/area-de-cursos",
+            "url": "https://museudoamanha.org.br/area-de-cursos"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "failed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageCompleted"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": "completed",
+          "title": null,
+          "type": "turnCompleted"
+        }
+      ],
+      "answers": [
+        {
+          "text": "Segundo a página oficial **Horários e Ingressos**, o Museu funciona **de quinta a terça-feira, das 10h às 18h**; **fecha às quartas-feiras**. A **última entrada é às 17h**. O site informa que também abre nesses horários em feriados.\n\nCitação: [[aura-source:W3]]\n\n**Incerteza:** a busca retornou o conteúdo da página oficial, mas a ferramenta de leitura não conseguiu abri-la (“tipo de conteúdo não suportado”). Assim, não pude confirmar o conteúdo diretamente na página lida."
+        }
+      ],
+      "evaluation": {
+        "result": "passed",
+        "citationsExist": true,
+        "citedSources": [
+          {
+            "kind": "searchSnippet",
+            "sourceId": "W3",
+            "title": "Horários e Ingressos | Museu do Amanhã",
+            "url": "https://museudoamanha.org.br/visite/horarios-e-ingressos"
+          }
+        ],
+        "reason": "Official search source cited; tool read failed unsupported_content; answer explicitly states it could not confirm the page directly. Accepted limitation, not a successful page read."
+      }
+    },
+    {
+      "id": "comparison",
+      "status": "completed",
+      "error": null,
+      "durationMs": 33661,
+      "events": [
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "turnStarted"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W1",
+            "title": "read_to_string in std::fs",
+            "url": "https://doc.rust-lang.org/std/fs/fn.read_to_string.html"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W2",
+            "title": "io — Core tools for working with streams",
+            "url": "https://docs.python.org/3/library/io.html"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W3",
+            "title": "pathlib — Chemins de système de fichiers orientés objet",
+            "url": "https://docs.python.org/fr/3/library/pathlib.html"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W4",
+            "title": "\"read_to_string\" Search",
+            "url": "https://doc.rust-lang.org/std?search=read_to_string"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W5",
+            "title": "Changelog — Python 3.12.13 documentation",
+            "url": "https://docs.python.org/3.12/whatsnew/changelog.html?highlight=gh-91351"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W6",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W1",
+            "title": "read_to_string in std::fs - Rust",
+            "url": "https://doc.rust-lang.org/std/fs/fn.read_to_string.html"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W6",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W6",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W7",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.14.7 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html?highlight=pathlib+path"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W8",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.14.7 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html?highlight=path+glob"
+          }
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "searchSnippet",
+            "sourceId": "W9",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.14.6 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html?highlight=file+path"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_search",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W10",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.14.8 documentation",
+            "url": "https://docs.python.org/3.14/library/pathlib.html"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageCompleted"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": "completed",
+          "title": null,
+          "type": "turnCompleted"
+        }
+      ],
+      "answers": [
+        {
+          "text": "- **Python:** `Path.read_text(encoding=None, errors=None)` decodifica o arquivo como texto; sem codificação informada, segue o padrão de `open()`, que pode depender da plataforma/configuração. É possível escolher a codificação e a política para erros de decodificação. Erros de leitura ou decodificação são exceções Python. [[aura-source:W6]] [[aura-source:W2]]\n- **Rust:** `std::fs::read_to_string` sempre espera UTF‑8: conteúdo inválido causa erro. Retorna `Result<String>`; falhas de abertura/leitura também são representadas como erro, em vez de exceções. [[aura-source:W1]]\n\n**Em suma:** Python permite ajustar encoding e tratamento de bytes inválidos; Rust oferece uma leitura simples, estrita em UTF‑8. Para texto em outra codificação no Rust, é preciso decodificar por outro caminho."
+        }
+      ],
+      "evaluation": {
+        "result": "passed",
+        "citationsExist": true,
+        "citedSources": [
+          {
+            "kind": "pageContent",
+            "sourceId": "W6",
+            "title": "pathlib — Object-oriented filesystem paths — Python 3.15.0 documentation",
+            "url": "https://docs.python.org/3/library/pathlib.html"
+          },
+          {
+            "kind": "searchSnippet",
+            "sourceId": "W2",
+            "title": "io — Core tools for working with streams",
+            "url": "https://docs.python.org/3/library/io.html"
+          },
+          {
+            "kind": "pageContent",
+            "sourceId": "W1",
+            "title": "read_to_string in std::fs - Rust",
+            "url": "https://doc.rust-lang.org/std/fs/fn.read_to_string.html"
+          }
+        ],
+        "reason": "Read Python pathlib and Rust read_to_string at separate official domains; cites both and correctly contrasts adjustable decoding/errors with UTF-8 Result."
+      }
+    },
+    {
+      "id": "specific-url",
+      "status": "completed",
+      "error": null,
+      "durationMs": 13022,
+      "events": [
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "turnStarted"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W1",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/WCAG22/"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "inProgress",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "webSource",
+          "source": {
+            "kind": "pageContent",
+            "sourceId": "W1",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/WCAG22/"
+          }
+        },
+        {
+          "channel": "conversation",
+          "kind": "mcp",
+          "status": "completed",
+          "title": "aura.web_fetch",
+          "type": "toolCall"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageDelta"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "messageCompleted"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": null,
+          "title": null,
+          "type": "tokenUsage"
+        },
+        {
+          "channel": "conversation",
+          "kind": null,
+          "status": "completed",
+          "title": null,
+          "type": "turnCompleted"
+        }
+      ],
+      "answers": [
+        {
+          "text": "Os quatro princípios de acessibilidade da WCAG 2.2 são: **perceptível, operável, compreensível e robusto**.\n\nFonte: página “Web Content Accessibility Guidelines (WCAG) 2.2”, seção introdutória sobre os princípios [[aura-source:W1]]."
+        }
+      ],
+      "evaluation": {
+        "result": "passed",
+        "citationsExist": true,
+        "citedSources": [
+          {
+            "kind": "pageContent",
+            "sourceId": "W1",
+            "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+            "url": "https://www.w3.org/TR/WCAG22/"
+          }
+        ],
+        "reason": "Read WCAG22 W1; names all four principles and cites W1."
+      }
+    }
+  ],
+  "phase": "specific-url:wait",
+  "preconditions": {
+    "planEnabled": true,
+    "signedIn": true,
+    "webEnabled": true
+  },
+  "finishedAt": "2026-10-10T22:02:37.689Z",
+  "evaluation": {
+    "result": "passed",
+    "scope": "Three live synthesis journeys only; native source destination/DPI/resize and full search extraction gate separate.",
+    "pin": "rust-v0.159.0",
+    "prototypeOverrides": false,
+    "auth": "Existing signed-in ChatGPT; no credentials in report"
+  }
+}

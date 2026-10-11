@@ -1,0 +1,80 @@
+{
+  "active_ticket": "TK-003",
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "ed9a9654c6e76e48186fc010a12eba77023b00f5"
+  },
+  "blockers": [
+    "Os dois monitores disponíveis estão em100%; AC008150/200 nativo ainda não executado."
+  ],
+  "effort_id": "038-restaurar-seletores-modelo-raciocinio",
+  "inputs": {
+    "contract": {
+      "fingerprint": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+      "revision": 1
+    },
+    "discovery": {
+      "fingerprint": "1d88018da5bb8d41391665a8260007321f66f05f832f3f09a02265ecd5ff15cd",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/discovery.md"
+    },
+    "overlay_shell": {
+      "fingerprint": "7a020efa9eb02c017d6a8fa3db7ed0191795e7bdfd83b996c6cfd7fdac9935ec",
+      "path": "apps/desktop/src-tauri/src/overlay.rs"
+    },
+    "plan": {
+      "fingerprint": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/plan.md",
+      "revision": 3
+    },
+    "qa_resize": {
+      "fingerprint": "e49ee17b0f7768cfbb68e471e335b3d91094a134302b6f1f9dd2e5a43e2f7301",
+      "path": "crates/aura-win/examples/qa_resize.rs"
+    },
+    "real_picker": {
+      "fingerprint": "9773fe7c261446f1f7e7708ce71c70547cfd95a89053d15fff63c4c098d882e8",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/experiments/real-chatgpt-picker-2026-10-10.json"
+    },
+    "review": {
+      "fingerprint": "d370d981b3e963b51816706ca745b6077b6d21a53e493e4746e7418078c6505d",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/review.md"
+    },
+    "tdd": {
+      "fingerprint": "d7175538494319ff7de2aa6d004e1f605fab1894e8a325fbcb9d4071ce276e12",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/tdd.md"
+    },
+    "ticket1": {
+      "fingerprint": "9fde8d15fbdc5493e965b9a50b66c967d5a6462c01905acc0c7cde8440e743dd",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/tickets/TK-001-acesso-e-recuperacao.md"
+    },
+    "ticket2": {
+      "fingerprint": "eb6bf3a46c3a375a977cf907eaed7dccb0e52e91b93e3390312c70c49a073f36",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/tickets/TK-002-escolha-e-memoria.md"
+    },
+    "ticket3": {
+      "fingerprint": "cec88743262728d532493628be0987b4744c7a91f7d5dcc7659740a0b23a4252",
+      "path": "specs/038-restaurar-seletores-modelo-raciocinio/tickets/TK-003-janela-e-acessibilidade.md"
+    }
+  },
+  "last_evidence": "EV-018",
+  "last_invalidation": {
+    "evidence": [
+      "EV-013",
+      "EV-014",
+      "EV-015"
+    ],
+    "inputs": {},
+    "timestamp": "2026-10-11T02:14:17+00:00"
+  },
+  "mode": "standard",
+  "next_action": "Concluir AC008 com WebView2 nativo a150/200%; 100%480px/teclado/resize renovados EV017/018 sobre040. Gate browser039 concluído.",
+  "pending_questions": [
+    "Monitor already configured150/200? Async user question sent; do not change personal display settings or substitute emulated browser DPR as native proof."
+  ],
+  "phase": "verification",
+  "revision": 26,
+  "schema_version": "1.0",
+  "status": "blocked_external",
+  "updated_at": "2026-10-11T02:21:12+00:00"
+}

@@ -4,6 +4,16 @@ import { freshApp } from "../test/harness";
 import { useApp } from "./app";
 
 describe("notices", () => {
+  it.each([
+    ["ptBr", "Este modelo não suporta ferramentas. A pesquisa na internet exige um modelo com esse suporte; a conversa continua disponível."],
+    ["en", "This model does not support tools. Internet research requires a model with tool support; ordinary chat remains available."],
+  ] as const)("explains unavailable web tools in %s", async (language, message) => {
+    await freshApp({ signedIn: true });
+    useApp.getState().setSettings({ ...useApp.getState().settings!, language });
+    useApp.getState().handle({ channel: "notice", event: { level: "warning", message: "web_tools_unsupported" } });
+    expect(useApp.getState().notices.map((notice) => notice.message)).toEqual([message]);
+  });
+
   it("the same message is shown once", async () => {
     await freshApp({ signedIn: true });
     const msg = "O atalho para abrir o Aura está em uso por outro app.";

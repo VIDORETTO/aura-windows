@@ -13,7 +13,7 @@ OS-independent and builds/tests on Linux and macOS too.
 
 ```bash
 # Everything that is not Windows-specific
-cargo test                      # 220+ tests, default workspace members
+cargo test                      # default workspace members
 cargo clippy --all-targets -- -D warnings
 cargo fmt --all -- --check
 pnpm -C apps/desktop install

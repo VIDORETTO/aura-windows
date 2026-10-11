@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-004",
+    "AC-005",
+    "AC-006",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-021",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/cache.rs": "a3abfe1d2c85087018d411681d261a90d666b1470537380fa1fc514e5aa945cd",
+    "crates/aura-web/src/fetch.rs": "bd06ae70fc4bfc1435401431c5e7aaa147c53d08e1d1e3daa0a29e7302f878b3",
+    "crates/aura-web/src/lib.rs": "559e448f5c90dd874d41546f9a744bb59a553ba1cd8d38b15cee79c3e4398d53",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "specs/039-web-gratuita-do-agente/plan.md": "e0433a139519bc1f6394e705b1c8dad16f041347a3a9b43181a10d9aea05e3e4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/cache.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Memoria incluindo registry,UX,historico e qualidade live ainda pendentes. Evidence invalidated because an input changed.",
+  "observations": "50 offline passaram,29 provas de leitura/SSRF/paginacao/cancel/limites; dois smokes live ignorados. Servico sem mudanca nesta fatia.",
+  "procedure": "cargo test -p aura-web --test search --test fetch",
+  "result": "stale",
+  "tested_revision": "local:033fbcc836d2b4f3832198ff460e1ae1366ee30641ee3c858e61978064f81a33",
+  "ticket": "TK-002",
+  "timestamp": "2026-10-10T16:11:19+00:00"
+}

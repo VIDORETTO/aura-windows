@@ -1,0 +1,43 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "Cargo.lock": "9502c59e0deca85376e4fbb020c70e98aa4ff01142981f6bf4370a2bb5e8e4bf",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web/Cargo.toml": "d1edda6923830c57ea25aecec074282eabf7b24cba61a09426d115e7420f320a",
+    "crates/aura-web/src/lib.rs": "413651398db79158cbfac3e4991f3b71e8092deb464f3c2714c7f75aafb0c88d",
+    "crates/aura-web/src/search.rs": "f634d091ae95b9d67559535858651fb590f69f77ae6c9c6c5b6b9e46132bb747",
+    "crates/aura-web/src/transport.rs": "43534521a5d9cef3de3d60352f2ee5ea2511f417faee351295a0b12903d825a9",
+    "crates/aura-web/tests/fixtures/parallel-tools.json": "d81890ff2dd71c019c39b884351ee0ab8ffc8be984dc3d171b3617d9ddef98ac",
+    "crates/aura-web/tests/search.rs": "abf123ca508cbafefa2e6f983774d3fcabdae833f5219e2830664ab233d7c8cf",
+    "specs/039-web-gratuita-do-agente/plan.md": "a9d9d1c273a5ee3dbe0aa8a133b90bb559f1213976a30aad8a017499fcedca35",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "crates/aura-web/Cargo.toml",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "crates/aura-web/tests/fixtures/parallel-tools.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente escopoTK001: AC001servico, AC012entrada/busca/concorrencia/resposta. Host/modelosTK003, fetchTK002, cache/global/UI/desativacaoTK004, qualidadeTK005 pendentes; nao aprova AC inteiro do esforco. Evidence invalidated because an input changed.",
+  "observations": "18 determinísticos passaram,1 live ignorado na suíte; Clippy/rustfmt/licenses passaram. TDD adicional URL>2048 red2fontes/green1; SSE fragmentado/pendingEOF,quota/concorrência,cancelamento,deadline,fallback,dedupe e privacy-wire comprovados.",
+  "procedure": "cargo test -p aura-web --test search; cargo clippy -p aura-web --all-targets -- -D warnings; cargo fmt --all -- --check; cargo deny check licenses (cargo-deny0.20.2 oficial no TEMP/PATH somente processo)",
+  "result": "stale",
+  "tested_revision": "local:269bfacf251288eafa1908a40d5ef51f3c40aad747877df898a1b8b3c496117f",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-08T00:43:16+00:00"
+}

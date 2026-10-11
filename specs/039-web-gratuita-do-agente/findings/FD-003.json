@@ -1,0 +1,16 @@
+{
+  "area": "aura-web.fetch",
+  "consequence": "Uma falha conservada na amostra8/10; investigar charset/content-type/encoding antes de atribuir causa ou mudar contrato.",
+  "created_at": "2026-10-10T17:02:20+00:00",
+  "dedupe_key": "039-web-gratuita-do-agente|convergence|live_content_classification|aura-web.fetch|tauri_cli_unsupported_live",
+  "effort": "039-web-gratuita-do-agente",
+  "evidence_location": "specs/039-web-gratuita-do-agente/quality-results-2026-10-10.json",
+  "fix_ticket": "TK-002",
+  "gap_type": "live_content_classification",
+  "id": "FD-003",
+  "origin": "convergence",
+  "severity": "minor",
+  "source_ref": "AC-005",
+  "state": "open",
+  "summary": "Tauri CLI HTML legivel no browser retorna unsupported_content no WebService real; causa ainda nao diagnosticada."
+}

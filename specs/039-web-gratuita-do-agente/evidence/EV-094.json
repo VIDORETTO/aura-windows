@@ -1,0 +1,46 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-089",
+    "EV-090",
+    "EV-091",
+    "EV-092",
+    "EV-093"
+  ],
+  "execution_status": "executed",
+  "id": "EV-094",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/web-research.e2e.ts": "1ac326a061ec4fff45e2920d3aecfb4973649e7ae64f35ea52968309feb9019c",
+    "apps/desktop/src-tauri/src/e2e_web.rs": "3a9810127861fae22d4c6d907571613118ac4f888ce1a2fada98b4731d41993e",
+    "apps/desktop/src-tauri/src/main.rs": "5a9372c7552729f638d048b3b7aedd8f0d1eaa51b17b27e3797ff7989e8ebc3d",
+    "crates/aura-app/tests/web_research.rs": "498c309ce404919c3aa0825a5f2bf4dd17327e79dc623ee9e90225de19be89bc",
+    "crates/aura-codex/src/service.rs": "64e0b0e948ec21715e8951952d18620b4a3da558d44c64519e71306ce65e11ed",
+    "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json": "0239e714cc8fa57507633c0ee22ce94509c8d2c88157cd09dd570526cfd8c054",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json": "b2d0851b5e2799045313ef65bdac88ac7640ff3ff0e3eb0ca10fc64a0ccabcda",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-app/tests/web_research.rs",
+    "apps/desktop/e2e/specs/web-research.e2e.ts",
+    "apps/desktop/src-tauri/src/e2e_web.rs",
+    "apps/desktop/src-tauri/src/main.rs",
+    "specs/039-web-gratuita-do-agente/experiments/synthesis-siwc-plan11-2026-10-10.json",
+    "specs/039-web-gratuita-do-agente/experiments/quality-revalidation-plan11.json",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Other commercial models not synthesized; source registry events not guaranteed to produce every answer correct. Backend12/10 data explicitly revalidated from actual same-code same-day run, not new queries. AC009 opener destination pending;038DPI/resize separate.",
+  "observations": "SIWC3/3 real:15.185/33.661/13.022sec completed and evaluated. WCAG fourprinciples W1 read/cited; Python/Rust separate official pages W6/W1 read/cited; Museu official snippet W3 with unsupported-content caveat, not page read. UI sources/history/stop/toggle3/3; deterministic5/5; privacy real pin current. FD004 resolved; native gate external destination remains separate.",
+  "procedure": "Current product native e2e build; unchanged three SIWC questions on existing ChatGPT/gpt-6-luna without prototype overrides; public Host events/source metadata evaluated against independent official pages; deterministic web_research5/5 and native web3/3; backend quality same-code semantic revalidation EV092/093.",
+  "result": "passed",
+  "tested_revision": "local:af6887fd680e33846353a9ca992547597f24c6c7b5c8d4ce4a3eb44e82989005",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T22:09:23+00:00"
+}

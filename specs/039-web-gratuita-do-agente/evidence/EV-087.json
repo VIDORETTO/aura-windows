@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-087",
+  "input_fingerprints": {
+    "Cargo.lock": "94079a8950a61f5137230246559091ba6195c4b6aeb40117dfaac17688118a12",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "c0f24ecd00be52a4e6c62c99b8583fbff1105279101eff11d323f06f2536c5f4",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Backend scope only; live quality/synthesis and native UI are separate gates. Evidence invalidated because an input changed.",
+  "observations": "54 cases passed (25 search,29 fetch),2 live ignored; licenses ok. Backend source unchanged; review against spec r1/plan11: anonymous search/fallback/session/budget and errors preserved.",
+  "procedure": "cargo test -p aura-web --test search --test fetch; cargo deny check licenses (process-local PATH target/qa-tools/cargo-deny/bin)",
+  "result": "stale",
+  "tested_revision": "local:9ab875a89e139806f0fe726eacdfec1611f5b11b78d4ba6839ae783bae9cbb27",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T21:55:02+00:00"
+}

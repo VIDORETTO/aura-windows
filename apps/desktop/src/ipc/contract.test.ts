@@ -2,7 +2,7 @@
 // through the TypeScript types and reducers: if either side changes shape,
 // one of the two test suites fails.
 import contract from "./__fixtures__/contract.json";
-import type { ContextChip, ConversationEvent, HostEvent, McpServerSpec, Meeting, MeetingHit, Settings, Utterance } from "./types";
+import type { ContextChip, ConversationEvent, HostEvent, McpServerSpec, Meeting, MeetingHit, Settings, TranscriptMessage, Utterance } from "./types";
 import { reduce, type ConvState } from "../state/conversation";
 import { useApp } from "../state/app";
 import { createMockBridge } from "./mock";
@@ -45,6 +45,34 @@ describe("IPC contract", () => {
     const mock = createMockBridge().state.settings;
     expect(Object.keys(rust).sort()).toEqual(Object.keys(mock).sort());
     expect(rust.invokeShortcut).toBe(mock.invokeShortcut);
+    expect(rust.webEnabled).toBe(true);
+  });
+
+  it("web source events preserve trusted identity and bounded provenance", () => {
+    const event = events.find((e) => e.channel === "webSource");
+    expect(event).toEqual({
+      channel: "webSource",
+      event: {
+        threadId: "thr_1", turnId: "turn-1",
+        source: {
+          sourceId: "W1", title: "Relatório público", url: "https://news.example/report",
+          snippet: "Produção: 42 unidades.", publishedAt: null,
+          retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+        },
+      },
+    });
+  });
+
+  it("history preserves cited provenance and the legacy role/text shape", () => {
+    const transcript = contract.transcript as TranscriptMessage[];
+    expect(transcript).toEqual([
+      { role: "user", text: "Verifique a produção" },
+      { role: "assistant", text: "Produção: 42 [[aura-source:W1]]", sources: [{
+        sourceId: "W1", title: "Relatório público", url: "https://news.example/report", snippet: "",
+        publishedAt: null, retrievedAt: "2026-10-10T15:00:00Z", kind: "pageContent",
+      }] },
+      { role: "assistant", text: "Resposta antiga" },
+    ]);
   });
 
   it("chips, MCP specs, decisions and modes use the documented tags", () => {

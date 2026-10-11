@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-008",
+    "AC-009",
+    "AC-010",
+    "AC-011",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-039",
+  "input_fingerprints": {
+    "crates/aura-app/src": "7140dccb917664e0fcdf9cfdef7435fc62921ddc7fa1431f171fb832a8477ed6",
+    "crates/aura-app/tests/real_app_server.rs": "5d6e9de390eff2949df2812e3ca1cc003eb2743c6dee8f6bc8fdcc1a7f21e9d6",
+    "crates/aura-web": "bdafb8a18cb8c0fe92aefb7f02e3f2f9faddf625905e6ef940bac0feebda558c",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md",
+    "crates/aura-app/src",
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-web"
+  ],
+  "limitations": "UI253/types são evidência histórica, não executados nesta rodada. Retenção normal, implementação TK007 e Windows/DPI/fluxo final ainda faltam; quality r7 aguarda renovação após invalidação. Evidence invalidated because an input changed.",
+  "observations": "288 offline e 16 integrações fixadas passaram; identidade/metadata/budget/efêmero/histórico/toggle do código atual mantidos. Gate normal reexecutado falhou EV038; protótipo EV034 é viabilidade apenas.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 --skip web_normal_research; conferir relatórios r8",
+  "result": "stale",
+  "tested_revision": "local:f7d5cb426b2cc2f9d3c6fffc7d4f3adabca92060629aeb8e02d22827fb9f7ab2",
+  "ticket": "TK-004",
+  "timestamp": "2026-10-10T17:29:54+00:00"
+}

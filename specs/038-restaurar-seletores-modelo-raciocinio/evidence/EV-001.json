@@ -1,0 +1,39 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-004"
+  ],
+  "environment": "Windows; Vitest 5.0.2/jsdom; Rust fixado do projeto; IPC mock publico.",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n/en.ts": "63adfd738478d8ce40e87dc3fa0eafda757adb02607c7e56ee6ca6ed9b86ee46",
+    "apps/desktop/src/i18n/pt-BR.ts": "e0800b777ce02e1ae8da6909d0d478296776d2332af8aaa944f6e2e35542c01b",
+    "apps/desktop/src/overlay/Composer.test.tsx": "55924798b44ff0bec393a01af5efce849e28aaf79ce44fd194931f3dcaa8d366",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "38a5c4ed89d6b2b1c9f5b47bb171c7bbd1bb576eed1f72676ea55b1620f211ad",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx": "ed6f4a784755176e8112220d38c7da8afcd16b72402b0a5bab5ffda5e6487a1f",
+    "apps/desktop/src/overlay/session.ts": "203b8d88493deb5bac8a09960c095e27a9e6f7c4d494ac2872594de8d6f04009",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "85995f466634d0f7da8d8676f05bbd22eb0daa9ed3faea8016b413b2d974173c",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "3fdbe1179a973336dfc7c99979b02ca0ce4ceaa126a9389e1a5e6244718dd7a7"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Composer.test.tsx",
+    "apps/desktop/src/overlay/OverlayApp.test.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Geometria nativa e DPI pertencem ao TK-003; esta evidencia de UI usa jsdom e nao prova pixels ou acesso comercial ChatGPT. Evidence invalidated because an input changed.",
+  "observations": "82 testes UI, typecheck, 3 i18n e 73 Host passaram. Red real observado para falha sem recuperacao e carregamento sem estado; green apos correcao. Catalogo preservado em erro, retry no menu aberto, resposta antiga descartada, BYOK preservado, seletores antes e apos iniciar Conversa com provedor fixo.",
+  "procedure": "pnpm -C apps/desktop test -- src/overlay/Composer.test.tsx src/overlay/OverlayApp.test.tsx; pnpm -C apps/desktop typecheck; pnpm -C apps/desktop test -- src/i18n; cargo test -p aura-app --test host",
+  "result": "stale",
+  "tested_revision": "local:aca019d64f8b4885a0caa563318b23ca74360867865d646f18a6d57f78489ec1",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-07T00:45:44+00:00"
+}

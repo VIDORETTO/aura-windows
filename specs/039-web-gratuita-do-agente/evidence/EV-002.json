@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "Cargo.lock": "9502c59e0deca85376e4fbb020c70e98aa4ff01142981f6bf4370a2bb5e8e4bf",
+    "crates/aura-web/src/lib.rs": "413651398db79158cbfac3e4991f3b71e8092deb464f3c2714c7f75aafb0c88d",
+    "crates/aura-web/src/search.rs": "f634d091ae95b9d67559535858651fb590f69f77ae6c9c6c5b6b9e46132bb747",
+    "crates/aura-web/src/transport.rs": "43534521a5d9cef3de3d60352f2ee5ea2511f417faee351295a0b12903d825a9",
+    "crates/aura-web/tests/search.rs": "abf123ca508cbafefa2e6f983774d3fcabdae833f5219e2830664ab233d7c8cf",
+    "specs/039-web-gratuita-do-agente/plan.md": "a9d9d1c273a5ee3dbe0aa8a133b90bb559f1213976a30aad8a017499fcedca35",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.lock",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Smoke pontual do endpoint primario. Nao benchmark de12consultas, nao evidencia de fallbackDDGaoVivo, nao prova Host/modelo/inferencia. Evidence invalidated because an input changed.",
+  "observations": "Consulta publica Rust docs: provider=parallel,degraded=false,5 fontes; sem conta/chave de busca.1passed em3s.",
+  "procedure": "cargo test -p aura-web --test search live_anonymous_search -- --ignored --nocapture",
+  "result": "stale",
+  "tested_revision": "local:fb869210c2723b5d2f5d646709effc11cbae2feb8b7ac7b4a062528034ec2101",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-08T00:43:16+00:00"
+}

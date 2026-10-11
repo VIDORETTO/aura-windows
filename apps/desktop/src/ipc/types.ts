@@ -32,6 +32,7 @@ export interface Settings {
   appServerIdleMinutes: number;
   workerIdleMinutes: number;
   memories: boolean;
+  webEnabled: boolean;
   asrLanguage: string | null;
   asrVocabulary: string[];
   cloudAsrProvider: string | null;
@@ -429,6 +430,17 @@ export interface HistoryPage {
 export interface TranscriptMessage {
   role: "user" | "assistant";
   text: string;
+  sources?: WebSource[];
+}
+
+export interface WebSource {
+  sourceId: string;
+  title: string;
+  url: string;
+  snippet: string;
+  publishedAt: string | null;
+  retrievedAt: string;
+  kind: "searchSnippet" | "pageContent";
 }
 
 export interface ModelInfo {
@@ -755,6 +767,7 @@ export type HostEvent =
   | { channel: "providersChanged"; event: Record<string, never> }
   | { channel: "audioLevel"; event: { source: AudioSourceKind; dbfs: number } }
   | { channel: "conversation"; event: ConversationEvent }
+  | { channel: "webSource"; event: { threadId: string; turnId: string; source: WebSource } }
   | { channel: "login"; event: LoginProgress }
   | { channel: "consent"; event: ConsentRequest }
   | { channel: "consentResolved"; event: { id: string } }

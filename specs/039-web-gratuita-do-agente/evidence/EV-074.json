@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-013",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "EV-073"
+  ],
+  "execution_status": "executed",
+  "id": "EV-074",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "c2aba2163b77d55e334e81c4e026fdf9b19a20043261d242ef9a66b699fe4952",
+    "crates/aura-app/src/web.rs": "b86f43eff82857e770d4f5782df00bce5119cad3e232a3bd8138c8c597920538",
+    "crates/aura-app/src/web_history.rs": "edc87685415d4fee6048ba5d4312e4d72edbc18f7f3754564310002332a854fd",
+    "crates/aura-app/tests/web_research.rs": "498c309ce404919c3aa0825a5f2bf4dd17327e79dc623ee9e90225de19be89bc",
+    "crates/aura-gateway/src/private_calls.rs": "4a612ba96d4b0906c8a0c996e38d1bd2a6a91e361e6b3cdfd9b37ba91406f929",
+    "crates/aura-gateway/src/tool_results.rs": "9e680f19fa8753c920e11895d2a9d374d726e9402059d95fb6d6ee6bf98d13c0",
+    "crates/aura-web": "ef0449ffa2db99720e01f0a64e47ad6e9861a7c9b3e8ae7fb0125c9be58ebc2d",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/web_research.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/web_history.rs",
+    "crates/aura-gateway/src/private_calls.rs",
+    "crates/aura-gateway/src/tool_results.rs",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Providerinferenciascripted eSO/DNS/HTTP controlados,sem conta/internet. Nao aprova3jornadasdesinteseao vivo oujanelaWindows. Builddemo23928 aindaemexecucao;E2E nativo naoexecutado. AC009 semnovaprova nativa. MatrizpreexistenteEV068 ebackendEV073 conservados semsubstituir gatespendentes. Evidence invalidated because an input changed.",
+  "observations": "5/5cadeiadeterministica realHost/pin/gateway/MCP/proveniencia/transcript em3,57s;HTML42/12/30 e2dominios/dedup;fallback429,blocked403,interruptstream,sétimaleitura limitada mesmocache. Clippy/fmt/diffcheck verdes. Nenhumcodigo produtivo mudado;casosja verdes,semredartificial.",
+  "procedure": "AURA_CODEX_BIN=TEMP/aura-038-model-picker-production/profile/bin/codex/rust-v0.159.0/bin/codex-app-server.exe;AURA_E2E_DIR=TEMP;cada caso novo executado isoladamente;rustfmt --edition2024 crates/aura-app/tests/web_research.rs;cargo test -p aura-app --test web_research -- --ignored --test-threads=1;cargo clippy -p aura-app --test web_research -- -D warnings;cargo fmt --all -- --check;git diff --check",
+  "result": "stale",
+  "tested_revision": "local:e477963154be379540c114e9c3cb08d391907e5090a252285335e6a337d62796",
+  "ticket": "TK-005",
+  "timestamp": "2026-10-10T20:30:11+00:00"
+}

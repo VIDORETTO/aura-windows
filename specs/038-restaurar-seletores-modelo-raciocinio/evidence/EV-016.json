@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-016",
+  "input_fingerprints": {
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/session.ts": "8a376aef925377a204025c72b716f415209ffd06032898fd1892bef77b7cbf44",
+    "specs/038-restaurar-seletores-modelo-raciocinio/experiments/real-chatgpt-picker-2026-10-10.json": "9773fe7c261446f1f7e7708ce71c70547cfd95a89053d15fff63c4c098d882e8",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/overlay/session.ts",
+    "specs/038-restaurar-seletores-modelo-raciocinio/experiments/real-chatgpt-picker-2026-10-10.json",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Additional actual account proof at100percent only; does not replace full compact/expanded/loading/error/keyboard/DPI cases. First harness lookup attempted provider item before recovery; classified harness error and preserved.",
+  "observations": "Real signed-in ChatGPT catalog3models, native picker visible; actual GPT-6 Luna selected locally, sixenabled effort radios including defaultmedium andlow/medium/high/xhigh/max. Settings identical before/after. Public existing catalog recovery used if needed; no hidden state injection or synthetic metadata.",
+  "procedure": "Read-only real-picker.mjs disposable native harness; default existing ChatGPT profile, normal complete pin (no binary override), public models_list and UI ModelPicker; select model locally without effort selection, compare settings_get before/after. No inference, capture or browser operation.",
+  "result": "partial",
+  "tested_revision": "local:a254f34daee16bc271561ac3949cd200dbeb1cae3ed868ac63f032b595138082",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-10T22:16:32+00:00"
+}

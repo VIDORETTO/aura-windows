@@ -1,0 +1,48 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n/en.ts": "064afbb8dfe6356066c125b7ff84928bf03c10758698ee83ddba8714f2bb2268",
+    "apps/desktop/src/i18n/pt-BR.ts": "0ebba8cd7de360bda4cc121dfa257fde3075c2b1d15aa5af22d6db42c1c069d3",
+    "apps/desktop/src/state/app.test.ts": "bf1dcb116da42ce30563b106f9d4ce29db201b12c9466b91c68d4bf60d4161d0",
+    "apps/desktop/src/state/app.ts": "069dfbe1bea10c6615816ea5a5f3d605b8d54cdd1f68202912d407a69cd290d2",
+    "crates/aura-app/src/host.rs": "99df1a7d45dd818ed4baa76cd2037d68add108ed9465a81a2358965c7ebb5307",
+    "crates/aura-app/src/tools.rs": "1b91ba63031896b94fc5296c5412ab1bba9d388a4b360920d768d9df6cf2040a",
+    "crates/aura-app/src/web.rs": "49db9868f3fbfe1da419dc1f5497ec66ea68a5a0d61a90a9c7c2e798610c938f",
+    "crates/aura-app/tests/web_tools.rs": "3bcff011636cdd079dbc34ad744ebee6d8b3b0f3a446ccb019aad10ba499152d",
+    "crates/aura-codex/src/service.rs": "cd5690b76519021bf6b20a47cb3ef9357a59c6a7e25d79b39faf5a05657f4aab",
+    "crates/aura-mcp/src/tools.rs": "e2bbaf2a0aa77ecff7ccd2c4f5d9f4720b7b7d552714c9ce55627a9a559367d1",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-app/src/tools.rs",
+    "crates/aura-app/tests/web_tools.rs",
+    "crates/aura-mcp/src/tools.rs",
+    "crates/aura-codex/src/service.rs",
+    "apps/desktop/src/state/app.ts",
+    "apps/desktop/src/state/app.test.ts",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "AC001 aviso modelo sem tools; AC007 registry/tools sem renderer; AC008 readonly/autoridade/aprovacao sem promessa LLM e W999 ainda TK004; AC011 cancelamento/lifecycle,cache busca/TTL agregado TK004. Nao aprova qualidade ou Windows. Evidence invalidated because an input changed.",
+  "observations": "10 web_tools,74 Host,2 IPC,8 UI passaram e typecheck verde. Red/green reais: contexto antes unknown_tool; close/shutdown demoravam; hosted search habilitado; aviso UI codigo cru. Casos ja verdes registrados somente como cobertura.",
+  "procedure": "cargo test -p aura-app --test web_tools --test host --test ipc_contract; pnpm -C apps/desktop test -- src/state/app.test.ts src/i18n/i18n.test.ts; pnpm -C apps/desktop typecheck",
+  "result": "stale",
+  "tested_revision": "local:108824b494f05f07ec548b33134694423581931e12f1f5554c245c7d03f37d14",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T15:09:11+00:00"
+}

@@ -321,6 +321,22 @@
       "event": {}
     },
     {
+      "channel": "webSource",
+      "event": {
+        "source": {
+          "kind": "pageContent",
+          "publishedAt": null,
+          "retrievedAt": "2026-10-10T15:00:00Z",
+          "snippet": "Produção: 42 unidades.",
+          "sourceId": "W1",
+          "title": "Relatório público",
+          "url": "https://news.example/report"
+        },
+        "threadId": "thr_1",
+        "turnId": "turn-1"
+      }
+    },
+    {
       "channel": "audioLevel",
       "event": {
         "dbfs": -12.5,
@@ -558,6 +574,7 @@
     "ttsCloudVoice": "alloy",
     "ttsProvider": null,
     "ttsVoice": null,
+    "webEnabled": true,
     "workerIdleMinutes": 2,
     "yolo": false
   },
@@ -571,6 +588,31 @@
     "wordsPerMinute": 0,
     "youSeconds": 0
   },
+  "transcript": [
+    {
+      "role": "user",
+      "text": "Verifique a produção"
+    },
+    {
+      "role": "assistant",
+      "sources": [
+        {
+          "kind": "pageContent",
+          "publishedAt": null,
+          "retrievedAt": "2026-10-10T15:00:00Z",
+          "snippet": "",
+          "sourceId": "W1",
+          "title": "Relatório público",
+          "url": "https://news.example/report"
+        }
+      ],
+      "text": "Produção: 42 [[aura-source:W1]]"
+    },
+    {
+      "role": "assistant",
+      "text": "Resposta antiga"
+    }
+  ],
   "turnErrors": [
     {
       "kind": "planUsageLimit"

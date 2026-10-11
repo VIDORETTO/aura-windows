@@ -1,0 +1,41 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003",
+    "AC-012"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "Cargo.lock": "1b07bcb6908a6450ca62e5ce1b45f97112bd35dd32454d85da9f93c9719e8cd7",
+    "crates/aura-web/src/fetch.rs": "853cd88a083c5f6f2acf8af89b35e546f09a6901be52b28b5741cec8adf29173",
+    "crates/aura-web/src/lib.rs": "87570c0ed35bf59e32a7fb3f5d49486d7fad031003e001425f0268fce80d3f8d",
+    "crates/aura-web/src/search.rs": "125d2afe470d05256bc1fab43a90d5c501163843819a470cb25e823bf77701ea",
+    "crates/aura-web/src/transport.rs": "0db3d5f34bdb68deedc5a939ffea26d042aaac672c7385c47d3de4e663811d13",
+    "crates/aura-web/tests/fetch.rs": "e69f6d12a83eda4c7ef10dc18ba2480776fa2bc19748becd5d2983185e9e6f29",
+    "crates/aura-web/tests/search.rs": "abf123ca508cbafefa2e6f983774d3fcabdae833f5219e2830664ab233d7c8cf",
+    "specs/039-web-gratuita-do-agente/plan.md": "7ec9a2be02d2fb73720435f096c72fe1a929aa0161a8de8aead2cb366772fcfd",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "Cargo.lock",
+    "crates/aura-web/src/lib.rs",
+    "crates/aura-web/src/search.rs",
+    "crates/aura-web/src/fetch.rs",
+    "crates/aura-web/src/transport.rs",
+    "crates/aura-web/tests/search.rs",
+    "crates/aura-web/tests/fetch.rs",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Aprovacao somente escopo do ticket de servico; integracao agente,UI,cache agregado e gates finais pendentes. Evidence invalidated because an input changed.",
+  "observations": "47 testes offline passaram (18 busca,29 leitura),2 live ignorados. Renovacao devido aresta aura-app->aura-web e futures dev; servicos e oraculos inalterados.",
+  "procedure": "cargo test -p aura-web",
+  "result": "stale",
+  "tested_revision": "local:917daf23dfdc6b46b9fb811d43ca3b534dde3b78c010fd7829f32aef1ebde509",
+  "ticket": "TK-001",
+  "timestamp": "2026-10-08T07:19:01+00:00"
+}

@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-10",
+  "pin": "rust-v0.159.0",
+  "model": "gpt-6-luna",
+  "kind": "discardable prototype; no production fix yet",
+  "cause": "Code mode custom_tool_call_output nested opaque MCP result does not pass the direct MCP gateway resolver.",
+  "directive": {
+    "features.code_mode.direct_only_tool_namespaces": [
+      "mcp__aura"
+    ]
+  },
+  "result": {
+    "status": "completed",
+    "durationMs": 7766,
+    "answers": [
+      {
+        "text": "Os quatro princípios de acessibilidade são: **perceptível, operável, compreensível e robusto**. [[aura-source:W1]]\n\nFonte lida: [WCAG 2.2 — W3C](https://www.w3.org/TR/WCAG22/)."
+      }
+    ]
+  },
+  "limitations": [
+    "One ephemeral WCAG question only; does not approve the three live journeys or normal-thread privacy.",
+    "Observer stores metadata only; credentials, nonce values, JS and page bodies omitted.",
+    "Full normal installation used; no binary override or model replacement."
+  ],
+  "artifactRoot": "C:\\Users\\gabri\\AppData\\Local\\Temp\\aura-039-output-shape-20261010-183915\\namespace-direct"
+}

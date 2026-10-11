@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-012"
+  ],
+  "environment": "Windows11; rust-v0.159.0; perfil sintético TEMP próprio; provider/rede scripted",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-044",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "298a9768cc48945c0345e70ca4336a6d0edb6ee6157c7998dcc917d461f0e476",
+    "crates/aura-app/tests/real_app_server.rs": "c9131d2c0a18e27e0ed2d2a9973b99f24c50481f5726a0bdabd503ec30334693",
+    "crates/aura-gateway/src/server.rs": "c84e1248acc0a309c597f876afe41140a175015745a10a784bc397286deb7a77",
+    "crates/aura-gateway/src/tool_results.rs": "a8b2e994985c31525f22a5a68556fa163fb7fe64305ad00f38735f41940fe180",
+    "crates/aura-web": "f432e4cc65927f267e648e8e8c737ba91ab4da97b26e60a7380831f0e61bf1ee",
+    "specs/039-web-gratuita-do-agente/plan.md": "48df20ec5bed45362803235e831ee0aa3ee83735a147a1ca86ab22594e84eb74",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/real_app_server.rs",
+    "crates/aura-app/src/web.rs",
+    "crates/aura-gateway/src/tool_results.rs",
+    "crates/aura-gateway/src/server.rs",
+    "crates/aura-web",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Não exercita raciocínio/compactação. Não reduzir esperado, trocar thread normal por efêmera ou aceitar persistência. Rollout e WAL foram localizados por auditoria independente. Evidence invalidated because an input changed.",
+  "observations": "Red comportamental: 0/1 em0,75s. O provedor recebe W1/W2 e resposta cita só W1; URL de W2 persiste em2 arquivos, incluindo1 function_call. Perfil preservado somente para auditoria sintética. Nenhum problema de ambiente.",
+  "procedure": "AURA_CODEX_BIN fixado/AURA_E2E_DIR TEMP: cargo test -p aura-app --test real_app_server web_fetched_but_uncited_source_url -- --ignored --test-threads=1",
+  "result": "stale",
+  "tested_revision": "local:5dbe722a8183915120f75a4baf7e0cd4701e3a0433bd7b6f574870cdd16fd66a",
+  "ticket": "TK-007",
+  "timestamp": "2026-10-10T18:12:19+00:00"
+}

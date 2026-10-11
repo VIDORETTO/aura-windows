@@ -1,0 +1,48 @@
+{
+  "acceptance_refs": [
+    "AC-009"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-040-monitor-20261010/regression-final.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-017",
+  "input_fingerprints": {
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts": "bd4979dd422477c93106bbc1c91c09eebd5f8ce786537b3ca22404e4f20cc734",
+    "apps/desktop/e2e/specs/resize.e2e.ts": "cf60582ede20f279d8217cc15b1d60b6b89ff6e5f20631c30e64b15a6bf02dc2",
+    "apps/desktop/src-tauri/src/overlay.rs": "7a020efa9eb02c017d6a8fa3db7ed0191795e7bdfd83b996c6cfd7fdac9935ec",
+    "apps/desktop/src/overlay/Header.tsx": "aae783a781cf6cfd93e8583bfc8ca76a8b7454746f925f1630ddceb752653815",
+    "apps/desktop/src/overlay/ModelPicker.tsx": "779a5169aab5f4c2dd2441a7ebce4b8d4145027b815e5bb4716a177e994cbcf0",
+    "apps/desktop/src/overlay/OverlayApp.tsx": "1075f6e09e01d53baba514538fd08fe8eb554c30efce0cca4bafb48cc0fac916",
+    "apps/desktop/src/ui/Popover.tsx": "94ba13a984ba508f576498dcf0aaaa4ef393f512a0dfa14aa14b6258fe030703",
+    "apps/desktop/src/ui/floating.tsx": "9c8536a36bf1894698d725368e184c110cec4c0008a5d8b280e4a5c16b25d7af",
+    "crates/aura-core/src/placement.rs": "f9789b91cc7b27dc12d24916947488069b22d058ea116099ceb511a7babd901e",
+    "crates/aura-win/examples/qa_resize.rs": "e49ee17b0f7768cfbb68e471e335b3d91094a134302b6f1f9dd2e5a43e2f7301",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md": "506142947113311362d470757295398eeb23cc07e48851944570801b49e95c1a",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md": "054f4b65d1f3806e724a11a01263f13f2b6058a8354644a6d91c75df495ad140",
+    "specs/040-overlay-estavel-no-monitor/qa.md": "ac294d9496443ae131f83e862729d5b47444bf259fddbea9e1254fe71c7de45f"
+  },
+  "input_paths": [
+    "apps/desktop/src/overlay/Header.tsx",
+    "apps/desktop/src/overlay/ModelPicker.tsx",
+    "apps/desktop/src/ui/Popover.tsx",
+    "apps/desktop/src/ui/floating.tsx",
+    "apps/desktop/src/overlay/OverlayApp.tsx",
+    "apps/desktop/src-tauri/src/overlay.rs",
+    "crates/aura-core/src/placement.rs",
+    "crates/aura-win/examples/qa_resize.rs",
+    "apps/desktop/e2e/specs/model-picker-recovery.e2e.ts",
+    "apps/desktop/e2e/specs/resize.e2e.ts",
+    "specs/040-overlay-estavel-no-monitor/qa.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/spec.md",
+    "specs/038-restaurar-seletores-modelo-raciocinio/plan.md"
+  ],
+  "limitations": "Não aprova AC008150/200; DPI nativo real100.",
+  "observations": "2/2 seletor/teclado e9/9resize em build nativa040 atual; teclado abre/seleciona esforço/Escape devolve foco em pt-BR/en. Renova prova invalidada por overlay/helper.",
+  "procedure": "pnpm -C apps/desktop/e2e test -- --spec ./specs/model-picker-recovery.e2e.ts --spec ./specs/resize.e2e.ts; ambiente nativo atual descrito em040/qa.md.",
+  "result": "passed",
+  "tested_revision": "local:0b0f446a909cf8cb0aeaaec304c9ffe2ff3a6a51358b7da60264fe02fa918733",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-11T02:20:10+00:00"
+}

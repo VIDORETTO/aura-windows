@@ -1,0 +1,42 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-007",
+    "AC-008",
+    "AC-011",
+    "AC-014"
+  ],
+  "environment": "OS=Windows-11-10.0.26200-SP0; Python=3.14.2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-062",
+  "input_fingerprints": {
+    "Cargo.lock": "8a424f5cf25697aed2714f3f5bc45f233303af79317e82005910a6fff36d7b29",
+    "Cargo.toml": "ba49b4229e74baf801a246fc022cba247d77ffc6e4a2a4ca10e99c88690dca4e",
+    "crates/aura-app": "494d38962d760f18ee1532f1d2658a1dcea982266cc163b067ffedc9dc243168",
+    "crates/aura-codex": "27512ba202c5f3c62986d93b52c92f0a39742c9d0600082ff42af2a36c0399ac",
+    "crates/aura-gateway": "eada29f37d5bee52cc56a5dfa8cb19c30bdc7b6af94eed9697b606fd08ca3f95",
+    "crates/aura-mcp": "effd0579c18eaae67b664e0b58f17443153604f65b8011692712626eb18e5be7",
+    "crates/aura-web": "c81f62d71696c357ab540db911fbb5acd197a5ac2be267a198be4e060196e9ba",
+    "specs/039-web-gratuita-do-agente/plan.md": "6a654d37e68fc0fcd9790c9a8bec0b6f52d03dc0006c2215fc260b1246ea38d5",
+    "specs/039-web-gratuita-do-agente/spec.md": "3688397150c7019d91240d0d8c9c261f77b70b6ebd1fe6fc1169f23668be7a8c"
+  },
+  "input_paths": [
+    "crates/aura-app",
+    "crates/aura-codex",
+    "crates/aura-gateway",
+    "crates/aura-mcp",
+    "crates/aura-web",
+    "Cargo.toml",
+    "Cargo.lock",
+    "specs/039-web-gratuita-do-agente/spec.md",
+    "specs/039-web-gratuita-do-agente/plan.md"
+  ],
+  "limitations": "Somente escopo originalTK003. Não aprova o gate integral deTK007/004,raciocínio/compactação nemUI/nativo/qualidade.316+10 conformelimitaçãoEV058. Evidence invalidated because an input changed.",
+  "observations": "316regressões,10novos atuais,18reais14,46s. Nove pares protocolo/modo,recusa/sandbox,retomada/histórico/identidade/toggle preservados. Host/MCP14 usam oráculos upstream observados,sem reimplementar expansão.",
+  "procedure": "cargo test -p aura-web -p aura-app -p aura-codex -p aura-gateway -p aura-mcp; novos10HTTP reexecutados após ajuste deassert; cargo test -p aura-app --test real_app_server web:: -- --ignored --test-threads=1 com pin eTEMP; clippy cinco crates/all-targets,fmt/diff check.",
+  "result": "stale",
+  "tested_revision": "local:5819c810ecc1c25fbde0bc16a2fdd0cfc1f8d0d99af204dae12a5c886e17e4a9",
+  "ticket": "TK-003",
+  "timestamp": "2026-10-10T19:19:06+00:00"
+}
