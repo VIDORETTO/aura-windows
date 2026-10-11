@@ -7,6 +7,12 @@
 > Escalas 150%/200% dos seletores continuam pendentes em 038. A publicação e
 > seus checks atuais são registrados no [esforço 041](../specs/041-publicacao-github-030/).
 > Os blocos seguintes são históricos; não substituem as evidências recentes.
+> **Publicação concluída:** [Aura 0.3.0](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.0),
+> fonte `15c11ff913ff4f28ab768d99e8e4164438ee6043`. NSIS/MSI assinados pela
+> chave permanente; sete downloads públicos e updater anônimo conferidos.
+> GitHub/local têm somente main; tags/releases anteriores preservadas.
+> 508 testes Rust + 253 UI, typecheck/fmt/Clippy/licenças/fontes e build passaram.
+> Actions continua desativado; DPI150/200 e Windows limpo não foram aprovados.
 
 > **05/10/2026 — QA da branch serene-cori-t5pt94 e distribuição retida:**
 > [relatório atual](qa/release-020-2026-10-05.md), esforço 036. Build local 0.2.0

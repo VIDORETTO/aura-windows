@@ -46,3 +46,18 @@ A comparação dos demais inputs das EV-087/088/089/090/092/093/096 não encontr
 - Instalação/atualização em Windows limpo não executada nesta rodada. Leitura do MSI e verificação de assinatura não substituem esse teste.
 - Pesquisa ao vivo com ChatGPT, privacidade e monitor a 100% têm evidência própria nos esforços 039/040. O build 0.3.0 não foi usado para repetir esses cenários nativos.
 - Actions segue desativado. Nenhuma execução local é atribuída ao CI remoto.
+
+## Publicação e verificação remota executadas
+
+Commit da release: `15c11ff913ff4f28ab768d99e8e4164438ee6043`, alcançável pela main remota e tag anotada v0.3.0. Publicada em **2026-10-11T04:27:36Z**, não draft/prerelease: [release](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.0).
+
+1. Draft com sete assets enviado por gh; digests GitHub correspondem aos arquivos locais. Download autenticado de todos os assets passou nos hashes, assinaturas anexas e seleção dos três targets.
+2. Publicação via `gh release edit ... --draft=false --latest` exit0.
+3. Download de todos os sete assets por urllib sem token/cookies: todos HTTP200, hashes correspondentes ao build e aos dois arquivos SHA publicados. Assinaturas NSIS/MSI baixadas verificadas independentemente contra a pública permanente, com chave aposentada da 0.1.0 e bytes corrompidos rejeitados.
+4. `.../releases/latest/download/latest.json` anônimo retorna HTTP200/version0.3.0, SHA `4a3206b4a2404db065581b13d0c412240467e1030399f56987125668d7669547`, bytes idênticos ao asset da tag. API pública latest = v0.3.0; URLs/signatures dos três targets coerentes.
+5. `git merge-base --is-ancestor` remote/local release/0.2.0 → main exit0; só depois, exclusão remote/local exit0. Inventário final tem somente main. Tags/releases 0.1/0.2 preservadas.
+6. Descrição/homepage/oito tópicos verificados na API; default main. Actions continua enabled=false.
+
+O snapshot final antes do commit tinha **1.245 arquivos**, zero privadas operacionais/Gmail e as mesmas 20 linhas de fixture/placeholder/hashes do audit anterior; Gitleaks exit1 classificado explicitamente. `git -c core.whitespace=-blank-at-eof diff --cached --check` passou: linhas vazias ao fim de documentos históricos foram mantidas para preservar fingerprints; formatação Rust passa pelo rustfmt. `git diff --quiet` passou antes do commit.
+
+Relatório público sem dados operacionais em `public-verification.json`. A confirmação HTTP/hash não substitui instalação limpa nem execução real do updater; esses limites continuam declarados acima. Os registros de fechamento podem deixar main à frente da tag por um commit de documentação, sem alteração no código compilado da 0.3.0.

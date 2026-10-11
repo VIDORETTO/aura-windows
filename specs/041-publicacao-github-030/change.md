@@ -43,11 +43,11 @@ Empacotamento Tauri normal sem e2e/demo, worker DirectML atualizado. Se aura.exe
 
 ## Sequência e tarefas
 
-- [ ] C-001 Descoberta, fonte limpa para publicação e documentos profissionais.
-- [ ] C-002 Versão, checks, worker/app e instaladores assinados.
-- [ ] C-003 Auditoria, commit/main/tag e assets em rascunho verificáveis.
-- [ ] C-004 Publicar/validar endpoint anônimo e remover branch redundante.
-- [ ] C-005 Evidências/revisão/checkpoint e relatório final.
+- [x] C-001 Descoberta, fonte limpa para publicação e documentos profissionais.
+- [x] C-002 Versão, checks, worker/app e instaladores assinados.
+- [x] C-003 Auditoria, commit/main/tag e assets em rascunho verificáveis.
+- [x] C-004 Publicar/validar endpoint anônimo e remover branch redundante.
+- [x] C-005 Evidências/revisão/checkpoint e relatório final.
 
 ## Validação e evidência
 

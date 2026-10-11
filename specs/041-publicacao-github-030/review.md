@@ -20,3 +20,12 @@ Sem achado bloqueante de Standards na preparação; controles remotos ainda deve
 - **AC-003:** ambas branches remotas no baseline; excluir somente após main preservar esse histórico e a publicação ser conferida.
 
 Não fechar os aceites remotos com evidência apenas local. Próxima ação: publicar main/tag, validar assets em rascunho e públicos, excluir a branch redundante e completar a revisão com resultados observados.
+
+## Revisão final após execução — 11/10/2026
+
+- **AC-001 passou:** main recebeu `15c11ff913ff4f28ab768d99e8e4164438ee6043`; README/guia/changelog, descrição, homepage e oito tópicos atuais. Autoria noreply; snapshot final antes do commit com 1.245 arquivos, sem dados pessoais operacionais selecionados. Checks locais reais em qa.md.
+- **AC-002 passou:** tag anotada v0.3.0 resolve ao mesmo commit; release pública, não prerelease, publicada em 2026-10-11T04:27:36Z. Todos os sete assets baixados no rascunho e novamente por HTTP anônimo após publicação, hashes idênticos ao build. Assinaturas públicas NSIS/MSI verificadas novamente; controles de chave aposentada/adulteração rejeitados. Endpoint latest anônimo retorna HTTP200/0.3.0 e manifesto idêntico ao asset.
+- **AC-003 passou:** ancestor checks remotos/locais exit0 antes da exclusão; release/0.2.0 removida em ambos. Somente main ao final; tags/releases v0.1.0/v0.2.0 preservadas. Backup Git local ignorado disponível em target/aura-before-publication-030.bundle.
+- Actions continua enabled=false, verificado após publicação. Limitações anteriores permanecem explícitas, sem alteração de comportamento ou dispensa de QA.
+
+Standards e Spec: sem achado bloqueante restante no escopo de publicação. Artefatos: change.md r1, qa.md, input-revalidation.json e public-verification.json. Resultado `completed`; evidência final pelo runner; o commit seguinte publica apenas os registros de fechamento, sem alterar os binários da tag.

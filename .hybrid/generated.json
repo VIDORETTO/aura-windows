@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "3d37d102b6d144e25ab75ed036188db4a832866d2880d44fc12b79062432e096",
+  "docs/project/backlog.md": "eb7f12357718ac9e2d11affa0661f8ea7e73972f265b964221aa48215845c11b",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -54,5 +54,5 @@
   "specs/039-web-gratuita-do-agente/verification.md": "1ac9365976ccbacde78ff008e5499e66a2feced9b9d779d65259ae42006baf5d",
   "specs/040-overlay-estavel-no-monitor/todo.md": "222d00faf0daa32645f167b56572701373ea8e63e50ebc3d28dae44e25088ded",
   "specs/040-overlay-estavel-no-monitor/verification.md": "84c0c75b53ccdfb68f7dd2d70d620ea3756342a61f75472f955ead2a025d3b51",
-  "specs/041-publicacao-github-030/verification.md": "449d373589313fa494c7df107b3cdfc0a3f0022a32356670e98eaa408611f6ca"
+  "specs/041-publicacao-github-030/verification.md": "f1eb94b3e8402a57e4600982713aa06c6bce98c037f302885a98d94afaec922c"
 }

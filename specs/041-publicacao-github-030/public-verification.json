@@ -1,0 +1,45 @@
+{
+  "authentication": "none; no token/cookies",
+  "updater_http_status": 200,
+  "latest_version": "0.3.0",
+  "latest_manifest_sha256": "4a3206b4a2404db065581b13d0c412240467e1030399f56987125668d7669547",
+  "assets": [
+    {
+      "name": "Aura_0.3.0_x64-setup.exe",
+      "bytes": 25925219,
+      "status": 200
+    },
+    {
+      "name": "Aura_0.3.0_x64-setup.exe.sig",
+      "bytes": 432,
+      "status": 200
+    },
+    {
+      "name": "Aura_0.3.0_x64_en-US.msi",
+      "bytes": 33370112,
+      "status": 200
+    },
+    {
+      "name": "Aura_0.3.0_x64_en-US.msi.sig",
+      "bytes": 432,
+      "status": 200
+    },
+    {
+      "name": "latest.json",
+      "bytes": 2011,
+      "status": 200
+    },
+    {
+      "name": "sha256.json",
+      "bytes": 495,
+      "status": 200
+    },
+    {
+      "name": "sha256.txt",
+      "bytes": 534,
+      "status": 200
+    }
+  ],
+  "published_at": "2026-10-11T04:27:36Z",
+  "release_url": "https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.0"
+}
