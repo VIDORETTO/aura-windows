@@ -15,7 +15,7 @@ Windows AI assistant · ChatGPT sign-in · Local voice · Free web search
 [![Rust](https://img.shields.io/badge/Rust-1.98.1-orange)](rust-toolchain.toml)
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8D8)](apps/desktop/src-tauri/Cargo.toml)
 
-[**Baixar Aura**](https://github.com/VIDORETTO/aura-windows/releases/latest) · [Primeiros passos](#primeiros-passos) · [Guia de uso](docs/usage.md) · [Desenvolvimento](#desenvolvimento) · [Reportar problema](https://github.com/VIDORETTO/aura-windows/issues)
+[**Baixar Aura**](https://github.com/VIDORETTO/aura-windows/releases/latest) · [Galeria do app](docs/media/2026-10-11/README.md) · [Primeiros passos](#primeiros-passos) · [Guia de uso](docs/usage.md) · [Desenvolvimento](#desenvolvimento) · [Reportar problema](https://github.com/VIDORETTO/aura-windows/issues)
 
 </div>
 

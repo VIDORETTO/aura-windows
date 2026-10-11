@@ -1,0 +1,451 @@
+{
+  "created": "2026-10-11",
+  "source": "Aura 0.3.0 — componentes reais com backend de demonstração local",
+  "images": [
+    {
+      "id": "general",
+      "label": "Geral",
+      "headline": "Do seu jeito.",
+      "description": "Tema, aparência, contexto e preferências para o dia a dia.",
+      "file": "03-capturas-originais/general.png",
+      "width": 1180,
+      "height": 850,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Geral",
+          "height": 859,
+          "file": "03-capturas-originais/general-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Instruções pessoais",
+          "height": 188,
+          "file": "03-capturas-originais/general-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Memórias",
+          "height": 206,
+          "file": "03-capturas-originais/general-secao-3.png",
+          "width": 720
+        },
+        {
+          "index": 3,
+          "title": "Modo YOLO (You Only Live Once)",
+          "height": 153,
+          "file": "03-capturas-originais/general-secao-4.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "label": "Conta e modelos",
+      "headline": "Sua conta. Seu modelo.",
+      "description": "Conta ChatGPT e esforço de raciocínio por modelo e modo.",
+      "file": "03-capturas-originais/account.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Conta ChatGPT",
+          "height": 201,
+          "file": "03-capturas-originais/account-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Esforço por modelo e modo",
+          "height": 232,
+          "file": "03-capturas-originais/account-secao-2.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "providers",
+      "label": "Provedores",
+      "headline": "Escolha de onde vem a IA.",
+      "description": "Provedores com suas próprias credenciais e modelos locais.",
+      "file": "03-capturas-originais/providers.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Provedores",
+          "height": 182,
+          "file": "03-capturas-originais/providers-secao-1.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "privacy",
+      "label": "Privacidade",
+      "headline": "Você decide o contexto.",
+      "description": "Controle sobre tela, microfone, áudio do sistema e retenção.",
+      "file": "03-capturas-originais/privacy.png",
+      "width": 1180,
+      "height": 620,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Privacidade",
+          "height": 254,
+          "file": "03-capturas-originais/privacy-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Reuniões",
+          "height": 286,
+          "file": "03-capturas-originais/privacy-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Janelas excluídas",
+          "height": 233,
+          "file": "03-capturas-originais/privacy-secao-3.png",
+          "width": 720
+        },
+        {
+          "index": 3,
+          "title": "Retenção",
+          "height": 262,
+          "file": "03-capturas-originais/privacy-secao-4.png",
+          "width": 720
+        },
+        {
+          "index": 4,
+          "title": "Gravações",
+          "height": 121,
+          "file": "03-capturas-originais/privacy-secao-5.png",
+          "width": 720
+        },
+        {
+          "index": 5,
+          "title": "Registro de acesso",
+          "height": 176,
+          "file": "03-capturas-originais/privacy-secao-6.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "personal",
+      "label": "Lembretes e notas",
+      "headline": "As ideias ficam.",
+      "description": "Lembretes, notas e textos salvos em um só lugar.",
+      "file": "03-capturas-originais/personal.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Lembretes",
+          "height": 181,
+          "file": "03-capturas-originais/personal-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Notas",
+          "height": 205,
+          "file": "03-capturas-originais/personal-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Textos salvos",
+          "height": 147,
+          "file": "03-capturas-originais/personal-secao-3.png",
+          "width": 720
+        },
+        {
+          "index": 3,
+          "title": "Hábitos",
+          "height": 117,
+          "file": "03-capturas-originais/personal-secao-4.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "voice",
+      "label": "Voz",
+      "headline": "Fale. O Aura acompanha.",
+      "description": "Reconhecimento de fala local, vocabulário e leitura em voz alta.",
+      "file": "03-capturas-originais/voice.png",
+      "width": 1180,
+      "height": 850,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Modelos de reconhecimento de fala",
+          "height": 421,
+          "file": "03-capturas-originais/voice-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Voz",
+          "height": 521,
+          "file": "03-capturas-originais/voice-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Leitura em voz alta",
+          "height": 223,
+          "file": "03-capturas-originais/voice-secao-3.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "extensions",
+      "label": "Extensões",
+      "headline": "Um assistente que se expande.",
+      "description": "Skills, servidores MCP e comandos rápidos.",
+      "file": "03-capturas-originais/extensions.png",
+      "width": 1180,
+      "height": 686,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Skills",
+          "height": 379,
+          "file": "03-capturas-originais/extensions-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Servidores MCP",
+          "height": 227,
+          "file": "03-capturas-originais/extensions-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Comandos rápidos",
+          "height": 1494,
+          "file": "03-capturas-originais/extensions-secao-3.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "profiles",
+      "label": "Perfis de app",
+      "headline": "Cada app, um contexto.",
+      "description": "Instruções e preferências para o aplicativo em que você está.",
+      "file": "03-capturas-originais/profiles.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Perfis de aplicativo",
+          "height": 239,
+          "file": "03-capturas-originais/profiles-secao-1.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "shortcuts",
+      "label": "Atalhos",
+      "headline": "Sempre a um atalho.",
+      "description": "Abra o Overlay, fale ou dite em qualquer aplicativo.",
+      "file": "03-capturas-originais/shortcuts.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Atalhos",
+          "height": 301,
+          "file": "03-capturas-originais/shortcuts-secao-1.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "diagnostics",
+      "label": "Diagnóstico",
+      "headline": "Tudo à vista.",
+      "description": "Estado dos componentes e exportação de diagnóstico para suporte.",
+      "file": "03-capturas-originais/diagnostics.png",
+      "width": 1180,
+      "height": 714,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Diagnóstico",
+          "height": 513,
+          "file": "03-capturas-originais/diagnostics-secao-1.png",
+          "width": 720
+        },
+        {
+          "index": 1,
+          "title": "Exportar diagnóstico",
+          "height": 121,
+          "file": "03-capturas-originais/diagnostics-secao-2.png",
+          "width": 720
+        },
+        {
+          "index": 2,
+          "title": "Apagar todos os meus dados",
+          "height": 105,
+          "file": "03-capturas-originais/diagnostics-secao-3.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "about",
+      "label": "Sobre",
+      "headline": "Aura, por dentro.",
+      "description": "Versão, código-fonte, licenças e atualizações.",
+      "file": "03-capturas-originais/about.png",
+      "width": 1180,
+      "height": 520,
+      "kind": "settings",
+      "sections": [
+        {
+          "index": 0,
+          "title": "Aura",
+          "height": 210,
+          "file": "03-capturas-originais/about-secao-1.png",
+          "width": 720
+        }
+      ]
+    },
+    {
+      "id": "conversa",
+      "label": "Conversa",
+      "headline": "A IA entra no seu fluxo.",
+      "description": "Converse, organize ideias e receba respostas no Overlay.",
+      "file": "03-capturas-originais/conversa.png",
+      "width": 820,
+      "height": 610,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "overlay-compacto",
+      "label": "Overlay compacto",
+      "headline": "Sempre à mão.",
+      "description": "Um atalho abre o Aura sobre o seu aplicativo.",
+      "file": "03-capturas-originais/overlay-compacto.png",
+      "width": 820,
+      "height": 80,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "contexto",
+      "label": "Contexto",
+      "headline": "Mostre o que importa.",
+      "description": "Tela, região, seleção, áudio ou arquivos no próximo turno.",
+      "file": "03-capturas-originais/contexto.png",
+      "width": 820,
+      "height": 610,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "tarefas",
+      "label": "Modo Tarefa",
+      "headline": "Da conversa à ação.",
+      "description": "Plano de trabalho e aprovação antes de alterar arquivos.",
+      "file": "03-capturas-originais/tarefas.png",
+      "width": 820,
+      "height": 610,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "arquivos",
+      "label": "Arquivos",
+      "headline": "O resultado fica aqui.",
+      "description": "Arquivos gerados, prévias e alterações no workspace da conversa.",
+      "file": "03-capturas-originais/arquivos.png",
+      "width": 1180,
+      "height": 630,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "alteracoes",
+      "label": "Alterações",
+      "headline": "Revise o que mudou.",
+      "description": "Acompanhe as alterações produzidas em uma tarefa.",
+      "file": "03-capturas-originais/alteracoes.png",
+      "width": 1180,
+      "height": 630,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "historico",
+      "label": "Histórico",
+      "headline": "Continue de onde parou.",
+      "description": "Encontre, fixe e retome suas conversas.",
+      "file": "03-capturas-originais/historico.png",
+      "width": 1180,
+      "height": 630,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "preparo",
+      "label": "Preparo",
+      "headline": "Antes da reunião.",
+      "description": "Prepare o contexto, escolha uma receita e organize os compromissos.",
+      "file": "03-capturas-originais/preparo.png",
+      "width": 1180,
+      "height": 760,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "reuniao",
+      "label": "Reunião",
+      "headline": "A conversa vira contexto.",
+      "description": "Transcrição, notas e ajuda do agente durante a reunião.",
+      "file": "03-capturas-originais/reuniao.png",
+      "width": 1180,
+      "height": 650,
+      "kind": "overlay",
+      "sections": []
+    },
+    {
+      "id": "minibar",
+      "label": "Minibar",
+      "headline": "Acompanhe enquanto trabalha.",
+      "description": "Um indicador compacto para a resposta em andamento.",
+      "file": "03-capturas-originais/minibar.png",
+      "width": 680,
+      "height": 36,
+      "kind": "overlay",
+      "sections": []
+    }
+  ]
+}

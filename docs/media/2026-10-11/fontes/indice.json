@@ -1,0 +1,282 @@
+[
+  {
+    "name": "01-capa",
+    "kind": "portfolio",
+    "file": "01-portfolio/01-capa.png"
+  },
+  {
+    "name": "02-conversa",
+    "kind": "portfolio",
+    "file": "01-portfolio/02-conversa.png"
+  },
+  {
+    "name": "03-contexto",
+    "kind": "portfolio",
+    "file": "01-portfolio/03-contexto.png"
+  },
+  {
+    "name": "04-tarefas",
+    "kind": "portfolio",
+    "file": "01-portfolio/04-tarefas.png"
+  },
+  {
+    "name": "05-arquivos",
+    "kind": "portfolio",
+    "file": "01-portfolio/05-arquivos.png"
+  },
+  {
+    "name": "06-alteracoes",
+    "kind": "portfolio",
+    "file": "01-portfolio/06-alteracoes.png"
+  },
+  {
+    "name": "07-historico",
+    "kind": "portfolio",
+    "file": "01-portfolio/07-historico.png"
+  },
+  {
+    "name": "08-preparo",
+    "kind": "portfolio",
+    "file": "01-portfolio/08-preparo.png"
+  },
+  {
+    "name": "09-reuniao",
+    "kind": "portfolio",
+    "file": "01-portfolio/09-reuniao.png"
+  },
+  {
+    "name": "10-overlay-compacto",
+    "kind": "portfolio",
+    "file": "01-portfolio/10-overlay-compacto.png"
+  },
+  {
+    "name": "11-minibar",
+    "kind": "portfolio",
+    "file": "01-portfolio/11-minibar.png"
+  },
+  {
+    "name": "12-general",
+    "kind": "portfolio",
+    "file": "01-portfolio/12-general.png"
+  },
+  {
+    "name": "13-account",
+    "kind": "portfolio",
+    "file": "01-portfolio/13-account.png"
+  },
+  {
+    "name": "14-providers",
+    "kind": "portfolio",
+    "file": "01-portfolio/14-providers.png"
+  },
+  {
+    "name": "15-privacy",
+    "kind": "portfolio",
+    "file": "01-portfolio/15-privacy.png"
+  },
+  {
+    "name": "16-personal",
+    "kind": "portfolio",
+    "file": "01-portfolio/16-personal.png"
+  },
+  {
+    "name": "17-voice",
+    "kind": "portfolio",
+    "file": "01-portfolio/17-voice.png"
+  },
+  {
+    "name": "18-extensions",
+    "kind": "portfolio",
+    "file": "01-portfolio/18-extensions.png"
+  },
+  {
+    "name": "19-profiles",
+    "kind": "portfolio",
+    "file": "01-portfolio/19-profiles.png"
+  },
+  {
+    "name": "20-shortcuts",
+    "kind": "portfolio",
+    "file": "01-portfolio/20-shortcuts.png"
+  },
+  {
+    "name": "21-diagnostics",
+    "kind": "portfolio",
+    "file": "01-portfolio/21-diagnostics.png"
+  },
+  {
+    "name": "22-about",
+    "kind": "portfolio",
+    "file": "01-portfolio/22-about.png"
+  },
+  {
+    "name": "23-general-instrucoes-pessoais",
+    "kind": "portfolio",
+    "file": "01-portfolio/23-general-instrucoes-pessoais.png"
+  },
+  {
+    "name": "24-general-memorias",
+    "kind": "portfolio",
+    "file": "01-portfolio/24-general-memorias.png"
+  },
+  {
+    "name": "25-general-modo-yolo-you-only-live-once",
+    "kind": "portfolio",
+    "file": "01-portfolio/25-general-modo-yolo-you-only-live-once.png"
+  },
+  {
+    "name": "26-privacy-janelas-excluidas",
+    "kind": "portfolio",
+    "file": "01-portfolio/26-privacy-janelas-excluidas.png"
+  },
+  {
+    "name": "27-privacy-retencao",
+    "kind": "portfolio",
+    "file": "01-portfolio/27-privacy-retencao.png"
+  },
+  {
+    "name": "28-privacy-gravacoes",
+    "kind": "portfolio",
+    "file": "01-portfolio/28-privacy-gravacoes.png"
+  },
+  {
+    "name": "29-privacy-registro-de-acesso",
+    "kind": "portfolio",
+    "file": "01-portfolio/29-privacy-registro-de-acesso.png"
+  },
+  {
+    "name": "30-personal-textos-salvos",
+    "kind": "portfolio",
+    "file": "01-portfolio/30-personal-textos-salvos.png"
+  },
+  {
+    "name": "31-personal-habitos",
+    "kind": "portfolio",
+    "file": "01-portfolio/31-personal-habitos.png"
+  },
+  {
+    "name": "32-voice-voz",
+    "kind": "portfolio",
+    "file": "01-portfolio/32-voice-voz.png"
+  },
+  {
+    "name": "33-voice-leitura-em-voz-alta",
+    "kind": "portfolio",
+    "file": "01-portfolio/33-voice-leitura-em-voz-alta.png"
+  },
+  {
+    "name": "34-extensions-comandos-rapidos-1",
+    "kind": "portfolio",
+    "file": "01-portfolio/34-extensions-comandos-rapidos-1.png"
+  },
+  {
+    "name": "35-extensions-comandos-rapidos-2",
+    "kind": "portfolio",
+    "file": "01-portfolio/35-extensions-comandos-rapidos-2.png"
+  },
+  {
+    "name": "36-extensions-comandos-rapidos-3",
+    "kind": "portfolio",
+    "file": "01-portfolio/36-extensions-comandos-rapidos-3.png"
+  },
+  {
+    "name": "01-capa",
+    "kind": "instagram",
+    "file": "02-instagram/01-capa.png"
+  },
+  {
+    "name": "02-conversa",
+    "kind": "instagram",
+    "file": "02-instagram/02-conversa.png"
+  },
+  {
+    "name": "03-contexto",
+    "kind": "instagram",
+    "file": "02-instagram/03-contexto.png"
+  },
+  {
+    "name": "04-tarefas",
+    "kind": "instagram",
+    "file": "02-instagram/04-tarefas.png"
+  },
+  {
+    "name": "05-arquivos",
+    "kind": "instagram",
+    "file": "02-instagram/05-arquivos.png"
+  },
+  {
+    "name": "06-historico",
+    "kind": "instagram",
+    "file": "02-instagram/06-historico.png"
+  },
+  {
+    "name": "07-preparo",
+    "kind": "instagram",
+    "file": "02-instagram/07-preparo.png"
+  },
+  {
+    "name": "08-reuniao",
+    "kind": "instagram",
+    "file": "02-instagram/08-reuniao.png"
+  },
+  {
+    "name": "09-general",
+    "kind": "instagram",
+    "file": "02-instagram/09-general.png"
+  },
+  {
+    "name": "10-account",
+    "kind": "instagram",
+    "file": "02-instagram/10-account.png"
+  },
+  {
+    "name": "11-providers",
+    "kind": "instagram",
+    "file": "02-instagram/11-providers.png"
+  },
+  {
+    "name": "12-privacy",
+    "kind": "instagram",
+    "file": "02-instagram/12-privacy.png"
+  },
+  {
+    "name": "13-personal",
+    "kind": "instagram",
+    "file": "02-instagram/13-personal.png"
+  },
+  {
+    "name": "14-voice",
+    "kind": "instagram",
+    "file": "02-instagram/14-voice.png"
+  },
+  {
+    "name": "15-extensions",
+    "kind": "instagram",
+    "file": "02-instagram/15-extensions.png"
+  },
+  {
+    "name": "16-profiles",
+    "kind": "instagram",
+    "file": "02-instagram/16-profiles.png"
+  },
+  {
+    "name": "17-shortcuts",
+    "kind": "instagram",
+    "file": "02-instagram/17-shortcuts.png"
+  },
+  {
+    "name": "18-diagnostics",
+    "kind": "instagram",
+    "file": "02-instagram/18-diagnostics.png"
+  },
+  {
+    "name": "19-about",
+    "kind": "instagram",
+    "file": "02-instagram/19-about.png"
+  },
+  {
+    "name": "20-overlay-e-minibar",
+    "kind": "instagram",
+    "file": "02-instagram/20-overlay-e-minibar.png"
+  }
+]

@@ -1,0 +1,16 @@
+{
+  "name": "aura-media-2026-10-11",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "capture": "node capture.cjs",
+    "compose": "node compose.cjs",
+    "export": "node export.cjs"
+  },
+  "dependencies": {
+    "playwright": "1.62.1",
+    "sharp": "0.35.5"
+  }
+}

@@ -1,0 +1,853 @@
+{
+  "compositionCount": 56,
+  "originalCount": 63,
+  "portfolioCount": 36,
+  "instagramCount": 20,
+  "failures": [],
+  "layout": [
+    {
+      "file": "01-portfolio/01-capa.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/02-conversa.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/03-contexto.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/04-tarefas.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/05-arquivos.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/06-alteracoes.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/07-historico.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/08-preparo.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/09-reuniao.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/10-overlay-compacto.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/11-minibar.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/12-general.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/13-account.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/14-providers.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/15-privacy.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/16-personal.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/17-voice.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/18-extensions.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/19-profiles.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/20-shortcuts.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/21-diagnostics.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/22-about.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/23-general-instrucoes-pessoais.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/24-general-memorias.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/25-general-modo-yolo-you-only-live-once.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/26-privacy-janelas-excluidas.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/27-privacy-retencao.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/28-privacy-gravacoes.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/29-privacy-registro-de-acesso.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/30-personal-textos-salvos.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/31-personal-habitos.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/32-voice-voz.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/33-voice-leitura-em-voz-alta.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/34-extensions-comandos-rapidos-1.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/35-extensions-comandos-rapidos-2.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "01-portfolio/36-extensions-comandos-rapidos-3.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "visualBottom": null,
+      "footerTop": 736,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/01-capa.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": null,
+      "footerTop": 1272,
+      "introBottom": null,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/02-conversa.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1154.140625,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/03-contexto.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1154.140625,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/04-tarefas.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1154.140625,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/05-arquivos.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1097.53125,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/06-historico.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 952.53125,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/07-preparo.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1140.296875,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/08-reuniao.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 968.8125,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/09-general.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1158.78125,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/10-account.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1029,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/11-providers.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1006,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/12-privacy.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1079,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/13-personal.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1133,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/14-voice.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1200,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/15-extensions.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1196,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/16-profiles.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1080,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/17-shortcuts.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1061,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/18-diagnostics.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1200,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/19-about.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": 1028,
+      "footerTop": 1272,
+      "introBottom": 312.71875,
+      "missingImages": 0
+    },
+    {
+      "file": "02-instagram/20-overlay-e-minibar.png",
+      "origin": [
+        0,
+        0
+      ],
+      "size": [
+        1080,
+        1350
+      ],
+      "visualBottom": null,
+      "footerTop": 1272,
+      "introBottom": 431.4375,
+      "missingImages": 0
+    }
+  ],
+  "compression": {
+    "pngBytes": 9025179,
+    "webpBytes": 3525914
+  }
+}

@@ -1,0 +1,14 @@
+AURA — IMAGENS PARA PORTFÓLIO E INSTAGRAM
+Criado em 11/10/2026.
+
+01-portfolio: 36 imagens PNG horizontais, 2560 x 1600 px. A subpasta webp tem versões leves para publicar no site.
+02-instagram: 20 imagens PNG verticais, 2160 x 2700 px (4:5), numeradas na ordem do carrossel.
+03-capturas-originais: telas completas, recortes de cada seção e painéis, em resolução 2x.
+
+Abra galeria.html para ver tudo. indice-visual.png é o contato visual do conjunto.
+
+As telas foram renderizadas a partir dos componentes reais da versão 0.3.0, na prévia local do projeto. Conta, conversas, provedores, notas, reuniões e estados técnicos são dados de demonstração. Não há credenciais reais. A função de ocultação de capturas do Aura impediu a captura direta das janelas de produção, por isso foi usada a prévia local.
+
+As 11 abas de configurações estão incluídas. As páginas longas têm capturas completas nos originais e imagens adicionais de detalhes no conjunto do portfólio. Também foram incluídos conversa, contexto, Modo Tarefa, arquivos, alterações, histórico, preparo de reunião, reunião, Overlay compacto e Minibar.
+
+fontes/composicoes.html contém os layouts editáveis. O logo é o ativo original do projeto. Nenhum texto ou controle foi redesenhado dentro das capturas.
