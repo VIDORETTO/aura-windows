@@ -39,6 +39,7 @@ impl ProcessLauncher {
                 codex_home.to_string_lossy().into_owned(),
             ),
             ("RUST_LOG".to_string(), "warn".to_string()),
+            ("NO_COLOR".to_string(), "1".to_string()),
         ];
         all_env.extend(env);
         let args = app_server_args(&program);
@@ -65,6 +66,26 @@ pub fn app_server_args(program: &std::path::Path) -> Vec<String> {
     } else {
         vec!["app-server".into()]
     }
+}
+
+/// Drops terminal color sequences (`ESC [ ... letter`) so aura.log stays readable.
+fn strip_ansi(line: &str) -> String {
+    let mut out = String::with_capacity(line.len());
+    let mut chars = line.chars();
+    while let Some(c) = chars.next() {
+        if c == '\u{1b}' {
+            if chars.next() == Some('[') {
+                for c in chars.by_ref() {
+                    if c.is_ascii_alphabetic() {
+                        break;
+                    }
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
 }
 
 impl Launcher for ProcessLauncher {
@@ -103,7 +124,7 @@ impl Launcher for ProcessLauncher {
                 use tokio::io::AsyncBufReadExt;
                 let mut lines = tokio::io::BufReader::new(stderr).lines();
                 while let Ok(Some(line)) = lines.next_line().await {
-                    tracing::warn!(target: "codex_app_server", "{}", aura_core::logging::redact(&line));
+                    tracing::warn!(target: "codex_app_server", "{}", aura_core::logging::redact(&strip_ansi(&line)));
                 }
             });
         }
@@ -155,8 +176,17 @@ impl Launcher for InMemoryLauncher {
 
 #[cfg(test)]
 mod tests {
-    use super::app_server_args;
+    use super::{app_server_args, strip_ansi};
     use std::path::Path;
+
+    #[test]
+    fn color_sequences_are_removed_from_forwarded_lines() {
+        assert_eq!(
+            strip_ansi("\u{1b}[2m2026-10-12T04:42:52Z\u{1b}[0m \u{1b}[33m WARN\u{1b}[0m codex: ok"),
+            "2026-10-12T04:42:52Z  WARN codex: ok"
+        );
+        assert_eq!(strip_ansi("plain ação"), "plain ação");
+    }
 
     #[test]
     fn standalone_binary_takes_no_subcommand() {

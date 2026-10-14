@@ -469,7 +469,9 @@ impl CodexService {
             extra_instructions: opts.conversation_instructions.clone(),
         };
         if !opts.ephemeral {
-            ConversationsRepo::new(&self.store).upsert(&meta)?;
+            let repo = ConversationsRepo::new(&self.store);
+            repo.upsert(&meta)?;
+            repo.set_instructed_mode(&thread_id, opts.mode.key())?;
         }
         self.shared.loaded.lock().await.insert(thread_id.clone());
         self.shared.threads.lock().await.insert(
@@ -500,13 +502,18 @@ impl CodexService {
             .get(thread_id)?
             .ok_or(ServiceError::NotFound)?;
         let mode = mode_from_key(&meta.mode, &meta.granted_folders);
+        // What the agent already knows survives restarts; conversations from
+        // before this was recorded are assumed to know their saved mode.
+        let announced = ConversationsRepo::new(&self.store)
+            .instructed_mode(thread_id)?
+            .map_or(mode.key(), |key| mode_from_key(&key, &[]).key());
         self.shared.threads.lock().await.insert(
             thread_id.to_string(),
             ThreadCtx {
                 meta: meta.clone(),
                 mode: mode.clone(),
                 ephemeral: false,
-                announced: None,
+                announced: Some(announced),
             },
         );
         Ok((meta, mode, false))
@@ -574,12 +581,15 @@ impl CodexService {
             match threads.get_mut(thread_id) {
                 Some(ctx) if ctx.announced != Some(mode.key()) => {
                     ctx.announced = Some(mode.key());
-                    true
+                    Some(ctx.ephemeral)
                 }
-                _ => false,
+                _ => None,
             }
         };
-        if announce {
+        if announce == Some(false) {
+            ConversationsRepo::new(&self.store).set_instructed_mode(thread_id, mode.key())?;
+        }
+        if announce.is_some() {
             let lang = *self.shared.language.read().unwrap();
             input.push(input_json(&TurnInput::Text {
                 text: crate::modes::mode_change_note(&mode, lang),

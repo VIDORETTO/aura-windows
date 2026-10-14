@@ -23,7 +23,7 @@ Windows AI assistant · ChatGPT sign-in · Local voice · Free web search
 
 O Aura fica na bandeja do Windows. Pressione **Ctrl+Shift+Espaço** para abrir o Overlay e conversar com uma IA sem sair do aplicativo em que está trabalhando. Conecte sua conta ChatGPT ou configure um provedor compatível, inclusive um servidor local.
 
-A versão **0.3.0** adiciona pesquisa e leitura de páginas da internet com fontes clicáveis, restaura a escolha de modelo e raciocínio e corrige a mudança involuntária de monitor durante a conversa. Veja o [changelog](CHANGELOG.md) e as [notas da release](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.0).
+A versão **0.3.1** faz o agente lembrar, nas mensagens seguintes e após reiniciar, o que pesquisou na web, e corrige anexos UTF-16, horários de lembretes e a retomada do agente. A 0.3.0 trouxe pesquisa e leitura de páginas com fontes clicáveis, seletores de modelo/raciocínio e estabilidade entre monitores. Veja o [changelog](CHANGELOG.md) e as [notas da release](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.1).
 
 ## Recursos
 
@@ -47,7 +47,7 @@ A busca não exige assinatura de um serviço de pesquisa. O acesso ao modelo con
 **Requisitos:** Windows 10/11 x64 e WebView2. É necessário acesso à internet para baixar componentes, usar modelos remotos e pesquisar na web.
 
 1. Abra a [última release](https://github.com/VIDORETTO/aura-windows/releases/latest).
-2. Baixe **`Aura_0.3.0_x64-setup.exe`** e execute o instalador. O pacote MSI também está disponível para instalações administradas.
+2. Baixe **`Aura_0.3.1_x64-setup.exe`** e execute o instalador. O pacote MSI também está disponível para instalações administradas.
 3. Abra o Aura e conclua a configuração inicial. O aplicativo permanece na bandeja.
 4. Pressione **Ctrl+Shift+Espaço** para abrir a conversa.
 
@@ -95,7 +95,7 @@ Os atalhos globais são configuráveis. Veja a [referência completa](docs/usage
 
 ## Atualização e remoção
 
-Nas versões **0.2.0 ou posteriores**, procure atualizações em **Configurações → Sobre**. A 0.3.0 mantém a chave permanente e o endpoint do updater. Se você ainda usa a 0.1.0, instale a versão atual pelo instalador da release; a migração de chave exigiu uma versão de transição.
+Nas versões **0.2.0 ou posteriores**, procure atualizações em **Configurações → Sobre**. A 0.3.1 mantém a chave permanente e o endpoint do updater. Se você ainda usa a 0.1.0, instale a versão atual pelo instalador da release; a migração de chave exigiu uma versão de transição.
 
 Para remover o aplicativo, use **Configurações do Windows → Aplicativos**. Antes de apagar o perfil local, exporte os dados que deseja guardar.
 
@@ -191,14 +191,14 @@ Testes nativos usam WebDriver e um perfil isolado; veja [apps/desktop/e2e](apps/
 
 ### Verificação e distribuição
 
-O GitHub Actions permanece **desativado** enquanto a preparação dos motores no ambiente hospedado é validada. A 0.3.0 é compilada e verificada localmente; os resultados ficam no [esforço de publicação](specs/041-publicacao-github-030). A existência de um workflow não comprova que ele foi executado.
+O GitHub Actions permanece **desativado** enquanto a preparação dos motores no ambiente hospedado é validada. A 0.3.1 é compilada e verificada localmente; os resultados ficam no [esforço 042](specs/042-continuidade-e-ruido). A existência de um workflow não comprova que ele foi executado.
 
 Instaladores, assinaturas do updater, manifesto e hashes são publicados em [Releases](https://github.com/VIDORETTO/aura-windows/releases). Tags anteriores permanecem disponíveis.
 
 ### Privacidade e limites conhecidos
 
 - Captura e acesso a contexto seguem permissões e exclusões por aplicativo. Revise esses controles antes de compartilhar tela ou áudio com um modelo remoto.
-- Resultados web têm entrega transitória para evitar guardar texto bruto de páginas nos rollouts do agente. O [ADR 0010](docs/adr/0010-entrega-transitoria-de-resultados-web.md) descreve a solução.
+- Desde a 0.3.1, o que o agente pesquisa e lê na web fica no histórico local da conversa, como as demais mensagens, para que ele continue lembrando nas mensagens seguintes e após reiniciar. Conversas efêmeras não gravam nada. A entrega transitória do [ADR 0010](docs/adr/0010-entrega-transitoria-de-resultados-web.md) foi substituída pelo [esforço 042](specs/042-continuidade-e-ruido/change.md).
 - Rollouts do Codex têm armazenamento próprio: não trate todo o perfil como integralmente cifrado.
 - A busca depende da disponibilidade das páginas e dos serviços gratuitos; login, CAPTCHA e páginas dependentes de JavaScript podem impedir leitura.
 - A estabilidade em dois monitores foi testada em escala 100%. Os testes nativos dos seletores em 150% e 200% continuam pendentes no esforço 038.

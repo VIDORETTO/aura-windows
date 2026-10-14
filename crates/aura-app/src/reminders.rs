@@ -120,6 +120,20 @@ pub fn parse_time(input: &str, offset: i32) -> Result<i64, ReminderError> {
         return Ok(d.unix_timestamp());
     }
     let (date, clock) = input.split_once(['T', ' ']).ok_or(ReminderError::BadTime)?;
+    // Models also write `09:00Z`, `09:00-03:00` and `09:00:00.000`.
+    let (clock, offset) = if let Some(clock) = clock.strip_suffix(['Z', 'z']) {
+        (clock, 0)
+    } else if let Some(at) = clock.rfind(['+', '-']) {
+        let (h, m) = clock[at + 1..]
+            .split_once(':')
+            .ok_or(ReminderError::BadTime)?;
+        let secs = h.parse::<i32>().map_err(bad)? * 3600 + m.parse::<i32>().map_err(bad)? * 60;
+        let sign = if clock.as_bytes()[at] == b'-' { -1 } else { 1 };
+        (&clock[..at], sign * secs)
+    } else {
+        (clock, offset)
+    };
+    let clock = clock.split_once('.').map_or(clock, |(whole, _)| whole);
     let mut d = date.split('-').map(|p| p.parse::<i32>());
     let (Some(Ok(y)), Some(Ok(m)), Some(Ok(day)), None) = (d.next(), d.next(), d.next(), d.next())
     else {

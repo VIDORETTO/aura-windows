@@ -1,0 +1,33 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Windows 11 Pro 26200; app-server fixado rust-v0.159.0; provedor Responses roteirizado; sem conta/Internet",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "crates/aura-app/src/web.rs": "4159568ee6e3140f6ef7854952d17c9721c17bcde3a5d82ddce0af54dc019817",
+    "crates/aura-app/tests/conversation_continuity.rs": "2133a774e382d12e252fb7fb0078b0c6ed580a28ab4461583183daa2e2493601",
+    "crates/aura-codex/src/service.rs": "aaa39183ff13240e38b32c02ea5f44b88b9084efc0eba3a08a0861a291889c49",
+    "crates/aura-gateway/src/server.rs": "9aa6ceca392f2893c42703b9fed7e1fcb2ea86c6f597af51c628ce3a08ddbdbe",
+    "crates/aura-store/src/conversations.rs": "ae71fe7d47212ebd63c136d4d9aac64aaa718c8c8e9c20d302b1156a65082632",
+    "specs/042-continuidade-e-ruido/change.md": "e2aadb9d02375ffb217df0734afbf56784a1cf8f7a7140fe503dc42a3a9c7f38"
+  },
+  "input_paths": [
+    "crates/aura-app/src/web.rs",
+    "crates/aura-gateway/src/server.rs",
+    "crates/aura-codex/src/service.rs",
+    "crates/aura-store/src/conversations.rs",
+    "crates/aura-app/tests/conversation_continuity.rs",
+    "specs/042-continuidade-e-ruido/change.md"
+  ],
+  "limitations": "Modelo real (ChatGPT) não exercitado.",
+  "observations": "Red observado antes: Turno 2 recebia 'Previous web input unavailable'/'no longer available'; conversa reaberta recebia <aura-mode> falso. Green: 6/6 (seguimento web, web após reinício, fatos após reinício, sem aviso falso, troca Chat->Tarefa, troca antes do reinício).",
+  "procedure": "AURA_CODEX_BIN=<fixado> cargo test -p aura-app --test conversation_continuity -- --ignored",
+  "result": "passed",
+  "tested_revision": "local:eb5d9fbe821a8cb9a3cc933f80a04b65f2f4463227735d156747081df537765c",
+  "ticket": null,
+  "timestamp": "2026-10-14T01:45:14+00:00"
+}

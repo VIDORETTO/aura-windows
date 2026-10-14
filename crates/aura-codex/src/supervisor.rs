@@ -168,7 +168,21 @@ impl AppServerSupervisor {
                     return Err(SupervisorError::CrashLoop);
                 }
                 if !st.restarting {
-                    return self.start_locked(&mut st).await;
+                    return match self.start_locked(&mut st).await {
+                        // The process exited before answering, typically while
+                        // the previous instance still releases CODEX_HOME:
+                        // one more launch instead of failing the user's send.
+                        Err(SupervisorError::Handshake(RpcError::Closed)) => {
+                            drop(st);
+                            tokio::time::sleep(Duration::from_millis(300)).await;
+                            let mut st = self.inner.state.lock().await;
+                            match &st.live {
+                                Some(live) if !live.peer.is_closed() => Ok(live.peer.clone()),
+                                _ => self.start_locked(&mut st).await,
+                            }
+                        }
+                        other => other,
+                    };
                 }
             }
             // A crash restart is in progress; wait for it.

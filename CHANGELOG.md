@@ -5,6 +5,29 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-13
+
+### Fixed
+- The agent no longer forgets its own web research on the next message: searched
+  queries, read URLs and page text now stay in the local conversation history,
+  also after restarting Aura. Ephemeral conversations still write nothing.
+- Reopening a conversation after a restart no longer tells the agent that the user
+  changed the mode when nothing changed; a mode switch made just before a restart
+  is still delivered.
+- Text attachments saved as UTF-16 (PowerShell 5 `>`, Notepad "Unicode") and empty
+  files are read instead of being rejected as unsupported.
+- Reminders accept the time formats models write (`09:00:00.000`, `09:00-03:00`,
+  `12:00Z`).
+- A Codex app-server that exits during its handshake is launched once more before
+  the user's message fails.
+
+### Changed
+- Aura's MCP server answers empty resource/prompt listings, removing thousands of
+  warnings from `aura.log`; app-server log lines no longer carry ANSI color codes.
+- Codex plugins, sub-agents and goals are disabled: they were unused by Aura,
+  downloaded ~94 MB of plugins and added ~13 KB of tools to every model request.
+- Supersedes the per-turn transient web delivery of 0.3.0 (effort 042).
+
 ## [0.3.0] - 2026-10-11
 
 ### Added

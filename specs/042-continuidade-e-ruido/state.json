@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "863270f094846945f33bdaf8cd34d70bf8e298a5"
+  },
+  "blockers": [],
+  "effort_id": "042-continuidade-e-ruido",
+  "inputs": {
+    "contract": {
+      "fingerprint": "3a55cbb63d6e47600ace8ec9aa799e936a954e7fb84b9cefe7af9bf067976367",
+      "path": "specs/042-continuidade-e-ruido/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

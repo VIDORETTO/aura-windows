@@ -1,5 +1,15 @@
 # HANDOFF — do Linux para o Windows
 
+> **13/10/2026 — Aura 0.3.1, esforço [042](../specs/042-continuidade-e-ruido/change.md):**
+> conteúdo web lido pelo agente agora fica no histórico local da Conversa (decisão do usuário;
+> revoga a retenção só por Turno da 039), sem aviso de modo falso após reinício, MCP sem ruído
+> `resources/list`, log sem ANSI, Codex sem plugins/sub-agentes/goals, anexos UTF-16/vazios,
+> horários de lembrete dos modelos e nova tentativa no handshake do app-server.
+> Testes reais: `conversation_continuity.rs` (app-server fixado). Para
+> `task_mode_confines_writes`, com `AURA_E2E_DIR` em `%TEMP%` defina `AURA_SBX_OUTSIDE` fora do TEMP.
+> Release v0.3.1 com NSIS/MSI assinados pela chave permanente. Build do worker exige
+> `LIBCLANG_PATH` (cópia local em `target/qa-tools/libclang18/.../clang/native`).
+
 > **11/10/2026 — fonte da versão 0.3.0:** esforços 038 (seletores), 039
 > (pesquisa web) e 040 (estabilidade do monitor) implementados. Pesquisa
 > validada com ChatGPT conectado e abertura da fonte W1 confirmada pelo usuário.

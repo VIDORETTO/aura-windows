@@ -248,7 +248,7 @@ async fn auth_origin_unknown_tool_and_method() {
     assert_eq!(v["error"]["code"], -32602);
     let v: Value = rpc(
         &url,
-        json!({"jsonrpc": "2.0", "id": 2, "method": "resources/list"}),
+        json!({"jsonrpc": "2.0", "id": 2, "method": "sampling/createMessage"}),
         None,
     )
     .await
@@ -258,4 +258,27 @@ async fn auth_origin_unknown_tool_and_method() {
     assert_eq!(v["error"]["code"], -32601);
     let v: Value = rpc(&url, json!([{"jsonrpc": "2.0", "id": 5, "method": "ping"}, {"jsonrpc": "2.0", "method": "notifications/initialized"}]), None).await.json().await.unwrap();
     assert_eq!(v.as_array().unwrap().len(), 1);
+}
+
+/// Codex polls these every few seconds even without the capability; an error
+/// filled the log with thousands of warnings (042).
+#[tokio::test]
+async fn empty_resource_and_prompt_listings() {
+    let (url, _) = start().await;
+    for (method, key) in [
+        ("resources/list", "resources"),
+        ("resources/templates/list", "resourceTemplates"),
+        ("prompts/list", "prompts"),
+    ] {
+        let v: Value = rpc(
+            &url,
+            json!({"jsonrpc": "2.0", "id": 7, "method": method}),
+            None,
+        )
+        .await
+        .json()
+        .await
+        .unwrap();
+        assert_eq!(v["result"], json!({ key: [] }), "{method}");
+    }
 }

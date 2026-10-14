@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: superseded by 0011
 ---
 
 # Entrega transitória de dados web pelo gateway

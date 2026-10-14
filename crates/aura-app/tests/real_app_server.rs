@@ -334,14 +334,14 @@ mod web {
         Identity,
         DisabledCitation,
         EphemeralPrivacy,
-        NormalPrivacy,
-        UncitedReadPrivacy,
-        ReasoningPrivacy,
+        NormalHistory,
+        UncitedRead,
+        Reasoning,
         ReasoningCompact,
     }
     impl Check {
-        fn private_reasoning(self) -> bool {
-            matches!(self, Self::ReasoningPrivacy | Self::ReasoningCompact)
+        fn reasoning(self) -> bool {
+            matches!(self, Self::Reasoning | Self::ReasoningCompact)
         }
     }
     async fn research_case(
@@ -357,7 +357,7 @@ mod web {
         // receives no key or plaintext; the independent probe decrypts the
         // provider's observed next request after this public journey finishes.
         let reasoning_ciphertext = check
-            .private_reasoning()
+            .reasoning()
             .then(|| {
                 std::env::var("AURA_WEB_REASONING_CIPHERTEXT")
                     .ok()
@@ -372,7 +372,7 @@ mod web {
         let scripted_answer = if comparison
             && !matches!(
                 check,
-                Check::UncitedReadPrivacy | Check::ReasoningPrivacy | Check::ReasoningCompact
+                Check::UncitedRead | Check::Reasoning | Check::ReasoningCompact
             ) {
             COMPARISON
         } else {
@@ -395,7 +395,7 @@ mod web {
                         body,
                         (
                             provider_gate.clone(),
-                            check.private_reasoning(),
+                            check.reasoning(),
                             provider_ciphertext.clone(),
                         ),
                         scripted_answer,
@@ -534,12 +534,11 @@ mod web {
         } else {
             tokio::time::timeout(
                 Duration::from_secs(30),
-                turn_with_private_events(
+                turn_with_events(
                     &host,
                     &mut events,
                     &conversation.thread_id,
                     "Pesquise o relatório público e verifique a produção na página.",
-                    check.private_reasoning(),
                 ),
             )
             .await
@@ -549,12 +548,11 @@ mod web {
             assert!(host.restart_agent().await);
             let (answer, calls) = tokio::time::timeout(
                 Duration::from_secs(30),
-                turn_with_private_events(
+                turn_with_events(
                     &host,
                     &mut events,
                     &conversation.thread_id,
                     "Pesquise novamente, depois do reinício do agente.",
-                    check.private_reasoning(),
                 ),
             )
             .await
@@ -592,7 +590,7 @@ mod web {
             Check::History
                 | Check::Identity
                 | Check::DisabledCitation
-                | Check::ReasoningPrivacy
+                | Check::Reasoning
                 | Check::ReasoningCompact
         ) {
             let reopened = Host::start(config()).await.unwrap();
@@ -662,7 +660,7 @@ mod web {
             }
             reopened.shutdown().await;
         }
-        if matches!(check, Check::EphemeralPrivacy | Check::NormalPrivacy) {
+        if matches!(check, Check::EphemeralPrivacy | Check::NormalHistory) {
             let mut pending = vec![paths.root.clone()];
             let mut contains_page = false;
             let mut contains_source_metadata = false;
@@ -693,10 +691,13 @@ mod web {
                     "ephemeral source metadata must not be written to disk"
                 );
             }
-            assert!(
-                !contains_page,
-                "Codex rollout persisted uncited web page content"
-            );
+            if check == Check::EphemeralPrivacy {
+                assert!(!contains_page, "ephemeral research wrote page content");
+            } else {
+                // 042: a normal Conversation keeps what the agent read so
+                // follow-up Turns and restarts can still use it.
+                assert!(contains_page, "page content kept in the local history");
+            }
         }
         provider_server.abort();
         let seen = seen.lock().unwrap();
@@ -720,7 +721,7 @@ mod web {
             if comparison
                 && !matches!(
                     check,
-                    Check::UncitedReadPrivacy | Check::ReasoningPrivacy | Check::ReasoningCompact
+                    Check::UncitedRead | Check::Reasoning | Check::ReasoningCompact
                 )
             {
                 COMPARISON
@@ -781,7 +782,7 @@ mod web {
                     && second.contains("https://independent.example/report")
             );
         }
-        if check.private_reasoning() && matches!(wire, Wire::Responses) {
+        if check.reasoning() && matches!(wire, Wire::Responses) {
             let reasoning = seen.requests[3]["input"]
                 .as_array()
                 .unwrap()
@@ -809,69 +810,11 @@ mod web {
         }
         if matches!(
             check,
-            Check::UncitedReadPrivacy | Check::ReasoningPrivacy | Check::ReasoningCompact
+            Check::UncitedRead | Check::Reasoning | Check::ReasoningCompact
         ) {
-            // The real provider has already received both literal page facts.
-            // Only W1 occurs in the final answer; W2's URL is not citation data.
+            // The provider received both pages; only W1 occurs in the answer,
+            // so only W1 becomes citation data (checked on the reopened history).
             assert!(!answer.contains("[[aura-source:W2]]"));
-            let mut pending = vec![paths.root.clone()];
-            let mut files_with_uncited_url = 0;
-            let mut persisted_fetch_calls = 0;
-            while let Some(path) = pending.pop() {
-                for entry in std::fs::read_dir(path).unwrap() {
-                    let path = entry.unwrap().path();
-                    if path.is_dir() {
-                        pending.push(path);
-                        continue;
-                    }
-                    let bytes = std::fs::read(&path).unwrap();
-                    let text = String::from_utf8_lossy(&bytes);
-                    files_with_uncited_url += usize::from(
-                        text.contains("https://independent.example/report")
-                            || (check.private_reasoning()
-                                && [
-                                    "Independent summary",
-                                    "Production: 30 units.",
-                                    "SYNTHETIC_REASONING_039_STAGE2",
-                                    "SYNTHETIC_REASONING_039_STAGE3",
-                                ]
-                                .iter()
-                                .any(|literal| text.contains(literal)))
-                            || reasoning_ciphertext
-                                .as_ref()
-                                .is_some_and(|literal| text.contains(literal.as_str())),
-                    );
-                    if path
-                        .extension()
-                        .is_some_and(|extension| extension == "jsonl")
-                    {
-                        for line in text.lines() {
-                            let Ok(record) = serde_json::from_str::<Value>(line) else {
-                                continue;
-                            };
-                            let item = &record["payload"];
-                            if item["type"] == "function_call"
-                                && item["arguments"].as_str().is_some_and(|arguments| {
-                                    arguments.contains("https://independent.example/report")
-                                })
-                            {
-                                persisted_fetch_calls += 1;
-                            }
-                        }
-                    }
-                }
-            }
-            if files_with_uncited_url != 0
-                || std::env::var_os("AURA_WEB_KEEP_SYNTHETIC_PROFILE").as_deref()
-                    == Some(std::ffi::OsStr::new("1"))
-            {
-                let kept = dir.keep();
-                eprintln!("Synthetic privacy fixture retained at {}", kept.display());
-            }
-            assert_eq!(
-                files_with_uncited_url, 0,
-                "Uncited source URL persisted in {files_with_uncited_url} file(s), including {persisted_fetch_calls} function call(s)"
-            );
         }
         if resume {
             let next_search = if comparison { 5 } else { 4 };
@@ -1046,64 +989,64 @@ mod web {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "needs pinned AURA_CODEX_BIN; pending normal-conversation rollout privacy gate"]
-    async fn web_normal_research_does_not_persist_uncited_page_content_in_codex_rollouts() {
+    #[ignore = "needs pinned AURA_CODEX_BIN; normal history keeps page content (042)"]
+    async fn web_normal_research_keeps_page_content_in_the_local_history() {
         research_case(
             Wire::Responses,
             ConversationMode::Chat,
             false,
             false,
             false,
-            Check::NormalPrivacy,
+            Check::NormalHistory,
         )
         .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "needs pinned AURA_CODEX_BIN; real disk privacy gate for a fetched but uncited source"]
-    async fn web_fetched_but_uncited_source_url_is_not_persisted_in_normal_history() {
+    #[ignore = "needs pinned AURA_CODEX_BIN; a fetched but uncited source"]
+    async fn web_fetched_but_uncited_source_is_never_cited() {
         research_case(
             Wire::Responses,
             ConversationMode::Chat,
             false,
             false,
             true,
-            Check::UncitedReadPrivacy,
+            Check::UncitedRead,
         )
         .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     #[ignore = "needs pinned AURA_CODEX_BIN; untrusted reasoning persistence gate"]
-    async fn web_reasoning_does_not_persist_a_fetched_but_uncited_source() {
+    async fn web_reasoning_turn_cites_only_the_source_it_used() {
         research_case(
             Wire::Responses,
             ConversationMode::Chat,
             false,
             false,
             true,
-            Check::ReasoningPrivacy,
+            Check::Reasoning,
         )
         .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     #[ignore = "needs pinned AURA_CODEX_BIN; reasoning expiry and continuation across restart"]
-    async fn web_private_reasoning_expires_and_research_continues_after_restart() {
+    async fn web_reasoning_research_continues_after_restart() {
         research_case(
             Wire::Responses,
             ConversationMode::Chat,
             false,
             true,
             true,
-            Check::ReasoningPrivacy,
+            Check::Reasoning,
         )
         .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
     #[ignore = "needs pinned AURA_CODEX_BIN; real compaction after private web reasoning"]
-    async fn web_compaction_preserves_history_without_reintroducing_private_reasoning() {
+    async fn web_compaction_preserves_history_with_reasoning() {
         research_case(
             Wire::Responses,
             ConversationMode::Chat,
@@ -1117,28 +1060,28 @@ mod web {
 
     #[tokio::test]
     #[ignore = "needs pinned AURA_CODEX_BIN; Chat reasoning privacy and restart"]
-    async fn web_chat_reasoning_keeps_private_sources_out_of_reopened_history() {
+    async fn web_chat_reasoning_reopened_history_keeps_only_cited_sources() {
         research_case(
             Wire::Chat,
             ConversationMode::Chat,
             false,
             true,
             true,
-            Check::ReasoningPrivacy,
+            Check::Reasoning,
         )
         .await;
     }
 
     #[tokio::test]
     #[ignore = "needs pinned AURA_CODEX_BIN; Anthropic thinking privacy and restart"]
-    async fn web_anthropic_thinking_keeps_private_sources_out_of_reopened_history() {
+    async fn web_anthropic_thinking_reopened_history_keeps_only_cited_sources() {
         research_case(
             Wire::Anthropic,
             ConversationMode::Chat,
             false,
             true,
             true,
-            Check::ReasoningPrivacy,
+            Check::Reasoning,
         )
         .await;
     }
@@ -1327,15 +1270,14 @@ async fn turn(
     thread: &str,
     text: &str,
 ) -> (String, Vec<String>) {
-    turn_with_private_events(host, rx, thread, text, false).await
+    turn_with_events(host, rx, thread, text).await
 }
 
-async fn turn_with_private_events(
+async fn turn_with_events(
     host: &Host,
     rx: &mut tokio::sync::broadcast::Receiver<HostEvent>,
     thread: &str,
     text: &str,
-    private_reasoning: bool,
 ) -> (String, Vec<String>) {
     host.send(SendRequest {
         thread_id: thread.into(),
@@ -1353,33 +1295,6 @@ async fn turn_with_private_events(
             .await
             .expect("turn finished in time")
             .expect("open");
-        if private_reasoning {
-            match &e {
-                HostEvent::Conversation(ConversationEvent::ReasoningDelta { delta, .. }) => {
-                    assert!(
-                        delta.is_empty(),
-                        "Private web reasoning must not become UI text"
-                    );
-                }
-                HostEvent::Conversation(ConversationEvent::ToolCall { title, detail, .. }) => {
-                    for text in [title.as_str(), detail.as_deref().unwrap_or_default()] {
-                        assert!(
-                            ![
-                                "auraPrivateReasoning",
-                                "aura-tool-arguments:v1:",
-                                "Independent summary",
-                                "Production: 30 units.",
-                                "https://independent.example/report"
-                            ]
-                            .iter()
-                            .any(|marker| text.contains(marker)),
-                            "UI tool fields contain no private text or references"
-                        );
-                    }
-                }
-                _ => {}
-            }
-        }
         match e {
             HostEvent::Conversation(ConversationEvent::MessageDelta { delta, .. }) => {
                 answer.push_str(&delta)

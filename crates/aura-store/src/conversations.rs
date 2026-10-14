@@ -96,6 +96,30 @@ impl<'a> ConversationsRepo<'a> {
         })
     }
 
+    /// Mode the agent was last told about (thread start or mode note); `None`
+    /// for conversations recorded before this was tracked.
+    pub fn instructed_mode(&self, thread_id: &str) -> Result<Option<String>> {
+        self.store.with_conn(|c| {
+            Ok(c.query_row(
+                "SELECT instructed_mode FROM conversations_meta WHERE thread_id = ?1",
+                [thread_id],
+                |r| r.get::<_, Option<String>>(0),
+            )
+            .optional()?
+            .flatten())
+        })
+    }
+
+    pub fn set_instructed_mode(&self, thread_id: &str, mode: &str) -> Result<()> {
+        self.store.with_conn(|c| {
+            c.execute(
+                "UPDATE conversations_meta SET instructed_mode = ?2 WHERE thread_id = ?1",
+                params![thread_id, mode],
+            )?;
+            Ok(())
+        })
+    }
+
     pub fn remove(&self, thread_id: &str) -> Result<()> {
         self.store.with_conn(|c| {
             c.execute(
@@ -164,6 +188,23 @@ mod tests {
         assert_eq!(repo.get("thr_1").unwrap().unwrap().mode, "task");
         repo.remove("thr_1").unwrap();
         assert_eq!(repo.get("thr_1").unwrap(), None);
+    }
+
+    #[test]
+    fn instructed_mode_is_unknown_until_recorded_and_survives_upsert() {
+        let store = Store::open_in_memory().unwrap();
+        let repo = ConversationsRepo::new(&store);
+        repo.upsert(&meta()).unwrap();
+        assert_eq!(repo.instructed_mode("thr_1").unwrap(), None);
+        repo.set_instructed_mode("thr_1", "chat").unwrap();
+        let mut m = meta();
+        m.mode = "task".into();
+        repo.upsert(&m).unwrap();
+        assert_eq!(
+            repo.instructed_mode("thr_1").unwrap().as_deref(),
+            Some("chat")
+        );
+        assert_eq!(repo.instructed_mode("missing").unwrap(), None);
     }
 
     #[test]

@@ -79,6 +79,10 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0015_reminder_prompt",
         include_str!("migrations/0015_reminder_prompt.sql"),
     ),
+    (
+        "0016_instructed_mode",
+        include_str!("migrations/0016_instructed_mode.sql"),
+    ),
 ];
 
 /// Shared handle to the database. Cloning is cheap.

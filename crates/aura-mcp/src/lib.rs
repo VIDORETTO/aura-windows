@@ -150,6 +150,10 @@ async fn handle_one(st: &McpState, msg: &Value, ctx: &CallContext) -> Option<Val
         }
         "ping" => rpc_result(&id, json!({})),
         "tools/list" => rpc_result(&id, json!({"tools": *st.tools})),
+        // Codex polls these regardless of capabilities; empty beats an error.
+        "resources/list" => rpc_result(&id, json!({"resources": []})),
+        "resources/templates/list" => rpc_result(&id, json!({"resourceTemplates": []})),
+        "prompts/list" => rpc_result(&id, json!({"prompts": []})),
         "tools/call" => {
             let name = params["name"].as_str().unwrap_or_default().to_string();
             if !st.tools.iter().any(|t| t.name == name) {

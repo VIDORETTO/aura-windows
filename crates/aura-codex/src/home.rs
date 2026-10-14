@@ -99,7 +99,16 @@ pub fn render(base: &BaseConfig, contributors: &[&dyn ConfigContributor]) -> Tab
     );
     root.insert(
         "features".into(),
-        table([("memories", Value::Boolean(base.memories))]),
+        table([
+            ("memories", Value::Boolean(base.memories)),
+            // Codex's plugin marketplace is not part of Aura: it cloned ~94 MB
+            // and called chatgpt.com on every start (042).
+            ("plugins", Value::Boolean(false)),
+            // Sub-agents and goals are not surfaced by Aura's UI; their tools
+            // and instructions only cost tokens on every request (042).
+            ("multi_agent", Value::Boolean(false)),
+            ("goals", Value::Boolean(false)),
+        ]),
     );
 
     if let Some(port) = base.mcp_port {
@@ -213,6 +222,9 @@ mod tests {
         assert!(text.contains("[model_providers.aura-groq]"));
         assert!(text.contains("url = \"http://127.0.0.1:4100/mcp\""));
         assert!(!text.to_lowercase().contains("sk-"));
+        for feature in ["plugins", "multi_agent", "goals"] {
+            assert_eq!(doc["features"][feature].as_bool(), Some(false), "{feature}");
+        }
     }
 
     #[test]

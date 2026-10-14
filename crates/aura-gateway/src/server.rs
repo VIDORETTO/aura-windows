@@ -115,7 +115,9 @@ async fn responses(
         .as_ref()
         .and_then(|resolver| thread.and_then(|thread| resolver.begin_response(thread)));
     let private = scope.is_some() || crate::tool_results::contains_private_marker(&body);
-    let protect_stream = resolver.is_some();
+    // Only a resolver that hands out a protector wants private calls; Aura's
+    // own web tools travel in the clear since 042.
+    let protect_stream = scope.is_some();
     let body = if let Some(resolver) = &resolver {
         match crate::tool_results::prepare(body, thread, resolver.as_ref()) {
             Ok((body, _)) => body,

@@ -200,21 +200,10 @@ impl WebTurns {
         Ok(())
     }
 }
+/// New web calls travel in the clear and stay in the local history (042), so
+/// follow-up Turns and restarts keep them. This only answers handles left in
+/// conversations recorded before that change.
 impl aura_gateway::tool_results::ToolResultResolver for WebTurns {
-    fn begin_response(
-        &self,
-        thread: &str,
-    ) -> Option<Arc<dyn aura_gateway::tool_results::ToolCallProtector>> {
-        let registry = self.registry.lock().unwrap();
-        let turn = registry.active.get(thread)?;
-        Some(Arc::new(PrivateCallScope {
-            service: self.service.clone(),
-            context: turn.context.clone(),
-            thread: thread.into(),
-            private_reasoning: self.service.has_private_context(&turn.context),
-        }))
-    }
-
     fn resolve_reasoning(
         &self,
         thread: &str,
@@ -289,52 +278,6 @@ impl aura_gateway::tool_results::ToolResultResolver for WebTurns {
             })
     }
 }
-struct PrivateCallScope {
-    service: Arc<WebService>,
-    context: WebContext,
-    thread: String,
-    private_reasoning: bool,
-}
-impl aura_gateway::tool_results::ToolCallProtector for PrivateCallScope {
-    fn protects_reasoning(&self) -> bool {
-        self.private_reasoning
-    }
-    fn protect_reasoning(
-        &self,
-        item: &Value,
-    ) -> Result<Value, aura_gateway::errors::UpstreamError> {
-        let handle = self
-            .service
-            .retain_private_reasoning(&self.context, &self.thread, item.to_string())
-            .map_err(|_| {
-                aura_gateway::errors::UpstreamError::new(
-                    409,
-                    "web_reasoning_unavailable",
-                    "Reasoning unavailable",
-                )
-            })?;
-        Ok(aura_gateway::tool_results::reasoning_envelope(
-            item, &handle,
-        ))
-    }
-    fn protect(
-        &self,
-        tool: &str,
-        arguments: &str,
-    ) -> Result<String, aura_gateway::errors::UpstreamError> {
-        let handle = self
-            .service
-            .retain_tool_arguments(&self.context, &self.thread, tool, arguments.into())
-            .map_err(|_| {
-                aura_gateway::errors::UpstreamError::new(
-                    409,
-                    "web_input_unavailable",
-                    "Web tool input is no longer available",
-                )
-            })?;
-        Ok(aura_gateway::tool_results::argument_envelope(tool, &handle))
-    }
-}
 fn error(error: WebError) -> ToolOutput {
     let code = serde_json::to_value(error).unwrap();
     ToolOutput::error(code.as_str().unwrap(), &error.to_string())
@@ -394,7 +337,7 @@ impl WebAccess for Host {
                     {
                         return error(err);
                     }
-                    output(&self.web.service, context, &thread_id, tool, result)
+                    output(result)
                 }
                 aura_mcp::tools::WEB_SEARCH => {
                     let input = match serde_json::from_value::<aura_web::SearchRequest>(args) {
@@ -414,30 +357,16 @@ impl WebAccess for Host {
                     {
                         return error(err);
                     }
-                    output(&self.web.service, context, &thread_id, tool, result)
+                    output(result)
                 }
                 _ => error(WebError::InvalidInput),
             }
         })
     }
 }
-fn output<T: serde::Serialize>(
-    service: &WebService,
-    context: &WebContext,
-    thread: &str,
-    tool: &str,
-    result: Result<T, WebError>,
-) -> ToolOutput {
+fn output<T: serde::Serialize>(result: Result<T, WebError>) -> ToolOutput {
     match result {
-        Ok(output) => match service.retain_tool_result(
-            context,
-            thread,
-            tool,
-            serde_json::to_string(&output).unwrap(),
-        ) {
-            Ok(handle) => ToolOutput::text(aura_gateway::tool_results::envelope(&handle)),
-            Err(err) => error(err),
-        },
+        Ok(output) => ToolOutput::text(serde_json::to_string(&output).unwrap()),
         Err(err) => error(err),
     }
 }

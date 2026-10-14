@@ -1,0 +1,26 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Windows 11 Pro 26200",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "crates/aura-mcp/src/lib.rs": "4974882d9022595ec5e6a066c544035c0a260229291317165c9e2dd282d51dd2",
+    "crates/aura-mcp/tests/protocol.rs": "9970d82faf50cab8d3c288c198aefce422f20b46c262623d51e2030cc3c2991b",
+    "specs/042-continuidade-e-ruido/change.md": "e2aadb9d02375ffb217df0734afbf56784a1cf8f7a7140fe503dc42a3a9c7f38"
+  },
+  "input_paths": [
+    "crates/aura-mcp/src/lib.rs",
+    "crates/aura-mcp/tests/protocol.rs",
+    "specs/042-continuidade-e-ruido/change.md"
+  ],
+  "limitations": "",
+  "observations": "Red: empty_resource_and_prompt_listings falhou com -32601; green 5/5.",
+  "procedure": "cargo test -p aura-mcp --test protocol",
+  "result": "passed",
+  "tested_revision": "local:33c9243cc5de16ad27707b54a12726c32eefa5ec796824e08135ee394607f96d",
+  "ticket": null,
+  "timestamp": "2026-10-14T01:45:14+00:00"
+}

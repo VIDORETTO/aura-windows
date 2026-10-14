@@ -123,7 +123,11 @@ pub fn detect(path: &Path, head: &[u8]) -> Result<Format, IngestError> {
 }
 
 fn looks_textual(head: &[u8]) -> bool {
-    !head.is_empty() && !head.contains(&0) && head.iter().filter(|b| **b < 0x09).count() == 0
+    // An empty file is empty text; a BOM marks UTF-8/UTF-16 text, whose
+    // zero bytes (PowerShell 5 `>`, Notepad "Unicode") are not binary.
+    head.is_empty()
+        || encoding_rs::Encoding::for_bom(head).is_some()
+        || (!head.contains(&0) && head.iter().filter(|b| **b < 0x09).count() == 0)
 }
 
 /// Heavy formats handled out of process (PDF, audio, video).
