@@ -19,9 +19,11 @@ on:
 permissions:
   contents: read
 
+# One queue for every trigger: a push and a release published together deploy in order,
+# so an older build never overwrites the page that already points to the new release.
 concurrency:
-  group: landing-${{ github.ref }}
-  cancel-in-progress: true
+  group: landing-pages
+  cancel-in-progress: false
 
 jobs:
   build:
