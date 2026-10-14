@@ -1,0 +1,51 @@
+---
+// Primary download CTA. Build-time release data; src/scripts/main.ts refreshes it in the browser.
+import Icon from "./Icon.astro";
+import { LATEST_URL, megabytes, type Release } from "../lib/release";
+
+interface Props {
+  release: Release | null;
+  size?: "md" | "lg";
+  meta?: boolean;
+}
+const { release, size = "lg", meta = true } = Astro.props;
+const href = release?.setup?.url ?? LATEST_URL;
+const details = release?.setup ? `Windows 10/11 · x64 · v${release.version} · ${megabytes(release.setup.bytes)} MB` : "Windows 10/11 · x64";
+---
+
+<div class:list={["dl", `dl-${size}`]}>
+  <a class="btn btn-primary" href={href} data-dl="setup" data-version={release?.version ?? ""}>
+    <Icon name="download" />
+    <span data-dl-label>Baixar para Windows</span>
+  </a>
+  {meta && <p class="dl-meta" data-dl-meta>{details}</p>}
+</div>
+
+<style>
+  .dl {
+    display: inline-grid;
+    gap: 12px;
+    justify-items: start;
+  }
+  .dl-lg .btn {
+    --h: 56px;
+    padding-inline: 28px;
+    font-size: 17px;
+  }
+  .dl-md .btn {
+    --h: 40px;
+    padding-inline: 16px;
+    font-size: 14px;
+    gap: 8px;
+  }
+  .dl-md .btn :global(svg) {
+    width: 16px;
+    height: 16px;
+  }
+  .dl-meta {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: var(--subtle);
+  }
+</style>

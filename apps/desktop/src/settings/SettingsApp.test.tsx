@@ -178,6 +178,16 @@ describe("Settings", () => {
     expect(accent()).toBe("");
   });
 
+  it("shows Aura's red as the default accent, without a duplicate red preset (043)", async () => {
+    await freshApp({ signedIn: true });
+    window.location.hash = "#/settings/general";
+    render(<SettingsApp />);
+    const swatch = await screen.findByRole("radio", { name: "Padrão" });
+    expect(swatch.style.background).toBe("rgb(217, 45, 53)");
+    expect(screen.queryByRole("radio", { name: "Vermelho" })).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Código hex da cor" })).toHaveValue("#d92d35");
+  });
+
   it("English MCP form localizes every field including secret fields", async () => {
     const bridge = await freshApp({ signedIn: true });
     await bridge.invoke("settings_update", { patch: { language: "en" } });

@@ -470,7 +470,6 @@ export const en: Record<MessageKey, string> = {
   "general.accent.teal": "Teal",
   "general.accent.green": "Green",
   "general.accent.orange": "Orange",
-  "general.accent.red": "Red",
   "general.accent.pink": "Pink",
   "general.accent.graphite": "Graphite",
   "general.accent.custom": "Custom color",

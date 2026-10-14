@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows 11 Pro 26200; Tauri CLI 2",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/desktop/public/logo.svg": "93505b5837e202fb774b66bb62dc5cdb4007024881da11f2c057fa057d31cac1",
+    "docs/assets/logo.png": "7e65e07be38710192def012dd9e9b07533187ce2a83494a457588c81a6af00e5",
+    "docs/assets/logo.svg": "93505b5837e202fb774b66bb62dc5cdb4007024881da11f2c057fa057d31cac1",
+    "specs/043-acento-vermelho/change.md": "187b0385ef64fad29a7ce8031519884cdf0a37a59bc46d5cd6e6fc83a2b2bd2c"
+  },
+  "input_paths": [
+    "docs/assets/logo.svg",
+    "apps/desktop/public/logo.svg",
+    "docs/assets/logo.png",
+    "specs/043-acento-vermelho/change.md"
+  ],
+  "limitations": "",
+  "observations": "Logos sem cores roxas; 15 ícones regenerados; logo.png 512x512 conferido visualmente.",
+  "procedure": "pnpm -C apps/desktop tauri icon ../../docs/assets/logo.svg -o <tmp>; copiar arquivos versionados; grep -i 5B5BF7/A24BF2 nos logos",
+  "result": "passed",
+  "tested_revision": "local:79829ac29f8960500bd81a23de7c8d7fc3d18a904cbc31671498589beae54005",
+  "ticket": null,
+  "timestamp": "2026-10-14T02:50:19+00:00"
+}

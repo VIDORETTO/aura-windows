@@ -470,7 +470,6 @@ export const ptBR = {
   "general.accent.teal": "Verde-azulado",
   "general.accent.green": "Verde",
   "general.accent.orange": "Laranja",
-  "general.accent.red": "Vermelho",
   "general.accent.pink": "Rosa",
   "general.accent.graphite": "Grafite",
   "general.accent.custom": "Cor personalizada",

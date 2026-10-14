@@ -1,0 +1,127 @@
+---
+// Shortcut keyboard (PLANO.md §4.6). Defaults from the README; all global ones are configurable.
+const shortcuts = [
+  { keys: ["Ctrl", "Shift", "Espaço"], action: "Abrir ou ocultar o Overlay" },
+  { keys: ["Ctrl", "Shift", "S"], action: "Anexar a tela à conversa" },
+  { keys: ["Ctrl", "Espaço"], action: "Segure para ditar com o Overlay aberto" },
+  { keys: ["Ctrl", "Alt", "Espaço"], action: "Ditar em qualquer aplicativo" },
+  { keys: ["Ctrl", "Shift", "L"], action: "Ler a resposta em voz alta" },
+  { keys: ["Ctrl", "Shift", "Enter"], action: "Substituir o texto selecionado pela resposta" },
+  { keys: ["/"], action: "Comandos rápidos" },
+  { keys: ["@"], action: "Adicionar contexto: tela, região, seleção, arquivo" },
+];
+---
+
+<section class="section" id="atalhos" aria-labelledby="keys-title">
+  <div class="container">
+    <div class="section-head center">
+      <p class="eyebrow" data-reveal>Atalhos</p>
+      <h2 class="title" id="keys-title" data-reveal style="--i:1">Tudo a um atalho.</h2>
+      <p class="lead" data-reveal style="--i:2">Passe o mouse ou navegue com Tab. Os atalhos globais podem ser trocados nas configurações.</p>
+    </div>
+    <div class="board" data-keys>
+      <p class="readout" aria-live="polite" data-readout>
+        <span class="r-keys">Ctrl + Shift + Espaço</span>
+        <span class="r-action">Abrir ou ocultar o Overlay</span>
+      </p>
+      <ul class="combos">
+        {
+          shortcuts.map((s, i) => (
+            <li data-reveal style={`--i:${i % 4}`}>
+              <button type="button" class:list={["combo", i === 0 && "on"]} data-combo={s.keys.join(" + ")} data-action={s.action}>
+                {s.keys.map((k) => <kbd class="key">{k}</kbd>)}
+                <span class="sr-only">: {s.action}</span>
+              </button>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .center {
+    margin-inline: auto;
+    text-align: center;
+    justify-items: center;
+  }
+  .board {
+    display: grid;
+    gap: 40px;
+    padding: clamp(24px, 4vw, 48px);
+    border-radius: 24px;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(60% 120% at 50% 0%, rgb(240 64 68 / 0.1), transparent 60%),
+      var(--bg-elev);
+  }
+  .readout {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    min-height: 92px;
+    text-align: center;
+  }
+  .r-keys {
+    font: 500 clamp(1.4rem, 2vw + 1rem, 2.4rem) / 1.1 var(--mono);
+    color: var(--red-300);
+    letter-spacing: -0.02em;
+  }
+  .r-action {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .readout.swap span {
+    animation: swap 450ms var(--ease);
+  }
+  @keyframes swap {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+  .combos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+  .combo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    transition:
+      border-color 200ms var(--ease),
+      background-color 200ms var(--ease);
+  }
+  .combo .key {
+    font-size: 14px;
+    transition:
+      translate 120ms var(--ease),
+      color 200ms var(--ease),
+      border-color 200ms var(--ease);
+  }
+  .combo:hover,
+  .combo.on {
+    border-color: rgb(240 64 68 / 0.3);
+    background: rgb(240 64 68 / 0.06);
+  }
+  .combo.on .key {
+    color: var(--red-300);
+    border-color: rgb(240 64 68 / 0.5);
+  }
+  .combo:active .key {
+    translate: 0 2px;
+  }
+</style>

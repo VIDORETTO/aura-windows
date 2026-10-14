@@ -1,0 +1,278 @@
+---
+import { Image } from "astro:assets";
+import Icon, { type IconName } from "./Icon.astro";
+import web from "../assets/screens/pesquisa-web.png";
+import voz from "../assets/screens/voz.png";
+import vozConfig from "../assets/screens/voice-secao-1.png";
+import tarefas from "../assets/screens/tarefas.png";
+import arquivos from "../assets/screens/arquivos.png";
+import reuniao from "../assets/screens/reuniao.png";
+import minibar from "../assets/screens/minibar.png";
+import extensoes from "../assets/screens/extensions-secao-1.png";
+import historico from "../assets/screens/historico.png";
+
+type Card = {
+  icon: IconName;
+  title: string;
+  text: string;
+  img: ImageMetadata;
+  alt: string;
+  cls: string;
+  fit: "top" | "strip" | "left" | "right";
+  /** Floating strip over the main image (the live dictation over the voice settings). */
+  extra?: { img: ImageMetadata; alt: string };
+};
+const cards: Card[] = [
+  { icon: "globe", title: "Pesquisa web com fontes", text: "Busca e lê páginas públicas e mostra de onde veio cada resposta. Sem chave paga de busca.", img: web, alt: "Resposta sobre a WCAG 2.2 com fontes do W3C clicáveis.", cls: "c-web", fit: "top" },
+  { icon: "mic", title: "Voz local", text: "Dite com transcrição no seu computador e ouça as respostas.", img: vozConfig, alt: "Configurações de voz com o modelo de transcrição local.", cls: "c-voice", fit: "top", extra: { img: voz, alt: "Overlay compacto transcrevendo um ditado." } },
+  { icon: "tasks", title: "Chat, Tarefa e Plano", text: "Converse, execute trabalho com ferramentas ou prepare um plano. Alterações só com sua aprovação.", img: tarefas, alt: "Modo Tarefa pedindo aprovação para criar um arquivo.", cls: "c-task", fit: "left" },
+  { icon: "paperclip", title: "Anexos de verdade", text: "Imagens, PDFs, planilhas, documentos, áudio e vídeo.", img: arquivos, alt: "Painel de arquivos gerados na conversa.", cls: "c-files", fit: "right" },
+  { icon: "users", title: "Reuniões", text: "Prepare, transcreva e saia com notas e próximos passos.", img: reuniao, alt: "Reunião em andamento com transcrição e resumo.", cls: "c-meet", fit: "left" },
+  { icon: "panel", title: "Minibar", text: "Acompanhe a resposta numa barra discreta enquanto continua trabalhando.", img: minibar, alt: "Minibar do Aura com uma resposta em andamento.", cls: "c-mini", fit: "strip" },
+  { icon: "plug", title: "Extensões", text: "Skills, servidores MCP e comandos rápidos.", img: extensoes, alt: "Lista de Skills instaladas.", cls: "c-ext", fit: "top" },
+  { icon: "history", title: "Memória e histórico", text: "Retome conversas, guarde memórias e crie perfis por aplicativo.", img: historico, alt: "Histórico de conversas aberto ao lado do chat.", cls: "c-hist", fit: "left" },
+];
+---
+
+<section class="section" id="recursos" aria-labelledby="features-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>Recursos</p>
+      <h2 class="title" id="features-title" data-reveal style="--i:1">Tudo o que você pede a uma IA, <span class="grad">no lugar onde você trabalha.</span></h2>
+    </div>
+    <ul class="bento">
+      {
+        cards.map((c, i) => (
+          <li class:list={["card", c.cls]} data-reveal data-glow style={`--i:${i % 4}`}>
+            <div class="text">
+              <span class="ic">
+                <Icon name={c.icon} size={18} />
+              </span>
+              <h3>{c.title}</h3>
+              <p>{c.text}</p>
+            </div>
+            <div class:list={["media", `fit-${c.fit}`]}>
+              <Image src={c.img} alt={c.alt} widths={[480, 820, 1280]} sizes="(min-width: 1024px) 50vw, 92vw" loading="lazy" />
+            </div>
+            {c.extra && (
+              <div class="extra">
+                <Image src={c.extra.img} alt={c.extra.alt} widths={[480, 820]} sizes="(min-width: 1024px) 380px, 92vw" loading="lazy" />
+              </div>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .bento {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: minmax(220px, auto);
+    gap: 16px;
+  }
+  .card {
+    --x: 50%;
+    --y: 0%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.025), transparent 40%), var(--surface);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      translate 400ms var(--ease),
+      border-color 300ms var(--ease);
+  }
+  /* glow-follow: border lights up under the cursor (vars set by main.ts). */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: radial-gradient(260px circle at var(--x) var(--y), rgb(240 64 68 / 0.7), transparent 60%);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 300ms var(--ease);
+    pointer-events: none;
+  }
+  .card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(400px circle at var(--x) var(--y), rgb(240 64 68 / 0.08), transparent 60%);
+    opacity: 0;
+    transition: opacity 300ms var(--ease);
+  }
+  .card:hover {
+    translate: 0 -3px;
+  }
+  .card:hover::before,
+  .card:hover::after {
+    opacity: 1;
+  }
+  .text {
+    display: grid;
+    gap: 8px;
+    padding: 24px 24px 20px;
+  }
+  .ic {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    color: var(--red-400);
+    background: var(--red-900);
+    border: 1px solid rgb(240 64 68 / 0.25);
+    margin-bottom: 6px;
+  }
+  h3 {
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+  }
+  .text p {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .media {
+    position: relative;
+    flex: 1;
+    min-height: 140px;
+    margin-left: 24px;
+    border-top-left-radius: 10px;
+    border: 1px solid var(--line-strong);
+    border-right: 0;
+    border-bottom: 0;
+    overflow: hidden;
+  }
+  .media :global(img) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    transition: scale 800ms var(--ease);
+    transform-origin: top left;
+  }
+  .card:hover .media :global(img) {
+    scale: 1.025;
+  }
+  .media.fit-left :global(img) {
+    width: 150%;
+    max-width: none;
+  }
+  .media.fit-right :global(img) {
+    left: auto;
+    right: 0;
+    width: 150%;
+    max-width: none;
+    transform-origin: top right;
+  }
+  .extra {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    z-index: 1;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgb(240 64 68 / 0.35);
+    box-shadow:
+      0 20px 40px -10px rgb(0 0 0 / 0.9),
+      0 0 40px -10px var(--glow);
+    animation: float 5s var(--ease) infinite alternate;
+  }
+  @keyframes float {
+    to {
+      translate: 0 -6px;
+    }
+  }
+  .extra :global(img) {
+    width: 100%;
+  }
+  .media.fit-strip {
+    flex: none;
+    min-height: 0;
+    margin: auto 24px 24px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+  }
+  .media.fit-strip :global(img) {
+    position: static;
+  }
+
+  .c-web {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+  .c-web .media {
+    min-height: 360px;
+  }
+  .c-voice {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .c-voice .text {
+    padding-bottom: 0;
+  }
+  .c-task {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+  .c-files {
+    grid-column: span 4;
+  }
+  .c-meet {
+    grid-column: span 4;
+  }
+  .c-mini {
+    grid-column: span 2;
+  }
+  .c-ext {
+    grid-column: span 2;
+  }
+  .c-hist {
+    grid-column: span 2;
+  }
+  .c-ext .media,
+  .c-hist .media {
+    min-height: 180px;
+  }
+
+  @media (max-width: 1023px) {
+    .bento {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .card {
+      grid-column: span 2 !important;
+      grid-row: auto !important;
+    }
+    .media {
+      min-height: 220px;
+    }
+  }
+  @media (max-width: 600px) {
+    .media {
+      min-height: 180px;
+    }
+    .c-web .media {
+      min-height: 280px;
+    }
+  }
+</style>

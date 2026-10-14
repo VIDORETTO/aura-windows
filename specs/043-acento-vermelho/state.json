@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "43d32a0eb852e539296192e38e26ccee26e93be5"
+  },
+  "blockers": [],
+  "effort_id": "043-acento-vermelho",
+  "inputs": {
+    "contract": {
+      "fingerprint": "2c194c03a3fb89b3965e11455bdd26280ec01e93714c7208c2295c9f88136995",
+      "path": "specs/043-acento-vermelho/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

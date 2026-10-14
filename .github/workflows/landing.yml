@@ -1,0 +1,67 @@
+name: Landing
+
+# Builds apps/landing and publishes it on GitHub Pages (effort 044).
+# A published release rebuilds the page so the download button points to the new installer.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/landing/**"
+      - ".github/workflows/landing.yml"
+  pull_request:
+    paths:
+      - "apps/landing/**"
+      - ".github/workflows/landing.yml"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: landing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: apps/landing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apps/landing/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm check
+      - run: pnpm build
+        env:
+          # Authenticated API calls avoid the 60 requests/hour limit when reading the latest release.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm budget
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
+        with:
+          path: apps/landing/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.event_name == 'release')
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

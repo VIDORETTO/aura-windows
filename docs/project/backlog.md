@@ -78,3 +78,6 @@
 | `039-web-gratuita-do-agente` | Busca e leitura da web gratuitas para o agente | `effort` | `—` | `closed` | `complete` | `7/7` | Web0.3 published; metadata and canonical LF revalidated explicitly in041; DPI150/200 remains pending in038. |
 | `040-overlay-estavel-no-monitor` | Manter o Overlay no monitor durante a conversa | `effort` | `—` | `closed` | `complete` | `1/1` | Correção entregue em target/release/aura-monitor-fix.exe; abrir após Sair da versão anterior. SC002 observação cotidiana posterior. |
 | `041-publicacao-github-030` | Publicação profissional do Aura 0.3.0 | `effort` | `—` | `closed` | `complete` | `—` | Release0.3 publicada e GitHub consolidado emmain; canonização documentada. QA150/200 e Windowslimpo continuam pendentes. |
+| `042-continuidade-e-ruido` | Change: Continuidade da conversa e ruído do runtime | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `043-acento-vermelho` | Change: Acento vermelho da marca | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
+| `044-landing-page` | Change: Landing page | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |

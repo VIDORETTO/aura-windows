@@ -1,0 +1,84 @@
+---
+import Icon from "./Icon.astro";
+import { REPO_URL } from "../lib/release";
+
+interface Props {
+  stars: number | null;
+  version: string | null;
+}
+const { stars, version } = Astro.props;
+const facts = [
+  ["Licença", "MIT ou Apache-2.0"],
+  ["Feito com", "Rust + Tauri 2"],
+  ["Versão", version ? `v${version}` : "última"],
+  ...(stars !== null && stars >= 10 ? [["Estrelas", new Intl.NumberFormat("pt-BR").format(stars)]] : []),
+];
+---
+
+<section class="oss" aria-labelledby="oss-title">
+  <div class="container inner" data-reveal>
+    <div class="lead-in">
+      <span class="ic"><Icon name="code" size={20} /></span>
+      <h2 id="oss-title">Código aberto. Leia, audite e contribua.</h2>
+    </div>
+    <dl>
+      {
+        facts.map(([k, v]) => (
+          <div>
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <a class="btn btn-ghost" href={REPO_URL}><Icon name="github" /> Ver código-fonte</a>
+  </div>
+</section>
+
+<style>
+  .oss {
+    padding-block: 32px;
+    border-block: 1px solid var(--line);
+    background: var(--bg-elev);
+  }
+  .inner {
+    display: flex;
+    align-items: center;
+    gap: 24px 48px;
+    flex-wrap: wrap;
+  }
+  .lead-in {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-right: auto;
+  }
+  .ic {
+    color: var(--red-400);
+  }
+  h2 {
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+  dl {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 0;
+  }
+  dt {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtle);
+    margin-bottom: 6px;
+  }
+  dd {
+    margin: 0;
+    font-weight: 500;
+  }
+  .btn {
+    --h: 44px;
+    font-size: 15px;
+  }
+</style>

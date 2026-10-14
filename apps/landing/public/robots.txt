@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vidoretto.github.io/aura-windows/sitemap-index.xml

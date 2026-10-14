@@ -312,7 +312,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "aura-app"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-asr",
  "aura-audio",
@@ -348,7 +348,7 @@ dependencies = [
 
 [[package]]
 name = "aura-asr"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-audio",
  "aura-core",
@@ -370,7 +370,7 @@ dependencies = [
 
 [[package]]
 name = "aura-audio"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-capture",
  "aura-core",
@@ -388,7 +388,7 @@ dependencies = [
 
 [[package]]
 name = "aura-auth"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-core",
  "aura-store",
@@ -411,7 +411,7 @@ dependencies = [
 
 [[package]]
 name = "aura-bench"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-app",
  "aura-capture",
@@ -426,7 +426,7 @@ dependencies = [
 
 [[package]]
 name = "aura-capture"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-core",
  "aura-policy",
@@ -444,7 +444,7 @@ dependencies = [
 
 [[package]]
 name = "aura-codex"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "anyhow",
  "aura-core",
@@ -468,7 +468,7 @@ dependencies = [
 
 [[package]]
 name = "aura-core"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "regex",
  "serde",
@@ -483,7 +483,7 @@ dependencies = [
 
 [[package]]
 name = "aura-desktop"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-app",
  "aura-asr",
@@ -520,7 +520,7 @@ dependencies = [
 
 [[package]]
 name = "aura-extensions"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-codex",
  "aura-core",
@@ -537,7 +537,7 @@ dependencies = [
 
 [[package]]
 name = "aura-gateway"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-codex",
  "aura-core",
@@ -564,7 +564,7 @@ dependencies = [
 
 [[package]]
 name = "aura-ingest"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-core",
  "calamine",
@@ -587,7 +587,7 @@ dependencies = [
 
 [[package]]
 name = "aura-mcp"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-core",
  "axum",
@@ -602,7 +602,7 @@ dependencies = [
 
 [[package]]
 name = "aura-policy"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-core",
  "serde",
@@ -611,7 +611,7 @@ dependencies = [
 
 [[package]]
 name = "aura-store"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aes-gcm",
  "aura-core",
@@ -628,7 +628,7 @@ dependencies = [
 
 [[package]]
 name = "aura-web"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "chrono",
  "dom_query",
@@ -648,7 +648,7 @@ dependencies = [
 
 [[package]]
 name = "aura-win"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-audio",
  "aura-capture",
@@ -664,7 +664,7 @@ dependencies = [
 
 [[package]]
 name = "aura-worker"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "aura-asr",
  "aura-core",

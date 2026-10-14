@@ -1,0 +1,157 @@
+---
+import DownloadButton from "./DownloadButton.astro";
+import Icon from "./Icon.astro";
+import Logo from "./Logo.astro";
+import { LATEST_URL, REPO_URL, releaseDate, type Release } from "../lib/release";
+
+interface Props {
+  release: Release | null;
+}
+const { release } = Astro.props;
+const hash = release?.setup?.sha256 ?? null;
+---
+
+<section class="section final" id="baixar" aria-labelledby="final-title">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="container inner">
+    <div class="mark" data-reveal><Logo size={88} /></div>
+    <h2 class="title" id="final-title" data-reveal style="--i:1">Pronto quando você precisar.</h2>
+    <p class="lead" data-reveal style="--i:2">Instale, conecte sua conta e pressione Ctrl+Shift+Espaço.</p>
+    <div data-reveal style="--i:3">
+      <DownloadButton release={release} />
+    </div>
+    <p class="platform" data-platform hidden>
+      O Aura é para Windows 10/11. <button type="button" class="link" data-copy-link={release?.setup?.url ?? LATEST_URL}>Copiar o link</button> para baixar no seu PC.
+    </p>
+    <div class="details" data-reveal style="--i:4">
+      {release && <p data-release-date>Publicada em {releaseDate(release.publishedAt)}</p>}
+      <div class="hash" data-hash-row hidden={!hash}>
+        <span class="label">SHA-256</span>
+        <code data-hash>{hash}</code>
+        <button type="button" class="copy" data-copy-hash aria-label="Copiar SHA-256">
+          <Icon name="copy" size={15} class="i-copy" />
+          <Icon name="check" size={15} class="i-check" />
+        </button>
+      </div>
+      <ul class="links">
+        <li><a href={release?.notesUrl ?? LATEST_URL} data-notes>Notas da versão</a></li>
+        {release?.msi && <li><a href={release.msi.url} data-dl="msi">Instalador MSI</a></li>}
+        <li><a href={`${REPO_URL}/releases`}>Todas as versões</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    overflow: clip;
+    text-align: center;
+  }
+  .glow {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: min(1000px, 140vw);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: radial-gradient(closest-side, rgb(240 64 68 / 0.22), rgb(168 27 38 / 0.08) 50%, transparent);
+    pointer-events: none;
+  }
+  .inner {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+  }
+  .mark {
+    filter: drop-shadow(0 20px 50px rgb(240 64 68 / 0.45));
+    margin-bottom: 8px;
+  }
+  .title {
+    font-size: clamp(2.4rem, 4vw + 1rem, 4.25rem);
+    letter-spacing: -0.04em;
+  }
+  .inner :global(.dl) {
+    justify-items: center;
+  }
+  .platform {
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--red-400);
+    font: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .details {
+    display: grid;
+    justify-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    color: var(--subtle);
+    font-size: 14px;
+  }
+  .hash {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 100%;
+    padding: 8px 8px 8px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .hash[hidden] {
+    display: none;
+  }
+  .label {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.1em;
+    color: var(--red-400);
+  }
+  code {
+    font: 500 12px/1.4 var(--mono);
+    color: var(--muted);
+    overflow-wrap: anywhere;
+    text-align: left;
+  }
+  .copy {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .copy:hover {
+    color: var(--text);
+    border-color: var(--line-strong);
+  }
+  .copy :global(.i-check),
+  .copy.done :global(.i-copy) {
+    display: none;
+  }
+  .copy.done :global(.i-check) {
+    display: block;
+    color: var(--red-400);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

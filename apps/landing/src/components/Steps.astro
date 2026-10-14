@@ -1,0 +1,228 @@
+---
+import { Image } from "astro:assets";
+import compact from "../assets/screens/overlay-pergunta.png";
+import contexto from "../assets/screens/contexto.png";
+import conversa from "../assets/screens/conversa.png";
+
+const steps = [
+  {
+    n: "01",
+    title: "Abra com um atalho.",
+    text: "Ctrl+Shift+Espaço, de qualquer aplicativo. O Overlay aparece por cima do que você está fazendo e some quando você termina.",
+  },
+  {
+    n: "02",
+    title: "Pergunte com contexto.",
+    text: "Digite @região para mostrar uma parte da tela, @seleção para usar o texto marcado ou @arquivo para anexar. Ou simplesmente fale.",
+  },
+  {
+    n: "03",
+    title: "Leve a resposta de volta.",
+    text: "Copie, ouça em voz alta ou insira o texto direto no aplicativo em que você estava. Sem trocar de janela.",
+  },
+];
+---
+
+<section class="section steps" id="como-funciona" aria-labelledby="steps-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>Como funciona</p>
+      <h2 class="title" id="steps-title" data-reveal style="--i:1">Do atalho à resposta em três passos.</h2>
+    </div>
+    <div class="grid" data-steps>
+      <ol class="list">
+        {
+          steps.map((s, i) => (
+            <li class="step" data-step={i} class:list={[i === 0 && "active"]}>
+              <span class="n">{s.n}</span>
+              <h3>{s.title}</h3>
+              <p>{s.text}</p>
+              <div class="inline-shot" aria-hidden="true">
+                {i === 0 && <Image src={compact} alt="" widths={[820, 1640]} sizes="92vw" />}
+                {i === 1 && <Image src={contexto} alt="" widths={[820, 1640]} sizes="92vw" />}
+                {i === 2 && <Image src={conversa} alt="" widths={[820, 1640]} sizes="92vw" />}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+      <div class="visual" aria-hidden="true">
+        <div class="sticky">
+          <div class="frame shots">
+            <div class="shot s0 on">
+              <div class="mini-desk">
+                <Image src={compact} alt="" widths={[820, 1640]} sizes="(min-width: 1024px) 620px, 92vw" />
+              </div>
+            </div>
+            <div class="shot s1"><Image src={contexto} alt="" widths={[820, 1640]} sizes="(min-width: 1024px) 620px, 92vw" /></div>
+            <div class="shot s2">
+              <Image src={conversa} alt="" widths={[820, 1640]} sizes="(min-width: 1024px) 620px, 92vw" />
+              <span class="ring-hl"></span>
+            </div>
+          </div>
+          <div class="dots">{steps.map((_, i) => <span class:list={[i === 0 && "on"]}></span>)}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 6vw, 96px);
+  }
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .step {
+    min-height: 70vh;
+    display: grid;
+    align-content: center;
+    gap: 14px;
+  }
+  /* Inactive steps fade to --subtle (still AA), the active one lights up. */
+  .step .n,
+  .step h3,
+  .step p {
+    color: var(--subtle);
+    transition: color 500ms var(--ease);
+  }
+  .step.active .n {
+    color: var(--red-400);
+  }
+  .step.active h3 {
+    color: var(--text);
+  }
+  .step.active p {
+    color: var(--muted);
+  }
+  .step:first-child {
+    min-height: 50vh;
+    align-content: start;
+    padding-top: 12vh;
+  }
+  .n {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  h3 {
+    font-size: clamp(1.6rem, 1.5vw + 1rem, 2.25rem);
+  }
+  .step p {
+    max-width: 44ch;
+  }
+  .inline-shot {
+    display: none;
+  }
+  .sticky {
+    position: sticky;
+    top: calc(50vh - min(22vw, 260px));
+    display: grid;
+    gap: 20px;
+  }
+  .shots {
+    aspect-ratio: 820 / 610;
+    background: rgb(26 24 24);
+  }
+  .shot {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    scale: 0.985;
+    transition:
+      opacity 500ms var(--ease),
+      scale 600ms var(--ease);
+  }
+  .shot.on {
+    opacity: 1;
+    scale: 1;
+  }
+  .shot :global(img) {
+    width: 100%;
+  }
+  .mini-desk {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    align-content: start;
+    padding: 9% 7%;
+    background:
+      radial-gradient(70% 80% at 75% 35%, rgb(240 64 68 / 0.45), transparent 60%),
+      conic-gradient(from 210deg at 70% 40%, #2a0b0e, #5a1018, #1a0607, #3b0c12, #2a0b0e);
+  }
+  .mini-desk :global(img) {
+    border-radius: 8px;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    box-shadow: 0 20px 50px -10px rgb(0 0 0 / 0.8);
+  }
+  /* Highlight on "Inserir no app" (capture coordinates: x 18–29%, y 40–44%). */
+  .ring-hl {
+    position: absolute;
+    left: 17.6%;
+    top: 40.2%;
+    width: 12.4%;
+    height: 4.6%;
+    border-radius: 8px;
+    border: 2px solid var(--red-500);
+    box-shadow: 0 0 0 6px rgb(240 64 68 / 0.15), 0 0 30px var(--glow);
+    opacity: 0;
+    scale: 1.3;
+    transition:
+      opacity 400ms var(--ease) 300ms,
+      scale 500ms var(--spring) 300ms;
+  }
+  .s2.on .ring-hl {
+    opacity: 1;
+    scale: 1;
+  }
+  .dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+  .dots span {
+    width: 28px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--line-strong);
+    transition: background-color 400ms var(--ease);
+  }
+  .dots span.on {
+    background: var(--red-500);
+  }
+
+  @media (max-width: 1023px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .visual {
+      display: none;
+    }
+    .step,
+    .step:first-child {
+      min-height: 0;
+      padding: 0 0 56px;
+    }
+    .step .n {
+      color: var(--red-400);
+    }
+    .step h3 {
+      color: var(--text);
+    }
+    .step p {
+      color: var(--muted);
+    }
+    .inline-shot {
+      display: block;
+      margin-top: 12px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+    }
+  }
+</style>

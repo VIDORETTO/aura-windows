@@ -1,0 +1,27 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002"
+  ],
+  "environment": "Windows 11 Pro 26200; Node 25.2.1",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/landing/src/lib/release.test.ts": "0f0764ed8a9ed603e2e2b93bfcb6bb742ebf38528f8dbddc7f63ac37d5958d23",
+    "apps/landing/src/lib/release.ts": "e74aa7913c802e4b48f2305441ec6237700c2b80c56162a054e2c2dfc2ea5a14",
+    "specs/044-landing-page/change.md": "c89cee008dc834dfe02273958af697d520c8dd3ad069dc7066d0172cd493d27c"
+  },
+  "input_paths": [
+    "apps/landing/src/lib/release.ts",
+    "apps/landing/src/lib/release.test.ts",
+    "specs/044-landing-page/change.md"
+  ],
+  "limitations": "",
+  "observations": "5/5: instalador NSIS escolhido em vez do .sig, digest da API mantido, rascunho rejeitado, comparação de versões, tamanho em MB.",
+  "procedure": "pnpm -C apps/landing test (node --test src/lib/release.test.ts)",
+  "result": "passed",
+  "tested_revision": "local:b31ec858b2dfbc05622c4200f6569d3fec211b9183331674e479c7545a7141f4",
+  "ticket": null,
+  "timestamp": "2026-10-14T03:14:57+00:00"
+}

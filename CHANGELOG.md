@@ -5,6 +5,17 @@ and [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-14
+
+### Changed
+- Aura's brand color is now red: the default accent is `#d92d35`, and the logo, window,
+  tray and installer icons use the red gradient. Dark and light neutrals are slightly warmer.
+  The separate "Red" accent preset was removed because it duplicated the default (043).
+
+### Added
+- Landing page in `apps/landing` (Astro, static) with the download of the latest release,
+  published on GitHub Pages by the `Landing` workflow (044).
+
 ## [0.3.1] - 2026-10-13
 
 ### Fixed

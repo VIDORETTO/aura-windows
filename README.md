@@ -15,7 +15,7 @@ Windows AI assistant · ChatGPT sign-in · Local voice · Free web search
 [![Rust](https://img.shields.io/badge/Rust-1.98.1-orange)](rust-toolchain.toml)
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8D8)](apps/desktop/src-tauri/Cargo.toml)
 
-[**Baixar Aura**](https://github.com/VIDORETTO/aura-windows/releases/latest) · [Galeria do app](docs/media/2026-10-11/README.md) · [Primeiros passos](#primeiros-passos) · [Guia de uso](docs/usage.md) · [Desenvolvimento](#desenvolvimento) · [Reportar problema](https://github.com/VIDORETTO/aura-windows/issues)
+[**Baixar Aura**](https://github.com/VIDORETTO/aura-windows/releases/latest) · [Site](https://vidoretto.github.io/aura-windows/) · [Galeria do app](docs/media/2026-10-11/README.md) · [Primeiros passos](#primeiros-passos) · [Guia de uso](docs/usage.md) · [Desenvolvimento](#desenvolvimento) · [Reportar problema](https://github.com/VIDORETTO/aura-windows/issues)
 
 </div>
 
@@ -23,7 +23,7 @@ Windows AI assistant · ChatGPT sign-in · Local voice · Free web search
 
 O Aura fica na bandeja do Windows. Pressione **Ctrl+Shift+Espaço** para abrir o Overlay e conversar com uma IA sem sair do aplicativo em que está trabalhando. Conecte sua conta ChatGPT ou configure um provedor compatível, inclusive um servidor local.
 
-A versão **0.3.1** faz o agente lembrar, nas mensagens seguintes e após reiniciar, o que pesquisou na web, e corrige anexos UTF-16, horários de lembretes e a retomada do agente. A 0.3.0 trouxe pesquisa e leitura de páginas com fontes clicáveis, seletores de modelo/raciocínio e estabilidade entre monitores. Veja o [changelog](CHANGELOG.md) e as [notas da release](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.1).
+A versão **0.3.2** adota o vermelho como cor da marca: destaque padrão, logo e ícones. A 0.3.1 fez o agente lembrar, nas mensagens seguintes e após reiniciar, o que pesquisou na web. A 0.3.0 trouxe pesquisa e leitura de páginas com fontes clicáveis, seletores de modelo/raciocínio e estabilidade entre monitores. Veja o [changelog](CHANGELOG.md) e as [notas da release](https://github.com/VIDORETTO/aura-windows/releases/tag/v0.3.2).
 
 ## Recursos
 
@@ -47,7 +47,7 @@ A busca não exige assinatura de um serviço de pesquisa. O acesso ao modelo con
 **Requisitos:** Windows 10/11 x64 e WebView2. É necessário acesso à internet para baixar componentes, usar modelos remotos e pesquisar na web.
 
 1. Abra a [última release](https://github.com/VIDORETTO/aura-windows/releases/latest).
-2. Baixe **`Aura_0.3.1_x64-setup.exe`** e execute o instalador. O pacote MSI também está disponível para instalações administradas.
+2. Baixe **`Aura_0.3.2_x64-setup.exe`** e execute o instalador. O pacote MSI também está disponível para instalações administradas.
 3. Abra o Aura e conclua a configuração inicial. O aplicativo permanece na bandeja.
 4. Pressione **Ctrl+Shift+Espaço** para abrir a conversa.
 
@@ -95,7 +95,7 @@ Os atalhos globais são configuráveis. Veja a [referência completa](docs/usage
 
 ## Atualização e remoção
 
-Nas versões **0.2.0 ou posteriores**, procure atualizações em **Configurações → Sobre**. A 0.3.1 mantém a chave permanente e o endpoint do updater. Se você ainda usa a 0.1.0, instale a versão atual pelo instalador da release; a migração de chave exigiu uma versão de transição.
+Nas versões **0.2.0 ou posteriores**, procure atualizações em **Configurações → Sobre**. A 0.3.2 mantém a chave permanente e o endpoint do updater. Se você ainda usa a 0.1.0, instale a versão atual pelo instalador da release; a migração de chave exigiu uma versão de transição.
 
 Para remover o aplicativo, use **Configurações do Windows → Aplicativos**. Antes de apagar o perfil local, exporte os dados que deseja guardar.
 
@@ -191,7 +191,7 @@ Testes nativos usam WebDriver e um perfil isolado; veja [apps/desktop/e2e](apps/
 
 ### Verificação e distribuição
 
-O GitHub Actions permanece **desativado** enquanto a preparação dos motores no ambiente hospedado é validada. A 0.3.1 é compilada e verificada localmente; os resultados ficam no [esforço 042](specs/042-continuidade-e-ruido). A existência de um workflow não comprova que ele foi executado.
+No GitHub Actions, só o workflow **Landing** está ativo: ele constrói e publica o [site](https://vidoretto.github.io/aura-windows/) (`apps/landing`). CI, Performance e Release continuam desativados enquanto a preparação dos motores no ambiente hospedado é validada. A 0.3.2 é compilada e verificada localmente; os resultados ficam nos esforços [043](specs/043-acento-vermelho) e [044](specs/044-landing-page). A existência de um workflow não comprova que ele foi executado.
 
 Instaladores, assinaturas do updater, manifesto e hashes são publicados em [Releases](https://github.com/VIDORETTO/aura-windows/releases). Tags anteriores permanecem disponíveis.
 

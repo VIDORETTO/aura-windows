@@ -1,0 +1,37 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Nav from "../components/Nav.astro";
+import Hero from "../components/Hero.astro";
+import Steps from "../components/Steps.astro";
+import Bento from "../components/Bento.astro";
+import Privacy from "../components/Privacy.astro";
+import Models from "../components/Models.astro";
+import Shortcuts from "../components/Shortcuts.astro";
+import OpenSource from "../components/OpenSource.astro";
+import Faq from "../components/Faq.astro";
+import FinalDownload from "../components/FinalDownload.astro";
+import Footer from "../components/Footer.astro";
+import { latestRelease, repoStars } from "../lib/release";
+
+const [release, stars] = await Promise.all([latestRelease(), repoStars()]);
+---
+
+<Layout
+  title="Aura: sua IA no Windows, a um atalho de distância"
+  description="Assistente de IA gratuito e de código aberto para Windows. Converse, pesquise na web com fontes e use o contexto da tela com Ctrl+Shift+Espaço. Conta ChatGPT, sua chave ou modelo local."
+  release={release}
+>
+  <Nav release={release} />
+  <main id="conteudo">
+    <Hero release={release} />
+    <Steps />
+    <Bento />
+    <Privacy />
+    <Models />
+    <Shortcuts />
+    <OpenSource stars={stars} version={release?.version ?? null} />
+    <Faq />
+    <FinalDownload release={release} />
+  </main>
+  <Footer />
+</Layout>

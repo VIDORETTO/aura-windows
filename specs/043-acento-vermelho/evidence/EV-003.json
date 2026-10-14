@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-002"
+  ],
+  "environment": "Windows 11 Pro 26200; Rust 1.98.1; Tauri CLI 2; Node 25.2.1",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "Cargo.toml": "536a514974217bef733d7f9a0ad511b9701c08438276aeee5823a9bb5dc0a039",
+    "apps/desktop/package.json": "83e805eedc145c3f1e5ea9aa904b093bd590d7d191dca3b63e870d7a495b9f76",
+    "apps/desktop/src-tauri/tauri.conf.json": "cbda2a1722456dd51182f57f0db0b913f73f2ed89b528ffd632e97535a441b8b",
+    "specs/043-acento-vermelho/change.md": "ba8833901e37780cfbede538775a60216b5bd0176228b7958b30e091b5618f4b"
+  },
+  "input_paths": [
+    "Cargo.toml",
+    "apps/desktop/package.json",
+    "apps/desktop/src-tauri/tauri.conf.json",
+    "specs/043-acento-vermelho/change.md"
+  ],
+  "limitations": "Instalação em Windows limpo não executada.",
+  "observations": "Build 0.3.2 exit 0; 2 assinaturas PASS; pública embutida = permanente; ProductVersion 0.3.2; Rust 519 passed; UI 254/254.",
+  "procedure": "prepare-sidecars.ps1 -Release -DirectML; tauri build --ci --bundles nsis,msi com a chave permanente; updater-verify (permanente aceita, aposentada e adulterado rejeitados); ProductVersion; cargo test --workspace --exclude aura-desktop; pnpm -C apps/desktop test",
+  "result": "passed",
+  "tested_revision": "local:3d556511637243e78b744de40de0563bad614aa82ac5143bac3e141de4eac7df",
+  "ticket": null,
+  "timestamp": "2026-10-14T10:23:01+00:00"
+}

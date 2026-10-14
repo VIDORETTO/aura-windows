@@ -241,18 +241,17 @@ function MemoriesSection() {
     </Section>
   );
 }
-/** Accent presets (012); the first is Aura's default (#5b5bf7). */
+/** Accent presets (012); the first is Aura's default, the brand red (043). */
 const ACCENTS: { key: string; color: string | null }[] = [
   { key: "default", color: null },
   { key: "blue", color: "#0a64d8" },
   { key: "teal", color: "#0f8a7e" },
   { key: "green", color: "#2e8b3e" },
   { key: "orange", color: "#d9661f" },
-  { key: "red", color: "#d13438" },
   { key: "pink", color: "#c2378f" },
   { key: "graphite", color: "#5c6370" },
 ];
-const DEFAULT_ACCENT = "#5b5bf7";
+const DEFAULT_ACCENT = "#d92d35";
 
 /** Accent color: presets, an RGB picker and a hex code (012 AC-002). */
 function AccentRow() {

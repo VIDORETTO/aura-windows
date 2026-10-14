@@ -287,6 +287,10 @@ Os 42 achados de `docs/qa/auditoria-e2e-2026-10-02.md` foram tratados no esforç
 
 Esforços 019–026 (Dia a Dia, ocultação/transmissão, Preparo + Configurar com IA, Reunião). Lógica, host e UI passaram nos testes; **nada foi executado no Windows**. Roteiro: `docs/qa/roteiro-funcoes-novas.md`. Pendências que exigem Windows: afinidade real das janelas e apps de transmissão (AnyDesk/RDP), toasts, OCR de região, colar/Ctrl+Z, voz offline, transcrição contínua com modelo local, janela própria `meeting` e mini-menu na seleção (não implementados). Esforços 027–035 acrescentaram compromissos, coaching, habilidades do dia a dia, instruções agendadas, sugestões e hábitos por app, "Todas as saídas" de áudio, supressão de eco (heurística de texto), palavras vigiadas na Reunião e a página Configurações › Lembretes e notas (comandos Tauri novos só compilam no Windows). O backlog (`docs/project/backlog.md`) lista os candidatos ainda não promovidos (Fases 2 e 3 do plano).
 
+## 6.3 Identidade vermelha e landing page (043, 044) — 14/10/2026
+
+O destaque padrão do app passou a ser o vermelho da marca `#d92d35`, com logo e ícones regenerados (043). A landing page fica em `apps/landing`: Astro estático, download da última release pela API do GitHub e publicação no GitHub Pages por `.github/workflows/landing.yml` (044). No Actions, só o workflow `Landing` está ativo; CI, Performance e Release seguem desativados. Release v0.3.2 publicada com NSIS/MSI assinados pela chave permanente. Plano em `apps/landing/PLANO.md`; imagens pendentes em `apps/landing/IMAGENS.md`. As capturas da página vêm do app real com a prévia de demonstração (`pnpm -C apps/landing capture`). O material de `docs/media/2026-10-11` continua roxo: é o registro da 0.3.0.
+
 ## 7. Fila de trabalho restante
 
 | # | Tarefa | Ticket |
@@ -298,6 +302,7 @@ Esforços 019–026 (Dia a Dia, ocultação/transmissão, Preparo + Configurar c
 | 5 | Suporte a `tool_search` na tradução Chat/Anthropic, se aparecer com provedores reais | 003 |
 | 6 | Assinatura de código, chaves do updater, primeira release | 010 TK-001/002 |
 | 7 | Baseline de desempenho na máquina de referência | 010 TK-004 |
+| 8 | Imagens da landing que exigem IA ou captura manual no Windows (IMG-01, IMG-03, IMG-07, IMG-09) | 044 |
 
 ---
 

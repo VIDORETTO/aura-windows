@@ -1,0 +1,160 @@
+---
+import { Image } from "astro:assets";
+import Icon, { type IconName } from "./Icon.astro";
+import controles from "../assets/screens/privacy-secao-1.png";
+import janelas from "../assets/screens/privacy-secao-3.png";
+import retencao from "../assets/screens/privacy-secao-4.png";
+
+const items: { icon: IconName; title: string; text: string }[] = [
+  { icon: "drive", title: "Seus dados ficam no seu computador", text: "Conversas, notas e configurações ficam no perfil local do Aura." },
+  { icon: "lock", title: "Credenciais protegidas pelo Windows", text: "Chaves e tokens ficam num cofre criptografado com DPAPI, nunca em arquivos de texto." },
+  { icon: "eyeoff", title: "Janelas que nunca aparecem", text: "Gerenciadores de senha e janelas anônimas já vêm excluídos. Adicione os seus." },
+  { icon: "log", title: "Cada acesso registrado", text: "Tela, microfone e áudio do sistema: você escolhe quando o agente pode usar e vê o que ele usou." },
+];
+---
+
+<section class="section privacy" id="privacidade" aria-labelledby="privacy-title">
+  <div class="container grid">
+    <div>
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>Privacidade</p>
+        <h2 class="title" id="privacy-title" data-reveal style="--i:1">Você decide o contexto.</h2>
+        <p class="lead" data-reveal style="--i:2">A tela e o áudio só entram na conversa quando você permite, do jeito que você configurou.</p>
+      </div>
+      <ul class="items">
+        {
+          items.map((it, i) => (
+            <li data-reveal style={`--i:${i}`}>
+              <span class="ic">
+                <Icon name={it.icon} size={18} />
+              </span>
+              <div>
+                <h3>{it.title}</h3>
+                <p>{it.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="fan" data-fan>
+      <div class="frame f1">
+        <Image src={retencao} alt="Configuração de retenção das gravações." widths={[480, 720, 1440]} sizes="(min-width: 1024px) 560px, 92vw" loading="lazy" />
+      </div>
+      <div class="frame f2">
+        <Image src={janelas} alt="Lista de janelas excluídas das capturas, como KeePass e Bitwarden." widths={[480, 720, 1440]} sizes="(min-width: 1024px) 560px, 92vw" loading="lazy" />
+      </div>
+      <div class="frame f3">
+        <Image src={controles} alt="Controles de tela, microfone e áudio do sistema, com o agente precisando perguntar." widths={[480, 720, 1440]} sizes="(min-width: 1024px) 560px, 92vw" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .privacy {
+    background: linear-gradient(180deg, transparent, var(--bg-elev) 12%, var(--bg-elev) 88%, transparent);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: center;
+  }
+  .items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 24px;
+  }
+  .items li {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+  }
+  .ic {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    color: var(--red-400);
+    background: var(--red-900);
+    border: 1px solid rgb(240 64 68 / 0.25);
+  }
+  h3 {
+    font-size: 1.08rem;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .items p {
+    color: var(--muted);
+    font-size: 15.5px;
+  }
+
+  /* fan-out: the three panels open when the stack enters the screen. */
+  .fan {
+    position: relative;
+    display: grid;
+    min-height: 520px;
+  }
+  .fan .frame {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(100%, 560px);
+    translate: -50% -50%;
+    transition:
+      translate 900ms var(--ease),
+      rotate 900ms var(--ease),
+      opacity 600ms var(--ease);
+  }
+  .f1 {
+    opacity: 0.55;
+  }
+  .f2 {
+    opacity: 0.8;
+  }
+  .fan.open .f1 {
+    translate: -46% -112%;
+    rotate: -3deg;
+  }
+  .fan.open .f2 {
+    translate: -54% -42%;
+    rotate: 2deg;
+  }
+  .fan.open .f3 {
+    translate: -48% 22%;
+    rotate: -1deg;
+  }
+  .fan.open .frame {
+    opacity: 1;
+  }
+  .f3 {
+    box-shadow:
+      0 30px 80px -20px rgb(0 0 0 / 0.8),
+      0 0 80px -30px var(--glow);
+  }
+
+  @media (max-width: 1023px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+    .fan {
+      min-height: 0;
+      gap: 16px;
+    }
+    .fan .frame,
+    .fan.open .frame {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: 100%;
+      translate: none;
+      rotate: none;
+      opacity: 1;
+    }
+  }
+</style>

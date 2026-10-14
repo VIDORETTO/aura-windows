@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "36399d6553e6379fbbf5c059041f96193d99c158166f5b3ac9ffa247a691025b",
+  "docs/project/backlog.md": "7388019caad85904952733296a5dd88af71681109864e662813abc9e1dbdb4c2",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -55,5 +55,7 @@
   "specs/040-overlay-estavel-no-monitor/todo.md": "222d00faf0daa32645f167b56572701373ea8e63e50ebc3d28dae44e25088ded",
   "specs/040-overlay-estavel-no-monitor/verification.md": "84c0c75b53ccdfb68f7dd2d70d620ea3756342a61f75472f955ead2a025d3b51",
   "specs/041-publicacao-github-030/verification.md": "0e7c4dfc09e4a265cbe8f3ee6ddec365d61b8be066bd64db275f1644ca4a057e",
-  "specs/042-continuidade-e-ruido/verification.md": "6d20a9c165769f8ffa50facb2f0c58bfd12b12b9eb94cfeaeb03aa23913c957a"
+  "specs/042-continuidade-e-ruido/verification.md": "6d20a9c165769f8ffa50facb2f0c58bfd12b12b9eb94cfeaeb03aa23913c957a",
+  "specs/043-acento-vermelho/verification.md": "d340e74597b3e170e0b659d02495218368df15dd0921bf7b85736797e283a594",
+  "specs/044-landing-page/verification.md": "bb056aaef50c0f84e5d29a9da2a2bfa3871805f8351ad81bfe313bf270d2011a"
 }

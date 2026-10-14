@@ -1,0 +1,425 @@
+---
+import { Image } from "astro:assets";
+import DownloadButton from "./DownloadButton.astro";
+import Icon from "./Icon.astro";
+import Logo from "./Logo.astro";
+import { REPO_URL, megabytes, type Release } from "../lib/release";
+import compact from "../assets/screens/overlay-pergunta.png";
+import conversa from "../assets/screens/conversa.png";
+
+interface Props {
+  release: Release | null;
+}
+const { release } = Astro.props;
+const meta = release?.setup ? `Windows 10/11 · x64 · v${release.version} · ${megabytes(release.setup.bytes)} MB · gratuito` : "Windows 10/11 · x64 · gratuito";
+---
+
+<section class="hero" id="topo">
+  <div class="rings" aria-hidden="true">
+    {[1, 2, 3, 4, 5].map((n) => <span style={`--n:${n}`}></span>)}
+  </div>
+  <div class="container hero-grid">
+    <div class="copy">
+      <p class="eyebrow hero-in" style="--d:0">
+        Assistente de IA para Windows{release && <span data-version-label> · v{release.version}</span>}
+      </p>
+      <h1 class="hero-rise">
+        Sua IA no Windows, a <span class="grad">um atalho</span> de distância.
+      </h1>
+      <p class="lead hero-in" style="--d:2">
+        Converse, pesquise na web e use o contexto da sua tela sem sair do que está fazendo. Entre com sua conta ChatGPT ou use seu próprio provedor.
+      </p>
+      <div class="actions hero-in" style="--d:3">
+        <DownloadButton release={release} meta={false} />
+        <a class="btn btn-ghost" href={REPO_URL}>
+          <Icon name="github" />
+          Ver no GitHub
+        </a>
+      </div>
+      <p class="meta hero-in" style="--d:4" data-dl-meta data-suffix=" · gratuito">{meta}</p>
+    </div>
+
+    <div class="stage hero-in" style="--d:2" data-demo data-parallax>
+      <div class="desk" role="img" aria-label="Demonstração: Ctrl+Shift+Espaço abre o Overlay do Aura sobre a área de trabalho e a resposta aparece na conversa.">
+        <div class="wall" aria-hidden="true"></div>
+        <div class="win compact" aria-hidden="true">
+          <Image src={compact} alt="" widths={[820, 1640]} sizes="(min-width: 1024px) 640px, 92vw" loading="eager" />
+        </div>
+        <div class="win expanded" aria-hidden="true">
+          <Image src={conversa} alt="" widths={[820, 1640]} sizes="(min-width: 1024px) 640px, 92vw" loading="eager" fetchpriority="high" />
+          <span class="wipe"></span>
+        </div>
+        <div class="taskbar" aria-hidden="true">
+          <span class="tb-start"></span><span></span><span></span><span class="tb-aura"><Logo size={14} /></span><span></span>
+        </div>
+      </div>
+      <div class="keys" aria-hidden="true">
+        <kbd class="key" style="--k:0">Ctrl</kbd>
+        <span class="plus">+</span>
+        <kbd class="key" style="--k:1">Shift</kbd>
+        <span class="plus">+</span>
+        <kbd class="key" style="--k:2">Espaço</kbd>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-top: calc(var(--header) + clamp(48px, 9vw, 120px));
+    padding-bottom: clamp(72px, 10vw, 140px);
+    overflow: clip;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto 35%;
+    height: 120%;
+    background:
+      radial-gradient(closest-side at 60% 40%, rgb(240 64 68 / 0.28), transparent 70%),
+      radial-gradient(closest-side at 80% 20%, rgb(168 27 38 / 0.25), transparent 70%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
+  /* Rings are placed with translate only, so font loading never shifts them (CLS). */
+  .rings {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    --rx: 66vw;
+    --ry: calc(var(--header) + 380px);
+  }
+  .rings span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(var(--n) * 260px);
+    aspect-ratio: 1;
+    translate: calc(var(--rx) - 50%) calc(var(--ry) - 50%);
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / calc(0.09 - var(--n) * 0.012));
+    animation: ring 7s var(--ease) infinite;
+    animation-delay: calc(var(--n) * -1.2s);
+  }
+  @keyframes ring {
+    0%,
+    100% {
+      scale: 1;
+      opacity: 1;
+    }
+    50% {
+      scale: 1.035;
+      opacity: 0.55;
+    }
+  }
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 11fr) minmax(0, 13fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+  .copy {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  h1 {
+    font-size: clamp(2.6rem, 3.4vw + 1rem, 4.6rem);
+    letter-spacing: -0.045em;
+    line-height: 0.98;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px 16px;
+    margin-top: 8px;
+  }
+  .actions > .btn {
+    --h: 56px;
+  }
+  .meta {
+    margin-top: -8px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: var(--subtle);
+  }
+
+  /* Page-load choreography */
+  .js .hero-in {
+    opacity: 0;
+    translate: 0 16px;
+    animation: hero-in 900ms var(--ease) forwards;
+    animation-delay: calc(120ms + var(--d) * 110ms);
+  }
+  /* The title is the LCP element: it moves in but is painted from the first frame. */
+  .js .hero-rise {
+    animation: hero-rise 900ms var(--ease) both;
+  }
+  @keyframes hero-rise {
+    from {
+      translate: 0 12px;
+    }
+  }
+  @keyframes hero-in {
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  /* Stage: a desktop where the Overlay opens (OverlayDemo, PLANO.md §4.1). */
+  .stage {
+    position: relative;
+    --mx: 0;
+    --my: 0;
+  }
+  .desk {
+    position: relative;
+    aspect-ratio: 16 / 10.4;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    box-shadow:
+      0 50px 120px -30px rgb(0 0 0 / 0.85),
+      0 0 120px -20px var(--glow);
+    transform: perspective(1400px) rotateY(calc(-4deg + var(--mx) * 3deg)) rotateX(calc(2deg - var(--my) * 2deg));
+    transition: transform 600ms var(--ease);
+  }
+  /* IMG-01 placeholder: crimson bloom drawn in CSS until the generated wallpaper exists. */
+  .wall {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(60% 70% at 72% 30%, rgb(240 64 68 / 0.55), transparent 60%),
+      radial-gradient(40% 50% at 88% 70%, rgb(168 27 38 / 0.5), transparent 65%),
+      conic-gradient(from 210deg at 70% 40%, #2a0b0e, #5a1018, #1a0607, #3b0c12, #2a0b0e),
+      #0a0909;
+    filter: saturate(1.1);
+  }
+  .wall::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(10 9 9 / 0.75), transparent 55%), linear-gradient(0deg, rgb(10 9 9 / 0.4), transparent 40%);
+  }
+  .win {
+    position: absolute;
+    left: 50%;
+    width: 78%;
+    translate: -50% 0;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.12);
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / 0.8);
+  }
+  .compact {
+    top: 9%;
+  }
+  .expanded {
+    top: 9%;
+  }
+  .wipe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 19%;
+    height: 26%;
+    background: rgb(26 24 24);
+    transform-origin: bottom;
+  }
+  .taskbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 7.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3%;
+    background: rgb(18 16 16 / 0.82);
+    border-top: 1px solid rgb(255 255 255 / 0.06);
+    backdrop-filter: blur(8px);
+  }
+  .taskbar span {
+    width: 3.2%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    background: rgb(255 255 255 / 0.12);
+  }
+  .taskbar .tb-start {
+    background: rgb(255 255 255 / 0.3);
+  }
+  .taskbar .tb-aura {
+    position: relative;
+    display: grid;
+    place-items: center;
+    background: none;
+  }
+  .taskbar .tb-aura :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+  .tb-aura::after {
+    content: "";
+    position: absolute;
+    bottom: -28%;
+    width: 40%;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--red-400);
+  }
+  .keys {
+    position: absolute;
+    left: -6%;
+    bottom: -5%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgb(18 16 16 / 0.8);
+    border: 1px solid var(--line-strong);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px -10px rgb(0 0 0 / 0.8);
+    font-size: 15px;
+  }
+  .plus {
+    color: var(--subtle);
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  /* Final frame (no JS / reduced motion): expanded conversation visible. */
+  .compact {
+    opacity: 0;
+  }
+  .wipe {
+    scale: 1 0;
+  }
+
+  /* 10s loop, only while the stage is on screen (.playing set by main.ts). */
+  .playing .compact {
+    animation: compact 10s var(--ease) -0.6s infinite;
+  }
+  .playing .expanded {
+    animation: expanded 10s var(--ease) -0.6s infinite;
+  }
+  .playing .wipe {
+    animation: wipe 10s linear -0.6s infinite;
+  }
+  .playing .key {
+    animation: press 10s var(--ease) infinite;
+    animation-delay: calc(var(--k) * 140ms - 0.6s);
+  }
+  @keyframes press {
+    0%,
+    6% {
+      translate: 0 0;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.08) inset,
+        0 -3px 0 rgb(0 0 0 / 0.55) inset,
+        0 6px 16px -6px rgb(0 0 0 / 0.8);
+      border-color: var(--line-strong);
+      color: var(--text);
+    }
+    8%,
+    13% {
+      translate: 0 2px;
+      box-shadow:
+        0 1px 0 rgb(255 255 255 / 0.05) inset,
+        0 -1px 0 rgb(0 0 0 / 0.55) inset,
+        0 0 24px -4px var(--glow);
+      border-color: rgb(240 64 68 / 0.6);
+      color: var(--red-300);
+    }
+    16%,
+    100% {
+      translate: 0 0;
+    }
+  }
+  @keyframes compact {
+    0%,
+    15% {
+      opacity: 0;
+      translate: -50% -18px;
+      scale: 0.98;
+    }
+    20%,
+    34% {
+      opacity: 1;
+      translate: -50% 0;
+      scale: 1;
+    }
+    40%,
+    100% {
+      opacity: 0;
+      translate: -50% 0;
+    }
+  }
+  @keyframes expanded {
+    0%,
+    34% {
+      opacity: 0;
+      clip-path: inset(0 0 87% 0 round 10px);
+    }
+    36% {
+      opacity: 1;
+    }
+    44%,
+    90% {
+      opacity: 1;
+      clip-path: inset(0 0 0 0 round 10px);
+    }
+    97%,
+    100% {
+      opacity: 0;
+      clip-path: inset(0 0 0 0 round 10px);
+    }
+  }
+  @keyframes wipe {
+    0%,
+    46% {
+      scale: 1 1;
+    }
+    62%,
+    100% {
+      scale: 1 0;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+    }
+    .rings {
+      --rx: 50vw;
+      --ry: calc(var(--header) + 760px);
+    }
+    .stage {
+      margin-top: 24px;
+    }
+    .desk {
+      transform: none;
+    }
+    .keys {
+      left: 50%;
+      translate: -50% 0;
+      bottom: -28px;
+    }
+  }
+  @media (max-width: 520px) {
+    .keys {
+      font-size: 12px;
+      padding: 8px 10px;
+      gap: 5px;
+    }
+    .actions > .btn {
+      --h: 52px;
+    }
+  }
+</style>

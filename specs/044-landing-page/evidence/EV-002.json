@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-003"
+  ],
+  "environment": "Windows 11 Pro 26200; Node 25.2.1; Astro 7.3.8; Edge",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "apps/landing/scripts/budget.mjs": "98b0d256a7bb91baba4e20c436878f0bf7d3970203e73b7cc03f36e8f63b264f",
+    "apps/landing/src/components/Hero.astro": "d37b7844ae0b5a2aca107397547d74c04498f5e5710292e69504f38b0064c9e3",
+    "apps/landing/src/components/Steps.astro": "9bf61348d128c4b225eeb85e817d32fed7716c74ca56c9d6ef3e191f3570a67f",
+    "apps/landing/src/pages/index.astro": "676178f08c8165ce14373dfc09e20a5ea960adb5d24a65374829f9db01b7520c",
+    "apps/landing/src/scripts/main.ts": "96e8761e9ea3f8da76ac87d14f93266b5189f92f501133baf10a82ce225c6688",
+    "apps/landing/src/styles/global.css": "d4b96ab4cdf1b18346cbf62328aee0c5c57182a73c78ade84b5ee46ac95d569f",
+    "specs/044-landing-page/change.md": "c89cee008dc834dfe02273958af697d520c8dd3ad069dc7066d0172cd493d27c"
+  },
+  "input_paths": [
+    "apps/landing/src/pages/index.astro",
+    "apps/landing/src/styles/global.css",
+    "apps/landing/src/scripts/main.ts",
+    "apps/landing/src/components/Hero.astro",
+    "apps/landing/src/components/Steps.astro",
+    "apps/landing/scripts/budget.mjs",
+    "specs/044-landing-page/change.md"
+  ],
+  "limitations": "LCP mobile acima da meta de 1,8 s; workflow do Pages não executado.",
+  "observations": "astro check 0 erros. Budget: JS 2,1 KB, CSS 7,0 KB, HTML 16,6 KB gzip, 4 WOFF2. Lighthouse desktop 100/100/100/100 (LCP 0,6 s, CLS 0); mobile 98/100/100/100 (LCP 2,2 s, CLS 0,019). Red antes das correções: CLS 0,758 (anéis do hero) e contraste dos passos inativos. Sem erros de console; overflow horizontal 0 em 390 px.",
+  "procedure": "pnpm -C apps/landing check; pnpm -C apps/landing build; pnpm -C apps/landing budget; Lighthouse 12.8.2 (Edge headless) mobile e --preset=desktop em astro preview; Playwright 1440x900 e 390x844",
+  "result": "passed",
+  "tested_revision": "local:584afbf340330998da297d80c897a7ef429fb861ef888b957f83afc2545c0958",
+  "ticket": null,
+  "timestamp": "2026-10-14T03:14:57+00:00"
+}

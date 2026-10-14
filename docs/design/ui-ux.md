@@ -14,11 +14,11 @@ Objetivo: parecer parte do Windows 11, desaparecer quando não é necessário e 
 
 | Token | Claro | Escuro | Uso |
 | --- | --- | --- | --- |
-| `--surface` | `rgba(249,249,251,0.72)` | `rgba(28,28,32,0.68)` | Fundo do Overlay sobre Acrylic |
-| `--surface-strong` | `rgba(255,255,255,0.92)` | `rgba(38,38,44,0.9)` | Cartões, menus |
+| `--surface` | `rgba(250,249,249,0.72)` | `rgba(26,24,24,0.68)` | Fundo do Overlay sobre Acrylic |
+| `--surface-strong` | `rgba(255,255,255,0.92)` | `rgba(38,35,35,0.9)` | Cartões, menus |
 | `--border` | `rgba(0,0,0,0.08)` | `rgba(255,255,255,0.08)` | Bordas 1 px |
-| `--text` / `--text-muted` | `#1b1b1f` / `#5d5d66` | `#f2f2f5` / `#a0a0aa` | Texto |
-| `--accent` | cor de destaque do Windows (lida do sistema) | idem | Foco, ações primárias |
+| `--text` / `--text-muted` | `#1d1b1b` / `#625c5a` | `#f4f2f1` / `#a8a09e` | Texto (neutros levemente quentes, 043) |
+| `--accent` | `#d92d35`, vermelho da marca (043); o usuário pode escolher outra em Geral (012) | idem | Foco, ações primárias, logo |
 | `--danger` / `--warning` / `--success` | `#c42b1c` / `#9d5d00` / `#0f7b0f` | `#ff99a4` / `#fce100` / `#6ccb5f` | Estados |
 | `--radius-lg` / `--radius-md` | 8 px / 8 px | idem | Overlay (igual ao canto do Windows 11) / controles |
 | `--shadow-overlay` | `0 16px 48px rgba(0,0,0,.18)` | `0 16px 48px rgba(0,0,0,.45)` | Elevação |

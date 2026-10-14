@@ -1,0 +1,112 @@
+---
+import { Image } from "astro:assets";
+import Icon, { type IconName } from "./Icon.astro";
+import modelo from "../assets/screens/modelo.png";
+
+const options: { icon: IconName; title: string; text: string; tag: string }[] = [
+  { icon: "user", title: "Conta ChatGPT", text: "Entre com sua conta e use os modelos do seu plano. Sem chave de API.", tag: "Mais simples" },
+  { icon: "key", title: "Sua chave", text: "OpenAI e provedores compatíveis, com a sua credencial guardada no cofre do Windows.", tag: "BYOK" },
+  { icon: "server", title: "Local", text: "Ollama ou qualquer servidor compatível rodando na sua máquina ou na sua rede.", tag: "No seu PC" },
+];
+---
+
+<section class="section" id="modelos" aria-labelledby="models-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow" data-reveal>Modelos</p>
+      <h2 class="title" id="models-title" data-reveal style="--i:1">Use a IA que você já tem.</h2>
+      <p class="lead" data-reveal style="--i:2">Escolha o modelo e o nível de raciocínio direto no Overlay. As opções acompanham o que cada modelo suporta.</p>
+    </div>
+    <div class="grid">
+      <ul class="opts">
+        {
+          options.map((o, i) => (
+            <li class="opt" data-reveal data-glow style={`--i:${i}`}>
+              <span class="ic">
+                <Icon name={o.icon} size={20} />
+              </span>
+              <div>
+                <h3>
+                  {o.title} <span class="tag">{o.tag}</span>
+                </h3>
+                <p>{o.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="frame shot" data-reveal style="--i:1">
+        <Image src={modelo} alt="Seletor de modelo aberto, com provedor, modelos, esforço de raciocínio e modo." widths={[620, 820, 1640]} sizes="(min-width: 1024px) 640px, 92vw" loading="lazy" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: clamp(32px, 5vw, 72px);
+    align-items: center;
+  }
+  .opts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .opt {
+    --x: 50%;
+    --y: 50%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    padding: 22px;
+    border-radius: 18px;
+    background: radial-gradient(300px circle at var(--x) var(--y), rgb(240 64 68 / 0.07), transparent 60%), var(--surface);
+    border: 1px solid var(--line);
+    transition: border-color 300ms var(--ease);
+  }
+  .opt:hover {
+    border-color: rgb(240 64 68 / 0.35);
+  }
+  .ic {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    color: var(--red-400);
+    background: var(--red-900);
+    border: 1px solid rgb(240 64 68 / 0.25);
+  }
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .tag {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: var(--muted);
+    border: 1px solid var(--line-strong);
+  }
+  .opt p {
+    color: var(--muted);
+    font-size: 15.5px;
+  }
+  @media (max-width: 1023px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

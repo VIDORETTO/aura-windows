@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-001"
+  ],
+  "environment": "Windows 11 Pro 26200; Node 25.2.1; Vitest/jsdom",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "apps/desktop/src/i18n/en.ts": "3f455d64075104710b397acc049be64ab91cbf4e31705a37a31571752b8857b7",
+    "apps/desktop/src/i18n/pt-BR.ts": "92a185c40f56c24ac0ed884735bec8003f2d88208ea7ce29da17bb1c43a704dc",
+    "apps/desktop/src/settings/General.tsx": "736fe9726c270d231a2cdcff0bd67d74dc37a7c834635d6af1cd178f3e0f20ba",
+    "apps/desktop/src/settings/SettingsApp.test.tsx": "1f29d889ff12119cfb892a1e6fbcc06defe4c41559aa37725b8e1cf74122bb9e",
+    "apps/desktop/src/styles/app.css": "36c8902b854d33e1d95330a756c29a49a1c4db931117af640774d79d731db18b",
+    "specs/043-acento-vermelho/change.md": "187b0385ef64fad29a7ce8031519884cdf0a37a59bc46d5cd6e6fc83a2b2bd2c"
+  },
+  "input_paths": [
+    "apps/desktop/src/settings/General.tsx",
+    "apps/desktop/src/styles/app.css",
+    "apps/desktop/src/settings/SettingsApp.test.tsx",
+    "apps/desktop/src/i18n/pt-BR.ts",
+    "apps/desktop/src/i18n/en.ts",
+    "specs/043-acento-vermelho/change.md"
+  ],
+  "limitations": "E2E WebDriver accent-color não executado (sem msedgedriver).",
+  "observations": "Red: amostrador Padrão era rgb(91, 91, 247). Green: teste 043 passa; UI 254/254; tsc sem erros.",
+  "procedure": "pnpm -C apps/desktop exec vitest run src/settings/SettingsApp.test.tsx; pnpm -C apps/desktop test; pnpm -C apps/desktop typecheck",
+  "result": "passed",
+  "tested_revision": "local:0d248c473363e59d0c12b557e1726855f99fab246d34b2385f139b77e1b26c36",
+  "ticket": null,
+  "timestamp": "2026-10-14T02:50:19+00:00"
+}

@@ -5,16 +5,16 @@
    the window background fully, cards partly, menus stay legible. */
 :root {
   --overlay-opacity: 0.92;
-  --surface-rgb: 249 249 251;
+  --surface-rgb: 250 249 249;
   --strong-rgb: 255 255 255;
   --surface: rgb(var(--surface-rgb) / var(--overlay-opacity));
   --surface-strong: rgb(var(--strong-rgb) / calc(0.5 + 0.45 * var(--overlay-opacity)));
   --surface-menu: rgb(var(--strong-rgb) / max(0.96, var(--overlay-opacity)));
   --surface-hover: rgba(0, 0, 0, 0.04);
   --border: rgba(0, 0, 0, 0.08);
-  --text: #1b1b1f;
-  --text-muted: #5d5d66;
-  --accent: #5b5bf7;
+  --text: #1d1b1b;
+  --text-muted: #625c5a;
+  --accent: #d92d35;
   --accent-contrast: #ffffff;
   --danger: #c42b1c;
   --warning: #9d5d00;
@@ -30,12 +30,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --surface-rgb: 28 28 32;
-    --strong-rgb: 40 40 46;
+    --surface-rgb: 26 24 24;
+    --strong-rgb: 38 35 35;
     --surface-hover: rgba(255, 255, 255, 0.06);
     --border: rgba(255, 255, 255, 0.08);
-    --text: #f2f2f5;
-    --text-muted: #a0a0aa;
+    --text: #f4f2f1;
+    --text-muted: #a8a09e;
     --danger: #ff99a4;
     --warning: #fce100;
     --success: #6ccb5f;
@@ -45,12 +45,12 @@
 }
 
 :root[data-theme="dark"] {
-  --surface-rgb: 28 28 32;
-  --strong-rgb: 40 40 46;
+  --surface-rgb: 26 24 24;
+  --strong-rgb: 38 35 35;
   --surface-hover: rgba(255, 255, 255, 0.06);
   --border: rgba(255, 255, 255, 0.08);
-  --text: #f2f2f5;
-  --text-muted: #a0a0aa;
+  --text: #f4f2f1;
+  --text-muted: #a8a09e;
   --danger: #ff99a4;
   --warning: #fce100;
   --success: #6ccb5f;

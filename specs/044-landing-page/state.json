@@ -1,0 +1,25 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "43d32a0eb852e539296192e38e26ccee26e93be5"
+  },
+  "blockers": [],
+  "effort_id": "044-landing-page",
+  "inputs": {
+    "contract": {
+      "fingerprint": "53493eab43a220d596b7f690539e7b21530e1aa954ddf5ecccc75b8c04d61baf",
+      "path": "specs/044-landing-page/change.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "compact",
+  "next_action": "Registrar o entendimento necessário para a próxima entrega",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 0,
+  "schema_version": "1.0",
+  "status": "active"
+}

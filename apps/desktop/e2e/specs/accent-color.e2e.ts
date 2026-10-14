@@ -1,6 +1,6 @@
 // 012 AC-002: a custom accent (#e4572e) chosen in Settings › General colors
 // the accent elements of Settings and the Overlay, survives a restart, and
-// "Default" brings back #5b5bf7.
+// "Default" brings back Aura's red #d92d35 (043).
 const invoke = (cmd: string, args: Record<string, unknown> = {}) =>
   browser.execute(async (c, a) => JSON.stringify(await (window as any).__TAURI_INTERNALS__.invoke(c, a)), cmd, args).then((s) => JSON.parse(s as string));
 
@@ -57,6 +57,6 @@ describe("Accent color (012)", () => {
     await browser.waitUntil(async () => (await invoke("settings_get")).accentColor === null, { timeout: 10_000 });
     const back = await accentHere();
     console.log("Native accent after Default", JSON.stringify(back));
-    expect(back.bg).toBe("rgb(91, 91, 247)");
+    expect(back.bg).toBe("rgb(217, 45, 53)");
   });
 });

@@ -1,0 +1,27 @@
+---
+// Aura mark in brand red (IMG-04): same shapes as docs/assets/logo.svg.
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 32, class: className } = Astro.props;
+const id = `l${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<svg viewBox="0 0 512 512" width={size} height={size} class={className} aria-hidden="true">
+  <defs>
+    <linearGradient id={`${id}bg`} x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF5A5F"></stop>
+      <stop offset="1" stop-color="#B3141F"></stop>
+    </linearGradient>
+    <radialGradient id={`${id}gl`} cx="0.5" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.35"></stop>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill={`url(#${id}bg)`}></rect>
+  <rect x="16" y="16" width="480" height="480" rx="112" fill={`url(#${id}gl)`}></rect>
+  <circle cx="256" cy="256" r="118" fill="none" stroke="#fff" stroke-width="36" stroke-opacity="0.95"></circle>
+  <circle cx="256" cy="256" r="46" fill="#fff"></circle>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#fff" stroke-width="10" stroke-opacity="0.35"></circle>
+</svg>
