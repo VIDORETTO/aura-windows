@@ -68,15 +68,16 @@ foram acrescentadas na revisão, com a recorrência indicada em cada linha; mét
 
 | Projeto | O que faz | Aproveitamos | Não aproveitamos |
 | --- | --- | --- | --- |
-| **screenpipe** | Memória contínua de tela e áudio, busca, agentes, MCP | Ideias: captura por evento, acessibilidade antes de OCR | Código. A licença mudou de MIT para comercial/source-available (README e listagens recentes divergem das antigas). Já estava em "Evitar" no radar; continua. |
-| **Microsoft Recall** | Fotos da tela a cada poucos segundos, busca semântica local | Teto de disco por tamanho do SSD, descarte do mais antigo, filtro de sensíveis, opt-in | Só existe em PCs Copilot+; fechado. |
+| **screenpipe** | Memória contínua de tela e áudio, busca, agentes, MCP | Ideias: captura por evento, acessibilidade antes de OCR, exceção de reunião na deduplicação, compactação de imagens antigas em vídeo, redação de segredos [C §4.1] | Código. Desde 10/06/2026 o repositório inteiro está sob a "Screenpipe Commercial License": uso livre só pessoal não comercial, educacional ou de pesquisa; proíbe usar o código para "build… a competing product"; versões antigas continuam MIT ([LICENSE.md](https://github.com/screenpipe/screenpipe/blob/main/LICENSE.md)). Cifra em repouso só quando o usuário tranca o cofre. Continua em "Evitar". |
+| **Microsoft Recall** | Captura "every few seconds and when the content of your active window changes" ([Microsoft](https://support.microsoft.com/en-us/windows/retrace-your-steps-with-recall-aa03f8a0-a78b-4b3e-b0a1-2eb8ac48701c)), busca semântica local | Teto de disco por tamanho do SSD, descarte do mais antigo, filtro de sensíveis ligado por padrão, opt-in, filtro de navegação privada, DRM e área de trabalho remota [C §4.2] | Só existe em PCs Copilot+; fechado. Não é otimizado para português. Cifra forte, mas extraível por processo do mesmo usuário ([TotalRecall Reloaded](https://github.com/xaitax/TotalRecall), 04/2026). |
 | **Rewind / Limitless** | Foi a referência no Mac; encerrado | A lição D11 | — |
-| **OpenRecall, Windrecorder** | Clones abertos do Recall | Confirmam a demanda; Windrecorder busca por OCR e por descrição da imagem | Python; não lidos em detalhe nesta sessão. |
+| **OpenRecall** | Clone aberto do Recall (AGPL-3.0) | Descarte por similaridade estrutural (MSSIM ≥ 0,9) a cada 3 s [C §4.3] | Código (AGPL); WebP sem perdas é caro em disco. |
+| **Windrecorder** | Gravador de tela com busca (GPL-2.0) | Três filtros de repetição (imagem 0,7, OCR 0,7, tabela 0,94); busca por imagem com uform3 multilíngue; 10–20 GB/mês de vídeo e ~160 MB/mês de banco [autodeclarado] [C §4.4] | Código (GPL); vídeo contínuo. |
 | **Padrão LLM-wiki (Karpathy)** | Wiki mantida por LLM, Obsidian como leitor | Camadas, operações, index/log | O gist diz que `index.md` funciona até "~100 fontes, ~centenas de páginas"; acima disso é preciso busca de verdade. |
-| **Smart Connections, Copilot, Khoj (plugins Obsidian)** | Embeddings e chat dentro do cofre | Mostram o que o usuário espera ver | Exigem o Obsidian aberto e configuração por plugin. |
+| **Smart Connections, Copilot, Claudian, Khoj (plugins Obsidian)** | Embeddings, chat e agentes de código dentro do cofre | Mostram o que o usuário espera ver; o que mais se instala é agente de código no cofre (Copilot 3,5 M e Claudian 2,7 M de downloads) e busca lexical (Omnisearch 2,1 M); Khoj tem 55 mil [C §7.4] | Exigem o Obsidian aberto e configuração por plugin. |
 | **RAGFlow** | RAG de servidor com ótimo parser de PDFs e tabelas | Só como base externa opcional via MCP | Como motor: Docker, cinco serviços, ~16 GB de RAM (D12). |
 | **AnythingLLM** | App desktop com LanceDB embutido | Prova de que "um app, índice embutido" é o formato certo | Electron; 10+ avisos de segurança entre 2024 e 2026 segundo uma wiki de administração. |
-| **Mem0, Zep/Graphiti, Letta** | Memória de conversa para agentes | Ideias: extrair fatos e consolidar (Mem0), fatos com janela de validade (Graphiti), memória em camadas (Letta) | Como dependência. São serviços de servidor, e os benchmarks não permitem escolher: Mem0 se atribui 93,4 no LongMemEval e uma avaliação independente mediu 49,0 numa versão anterior ([arXiv 2603.04814](https://arxiv.org/html/2603.04814), [comparativo](https://www.agenticwire.news/article/mem0-zep-letta-agent-memory)). |
+| **Mem0, Zep/Graphiti, Letta** | Memória de conversa para agentes | Ideias: extrair fatos e consolidar (Mem0), fatos com janela de validade (Graphiti), memória em camadas (Letta) | Como dependência. São serviços de servidor, e os números dos fornecedores não se sustentam: Mem0 se atribui mais de 90 no LongMemEval ([comparativo](https://www.agenticwire.news/article/mem0-zep-letta-agent-memory)) [autodeclarado]; a avaliação independente ([arXiv 2603.04814](https://arxiv.org/abs/2603.04814), lida) mediu 49,0% contra 82,4% de passar o histórico inteiro ao mesmo modelo [C §8]. Zep e Letta: resultado independente não encontrado. |
 
 ## 5. Tecnologias para o motor
 
@@ -84,24 +85,33 @@ foram acrescentadas na revisão, com a recorrência indicada em cada linha; mét
 
 | Opção | A favor | Contra |
 | --- | --- | --- |
-| **SQLite FTS5 + sqlite-vec** | Mesmo arquivo e mesma biblioteca que o Aura já usa; FTS5 já está no radar como "Adotar"; sqlite-vec é C puro e pequeno, sucessor mantido do sqlite-vss; há um crate Rust que já junta os dois ([sapphire-retrieve](https://docs.rs/crate/sapphire-retrieve/0.2.0/source/src/sqlite_store.rs)) e um benchmark público pequeno em que FTS5 + sqlite-vec com fusão e reordenação fica perto do DuckDB ([sanityboard](https://sanityboard.pages.dev/evals/vecdb)) | Busca vetorial por força bruta; precisa de quantização e filtro prévio para escalar |
-| LanceDB | Rust, colunar, busca vetorial e textual | Segundo armazenamento ao lado do SQLite; as fontes divergem sobre o texto completo vir pronto |
+| **SQLite FTS5 + sqlite-vec** | Mesmo arquivo e mesma biblioteca que o Aura já usa; FTS5 já está no radar como "Adotar"; sqlite-vec é C puro e pequeno, licença MIT ou Apache-2.0; o screenpipe usa em produção com Rust; combina com SQLCipher (projetos públicos fazem isso, com a sintaxe `k = ?` quando o SQLite do SQLCipher é antigo) [C §5.1]; há um crate que já junta FTS5 e sqlite-vec ([sapphire-retrieve](https://docs.rs/crate/sapphire-retrieve/0.2.0/source/src/sqlite_store.rs)) e um benchmark pequeno em que a fusão com reordenação fica perto do DuckDB ([sanityboard](https://sanityboard.pages.dev/evals/vecdb)) | Busca vetorial por força bruta; **int8 não acelera** (39 ms contra 38,7 ms de float32 com 100 mil × 384 num i9; binário: 2 ms) ([SimpleVecDB](https://coderdayton.github.io/SimpleVecDB/benchmarks)) [autodeclarado]; pré-1.0 e sem commits desde 18/05/2026 ([repositório](https://github.com/asg017/sqlite-vec)) |
+| LanceDB | Rust, colunar, busca vetorial e textual, Apache-2.0 | Segundo armazenamento ao lado do SQLite, fora da cifra do SQLCipher |
+| BLOB no próprio SQLite + varredura em Rust | Sem extensão, cifrado junto com o resto | Mesmo custo de força bruta; código nosso para manter |
 | Servidor (Qdrant, Elasticsearch) | Escala | Processo residente a mais; contraria a leveza |
 
-Recomendação: **FTS5 + sqlite-vec**, com fusão por posição recíproca (RRF). Licença do
-sqlite-vec a confirmar no ticket (regra do `deny.toml`).
+Recomendação: **FTS5 + sqlite-vec**, com fusão por posição recíproca (RRF), primeiro passo
+binário e reordenação dos melhores, e saída documentada para BLOB + varredura em Rust se o
+sqlite-vec parar [C §10, I-2 e I-3]. A licença do sqlite-vec passa no `deny.toml`.
 
 ### 5.2 Modelo de embeddings local (multilíngue, CPU)
 
-| Modelo | Tamanho | Observação |
-| --- | --- | --- |
-| multilingual-e5-small | pequeno | Padrão histórico; conversões ONNX rodam só em CPU com pouca perda. 50,9 em recuperação na tabela dos autores do Bekko. |
-| Bekko a8m / a25m (2026) | 7,7 M / 24,9 M parâmetros | Licença MIT, traz ONNX. Os autores reportam 56,2 (a8m) no MMTEB multilíngue, acima do e5 e do BGE-M3, e 364 documentos/s num Ryzen 9. **Autoavaliação.** ([modelo](https://huggingface.co/hotchpotch/bekko-embedding-v1-a8m), [artigo](https://arxiv.org/pdf/2607.25180)) |
-| EmbeddingGemma-300M | <200 MB de RAM quantizado | 100+ idiomas, trechos até 512 tokens ([Google](https://developers.googleblog.com/en/introducing-embeddinggemma/)). Usa os termos do Gemma, que não são uma licença permissiva comum: **checar antes de considerar.** |
-| BGE-M3 | ~568 M parâmetros | Forte e pesado; 54,6 na mesma tabela. |
+Recuperação em português do Brasil: nDCG@10 médio em seis tarefas nativas do
+[MTEB-BR](https://arxiv.org/abs/2607.04581) (julho de 2026), média calculada por nós a partir dos
+[resultados publicados](https://huggingface.co/datasets/mteb-pt/mteb-pt-results) [C §3.1].
 
-Nenhuma fonte trouxe números para **português**. A escolha tem de sair de um teste nosso
-(plano §9, spike S1).
+| Modelo | Tamanho | Licença | MTEB-BR | Observação |
+| --- | --- | --- | ---: | --- |
+| multilingual-e5-small | 118 M parâm. | MIT | 0,507 | Padrão histórico; ONNX int8 oficial de 118 MB. 50,9 em recuperação na tabela dos autores do Bekko. |
+| **granite-embedding-97m-multilingual-r2** (2026) | 97 M | Apache-2.0 | **0,557** | 384 dimensões, 8.192 tokens, ONNX int8 oficial de 98 MB ([modelo](https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2)). Não estava na primeira versão. |
+| Bekko a8m / a25m (2026) | 7,7 M / 24,9 M parâmetros **ativos**; 106 M / 123 M no total | MIT | não avaliado | Traz ONNX (130 MB / 199 MB). Os autores reportam 56,2 (a8m) no MMTEB multilíngue e 364 documentos/s num Ryzen 9, mas nas tarefas multilíngues de pergunta e resposta ficam abaixo do gte-multilingual-base e do BGE-M3. **Autoavaliação.** ([modelo](https://huggingface.co/hotchpotch/bekko-embedding-v1-a8m), [artigo](https://arxiv.org/pdf/2607.25180), [C §3.4]) |
+| EmbeddingGemma-300M | 308 M | **Termos do Gemma** | 0,653 | O melhor pequeno em português, mas os [termos](https://ai.google.dev/gemma/terms) obrigam a repassar restrições de uso, anexar aviso e aceitar restrição remota pelo Google: **não é licença permissiva** [C §3.3]. |
+| granite-embedding-311m-multilingual-r2 | 312 M | Apache-2.0 | 0,607 | ONNX int8 oficial de 313 MB. |
+| BGE-M3 | ~568 M | MIT | 0,635 | Forte e pesado; 54,6 no MMTEB na tabela dos autores do Bekko. |
+
+Um segundo benchmark, o [MTEB-PT](https://arxiv.org/abs/2607.04071), conclui que rankings
+multilíngues não preveem bem o desempenho em português. A escolha final continua saindo do
+spike S1 com o conjunto dourado; o teste local ficou para o computador do usuário [C §3.5].
 
 ### 5.3 Imagens
 
@@ -111,35 +121,81 @@ Nenhuma fonte trouxe números para **português**. A escolha tem de sair de um t
 - ColPali/ColQwen guardam muitos vetores por página; custo de disco e latência altos para um
   acervo pessoal de centenas de milhares de imagens.
 - Embedding visual de vetor único (família CLIP/SigLIP) faz sentido para busca por aparência
-  ("aquele gráfico azul"). A busca desta sessão não confirmou disponibilidade em ONNX nem
-  licenças; fica como spike.
+  ("aquele gráfico azul"). Com ONNX e licença permissiva: SigLIP 2 base (Apache-2.0, conversão
+  da comunidade de 378 MB em int8), CLIP ViT-B/32 (MIT, 154 MB em int8) e uform3 multilíngue
+  (Apache-2.0, 87 MB o codificador de imagem; usado pelo Windrecorder). Evidência de que servem
+  para capturas de tela é fraca: o CLIP sem ajuste fino teve recall@10 pouco acima de 0,2 em
+  busca de telas de app ([GUing](https://arxiv.org/abs/2405.00145)); SigLIP em telas: não
+  encontrado. Continua como spike da Fase 4 [C §6.1].
+- Formato: AVIF ficou ~34% menor que JPEG num teste com quadros de TV, mas custou ~13× mais CPU
+  para codificar que WebP ([GDELT](https://blog.gdeltproject.org/at-scale-ocr-of-television-news-experiments-optimizing-the-still-frame-file-storage-format/));
+  estudo do efeito do formato na qualidade do OCR de telas: não encontrado [C §6.2].
 
 ### 5.4 Captura no Windows
 
 - **Desktop Duplication (DXGI)** entrega, por quadro, a lista de retângulos alterados; quadro
   sem retângulos é sinal gratuito de "nada mudou" ([Microsoft](https://learn.microsoft.com/en-us/windows/win32/api/dxgi1_2/nf-dxgi1_2-idxgioutputduplication-getframedirtyrects)). A duplicação cai em troca de sessão e precisa ser recriada.
 - **Windows.Graphics.Capture** ganhou `DirtyRegionMode` e `MinUpdateInterval` no Windows 11
-  24H2 (build 26100). Há "essentially no documentation" segundo um
+  24H2 (build 26100). Confirmado na referência: os valores `ReportOnly` e `ReportAndRender` e o
+  `MinUpdateInterval` não têm descrição nenhuma
+  ([enum](https://learn.microsoft.com/en-us/uwp/api/windows.graphics.capture.graphicscapturedirtyregionmode)).
+  Há "essentially no documentation" segundo um
   [issue do exemplo oficial](https://github.com/robmikh/Win32CaptureSample/issues/82); o libwebrtc
-  testa a presença da API antes de usar.
-- O Recall tira uma foto "a cada poucos segundos". A regra "só se a tela mudou" que circula não
-  foi confirmada nas páginas da Microsoft encontradas.
+  calcula a própria região alterada em vez de usar a API [C §7.1].
+- O Recall salva uma captura "every few seconds and when the content of your active window
+  changes" ([Microsoft](https://support.microsoft.com/en-us/windows/retrace-your-steps-with-recall-aa03f8a0-a78b-4b3e-b0a1-2eb8ac48701c)):
+  a regra de mudança está confirmada.
+- **UI Automation tem custo fora do Aura:** um processo cliente de UIA faz Chrome e Firefox
+  manterem a árvore de acessibilidade completa; um relato com rastreamento mediu 43 s de entrada
+  travada no Chrome ([issue](https://github.com/anthropics/claude-code/issues/44739)). Apps
+  Electron só expõem texto quando detectam tecnologia assistiva. Janelas com
+  `WDA_EXCLUDEFROMCAPTURE` (como o Signal) escondem os pixels, não a árvore de UIA [C §7.2].
 
 ### 5.5 Obsidian
 
 - Um cofre é uma pasta de arquivos Markdown. Escrever nessa pasta funciona com o Obsidian
   fechado e sem plugin.
 - **CLI oficial** desde a versão 1.12.0 (fevereiro de 2026): `obsidian search query="…"`,
-  `create`, `append`, `prepend`, saída em JSON. Ainda em acesso antecipado segundo uma fonte, e
-  **precisa do aplicativo aberto** ([Obsidian](https://obsidian.md/cli), [dev.to](https://dev.to/shimo4228/obsidians-official-cli-is-here-no-more-hacking-your-vault-from-the-back-door-3123)). Serve como atalho opcional, não como dependência.
-- Propriedades no cabeçalho YAML alimentam Bases e Dataview. A sintaxe dos comandos de Bases na
-  CLI não foi confirmada.
+  `create`, `append`, `prepend`, saída em JSON. Liga-se em Configurações → Geral. Confirmado na
+  ajuda: "requires the Obsidian app to be running"; o primeiro comando abre o app
+  ([ajuda](https://obsidian.md/help/cli)). Sem o app, só o Obsidian Headless (beta), que
+  sincroniza e publica mas exige conta do Obsidian Sync. Há defeitos relatados com agentes:
+  `property:set` sai com sucesso sem mudar arquivos escritos por fora, e códigos de saída 0 em
+  falhas ([fórum](https://forum.obsidian.md/t/113166)). Serve como atalho opcional, não como
+  dependência.
+- Propriedades no cabeçalho YAML alimentam Bases e Dataview; o tipo de uma propriedade vale para
+  o cofre inteiro ([ajuda](https://obsidian.md/help/properties)). Sintaxe confirmada na CLI:
+  `property:set name=… value=… type=… path=…`, `bases`, `base:views`,
+  `base:query path=… view=… format=json`, `base:create` [C §7.3].
+- **Obsidian Sync** mescla conflitos com diff-match-patch e pode duplicar texto; nota criada
+  localmente pode ser trocada pela remota sem mesclar; cofre em `Desktop` ou `Documents` costuma
+  estar no OneDrive ([ajuda](https://obsidian.md/help/sync/troubleshoot)). Isso muda como o Aura
+  escreve no Cofre [C §10, I-14].
 
-## 6. O que a pesquisa não respondeu
+## 6. O que a pesquisa não respondeu (revisado)
 
-1. Opiniões diretas do Reddit e do fórum do Obsidian (bloqueados; só citações de segunda mão).
-2. Qualidade dos modelos de embedding em português.
-3. Custo real de CPU da captura por evento com UI Automation no Windows.
-4. Formato de disco e deduplicação internos do screenpipe e do Recall.
-5. Consentimento de terceiros em gravação de conversas: nenhuma fonte encontrada. É questão
-   jurídica (LGPD) que precisa de orientação própria antes de qualquer promessa na interface.
+1. **Opiniões diretas.** Fórum do Obsidian, Tildes e Hacker News: respondido, lidos direto
+   ([C §1–2]). Reddit: **continua sem resposta**. Tentativas: `reddit.com` e `old.reddit.com`
+   (403 para esta rede), leitor Jina (403), PullPush (526), buscador da Anthropic (domínio
+   recusado), agent-reach (exige login), Internet Archive (fora do ar; cópias sem comentários).
+2. **Embeddings em português.** Respondido em parte: o MTEB-BR e o MTEB-PT (julho de 2026) têm
+   números independentes (seção 5.2). Bekko não foi avaliado em português; o teste local com 50
+   documentos e 30 perguntas **não rodou** e ficou para o computador do usuário [C §3.5].
+3. **Custo de CPU da captura por evento com UIA no Windows.** Não encontrado como medição. Há
+   só a estimativa da especificação do screenpipe (200–500 ms para percorrer a árvore no
+   Windows contra 10–50 ms no macOS) [autodeclarado] e um risco novo: ser cliente de UIA deixa
+   os navegadores mais lentos (seção 5.4). Continua no spike S3, que passa a medir também o
+   efeito nos navegadores.
+4. **Formato de disco e deduplicação do screenpipe e do Recall.** screenpipe: respondido no
+   código (JPEG q80 por captura, compactado em MP4 depois de 10 min; deduplicação por hash do
+   texto de acessibilidade com exceções; SQLite com FTS5 e sqlite-vec) [C §4.1]. Recall:
+   respondido em parte (captura a cada poucos segundos e quando a janela muda; cifra por captura
+   num enclave; AES-256-GCM por página segundo o TotalRecall); o formato do banco e a regra de
+   deduplicação não são públicos [C §4.2].
+5. **Consentimento de terceiros.** Respondido em parte: a LGPD não se aplica a tratamento "por
+   pessoa natural para fins exclusivamente particulares e não econômicos" (art. 4º, I); uso com
+   clientes é econômico e exige base legal (art. 7º) e transparência. Granola, Fathom e
+   Fireflies oferecem aviso no chat, marca d'água ou e-mail; o Otter é processado por não pedir
+   a todos [C §9]. Orientação da ANPD específica: não encontrada. Continua precisando de
+   advogado antes de qualquer promessa na interface (spike S6). **Isto é pesquisa, não
+   aconselhamento jurídico.**
