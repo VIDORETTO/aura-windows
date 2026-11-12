@@ -37,6 +37,17 @@
 | `CAND-070` | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-071` | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-072` | Respostas instantâneas locais: contas, porcentagens, conversões | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-073` | Acervo: índice local cifrado (FTS5 + vetores) de Conversas, Reuniões, notas, anexos e páginas lidas, com `memory_search` híbrido, origem citada e conjunto dourado de avaliação | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-074` | Memória de Conversas: resumo por Conversa, busca entre Conversas e propostas de Memória com revisão | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-075` | Momentos de tela: captura por evento, texto primeiro (UIA, OCR de reserva), descarte de repetidos, imagem com prazo e teto de disco (absorve CAND-015) | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-076` | Página "Memória": buscar, ver origem, linha do tempo, esquecer (período, app, site, pessoa) e uso de disco | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-077` | Consolidação em segundo plano: sessões, resumo do dia, Fichas de Pessoa/Projeto/Tópico com fatos datados e revisão semanal | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-078` | Cofre de notas (Obsidian): pasta pronta em um clique, publicação gerenciada do destilado, leitura das notas do usuário como fonte | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-079` | "O que eu li": páginas com endereço, tempo de leitura e texto; importação do histórico do navegador | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-080` | Recuperação de imagens: imagem do Momento entregue ao modelo e busca por aparência opcional | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-081` | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-082` | Bases externas pré-configuradas por MCP (RAGFlow, Khoj, AnythingLLM, Notion) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-083` | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `001-fundacao-overlay` | Specification: Fundação do app residente e Overlay | `effort` | `—` | `implementation` | `active` | `0/6` | No Windows: compilar o shell Tauri e validar TK-001..006 (docs/HANDOFF.md §2, §4.1, §6 Marco 1) |
 | `002-conversa-agente-codex` | Specification: Conversa agêntica via Codex app-server | `effort` | `—` | `implementation` | `active` | `0/9` | Spike com o app-server real (TK-001); UI de perguntas do agente (TK-007), uso de contexto (TK-008), pastas concedidas (TK-009) |
 | `003-byok-gateway` | Specification: BYOK com endpoint customizado | `effort` | `—` | `implementation` | `active` | `0/7` | Validar com provedores reais e gravar fixtures SSE reais (docs/HANDOFF.md §4.3) |

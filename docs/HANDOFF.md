@@ -1,5 +1,11 @@
 # HANDOFF — do Linux para o Windows
 
+> **12/11/2026 — estudo do Segundo Cérebro (só documentação, nenhum código alterado):**
+> [plano](project/plano-segundo-cerebro.md), [pesquisa](research/segundo-cerebro.md) e
+> [auditoria do código](qa/auditoria-codigo-2026-11-12.md). Candidatos CAND-073…083 no roadmap.
+> A auditoria confirmou em execução que o modo Contínuo ignora a Retenção (A-01); corrigir
+> antes de qualquer gravação longa (CAND-083). Decisões pendentes do usuário: Q-011 a Q-017.
+
 > **13/10/2026 — Aura 0.3.1, esforço [042](../specs/042-continuidade-e-ruido/change.md):**
 > conteúdo web lido pelo agente agora fica no histórico local da Conversa (decisão do usuário;
 > revoga a retenção só por Turno da 039), sem aviso de modo falso após reinício, MCP sem ruído
