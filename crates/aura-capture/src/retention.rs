@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 pub struct SegmentMeta {
     pub id: String,
     pub source: String,
-    /// `buffer` or `recording`.
+    /// `buffer`, `continuous` or `recording`.
     pub kind: String,
     pub recording_id: Option<String>,
     pub start_ms: i64,
@@ -38,6 +38,12 @@ impl Default for RetentionPolicy {
     }
 }
 
+/// Whether a segment follows the age and size limits: Continuous segments and
+/// recordings (manual ones only when the policy says so).
+pub fn is_limited(s: &SegmentMeta, policy: &RetentionPolicy) -> bool {
+    s.kind == "continuous" || (s.kind == "recording" && (!s.manual || policy.apply_to_manual))
+}
+
 /// Returns ids of segments to delete, oldest first.
 pub fn plan(segments: &[SegmentMeta], policy: &RetentionPolicy, now_ms: i64) -> Vec<String> {
     let mut delete: Vec<&SegmentMeta> = segments
@@ -45,9 +51,10 @@ pub fn plan(segments: &[SegmentMeta], policy: &RetentionPolicy, now_ms: i64) -> 
         .filter(|s| s.kind == "buffer" && s.end_ms < now_ms - policy.buffer_ms)
         .collect();
 
+    // Continuous segments and limited recordings share one age/size budget.
     let mut recordings: Vec<&SegmentMeta> = segments
         .iter()
-        .filter(|s| s.kind == "recording" && (!s.manual || policy.apply_to_manual))
+        .filter(|s| is_limited(s, policy))
         .collect();
     recordings.sort_by_key(|s| s.start_ms);
     let mut kept_bytes: u64 = recordings.iter().map(|s| s.bytes).sum();
@@ -119,5 +126,96 @@ mod tests {
         assert!(plan(&manual, &policy, 10 * DAY).is_empty());
         policy.apply_to_manual = true;
         assert_eq!(plan(&manual, &policy, 10 * DAY).len(), 4);
+    }
+
+    const DAY: i64 = 24 * 3_600_000;
+    const GB: u64 = 1024 * 1024 * 1024;
+
+    fn day(source: &str, kind: &str, d: i64, gb: u64, manual: bool) -> SegmentMeta {
+        SegmentMeta {
+            id: format!("{source}-{kind}-d{d}"),
+            source: source.into(),
+            kind: kind.into(),
+            recording_id: None,
+            start_ms: d * DAY,
+            end_ms: (d + 1) * DAY,
+            bytes: gb * GB,
+            manual,
+        }
+    }
+
+    // 041 AC-001: the Continuous mode follows the age and size limits.
+    #[test]
+    fn continuous_segments_follow_age_and_size_limits() {
+        let policy = RetentionPolicy::default();
+        let two_gb: Vec<_> = (0..10)
+            .map(|d| day("screen", "continuous", d, 2, false))
+            .collect();
+        assert_eq!(
+            plan(&two_gb, &policy, 10 * DAY),
+            vec![
+                "screen-continuous-d0",
+                "screen-continuous-d1",
+                "screen-continuous-d2"
+            ]
+        );
+        let three_gb: Vec<_> = (0..10)
+            .map(|d| day("screen", "continuous", d, 3, false))
+            .collect();
+        assert_eq!(
+            plan(&three_gb, &policy, 10 * DAY),
+            vec![
+                "screen-continuous-d0",
+                "screen-continuous-d1",
+                "screen-continuous-d2",
+                "screen-continuous-d3"
+            ]
+        );
+    }
+
+    // 041 AC-002: manual recordings (production rows have manual = 1) stay out
+    // of the limits unless the policy says so; they do not use the budget.
+    #[test]
+    fn manual_recordings_stay_outside_the_continuous_budget() {
+        let mut policy = RetentionPolicy::default();
+        let mut segs: Vec<_> = (0..10)
+            .map(|d| day("screen", "recording", d, 3, true))
+            .collect();
+        segs.extend((5..10).map(|d| day("mic", "continuous", d, 1, false)));
+        assert!(plan(&segs, &policy, 10 * DAY).is_empty());
+        policy.apply_to_manual = true;
+        // 35 GB: age drops recording d0–d2 (26 GB), size drops d3–d4 (20 GB).
+        assert_eq!(
+            plan(&segs, &policy, 10 * DAY),
+            vec![
+                "screen-recording-d0",
+                "screen-recording-d1",
+                "screen-recording-d2",
+                "screen-recording-d3",
+                "screen-recording-d4"
+            ]
+        );
+    }
+
+    // 041 AC-003: one global budget over every source, oldest start first.
+    #[test]
+    fn continuous_budget_is_shared_by_all_sources() {
+        let policy = RetentionPolicy::default();
+        let mut segs: Vec<_> = (0..10)
+            .map(|d| day("screen", "continuous", d, 3, false))
+            .collect();
+        segs.extend((5..10).map(|d| day("mic", "continuous", d, 1, false)));
+        // Worked by hand: 35 GB; age drops screen d0–d2 (26 GB); size drops
+        // screen d3 (23 GB) and d4 (20 GB); the microphone stays.
+        assert_eq!(
+            plan(&segs, &policy, 10 * DAY),
+            vec![
+                "screen-continuous-d0",
+                "screen-continuous-d1",
+                "screen-continuous-d2",
+                "screen-continuous-d3",
+                "screen-continuous-d4"
+            ]
+        );
     }
 }
