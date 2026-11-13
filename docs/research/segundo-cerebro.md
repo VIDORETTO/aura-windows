@@ -9,8 +9,9 @@ Detalhes, métodos e a lista de mudanças propostas ao plano estão em
 **[2ª mão]** o que vinha de resumos de busca; na revisão, o fórum do Obsidian, o Tildes, o
 Hacker News, o código do screenpipe e as páginas da Microsoft foram lidos direto, e as marcas
 foram substituídas. O Reddit continua inacessível (bloqueio à rede e ao buscador, [C §1]); o que
-dependia dele está marcado **[não verificado]**. O gist do Karpathy foi lido na íntegra. Nenhum
-número deste documento foi medido por nós.
+dependia dele está marcado **[não verificado]**. O gist do Karpathy foi lido na íntegra. As
+seções 1 a 5 não trazem número medido por nós; as medições feitas depois estão em
+`docs/research/segundo-cerebro-medicoes-2026-11.md` e são resumidas na seção 6.
 
 ## 1. O que o usuário pediu, em uma frase
 
@@ -174,18 +175,29 @@ spike S1 com o conjunto dourado; o teste local ficou para o computador do usuár
 
 ## 6. O que a pesquisa não respondeu (revisado)
 
+Números medidos depois num PC Windows estão em
+`docs/research/segundo-cerebro-medicoes-2026-11.md` (citado como **[M §n]**).
+
 1. **Opiniões diretas.** Fórum do Obsidian, Tildes e Hacker News: respondido, lidos direto
-   ([C §1–2]). Reddit: **continua sem resposta**. Tentativas: `reddit.com` e `old.reddit.com`
-   (403 para esta rede), leitor Jina (403), PullPush (526), buscador da Anthropic (domínio
-   recusado), agent-reach (exige login), Internet Archive (fora do ar; cópias sem comentários).
+   ([C §1–2]). Reddit: **continua sem resposta**. Tentativas da VPS: `reddit.com` e
+   `old.reddit.com` (403 para esta rede), leitor Jina (403), PullPush (526), buscador da
+   Anthropic (domínio recusado), agent-reach (exige login), Internet Archive (fora do ar; cópias
+   sem comentários). Tentativas de uma rede doméstica: `old.reddit.com` exige conta; o
+   `www.reddit.com` abriu num Chrome real sem login e bloqueou o IP em seguida; JSON público 403;
+   PullPush 526; Arctic Shift sem resposta [M §7]. A conta do usuário não foi usada. As tabelas
+   das seções 2 e 3 não mudaram.
 2. **Embeddings em português.** Respondido em parte: o MTEB-BR e o MTEB-PT (julho de 2026) têm
-   números independentes (seção 5.2). Bekko não foi avaliado em português; o teste local com 50
-   documentos e 30 perguntas **não rodou** e ficou para o computador do usuário [C §3.5].
-3. **Custo de CPU da captura por evento com UIA no Windows.** Não encontrado como medição. Há
-   só a estimativa da especificação do screenpipe (200–500 ms para percorrer a árvore no
-   Windows contra 10–50 ms no macOS) [autodeclarado] e um risco novo: ser cliente de UIA deixa
-   os navegadores mais lentos (seção 5.4). Continua no spike S3, que passa a medir também o
-   efeito nos navegadores.
+   números independentes (seção 5.2). O teste local **rodou** [M §2], com 50 documentos
+   sintéticos, 1.000 distratores e 30 perguntas escritas por um subagente. Acerto na 1ª posição:
+   e5-small 0,73; bekko-a8m 0,80; granite-97m-r2 0,87; bekko-a25m 0,93; granite-311m-r2 1,00. A
+   fusão RRF com FTS5 de pesos iguais **piorou** todos. O conjunto é pequeno e sintético; a
+   escolha final continua no S1.
+3. **Custo de CPU da captura por evento com UIA no Windows.** **Medido** [M §4]. Em 10 minutos
+   de uso sintético, ganchos separados + leitura UIA a cada evento custaram 1,75% de um núcleo e
+   38 MB de pico. A leitura da janela levou 80 ms de p50 no Chrome e no Edge, 1,4 s de p95 no
+   Word e 2,6 s no WhatsApp. Uma leitura por UIA ligou a acessibilidade completa do Chrome; numa
+   página muito dinâmica, cada tecla passou a levar ~12 s. Proposta: navegadores por captura +
+   OCR, não por UIA; leitura com orçamento de tempo [M §9, I-25 e I-31].
 4. **Formato de disco e deduplicação do screenpipe e do Recall.** screenpipe: respondido no
    código (JPEG q80 por captura, compactado em MP4 depois de 10 min; deduplicação por hash do
    texto de acessibilidade com exceções; SQLite com FTS5 e sqlite-vec) [C §4.1]. Recall:
@@ -196,6 +208,19 @@ spike S1 com o conjunto dourado; o teste local ficou para o computador do usuár
    pessoa natural para fins exclusivamente particulares e não econômicos" (art. 4º, I); uso com
    clientes é econômico e exige base legal (art. 7º) e transparência. Granola, Fathom e
    Fireflies oferecem aviso no chat, marca d'água ou e-mail; o Otter é processado por não pedir
-   a todos [C §9]. Orientação da ANPD específica: não encontrada. Continua precisando de
-   advogado antes de qualquer promessa na interface (spike S6). **Isto é pesquisa, não
-   aconselhamento jurídico.**
+   a todos [C §9]. Orientação da ANPD específica: não encontrada, também numa segunda busca
+   restrita a gov.br/anpd [M §8.2]. Continua precisando de advogado antes de qualquer promessa
+   na interface (spike S6). **Isto é pesquisa, não aconselhamento jurídico.**
+6. **Armazenamento vetorial com cifra.** **Medido** [M §3]. SQLCipher + sqlite-vec compilam no
+   MSVC (exige Perl nativo do Windows). Mas, com a cifra e o cache padrão, a busca vetorial fica
+   5–10× mais lenta, e o sqlite-vec roda sem SIMD no MSVC. Vetores em BLOB, em ordem
+   cronológica, com filtro de período por faixa de `rowid` e varredura em Rust, ficaram em 31 ms
+   a 500 mil com cifra [M §9, I-21 e I-22].
+7. **Formato de imagem e OCR.** **Medido** [M §5]. O formato quase não muda o OCR na resolução
+   nativa, e o WebP sem perdas é o menor para telas de texto. Reduzir a janela para 1.280 px
+   antes do OCR derruba o reconhecimento de código para 24% [M §9, I-28].
+8. **`DirtyRegionMode` do WGC.** **Medido** [M §6]. No build 26200 só chega quadro quando algo
+   muda, e `DirtyRegions` traz o retângulo exato [M §9, I-29].
+9. **Janela anônima no Recall.** Respondido: o navegador marca a janela com
+   `SetInputScope(IS_PRIVATE)` [M §8.1]. Outro processo não consegue ler essa marca (nenhuma
+   API encontrada). A UIA do Chrome expõe "(Modo anônimo)" no nome da janela [M §4.4].
