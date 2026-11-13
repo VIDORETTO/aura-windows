@@ -52,10 +52,8 @@ pub fn plan(segments: &[SegmentMeta], policy: &RetentionPolicy, now_ms: i64) -> 
         .collect();
 
     // Continuous segments and limited recordings share one age/size budget.
-    let mut recordings: Vec<&SegmentMeta> = segments
-        .iter()
-        .filter(|s| is_limited(s, policy))
-        .collect();
+    let mut recordings: Vec<&SegmentMeta> =
+        segments.iter().filter(|s| is_limited(s, policy)).collect();
     recordings.sort_by_key(|s| s.start_ms);
     let mut kept_bytes: u64 = recordings.iter().map(|s| s.bytes).sum();
     for s in recordings {
