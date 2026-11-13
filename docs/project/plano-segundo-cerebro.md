@@ -3,10 +3,16 @@
 Data: 2026-11-12 · Status: **proposta** (não é spec; vira os candidatos CAND-073…083 em
 `roadmap.md` e só vira esforço depois de passar pelo fluxo Hybrid) · Base:
 `docs/research/segundo-cerebro.md` (pesquisa e fontes), `docs/qa/auditoria-codigo-2026-11-12.md`
-(estado do código), `docs/HANDOFF.md`, `CONTEXT.md`, ADRs 0001–0011.
+(estado do código), `docs/HANDOFF.md`, `CONTEXT.md`, ADRs 0001–0011 (0012–0014 propostos),
+`docs/research/segundo-cerebro-medicoes-2026-11.md` (medições, citado como [M §n]).
 
-Todos os números de disco, CPU e latência deste plano são **estimativas de projeto**. Nenhum foi
-medido. Os spikes do §9 existem para trocá-los por medições antes de qualquer promessa.
+**Revisão 2 (2026-11-13).** Incorpora as medições preliminares de
+`docs/research/segundo-cerebro-medicoes-2026-11.md` e propõe os ADRs 0012 a 0014. O que mudou está
+no §13.
+
+Os números de disco, CPU e latência deste plano são **estimativas de projeto**, exceto os marcados
+como medidos. Esses vêm de protótipos fora do Aura, num desktop rápido. Os spikes do §9 continuam
+necessários para trocar tudo por medições no código do Aura antes de qualquer promessa.
 
 ## 0. Resumo
 
@@ -21,13 +27,15 @@ significado, tempo e pessoa.
 
 **Cinco decisões deste plano**
 
-1. **Motor próprio, embutido.** O índice (o **Acervo**) fica dentro do Aura: SQLite com FTS5 e
-   sqlite-vec, embeddings locais no worker. Sem Docker, sem Python, sem servidor. RAGFlow e
-   afins entram só como base externa opcional, por MCP (§3).
+1. **Motor próprio, embutido.** O índice (o **Acervo**) fica dentro do Aura: SQLite cifrado com
+   FTS5 e vetores em tabela própria (binário + int8, ADR 0012 proposto), embeddings locais no
+   worker (ADR 0014 proposto). Sem Docker, sem Python, sem servidor. RAGFlow e afins entram só
+   como base externa opcional, por MCP (§3).
 2. **Tela vira texto, não vídeo.** Em vez de foto a cada N segundos, o Aura registra
-   **Momentos**: captura por evento, texto da janela por UI Automation, OCR só como reserva,
-   descarte de repetidos e imagem pequena com prazo de validade (§4). A ideia de "tela parada
-   por 5 segundos" está certa no gatilho e errada no que guarda; o §4.1 mostra o ajuste.
+   **Momentos**: captura por evento; texto da janela por UI Automation fora dos navegadores, e
+   OCR na resolução nativa nos navegadores e como reserva; descarte de repetidos; imagem com
+   prazo de validade (§4, ADR 0013 proposto). A ideia de "tela parada por 5 segundos" está certa
+   no gatilho e errada no que guarda; o §4.1 mostra o ajuste.
 3. **O agente busca, não recebe despejo.** Ferramentas `memory_*` com busca híbrida, filtros de
    tempo, app, pessoa e projeto, e origem citada em toda resposta (§5).
 4. **Consolidar enquanto a pessoa não está usando.** Um trabalho em segundo plano transforma
@@ -54,7 +62,7 @@ Fase 4 (Cofre completo, imagens, proativo) (§8).
 | Já existe (onde) | Serve para |
 | --- | --- |
 | Política de privacidade, Janelas excluídas, Pausa, Registro de acesso (`aura-policy`, `privacy.rs`) | Decidir cada Momento **antes** de capturar; "o que o agente leu da minha memória" |
-| Texto da janela por UI Automation com OCR de reserva (`read_screen_text`, `ScreenText`) | Fonte principal dos Momentos |
+| Texto da janela por UI Automation com OCR de reserva (`read_screen_text`, `ScreenText`) | Fonte principal dos Momentos fora dos navegadores; precisa de orçamento de tempo (§4.2) |
 | Redação de dados pessoais (`pii.rs`: CPF, CNPJ, cartão, telefone) | Limpar o texto antes de indexar |
 | Cofre AES-GCM com chave por DPAPI, Segmentos cifrados (`aura-store::vault`) | Cifrar imagens e a chave do banco do Acervo |
 | Motor de Reunião com Transcrição, Projetos, Compromissos (`meeting.rs`, `projects.rs`, `actions.rs`) | Reuniões entram no Acervo; Projetos viram Fichas |
@@ -102,7 +110,7 @@ continua significando o fato durável.
 
 | Opção | Veredito | Motivo |
 | --- | --- | --- |
-| **Motor próprio embutido** (SQLite FTS5 + sqlite-vec + embeddings no worker) | **Adotar** | Único caminho que respeita leveza, instalação sem administrador, licenças permissivas, cifra em repouso e Política aplicada na captura. Zero configuração para o usuário. |
+| **Motor próprio embutido** (SQLite FTS5 + vetores em BLOB + embeddings no worker) | **Adotar** | Único caminho que respeita leveza, instalação sem administrador, licenças permissivas, cifra em repouso e Política aplicada na captura. Zero configuração para o usuário. |
 | RAGFlow como motor | Rejeitar | Docker, cinco serviços, ~16 GB de RAM. Público de servidor, não de desktop. |
 | Código do screenpipe | Rejeitar | Licença comercial/source-available. Ficam as ideias. |
 | Mem0, Zep, Letta como dependência | Rejeitar | São serviços; os benchmarks publicados se contradizem (93,4 autodeclarado contra 49,0 independente para o mesmo produto). Ficam as ideias: extrair e consolidar fatos, fatos com validade no tempo. |
@@ -145,7 +153,7 @@ flowchart TD
   E["Evento: troca de janela · título mudou · pausa de digitação<br/>fim de rolagem · clique · batida a cada 30–60 s se algo muda"] --> D["Assentar ~1,5 s"]
   D --> P{"Política de privacidade<br/>(Janela excluída, Pausa, janela anônima)"}
   P -- negar --> X["Nada é lido"]
-  P -- permitir --> T["Texto por UI Automation<br/>+ app, título, endereço"]
+  P -- permitir --> T["Texto por UI Automation (fora de navegadores, ≤ ~200 ms)<br/>ou OCR na resolução nativa<br/>+ app, título, endereço"]
   T --> H{"Texto igual ao último<br/>Momento desta janela?"}
   H -- sim --> U["Só aumenta a duração do Momento anterior"]
   H -- não --> O{"Texto vazio ou curto?"}
@@ -159,32 +167,49 @@ flowchart TD
 Pontos do desenho:
 
 - **Gatilhos por evento.** No Windows, `SetWinEventHook` avisa troca de primeiro plano e de
-  título sem sondagem. Pausa de digitação sai do gancho de teclado que o Aura já tem para
-  atalhos; fim de rolagem e clique pedem um gancho de mouse novo. A batida de 30–60 s cobre
+  título sem sondagem. São dois ganchos separados, nunca uma faixa de eventos: cada evento
+  assinado custa ~0,19 ms a quem o dispara, e a faixa larga ainda encarece os eventos não
+  assinados (medido, [M §4.3]). Pausa de digitação sai do gancho de teclado que o Aura já tem
+  para atalhos; fim de rolagem e clique pedem um gancho de mouse novo. A batida de 30–60 s cobre
   vídeo e apresentações.
 - **Nada acontece com o usuário ausente.** Sem entrada há mais de alguns minutos, tela
   bloqueada, jogo ou vídeo em tela cheia: sem captura.
-- **Texto primeiro.** UI Automation devolve o texto exato da janela e, em navegadores, o
-  endereço. É barato e não depende de modelo. OCR (`Windows.Media.Ocr`, já adaptado) só quando
-  a UIA devolve pouco: PDF renderizado, imagem, área remota, canvas.
+- **Texto primeiro, mas não a qualquer custo.** Fora dos navegadores, a UI Automation devolve o
+  texto exato da janela, sem modelo. A leitura **não é barata**: o algoritmo atual levou 2,6 s no
+  WhatsApp e 1,4 s de p95 no Word (medido, [M §4.2]). Por isso ela tem orçamento de ~200 ms e,
+  passando disso, cai para OCR.
+- **Navegadores e apps Chromium/Electron/WebView2 por OCR.** Uma única leitura do Chrome por UIA
+  liga a acessibilidade completa dele. Numa página muito dinâmica, cada tecla passou a levar
+  ~12 s (medido, [M §4.5]). Esses apps vão por captura da janela + OCR do Windows; título e
+  endereço vêm do título da janela. UIA nesses apps só como opção explícita, com aviso.
+- **OCR na resolução nativa.** O OCR (`Windows.Media.Ocr`, já adaptado) roda sobre a captura
+  antes de reduzir. Reduzir de 1.920 para 1.280 px derruba o reconhecimento de código para 24%
+  (medido, [M §5]).
 - **Dois filtros de repetição.** Impressão digital do texto normalizado (igual → descarta) e
-  hash perceptual da imagem reduzida (quase igual → descarta). Com os dois, rolar um documento
-  gera Momentos novos; ficar parado lendo, não.
+  "nada mudou na tela". No build 26100+, este segundo vem do Windows.Graphics.Capture por janela,
+  que só entrega quadro quando algo muda e informa o retângulo alterado (medido, [M §6]). Em
+  builds anteriores, hash perceptual da imagem reduzida. Com os dois, rolar um documento gera
+  Momentos novos; ficar parado lendo, não.
 - **Trabalho pesado fora do host.** O host só lê texto e calcula hashes. OCR em lote,
   embeddings e compressão de imagem rodam no `aura-worker`, com a máquina ociosa e na tomada.
+  Nos navegadores o texto só existe depois do OCR. Até lá, o Momento guarda a captura nativa (WebP
+  sem perdas, ~45 KB), e a repetição é decidida pelo WGC e pelo título. Por isso o OCR desses
+  Momentos não pode esperar dias: ele precisa de um teto de fila, a medir no S3.
 - **Um Momento tem duração.** "Fiquei 12 minutos nesta página" é o sinal mais útil de
   importância e sai de graça do filtro de repetição.
 
-Otimização posterior, fora do primeiro corte: retângulos alterados do DXGI ou do WGC (Windows
-11 24H2) como sinal gratuito de "nada mudou". O ADR 0008 mantém GDI na primeira versão e a
-documentação das APIs novas é rala.
+O WGC deixa de ser "otimização posterior": a medição mostrou que ele responde "mudou algo?" de
+graça (ADR 0013 proposto). O GDI do ADR 0008 continua como reserva para builds anteriores ao
+26100 e para captura de monitor inteiro.
+
+[M] = `docs/research/segundo-cerebro-medicoes-2026-11.md`.
 
 ### 4.3 O que cada camada guarda
 
 | Camada | Conteúdo | Tamanho estimado | Prazo padrão |
 | --- | --- | --- | --- |
-| **Texto** | App, título, endereço, início, duração, texto redigido, embedding | ~100–150 MB por mês de uso (texto + índice + vetores de 8 bits) | Sem prazo, até o teto |
-| **Imagem** | Janela ativa reduzida (lado maior ≤ 1.280 px), com perdas, cifrada pelo cofre | ~80 KB cada; até ~800 por dia → ~1,4 GB por mês antes de rarear | 30 dias inteira; depois 1 por Momento longo; depois de 90 dias só as citadas ou fixadas |
+| **Texto** | App, título, endereço, início, duração, texto redigido, embedding | ~100–150 MB por mês de uso (texto + índice + vetores binário e int8, 432 bytes por trecho) | Sem prazo, até o teto |
+| **Imagem** | Janela ativa na resolução nativa, WebP sem perdas para telas de texto (OCR antes de qualquer redução), cifrada pelo cofre; miniatura reduzida opcional | ~45 KB cada em telas de texto (medido: 44 KB médios a 1.280 × 1.080, [M §5]); até ~800 por dia → ~1,1 GB por mês antes de rarear (calculado). Telas com foto ou vídeo ficam maiores sem perdas: para elas, WebP com perdas (q75) | 30 dias inteira; depois 1 por Momento longo; depois de 90 dias só as citadas ou fixadas |
 | **Vídeo** | O Buffer recente de hoje (H.264, Segmentos) | Como hoje | Como hoje: minutos |
 
 O vídeo contínuo deixa de ser o caminho da memória longa. O Buffer recente continua servindo
@@ -207,6 +232,11 @@ modelo do Recall (teto proporcional, o mais antigo sai primeiro).
 - Indicador na bandeja e no Overlay enquanto o Segundo Cérebro está ativo.
 - Excluídos de fábrica, além das Janelas excluídas atuais: janelas anônimas de navegador,
   campos de senha (propriedade `IsPassword` da UIA), gerenciadores de senha, apps de banco.
+  Janela anônima: o Edge marca "[InPrivate]" no título; o título da janela anônima do Chrome é
+  igual ao normal, e só o nome UIA da raiz traz "(Modo anônimo)", traduzido conforme o idioma.
+  O `IS_PRIVATE` que o Recall usa não é legível por outro processo (medido e pesquisado,
+  [M §4.4, §8.1]). O S3 confirma se ler só esse nome liga a acessibilidade do Chrome. Na dúvida,
+  não capturar.
 - **Esquecer** em um clique: os últimos N minutos, um dia, um aplicativo, um site, uma pessoa.
   Apagar remove texto, imagem, vetor e o que a Consolidação derivou daquilo.
 - Conversa efêmera nunca entra no Acervo.
@@ -240,14 +270,20 @@ modelo do Recall (teto proporcional, o mais antigo sai primeiro).
   pode ser apagado inteiro sem tocar nas configurações.
 - **Cifrado por inteiro.** O FTS5 não funciona sobre campos cifrados um a um, e um índice de
   tudo o que a pessoa viu não pode ficar em claro (foi a crítica central ao Recall). Proposta:
-  SQLCipher com a chave guardada pelo cofre existente (DPAPI). Compatibilidade com sqlite-vec e
-  com o build MSVC é o spike S2.
+  SQLCipher com a chave guardada pelo cofre existente (DPAPI). Compila no MSVC com
+  `bundled-sqlcipher-vendored-openssl`, desde que o build tenha Perl nativo do Windows (medido,
+  [M §3.1]).
 - Tabelas: `lembrancas` (origem, tipo, hora, duração, app, endereço, pessoa, projeto, texto),
-  FTS5 com `unicode61 remove_diacritics 2` (aposenta o `fold` manual de `notes.rs`), vetores no
-  sqlite-vec, `imagens` (ponteiro para arquivo cifrado), `fatos` (§6).
-- Vetores quantizados em 8 bits. A ~2.000 trechos por dia útil são ~500 mil por ano e ~190 MB
-  varridos por busca em força bruta, antes de filtro. Filtro por período e por fonte reduz isso
-  na prática. Se o p95 passar da meta, entra um primeiro passo binário. Medir no S2.
+  FTS5 com `unicode61 remove_diacritics 2` (aposenta o `fold` manual de `notes.rs`), `vetores`
+  (tabela comum em ordem de inserção: binário de 48 bytes + int8 de 384 bytes por trecho, sem
+  float32), `imagens` (ponteiro para arquivo cifrado), `fatos` (§6). Sem sqlite-vec por padrão
+  (ADR 0012 proposto).
+- Busca vetorial no worker: filtro de período como faixa de `rowid` → varredura do binário em
+  Rust → reordenação dos 100 melhores pelo int8. A ~2.000 trechos por dia útil são ~500 mil por
+  ano. Medido com vetores reais de 384 dimensões ([M §3.4]): com cifra, os últimos 30 dias levam
+  31 ms a 500 mil e 47 ms a ~1 milhão; sem filtro, a ~1 milhão, 66 ms com cache de 120 MB
+  (recall@10 de 0,86–0,90). Sem cache dimensionado e sem filtro, a cifra deixa a busca 5–10×
+  mais lenta e o binário passa de 300 ms a ~1 milhão.
 
 ### 5.3 Como o agente lembra
 
@@ -267,8 +303,11 @@ Receita de recuperação:
    data, aplicativo, título, endereço, reunião, orador. É a versão barata da recuperação
    contextual; a medição da Anthropic dá ~35% menos falhas só com isso sobre embeddings simples.
    Contexto gerado por LLM fica só para documentos longos, e opcional.
-2. **Duas buscas, uma fusão.** FTS5 (BM25) pega nomes, códigos e termos exatos. Vetores pegam
-   paráfrase ("aquele artigo sobre preço de energia"). Fusão por posição recíproca.
+2. **Duas buscas, fusão calibrada.** FTS5 (BM25) pega nomes, códigos e termos exatos. Vetores
+   pegam paráfrase ("aquele artigo sobre preço de energia"). **Não usar RRF de pesos iguais**: no
+   conjunto sintético, ele derrubou o acerto na 1ª posição de todos os modelos em 7–23 pontos
+   (medido, [M §2]). O peso do lexical, ou a regra "lexical só quando a pergunta tem termo raro",
+   sai do conjunto dourado do S1.
 3. **Filtros antes de ranquear.** "Semana passada", "com a Ana", "no Chrome" viram filtros. O
    agente já tem `clock_now`.
 4. **Recência e duração como desempate.** Não como critério principal.
@@ -459,10 +498,10 @@ Os orçamentos atuais (ocioso ≤ 150 MB, CPU ≤ 0,5%) valem com capturas desli
 
 | Métrica | Orçamento proposto | Onde se mede |
 | --- | --- | --- |
-| CPU do host com captura de Momentos | ≤ 1% em média num dia de trabalho | `aura-bench`, Fase 2 |
+| CPU do host com captura de Momentos | ≤ 1% de **um núcleo** em média num dia de trabalho (ganchos + UIA a cada evento, sem agrupar, mediram 1,75% de um núcleo em uso sintético, [M §4.2]; o agrupamento de 1,5 s e a exclusão dos navegadores devem trazer para baixo disso) | `aura-bench`, Fase 2 |
 | Memória a mais no host | ≤ 40 MB | idem |
 | Trabalho do worker (OCR, embeddings) | Só com a máquina ociosa e na tomada; nunca durante Reunião ou tela cheia | idem |
-| `memory_search` | ≤ 300 ms p95 com 500 mil trechos | S2, Fase 1 |
+| `memory_search` | ≤ 300 ms p95 com 500 mil trechos, busca vetorial no worker (medido no desenho do ADR 0012: 31–66 ms num desktop rápido, [M §3.4]) | S2 num notebook modesto, Fase 1 |
 | Disco | Dentro do teto da predefinição; nunca cresce sem limite | teste de retenção |
 
 ---
@@ -471,10 +510,10 @@ Os orçamentos atuais (ocioso ≤ 150 MB, CPU ≤ 0,5%) valem com capturas desli
 
 | ID | Pergunta | Como | Fase |
 | --- | --- | --- | --- |
-| S1 | Qual modelo de embeddings em português? | multilingual-e5-small, Bekko a8m/a25m e mais um, no conjunto dourado: acerto nos 10 primeiros, latência em CPU, RAM, tamanho, licença | 0 |
-| S2 | FTS5 + sqlite-vec + SQLCipher convivem no build MSVC com `rusqlite`? | Protótipo com 500 mil vetores de 384 dimensões em 8 bits; p95 de busca com e sem filtro | 0 |
-| S3 | Quanto custa capturar por evento? | `SetWinEventHook` + texto por UIA em Chrome, Edge, VS Code, Word, Teams, WhatsApp: CPU, latência, fração das janelas com texto útil contra OCR | 0 (exige Windows) |
-| S4 | Qual formato de imagem? | WebP, JPEG e AVIF a 1.280 px: tamanho, legibilidade para OCR posterior, licença do codificador | 0 |
+| S1 | Qual modelo de embeddings em português? | Finalistas (ADR 0014): granite-97m-r2, bekko-a25m int8, bekko-a8m; e5-small como base. Conjunto dourado com 50–100 perguntas **escritas pelo usuário** sobre documentos parecidos com os reais (só local): acerto na 1ª e nos 10 primeiros, MRR, latência, RAM no worker em Rust; fusão vetor + FTS5 com pesos diferentes; Bekko também com OpenVINO. Já adiantado em conjunto sintético ([M §2]) | 0 |
+| S2 | O desenho do ADR 0012 cumpre ≤ 300 ms p95 num notebook modesto? | Compilação MSVC + SQLCipher já confirmada ([M §3.1]). Falta: implementar binário + int8 em BLOB no `aura-store`/worker, medir num notebook modesto com 500 mil e 1 milhão de vetores do modelo do S1, ajustar o número de candidatos pelo recall, decidir worker residente ou partida a frio, medir o tempo de CI com Perl | 0 |
+| S3 | Quanto custa capturar por evento, no desenho do ADR 0013? | Já medido em uso sintético ([M §4]). Falta: um dia de **uso humano real** (só contagens), Teams, leitura UIA com orçamento e navegadores por OCR; se ler só o nome UIA da raiz liga a acessibilidade do Chrome; quanto tempo o Chrome leva para desligá-la; notebook modesto | 0 (exige Windows) |
+| S4 | OCR na resolução nativa e WGC como gatilho funcionam em telas reais? | Formato já medido em páginas públicas ([M §5]: WebP sem perdas, OCR antes de reduzir; [M §6]: WGC). Falta: confirmar em telas reais variadas (planilha, PDF, vídeo, tema escuro) e prototipar o gatilho WGC no `aura-win` | 0 |
 | S5 | Quanto custa a Consolidação? | Tokens por dia de uso real com modelo barato; qualidade do resumo julgada por você | 3 |
 | S6 | O que a LGPD exige para guardar conversas com terceiros? | Orientação jurídica | antes da Fase 2 |
 
@@ -498,14 +537,15 @@ S3 depende da validação de UIA e OCR que o HANDOFF lista como pendente desde s
 
 ## 11. ADRs a propor
 
-Decisões difíceis de reverter; cada uma vira ADR com status "proposto" no primeiro esforço que
-a tocar.
+Decisões difíceis de reverter. 0012 a 0014 já foram escritos com status "proposed" em
+13/11/2026, a partir das medições; viram "accepted" depois dos spikes S1 a S3 oficiais. 0015 e
+0016 viram ADR no primeiro esforço que os tocar.
 
 | ADR | Decisão |
 | --- | --- |
-| 0012 | Acervo em banco próprio (`memory.db`) cifrado por inteiro, com FTS5 e sqlite-vec |
-| 0013 | Memória de tela por Momentos (evento, texto primeiro); complementa o ADR 0004, que previa "screenshots por evento" como adição futura para a linha do tempo |
-| 0014 | Embeddings locais no worker, modelo baixado pelo catálogo; nuvem só como opção |
+| 0012 | Acervo em banco próprio (`memory.db`) cifrado por inteiro, com FTS5 e vetores em BLOB (binário + int8), busca no worker — **escrito como proposto**: `docs/adr/0012-acervo-cifrado-com-vetores-em-blob.md` |
+| 0013 | Memória de tela por Momentos (evento, texto fora dos navegadores, OCR na resolução nativa, WGC como gatilho); complementa os ADRs 0004 e 0008 — **escrito como proposto**: `docs/adr/0013-momentos-de-tela-por-evento.md` |
+| 0014 | Embeddings locais no worker, modelo baixado pelo catálogo, finalistas por medição, sem RRF de pesos iguais; nuvem só como opção — **escrito como proposto**: `docs/adr/0014-embeddings-locais-no-worker.md` |
 | 0015 | Cofre de notas: Markdown em pasta própria, escrita direta, blocos gerenciados |
 | 0016 | Consolidação em segundo plano e saída de dados fora de um Turno (revisa a visão) |
 
@@ -517,9 +557,40 @@ a tocar.
 | --- | --- |
 | Reação de privacidade como a do Recall | Desligado por padrão, indicador, banco cifrado, Esquecer, exclusões de fábrica, tudo local |
 | UIA devolve pouco texto em apps importantes | S3 mede antes; OCR de reserva; lista de apps com tratamento próprio |
-| Embeddings fracos em português | S1 com conjunto dourado; FTS5 segura nomes e termos exatos |
+| Ler um navegador por UIA liga a acessibilidade completa dele e trava a digitação em páginas dinâmicas (medido, [M §4.5]) | Navegadores e apps Chromium/Electron por OCR; UIA com orçamento de tempo; S3 confirma em uso real |
+| SQLCipher deixa a busca vetorial 5–10× mais lenta (medido, [M §3.4]) | Filtro de período por faixa de `rowid`, cache dimensionado no worker (ADR 0012); S2 num notebook modesto |
+| Embeddings fracos em português | S1 com conjunto dourado; FTS5 segura nomes e termos exatos; finalistas já superam o e5-small em paráfrase (medido, [M §2]) |
 | Consolidação gasta o plano do usuário | Teto diário visível, modelo barato, só ociosa, funciona sem LLM |
 | Fichas duplicadas ou erradas | Origem obrigatória, pergunta em caso de dúvida, revisão semanal com aprovação |
 | Disco cheio | Teto por predefinição e retenção corrigida na Fase 0 |
 | Dados de terceiros | S6 antes de prometer; consentimento de Reunião que já existe |
 | Escopo grande demais | Fases com demonstração; a Fase 1 vale sozinha |
+
+---
+
+## 13. Revisões
+
+### Revisão 2 — 2026-11-13
+
+Medições preliminares em `docs/research/segundo-cerebro-medicoes-2026-11.md` (Ryzen 7 7800X3D,
+Windows 11 build 26200, protótipos fora do Aura) e propostas I-1 a I-31 (complemento §10 e
+medições §9). Mudanças nesta revisão:
+
+| Trecho | Antes | Agora | Origem |
+| --- | --- | --- | --- |
+| §0, §3, §5.2 | FTS5 + sqlite-vec, vetores de 8 bits, binário só "se o p95 passar" | Vetores em BLOB (binário + int8), filtro de período por `rowid`, busca no worker; sqlite-vec opcional | I-2, I-3, I-21, I-22, I-24; ADR 0012 |
+| §5.2 | Compatibilidade com o MSVC em aberto | Compila; exige Perl nativo no build | I-23 |
+| §5.3 (2) | Fusão por posição recíproca | Sem RRF de pesos iguais; peso do lexical sai do S1 | I-19 |
+| §4.2 | UIA "é barato"; texto por UIA em todas as janelas | UIA com orçamento de ~200 ms; navegadores e apps Chromium/Electron por OCR | I-5, I-25, I-31; ADR 0013 |
+| §4.2 | Ganchos sem forma definida | Dois ganchos separados, nunca faixa | I-26 |
+| §4.2 | WGC como otimização posterior; hash perceptual | WGC por janela como gatilho de "mudou algo" no build 26100+ | I-8, I-29 |
+| §4.2, §4.3 | Imagem reduzida a 1.280 px, com perdas, ~80 KB | OCR na resolução nativa antes de reduzir; WebP sem perdas, ~45 KB em telas de texto | I-9, I-28 |
+| §4.5 | Janela anônima excluída, sem mecanismo | Edge pelo título; Chrome pelo nome UIA da raiz, a confirmar no S3 | I-27 |
+| §8.1 | CPU ≤ 1% sem unidade | ≤ 1% de um núcleo | I-30 |
+| §9 | Spikes S1–S4 como perguntas abertas | O que já foi adiantado e o que falta em cada um | — |
+| §11 | ADRs 0012–0014 a propor | Escritos como "proposed" | — |
+| §12 | — | Riscos de UIA em navegadores e de custo da cifra | I-21, I-31 |
+
+Continua igual: fases, vocabulário, Consolidação, Cofre de notas e decisões Q-011 a Q-017 (§10).
+As propostas I-4, I-6, I-7 e I-10 a I-17 do complemento não foram testadas nem incorporadas
+nesta revisão; continuam como propostas no complemento §10.
