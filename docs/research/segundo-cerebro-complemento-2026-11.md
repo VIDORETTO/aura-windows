@@ -9,10 +9,12 @@ afirmação do próprio fornecedor ou autor do projeto. **[não verificado]** ma
 consegui confirmar na fonte primária. "Não encontrado" diz onde procurei. Conteúdo de páginas
 foi tratado como dado; instruções embutidas em código de terceiros foram ignoradas.
 
-**O que nós medimos: nada.** O teste local de embeddings (P3) ficou pendente por decisão do
-usuário (vai rodar no computador pessoal; protocolo na seção 3.5). As médias da tabela de
-português (seção 3.1) foram calculadas por mim a partir dos resultados brutos publicados pelo
-MTEB-BR; não são medição nossa.
+**O que nós medimos:** nesta sessão, nada. Depois, num PC Windows (Ryzen 7 7800X3D, Windows 11
+build 26200), medimos embeddings em português, busca vetorial com e sem SQLCipher, custo da UI
+Automation, formato de imagem × OCR e `DirtyRegionMode`, e refizemos as buscas que ficaram sem
+resposta: ver `docs/research/segundo-cerebro-medicoes-2026-11.md` (citado como **[M §n]**). As
+médias da tabela de português (seção 3.1) foram calculadas a partir dos resultados brutos
+publicados pelo MTEB-BR; não são medição nossa.
 
 ---
 
@@ -25,10 +27,13 @@ combinação sqlite-vec + SQLCipher + rusqlite (P4); licenças de modelos visuai
 documentada das APIs do Windows (P6); sintaxe da CLI do Obsidian e o que os usuários instalam
 (P7); avaliação independente de Mem0 (P8); texto da LGPD e práticas de aviso (P9).
 
-**Sem resposta:** Reddit (bloqueado por todos os caminhos tentados, seção 1); custo de CPU da
-UI Automation no Windows medido por alguém; impacto de WebP/AVIF/JPEG na qualidade do OCR;
-semântica de `DirtyRegionMode`; mecanismo do Recall para detectar janela anônima; orientação
-da ANPD sobre uso doméstico; desempenho de Bekko em português.
+**Sem resposta:** Reddit (bloqueado também a partir de uma rede doméstica, [M §7]); orientação
+da ANPD sobre uso doméstico; resultado independente do Letta. **Respondido depois, com medição
+própria em [M]:** custo da UI Automation e do `SetWinEventHook` no Windows (§4); efeito de
+WebP/AVIF/JPEG no OCR (§5); comportamento de `DirtyRegionMode` (§6); Bekko em português, num
+conjunto sintético (§2). **Respondido por fonte:** o Recall reconhece janela anônima porque o
+navegador marca a janela com `SetInputScope(IS_PRIVATE)` ([M §8.1]); avaliação independente do
+Graphiti ([M §8.3]).
 
 **As três descobertas que mais mudam o plano**
 
@@ -227,10 +232,14 @@ Policy, incorporada por referência (seção 3.2); e "Google reserves the right 
   difíceis 53,5 contra 64,2 e 69,6 [autodeclarado]. A vantagem média vem de tarefas como
   LEMBPasskey e WinoGrande.
 
-### 3.5 Teste local: não rodou
+### 3.5 Teste local
 
-Não rodou nesta sessão: a VPS tinha ~1,1 GiB de RAM livre, compartilhada com produção, e o
-usuário preferiu rodar no computador pessoal. Protocolo sugerido, para o spike S1:
+Não rodou nesta sessão: a VPS tinha ~1,1 GiB de RAM livre, compartilhada com produção. **Rodou
+depois no PC do usuário, com este protocolo: resultados em [M §2].** Resumo: com 50 documentos
+sintéticos (+1.000 distratores da Wikipédia) e 30 perguntas escritas por um subagente, acerto na
+1ª posição de 0,73 para o e5-small, 0,80 para o bekko-a8m, 0,87 para o granite-97m-r2, 0,93
+para o bekko-a25m e 1,00 para o granite-311m-r2; a fusão RRF com FTS5 **piorou** todos. Conjunto
+pequeno e sintético; o S1 oficial continua necessário. Protocolo, para o spike S1:
 
 1. Conjunto: 50 documentos curtos em português (trechos de reunião, telas, notas, páginas lidas)
    e 30 perguntas escritas por outra pessoa, cada uma apontando o documento certo.
@@ -414,6 +423,13 @@ passar da meta de 300 ms. Resultados publicados de int8 + reordenação no sqlit
 500 mil a 1 milhão de itens: não encontrados (procurei no repositório, que tem scripts mas não
 resultados, e em buscas na web).
 
+**Medido depois [M §3]** (Ryzen 7 7800X3D, build MSVC, 1 thread, vetores reais de 384 dim.):
+sem cifra, a 500 mil, float32 450 ms, int8 200 ms (no MSVC o sqlite-vec roda sem SIMD, e o int8
+fica 2,2× mais rápido que o float32), binário 15 ms, binário → float32 dos 100 melhores 43 ms
+(recall@10 0,88). **Com SQLCipher e cache padrão, tudo que relê o índice fica 5–10× mais lento**
+(binário a ~1 milhão: 331 ms); um cache de páginas que segure o índice binário, ou um filtro de
+período por faixa de `rowid`, traz de volta para 31–66 ms.
+
 ### 5.3 Alternativas embutidas com licença permissiva
 
 | Opção | Licença | Limitação principal |
@@ -457,7 +473,11 @@ Fase 4, com o uform3 (Apache-2.0, ONNX pequeno, multilíngue) como primeiro cand
 - **Efeito no OCR:** estudo controlado comparando JPEG, WebP e AVIF em capturas de tela não
   encontrado (busquei artigos, blogs de compressão e o relatório NIST citado por terceiros, que
   não consegui abrir). Os guias concordam só em termos qualitativos: artefatos de JPEG se
-  concentram em bordas de letras.
+  concentram em bordas de letras. **Medido depois [M §5]** com o OCR do Windows em pt-BR: na
+  resolução nativa todos os formatos ficam entre 92% e 96% de palavras reconhecidas, e o WebP
+  sem perdas é o menor (44 KB médios a 1.280 × 1.080). O que derruba o OCR é reduzir a janela
+  antes: de 1.920 para 1.280 px, o código cai de 91% para 24% e o texto de 12 px de 96% para 16%.
+  AVIF levou 0,3–0,9 s por imagem para codificar, sem ganho de OCR.
 - **O que os projetos escolhem:** screenpipe usa JPEG q80 e compacta em vídeo (seção 4.1);
   OpenRecall usa WebP sem perdas; Windrecorder usa vídeo.
 
@@ -483,7 +503,13 @@ Fase 4, com o uform3 (Apache-2.0, ONNX pequeno, multilíngue) como primeiro cand
   ([wgc_capture_session.cc](https://webrtc.googlesource.com/src/+/HEAD/modules/desktop_capture/win/wgc_capture_session.cc));
   um commit só registra se a propriedade existe ([commit](https://webrtc.googlesource.com/src/+/dfd8f570cd069d502c2ea923256ef835971e97b5))
   [não verificado: lido por resumo de busca].
-- **O que acontece com quadros sem mudança:** não encontrado em documentação oficial.
+- **O que acontece com quadros sem mudança:** não encontrado em documentação oficial. **Medido
+  depois [M §6]** no build 26200, capturando uma janela de teste: com a janela parada não chega
+  quadro nenhum além do inicial (30 s); com o cursor de texto piscando chega um quadro por
+  piscada com um retângulo de 4 × 24 px, mas só nos primeiros ~5 s (o sistema para de piscar o
+  cursor depois de `CaretTimeout` = 5.000 ms); com uma mudança pequena por segundo chega um
+  quadro por segundo com só o retângulo alterado. `MinUpdateInterval` = 1 s limita a um quadro
+  por segundo. `ReportOnly` e `ReportAndRender` não diferiram em quadros nem em `DirtyRegions`.
 
 ### 7.2 SetWinEventHook e UI Automation
 
@@ -512,7 +538,18 @@ Fase 4, com o uform3 (Apache-2.0, ONNX pequeno, multilíngue) como primeiro cand
   password"; "Attempting to access the Value property of the protected element… may cause an
   error to occur" ([propriedades UIA](https://learn.microsoft.com/en-us/windows/win32/winauto/uiauto-automation-element-propids)).
 - **Janela anônima:** API pública de detecção não encontrada; o Recall filtra, mas não diz como
-  (seção 4.2).
+  (seção 4.2). **Depois:** o mecanismo do Recall é o navegador marcar a janela com
+  `SetInputScope(IS_PRIVATE)` ([M §8.1]); de fora, o título da janela anônima do Chrome é igual
+  ao normal, mas o nome UIA da janela traz "(Modo anônimo)", e o Edge marca "[InPrivate]" no
+  título ([M §4.4]).
+- **Medido depois [M §4]:** em 10 minutos de uso sintético, ganchos separados + leitura UIA a
+  cada evento custaram 1,75% de um núcleo e 38 MB de pico ao programa; a leitura levou 80 ms de
+  p50 no Chrome e no Edge, 1,4 s de p95 no Word e 2,6 s no WhatsApp. Um gancho que assina um
+  evento faz cada disparo dele custar ~0,19 ms a mais para quem dispara; o gancho de faixa larga
+  ainda encarece eventos não assinados (relato com números no
+  [Twinkle Tray #1352](https://github.com/xanderfrangos/twinkle-tray/issues/1352), reproduzido
+  aqui). Com uma leitura por UIA, o Chrome ligou a acessibilidade completa e, numa página muito
+  dinâmica, passou a levar ~12 s para confirmar cada tecla.
 - **Apps que pedem para não ser capturados:** `SetWindowDisplayAffinity` com
   `WDA_EXCLUDEFROMCAPTURE` (Windows 10 2004+) exclui a janela de capturas
   ([documentação](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setwindowdisplayaffinity)).
@@ -688,14 +725,14 @@ Não alterei `docs/project/plano-segundo-cerebro.md`. Mudanças propostas:
 
 ## 11. Não encontrado (resumo)
 
-| Pergunta | Onde procurei |
-| --- | --- |
-| Threads do Reddit | Seis caminhos (seção 1) |
-| Custo de CPU de `SetWinEventHook` e UIA no Windows, medido | Documentação da Microsoft, busca web, código do screenpipe |
-| Efeito de JPEG/WebP/AVIF na qualidade do OCR de telas | Busca web, GDELT, guias de compressão |
-| Semântica de `DirtyRegionMode` e quadros sem mudança no WGC | Referência da Microsoft, repositório de fontes da documentação, issue do exemplo oficial, libwebrtc |
-| Como o Recall detecta janela anônima | Páginas de suporte e de desenvolvedor do Recall, busca web |
-| Desempenho de Bekko em português | MTEB-BR, MTEB-PT, cartão do modelo |
-| Resultados independentes de Zep/Graphiti e Letta | Busca web e arXiv |
-| Orientação da ANPD sobre uso doméstico, gravação de reuniões ou memória de tela | Busca por guias e notas técnicas da ANPD |
-| Benchmark de int8 + reordenação no sqlite-vec com 500 mil a 1 milhão de itens | Repositório do sqlite-vec, busca web |
+| Pergunta | Onde procurei | Depois (12–13/11/2026, [M]) |
+| --- | --- | --- |
+| Threads do Reddit | Seis caminhos (seção 1) | **Continua sem resposta**: mais 8 caminhos a partir de uma rede doméstica, inclusive um Chrome real sem login, que foi bloqueado por IP ([M §7]) |
+| Custo de CPU de `SetWinEventHook` e UIA no Windows, medido | Documentação da Microsoft, busca web, código do screenpipe | Medido ([M §4]); um relato publicado com números achado ([M §8.4]) |
+| Efeito de JPEG/WebP/AVIF na qualidade do OCR de telas | Busca web, GDELT, guias de compressão | Medido ([M §5]) |
+| Semântica de `DirtyRegionMode` e quadros sem mudança no WGC | Referência da Microsoft, repositório de fontes da documentação, issue do exemplo oficial, libwebrtc | Comportamento medido ([M §6]); documentação continua sem descrição |
+| Como o Recall detecta janela anônima | Páginas de suporte e de desenvolvedor do Recall, busca web | Achado: `SetInputScope(IS_PRIVATE)` ([M §8.1]); teste no Recall não feito (o PC não é Copilot+) |
+| Desempenho de Bekko em português | MTEB-BR, MTEB-PT, cartão do modelo | Medido num conjunto sintético pequeno ([M §2]); benchmark público continua não encontrado |
+| Resultados independentes de Zep/Graphiti e Letta | Busca web e arXiv | Graphiti achado (KTH, LoCoMo: 56% contra 78% de RAG simples, [M §8.3]); Letta continua não encontrado |
+| Orientação da ANPD sobre uso doméstico, gravação de reuniões ou memória de tela | Busca por guias e notas técnicas da ANPD | **Continua não encontrada** (busca restrita a gov.br/anpd, [M §8.2]) |
+| Benchmark de int8 + reordenação no sqlite-vec com 500 mil a 1 milhão de itens | Repositório do sqlite-vec, busca web | Medido com e sem SQLCipher ([M §3]) |
