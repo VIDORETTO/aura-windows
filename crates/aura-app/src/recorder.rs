@@ -293,14 +293,13 @@ impl CaptureService {
         let stop2 = stop.clone();
         let flush = Arc::new((AtomicU64::new(0), AtomicU64::new(0)));
         let flush2 = flush.clone();
-        let retention = self.retention.lock().unwrap().clone();
         let mut writer = AudioSegmentWriter::new(
             kind.key(),
             seg_kind,
             recording_id.clone(),
             Box::new(PcmZstd),
             self.audio_store.clone(),
-            retention,
+            self.retention.clone(),
         );
         let policy = self.policy.clone();
         let task = tokio::task::spawn_blocking(move || {

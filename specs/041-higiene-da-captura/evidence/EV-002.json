@@ -20,10 +20,10 @@
     "specs/041-higiene-da-captura/spec.md",
     "specs/041-higiene-da-captura/plan.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "11 testes de unidade (3 novos: continuous_segments_follow_age_and_size_limits, manual_recordings_stay_outside_the_continuous_budget, continuous_budget_is_shared_by_all_sources) e 4 de integração passaram.",
   "procedure": "cargo test -p aura-capture (lib + testes de integração)",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:796faf0651d9d42a74a84b6d671bc96dcac734dafc0d9cce2e188679c206e62b",
   "ticket": "TK-001",
   "timestamp": "2026-11-13T23:56:15+00:00"

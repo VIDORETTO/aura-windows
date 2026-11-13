@@ -4,17 +4,20 @@ schema_version: 1.0
 id: TK-001
 effort: 041-higiene-da-captura
 type: delivery
-status: implemented
-ticket_revision: 3
+status: done
+ticket_revision: 6
 requires: []
 requirement_refs: ["FR-001"]
 acceptance_refs: ["AC-001", "AC-002", "AC-003"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["crates/aura-capture/src/retention.rs"]
-verification_status: not_run
-last_update: plan trata continuous; testes AC-001..003 verdes
+verification_status: passed
+last_update: Evidence invalidated after an input changed.
 ---
+
+
+
 
 
 

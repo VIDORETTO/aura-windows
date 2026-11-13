@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk002-green.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-005",
+  "input_fingerprints": {
+    "crates/aura-app/src/recorder.rs": "5b52233a8d1fb09ea846be835bc0dd9dd042ee000c86a4398f685b44758b469f",
+    "crates/aura-audio/src/recorder.rs": "efba35885a3bd1ab87f42a1110d567c51af8d516da7b5594a86944204faca43d",
+    "crates/aura-audio/tests/recording.rs": "35f86ecd8dcf28f995982263c1842e83ab54ab9d9c7a764bb3db78835f8e8ec9",
+    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-audio/src/recorder.rs",
+    "crates/aura-audio/tests/recording.rs",
+    "crates/aura-app/src/recorder.rs",
+    "specs/041-higiene-da-captura/spec.md",
+    "specs/041-higiene-da-captura/plan.md"
+  ],
+  "limitations": "",
+  "observations": "aura-audio 11 + 2 (live_retention_change_reaches_audio verde: 20 telas mantidas com 30 min; com 5 min sobram as que terminam em 16 a 20 min). aura-app: todas as suítes passaram.",
+  "procedure": "cargo test -p aura-audio; cargo test -p aura-app",
+  "result": "passed",
+  "tested_revision": "local:0ac08bb1dcbbbe6a202d474c7fa6c30e9600636e36afab0ba43053bcc7664391",
+  "ticket": "TK-002",
+  "timestamp": "2026-11-13T23:59:00+00:00"
+}

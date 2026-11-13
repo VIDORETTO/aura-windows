@@ -1,5 +1,5 @@
 {
-  "active_ticket": "TK-001",
+  "active_ticket": "TK-002",
   "authorization_refs": [],
   "baseline": {
     "kind": "git",
@@ -24,12 +24,20 @@
     }
   },
   "last_evidence": null,
+  "last_invalidation": {
+    "evidence": [
+      "EV-001",
+      "EV-002"
+    ],
+    "inputs": {},
+    "timestamp": "2026-11-13T23:56:58+00:00"
+  },
   "mode": "standard",
-  "next_action": "TK-001: teste AC-001 vermelho em retention.rs",
+  "next_action": "TK-002: AudioSegmentWriter com Arc<Mutex<RetentionPolicy>>; teste AC-004 vermelho",
   "pending_questions": [],
   "phase": "implementation",
-  "revision": 1,
+  "revision": 3,
   "schema_version": "1.0",
   "status": "active",
-  "updated_at": "2026-11-13T23:55:03+00:00"
+  "updated_at": "2026-11-13T23:56:58+00:00"
 }

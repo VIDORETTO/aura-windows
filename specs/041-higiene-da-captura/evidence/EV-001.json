@@ -18,10 +18,10 @@
     "specs/041-higiene-da-captura/spec.md",
     "specs/041-higiene-da-captura/plan.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "Red comportamental: plan devolveu [] para 10 Segmentos continuous de 2 GB (esperado d0-d2).",
   "procedure": "Antes da correção: cargo test -p aura-capture --lib retention (novo caso continuous_segments_follow_age_and_size_limits)",
-  "result": "failed",
+  "result": "stale",
   "tested_revision": "local:796faf0651d9d42a74a84b6d671bc96dcac734dafc0d9cce2e188679c206e62b",
   "ticket": "TK-001",
   "timestamp": "2026-11-13T23:56:15+00:00"

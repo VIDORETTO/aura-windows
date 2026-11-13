@@ -8,6 +8,7 @@
 use crate::hub::Chunk;
 use aura_capture::retention::{RetentionPolicy, SegmentMeta};
 use aura_capture::segments::{SegmentError, SegmentStore};
+use std::sync::{Arc, Mutex};
 
 pub trait AudioEncoder: Send {
     fn encode(&mut self, samples_16k_mono: &[f32]) -> Result<Vec<u8>, SegmentError>;
@@ -44,7 +45,8 @@ pub struct AudioSegmentWriter {
     recording_id: Option<String>,
     encoder: Box<dyn AudioEncoder>,
     store: SegmentStore,
-    retention: RetentionPolicy,
+    /// Live policy shared with the screen recorder (041 AC-004).
+    retention: Arc<Mutex<RetentionPolicy>>,
     buf: Vec<f32>,
     start_ms: Option<i64>,
 }
@@ -56,7 +58,7 @@ impl AudioSegmentWriter {
         recording_id: Option<String>,
         encoder: Box<dyn AudioEncoder>,
         store: SegmentStore,
-        retention: RetentionPolicy,
+        retention: Arc<Mutex<RetentionPolicy>>,
     ) -> Self {
         Self {
             source: source.into(),
@@ -103,7 +105,8 @@ impl AudioSegmentWriter {
             },
             &bytes,
         )?;
-        self.store.apply_retention(&self.retention, end)?;
+        let retention = self.retention.lock().unwrap().clone();
+        self.store.apply_retention(&retention, end)?;
         Ok(Some(meta))
     }
 }

@@ -1,19 +1,23 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-002
 effort: 041-higiene-da-captura
 type: delivery
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 5
 requires: ["TK-001"]
 requirement_refs: ["FR-002"]
 acceptance_refs: ["AC-004"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["crates/aura-audio/src/recorder.rs", "crates/aura-audio/tests/recording.rs", "crates/aura-app/src/recorder.rs"]
-verification_status: not_run
+verification_status: passed
 ---
+
+
+
+
 
 # TK-002 — Áudio com a política de retenção viva (A-03)
 

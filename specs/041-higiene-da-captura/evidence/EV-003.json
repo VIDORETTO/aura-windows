@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk001-green2.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "crates/aura-capture/src/retention.rs": "a86da20622b484171210c81edcc654169991e26193e94d4c963270e63ec7d821",
+    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/retention.rs",
+    "specs/041-higiene-da-captura/spec.md",
+    "specs/041-higiene-da-captura/plan.md"
+  ],
+  "limitations": "",
+  "observations": "11 testes de unidade e 4 de integração passaram, incluindo os 3 novos de 041.",
+  "procedure": "cargo test -p aura-capture (após rustfmt, HEAD 67110c3)",
+  "result": "passed",
+  "tested_revision": "local:be88c1cd031cb5dfa3a632ddafbe89f3069495ea8726756593b59825c971131c",
+  "ticket": "TK-001",
+  "timestamp": "2026-11-13T23:57:02+00:00"
+}
