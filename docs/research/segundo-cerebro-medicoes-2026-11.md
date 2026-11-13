@@ -682,8 +682,9 @@ inicial.
 
 Como o acesso que funcionou exigiria contornar o bloqueio de rede ou usar a conta pessoal do
 usuário no navegador dele, parei aqui. As tabelas das seções 2 e 3 de `segundo-cerebro.md` não
-mudaram. Para fechar o T6: o usuário abrir as threads logado, ou autorizar explicitamente o uso
-da conta dele num navegador; ou tentar o Arctic Shift outro dia.
+mudaram. **Encerrado por decisão do usuário em 13/11/2026:** o T6 fica como "inacessível". O
+fórum do Obsidian, o Tildes e o Hacker News já cobrem as mesmas dores [C §2], e usar a conta
+pessoal acrescentaria pouco.
 
 ---
 
