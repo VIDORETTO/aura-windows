@@ -11,7 +11,7 @@ flowchart LR
     Host["aura.exe — host Tauri/Rust<br/>hotkeys · janelas · captura · política · store"]
     GW["Loopback HTTP (no host)<br/>/v1/responses gateway · /mcp servidor MCP"]
     Codex["codex-app-server.exe<br/>(sidecar fixado, sob demanda)"]
-    Worker["aura-worker.exe<br/>ASR · PDF · vídeo (sob demanda)"]
+    Worker["aura-worker.exe<br/>ASR local (sob demanda)"]
   end
   Cloud["ChatGPT/OpenAI · provedores BYOK · MCP remotos"]
 
@@ -30,7 +30,7 @@ flowchart LR
 | `aura.exe` | Sempre (bandeja) | Hotkeys, janelas, login ChatGPT (SIWC) e renovação de tokens, captura de tela/áudio, motor de política, store criptografado, supervisão de sidecars, gateway e servidor MCP em loopback | Núcleo leve e confiável |
 | WebView2 | Janela do overlay pré-criada e oculta; Configurações criada sob demanda | Toda a UI | Imposto pelo Tauri |
 | `codex-app-server.exe` | Sobe na primeira conversa; encerra após inatividade (padrão 15 min) | Loop agêntico, threads, tools, MCP, skills, aprovações (o login ChatGPT é do host, via SIWC) | Binário oficial fixado (ADR 0001) |
-| `aura-worker.exe` | Sobe quando há transcrição/ingestão pesada; encerra após inatividade (padrão 2 min) | Inferência ASR, render de PDF, decodificação de vídeo | Devolve memória ao SO e isola falhas de bibliotecas nativas (ADR 0005) |
+| `aura-worker.exe` | Sobe quando há transcrição/ingestão pesada; encerra após inatividade (padrão 2 min) | Inferência ASR local (PDF com camada de texto e WAV ficam no host; HANDOFF, desvio 9) | Devolve memória ao SO e isola falhas de bibliotecas nativas (ADR 0005) |
 
 ## Módulos (workspace Cargo + app)
 
@@ -46,14 +46,14 @@ aura/
 │  ├─ aura-codex/          # cliente JSON-RPC do app-server, supervisor, mapeamento de itens
 │  ├─ aura-gateway/        # servidor Responses local e adaptadores (chat, anthropic)
 │  ├─ aura-mcp/            # servidor MCP do Aura (ferramentas de tela/áudio/contexto)
-│  ├─ aura-capture/        # tela: WGC, região, ring buffer segmentado, OCR/UIA
+│  ├─ aura-capture/        # tela: GDI (ADR 0008), região, ring buffer segmentado, OCR/UIA
 │  ├─ aura-audio/          # WASAPI mic/loopback, ring buffer, codificação
 │  ├─ aura-asr/            # catálogo, downloads, interface de transcrição
 │  ├─ aura-ingest/         # anexos → texto/imagens (PDF, planilhas, docs, vídeo)
 │  ├─ aura-extensions/     # Skills, comandos rápidos, config MCP, importadores
 │  ├─ aura-app/            # núcleo do host: composição, comandos da UI, ferramentas, eventos
 │  ├─ aura-win/            # adaptadores Windows (GDI, UIA, OCR, WASAPI, Cred. Manager, atalhos, MF)
-│  └─ aura-worker/         # binário do worker (hospeda asr + ingest pesados)
+│  └─ aura-worker/         # binário do worker (hospeda o ASR local)
 ├─ tools/aura-bench/       # orçamentos de desempenho
 ├─ docs/  specs/  .agents/  .hybrid/
 ```
@@ -67,7 +67,7 @@ Regra de dependência: `aura-core` não depende de nada do Windows. As APIs do S
 1. Hook/atalho no host dispara `OverlayToggle`.
 2. Host registra janela em primeiro plano (título, processo, monitor) **antes** de mostrar o overlay.
 3. Overlay pré-criado é posicionado no monitor ativo e mostrado (sem recriar WebView2).
-4. `/screen` ou clique no chip → host consulta `aura-policy` → captura via WGC excluindo o overlay → salva PNG no workspace da conversa → chip com miniatura.
+4. `/screen` ou clique no chip → host consulta `aura-policy` → captura via GDI excluindo o overlay (ADR 0008) → salva PNG no workspace da conversa → chip com miniatura.
 5. Enviar → `aura-codex` garante app-server ativo → `thread/start` (provedor `aura-chatgpt-plan`, persona Aura em `base_instructions`) → `turn/start` com `text` + `localImage` → o app-server chama o Gateway, que injeta o access token SIWC vigente e repassa a `https://api.openai.com/v1/responses`.
 6. Notificações `item/*` viram eventos tipados para a UI por um `Channel` Tauri; markdown renderizado incrementalmente.
 
@@ -122,7 +122,7 @@ Limitação registrada: os rollouts do Codex (histórico) são JSONL gerenciados
 
 ## Testes (estratégia comum)
 
-- **Rust**: `cargo nextest run --workspace`. Seams públicas de cada crate; adapters de teste apenas onde há variação real (SO, rede, relógio, processo externo).
+- **Rust**: `cargo test` (no Windows, `cargo test --workspace --exclude aura-desktop`). Seams públicas de cada crate; adapters de teste apenas onde há variação real (SO, rede, relógio, processo externo).
 - **Contrato com o Codex**: transcripts JSONL gravados de uma versão fixada do app-server reproduzidos por um app-server falso; schema TS gerado por `codex app-server generate-ts` commitado em `apps/desktop/src/generated/codex/`.
 - **Gateway**: fixtures SSE reais de cada provedor gravadas; `wiremock` como upstream.
 - **UI**: Vitest + Testing Library com `mockIPC` do Tauri na seam de IPC.
@@ -130,4 +130,8 @@ Limitação registrada: os rollouts do Codex (histórico) são JSONL gerenciados
 - **Desempenho**: binário `aura-bench` coleta latência/memória via ETW/PDH e publica relatório.
 - **Manuais**: itens visuais (translucidez, animações, invisibilidade em captura) têm roteiro no ticket e evidência por vídeo/print.
 
-Comandos canônicos (definidos no esforço 001 TK-001): `pnpm test` (UI), `cargo nextest run --workspace` (Rust), `pnpm tauri build` (app), `pnpm e2e` (Windows).
+Comandos canônicos (definidos no esforço 001 TK-001): `pnpm test` (UI), `cargo test --workspace --exclude aura-desktop` (Rust, no Windows), `pnpm tauri build` (app), `pnpm e2e` (Windows).
+
+> Revisão 2026-11-13 (auditoria A-12): alinhado aos ADRs 0005 e 0008 e aos desvios 1 e 9 do
+> `docs/HANDOFF.md` (captura por GDI; PDF e WAV no host; worker só para ASR) e ao comando de testes
+> do `AGENTS.md`. Os ADRs 0012–0014 propostos (Segundo Cérebro) ainda não mudam este documento.

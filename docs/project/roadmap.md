@@ -99,7 +99,11 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-081 | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | CAND-077, CAND-041 | P2 | candidate | — |
 | CAND-082 | Bases externas pré-configuradas por MCP (RAGFlow, Khoj, AnythingLLM, Notion) | CAND-031 | P3 | candidate | — |
 | CAND-083 | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | CAND-004, CAND-005 | P0 | candidate | — |
+| CAND-084 | Regularizar a evidência dos esforços 012–035 entregues sem registro (auditoria 2026-11-12, A-11): rodar os aceites de cada um no Windows e registrar com `evidence add`, sem evidência retroativa | — | P2 | candidate | — |
+| CAND-085 | Spikes do Segundo Cérebro (S1–S4 do plano): modelo de embeddings, armazenamento vetorial cifrado, custo da captura por evento, imagem e OCR | CAND-083 | P0 | candidate | — |
 
 > Revisão 2026-10-05: CAND-033…049 vêm de `docs/project/plano-reuniao-e-configuracao-assistida.md` e `docs/research/competitors-ao-vivo.md`. CAND-016 passa a ser coberto por CAND-035/036/037; CAND-025, 028, 030 e 031 ganham prioridade como habilitadores (ditado inteligente, sugestões contextuais, base de conhecimento, conectores). Nada aqui é esforço até passar pelo fluxo Hybrid.
 
 > Revisão 2026-11-12: CAND-073…083 vêm de `docs/project/plano-segundo-cerebro.md`, `docs/research/segundo-cerebro.md` e `docs/qa/auditoria-codigo-2026-11-12.md`. CAND-075 absorve CAND-015; CAND-073 e CAND-078 cobrem CAND-030; CAND-083 é pré-requisito dos demais. Nada aqui é esforço até passar pelo fluxo Hybrid.
+
+> Revisão 2026-11-13: Q-017 decidida (plano do Segundo Cérebro §10). A-12 corrigida no `docs/architecture/overview.md`; A-11 vira CAND-084, sem evidência retroativa. CAND-085 separa os spikes do Segundo Cérebro da higiene da captura (CAND-083).

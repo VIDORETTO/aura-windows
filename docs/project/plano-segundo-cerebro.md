@@ -531,7 +531,7 @@ S3 depende da validação de UIA e OCR que o HANDOFF lista como pendente desde s
 | Q-014 | Qual predefinição vem marcada ao ligar? | **Equilibrado** (texto + imagem por 30 dias, teto de 10 GB). |
 | Q-015 | A Fase 1 (sem captura nova) sai antes dos Momentos de tela? | **Sim.** Entrega "lembra das reuniões e conversas" cedo e deixa a parte sensível para depois dos spikes. |
 | Q-016 | O Cofre de notas publica só o destilado? | **Sim.** Texto bruto de tela em pasta sincronizada é o pior caso de vazamento. |
-| Q-017 | Arrumar a documentação de processo (A-11, A-12) antes de abrir os esforços novos? | **Sim, uma passada curta.** Os esforços novos vão se apoiar nela. |
+| Q-017 | Arrumar a documentação de processo (A-11, A-12) antes de abrir os esforços novos? | **Decidido em 13/11/2026 (delegado pelo usuário): sim, passada curta e sem evidência retroativa.** A-12: `overview.md` alinhado aos ADRs. A-11: não se registra evidência de esforço antigo sem rodar os aceites; vira CAND-084 (P2) e não bloqueia os esforços novos, que não dependem do estado dos esforços 012–035. |
 
 ---
 
