@@ -39,8 +39,8 @@ Status: `blocked` | Bloqueado por: TK-004
 - [ ] TK-005.2 Analisar contra os orçamentos do plano §8.1.
 - [ ] TK-005.3 ADR 0013 e evidência.
 
-## [ ] TK-003 — TK-003 — S2 — armazenamento vetorial do ADR 0012
-Status: `in_progress` | Bloqueado por: TK-002
+## [x] TK-003 — TK-003 — S2 — armazenamento vetorial do ADR 0012
+Status: `done` | Bloqueado por: TK-002
 
 - [ ] TK-003.1 Testes de unidade (quantização, hamming, reordenação, recall).
 - [ ] TK-003.2 Gerar vetores reais (prioridade ociosa).

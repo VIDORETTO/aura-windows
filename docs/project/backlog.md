@@ -93,8 +93,8 @@
 | `043-acento-vermelho` | Change: Acento vermelho da marca | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `044-landing-page` | Change: Landing page | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `045-higiene-da-captura` | Higiene da captura | `effort` | `—` | `closed` | `complete` | `4/4` | Entregue (A-01..A-04). Pendências do CAND-083: A-06, A-07, captura de tela em thread própria. |
-| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `3/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |
-| `047-acervo` | Acervo: índice local cifrado e busca do agente | `effort` | `—` | `specification` | `active` | `—` | Spec r1 aceito. Plano depois do S2 (046 TK-003) decidir o ADR 0012. |
+| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `4/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |
+| `047-acervo` | Acervo: índice local cifrado e busca do agente | `effort` | `—` | `implementation` | `active` | `0/5` | TK-001: crate aura-memory e troca do rusqlite para SQLCipher; AC-007 vermelho primeiro |
 | `048-memoria-de-conversas` | Memória de Conversas | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
 | `049-pagina-memoria` | Página Memória | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
 | `050-cofre-de-notas-v0` | Cofre de notas v0 | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
