@@ -129,18 +129,29 @@ fn main() -> Result<()> {
     let gt_p: Vec<Vec<i64>> = queries.iter().map(|q| exact(&base, q, from_period)).collect();
     let sized_kib = (n * (BIN_BYTES + 24) / 1024 + 4096) as i64;
 
-    // Frio: abrir (senha ou chave crua) + primeira consulta; 5 repetições cada.
+    // Frio: conexão nova (o cache do SO pode estar quente) + primeira consulta; 5 repetições.
+    // A senha passa pela derivação PBKDF2, que não depende do tamanho do banco: mede só a
+    // abertura, num banco pequeno criado com a senha. A chave crua abre o banco medido.
+    let pw_path = format!("{dir}/senha.db");
+    if !std::path::Path::new(&pw_path).exists() {
+        let c = Connection::open(&pw_path)?;
+        c.execute_batch(&format!("PRAGMA key = '{PASSPHRASE}'; CREATE TABLE t(x);"))?;
+    }
     for raw in [false, true] {
+        let p = if raw { &path } else { &pw_path };
         let (mut open_ms, mut first_ms) = (Vec::new(), Vec::new());
         for i in 0..5 {
-            let (c, o) = open(&path, raw, Some(sized_kib))?;
-            let t = Instant::now();
-            search(&c, &queries[i % queries.len()], 100, 1)?;
+            let (c, o) = open(p, raw, Some(sized_kib))?;
             open_ms.push(o);
-            first_ms.push(t.elapsed().as_secs_f64() * 1000.0);
+            if raw {
+                let t = Instant::now();
+                search(&c, &queries[i % queries.len()], 100, 1)?;
+                first_ms.push(t.elapsed().as_secs_f64() * 1000.0);
+            }
         }
+        let first = if raw { Some(pct(&mut first_ms, 50.0)) } else { None };
         writeln!(out, "{}", serde_json::json!({"tipo": "frio", "rotulo": label, "N": n, "chave_crua": raw,
-            "abrir_ms_p50": pct(&mut open_ms, 50.0), "primeira_ms_p50": pct(&mut first_ms, 50.0)}))?;
+            "abrir_ms_p50": pct(&mut open_ms, 50.0), "primeira_ms_p50": first}))?;
     }
     // Quente: 3 aquecimento + `nq` consultas por caso.
     for (cache_name, cache) in [("padrao_2MB", None), ("dimensionado", Some(sized_kib))] {
