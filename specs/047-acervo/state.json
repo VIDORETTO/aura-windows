@@ -1,5 +1,5 @@
 {
-  "active_ticket": null,
+  "active_ticket": "TK-001",
   "authorization_refs": [],
   "baseline": {
     "kind": "git",
@@ -12,15 +12,24 @@
       "fingerprint": "1d4d391431bc07e720020a1009c19f21d185b0d55bf280f484efdd40443dbf3d",
       "path": "specs/047-acervo/spec.md",
       "revision": 1
+    },
+    "plan": {
+      "fingerprint": "c01a5049b399bfab548b7b5212b924b067a5d42b41e3911507802f18c435f17e",
+      "path": "specs/047-acervo/plan.md",
+      "revision": 1
+    },
+    "tdd": {
+      "fingerprint": "fcea94598a831a641fa93280e79d08ac0a9f135c1a8d0860822b821db7bc838c",
+      "path": "specs/047-acervo/tdd.md"
     }
   },
   "last_evidence": null,
   "mode": "standard",
-  "next_action": "Spec r1 aceito. Plano depois do S2 (046 TK-003) decidir o ADR 0012.",
+  "next_action": "TK-001: crate aura-memory e troca do rusqlite para SQLCipher; AC-007 vermelho primeiro",
   "pending_questions": [],
-  "phase": "specification",
-  "revision": 1,
+  "phase": "implementation",
+  "revision": 2,
   "schema_version": "1.0",
   "status": "active",
-  "updated_at": "2026-11-14T01:17:14+00:00"
+  "updated_at": "2026-11-14T02:00:20+00:00"
 }
