@@ -1,11 +1,11 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-006
 effort: 046-spikes-segundo-cerebro
 type: spike
 status: blocked
-ticket_revision: 1
+ticket_revision: 2
 requires: []
 requirement_refs: ["FR-003"]
 acceptance_refs: ["AC-013"]
@@ -13,7 +13,9 @@ spec_revision: 1
 plan_revision: 1
 owned_areas: ["specs/046-spikes-segundo-cerebro/s6.md"]
 verification_status: not_run
+last_update: "TK-006.1 feito: 16 perguntas em s6.md (uso pessoal x profissional, base legal e aviso, tela e conversas escritas, direitos e nuvem, o que o produto pode dizer). Segue bloqueado aguardando o parecer."
 ---
+
 
 # TK-006 — S6 — parecer jurídico sobre conversas com terceiros
 
