@@ -7,7 +7,7 @@
 
 use crate::hub::Chunk;
 use aura_capture::retention::{RetentionPolicy, SegmentMeta};
-use aura_capture::segments::{SegmentError, SegmentStore};
+use aura_capture::segments::{SWEEP_EVERY_MS, SegmentError, SegmentStore};
 use std::sync::{Arc, Mutex};
 
 pub trait AudioEncoder: Send {
@@ -49,6 +49,8 @@ pub struct AudioSegmentWriter {
     retention: Arc<Mutex<RetentionPolicy>>,
     buf: Vec<f32>,
     start_ms: Option<i64>,
+    /// End of the segment that ran the last orphan sweep (041 TK-003).
+    last_sweep_ms: Option<i64>,
 }
 
 impl AudioSegmentWriter {
@@ -69,6 +71,7 @@ impl AudioSegmentWriter {
             retention,
             buf: Vec::new(),
             start_ms: None,
+            last_sweep_ms: None,
         }
     }
 
@@ -107,6 +110,11 @@ impl AudioSegmentWriter {
         )?;
         let retention = self.retention.lock().unwrap().clone();
         self.store.apply_retention(&retention, end)?;
+        // Orphans of the audio folder: first segment, then at most hourly.
+        if self.last_sweep_ms.is_none_or(|t| end - t >= SWEEP_EVERY_MS) {
+            self.store.sweep_orphans()?;
+            self.last_sweep_ms = Some(end);
+        }
         Ok(Some(meta))
     }
 }

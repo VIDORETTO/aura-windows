@@ -66,3 +66,55 @@
 - Observations: aura-audio 11 + 2 (live_retention_change_reaches_audio verde: 20 telas mantidas com 30 min; com 5 min sobram as que terminam em 16 a 20 min). aura-app: todas as suítes passaram.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk002-green.log`
 - Limitations: none recorded
+
+## EV-006 — failed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-008`
+- Procedure: `sweep_orphans extraído mas ainda chamado por apply_retention: cargo test -p aura-capture --test retention_store orphans`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; NVMe Kingston NV3
+- Tested revision: `local:cfa04481a4cf612f099c613c2661bbe6207a0670db55aeb51e35a78717b53676`
+- Timestamp: `2026-11-14T00:04:49+00:00`
+- Observations: Red comportamental: apply_retention devolveu 3 (removeu .seg órfão, .seg.tmp e linha sem arquivo) em vez de 0.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-red.log`
+- Limitations: none recorded
+
+## EV-007 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-007`, `AC-008`, `AC-009`
+- Procedure: `cargo test -p aura-capture; cargo test -p aura-audio; cargo clippy -p aura-capture -p aura-audio --all-targets -- -D warnings`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; NVMe Kingston NV3
+- Tested revision: `local:3f3d042e604e258004499fd7811c6ac99f4ea22d8f97ae3c1a6fa4eba9130863`
+- Timestamp: `2026-11-14T00:04:49+00:00`
+- Observations: Equivalência com plan em 3 sementes x 4 políticas x 2.000 Segmentos; órfãos só na varredura; range com literais 20/30/40/50 s; regressões de pipeline e áudio verdes; clippy limpo.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-green.log`
+- Limitations: none recorded
+
+## EV-008 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-007`
+- Procedure: `cargo test -p aura-capture --release --test retention_cost -- --ignored --nocapture, no código anterior (dd37ee5 + teste) e no novo`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; NVMe Kingston NV3
+- Tested revision: `local:042bce66c991881d741fa08e202bf801c383168b0b6f16076d9eb913630ce1c3`
+- Timestamp: `2026-11-14T00:04:49+00:00`
+- Observations: SC-002: 60.000 Segmentos continuous em disco (SQLite em arquivo). Retenção após um Segmento: antes p50 1.034,5 ms (1.026-1.268); depois p50 15,5 ms (14,2-16,2); 7 execuções cada.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-antes.log`, `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-depois.log`
+- Limitations: none recorded
+
+## EV-009 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-007`, `AC-008`, `AC-009`
+- Procedure: `cargo test -p aura-capture (inclui recorder_sweeps_orphans_at_start_and_hourly); cargo clippy -p aura-capture --all-targets -- -D warnings`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:003ea6ae2e29cb5a9b5afcd181472da78668014d4743aad5ca3a2673e44548e8`
+- Timestamp: `2026-11-14T00:05:44+00:00`
+- Observations: Gravador varre órfãos ao iniciar, não varre antes de 1 h e varre depois de 1 h (relógio injetado); equivalência, órfãos e range verdes; clippy limpo.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-green3.log`
+- Limitations: none recorded

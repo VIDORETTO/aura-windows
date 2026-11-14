@@ -40,3 +40,24 @@ Diff revisado (não commitado na revisão): `crates/aura-audio/src/recorder.rs`,
 - A regressão do teste do tom continua verde.
 
 Disposição: TK-002 liberado para `verified` e `done`.
+
+## TK-003 — Retenção por consulta e órfãos com cadência (A-04)
+
+Diff revisado: `crates/aura-capture/src/segments.rs`, `crates/aura-audio/src/recorder.rs`, testes `retention_store.rs`, `retention_cost.rs` e `pipeline.rs`. O ticket chegou à revisão 3 para incluir o `AudioSegmentWriter`: sem isso, os órfãos da pasta de áudio deixariam de ser limpos.
+
+### Standards
+
+- SQL montado só com constantes (`SELECT_META`, `LIMITED`) e parâmetros ligados; sem entrada externa no texto do SQL.
+- `delete` passou a uma transação; os arquivos saem depois, e uma queda no meio deixa órfão de arquivo, que a varredura limpa.
+- A regra "sujeito a limite" existe em dois lugares (`retention::is_limited` e `LIMITED`). O risco de divergência fica coberto pelo teste de equivalência com 24 combinações. Achado de baixa severidade, aceito: documentado no comentário de `LIMITED`.
+- Sem dependência nova, esquema, IPC ou API do Windows. `clippy -D warnings` e `rustfmt` limpos.
+
+### Spec
+
+- **FR-004 / AC-007:** equivalência exata com `plan` (3 sementes × 4 políticas × 2.000 Segmentos de 3 Fontes e 3 kinds, `manual` pelo `JOIN`).
+- **AC-008:** red real (EV: a retenção removia 3 órfãos); green com a varredura separada; cadência no início e de hora em hora provada pelo relógio injetado.
+- **AC-009:** `range` com o literal 20/30/40/50 s.
+- **SC-002:** 1.034,5 → 15,5 ms de p50 com 60.000 Segmentos `continuous` em SQLite de arquivo (mesmo PC, mesmo teste).
+- A agregação ainda é O(n) sobre o conjunto sujeito a limite, mas sem E/S de arquivos: aceitável para o volume de 7 dias.
+
+Disposição: TK-003 liberado para `verified` e `done`.

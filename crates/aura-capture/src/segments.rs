@@ -5,16 +5,41 @@
 //! file + index row. Plaintext never touches the disk (OT-003).
 
 use crate::frame::redact;
-use crate::retention::{RetentionPolicy, SegmentMeta, plan};
+use crate::retention::{RetentionPolicy, SegmentMeta};
 use crate::source::{FrameSource, Target, WindowInventory};
 use aura_policy::{AccessRequest, Decision, Grants, Policy, Requester, Source, decide};
 use aura_store::Store;
-use rusqlite::params;
+use rusqlite::{OptionalExtension, params};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 pub use crate::encoder::{NullEncoder, Sealer, SegmentError, VideoEncoder};
+
+/// Columns of [`SegmentMeta`], with `manual` from the recording.
+const SELECT_META: &str = "SELECT s.id, s.source, s.kind, s.recording_id, s.start_ms, s.end_ms, s.bytes, COALESCE(r.manual, 0)
+     FROM capture_segments s LEFT JOIN recordings r ON r.id = s.recording_id";
+
+/// Segments under the age and size limits (same rule as
+/// [`crate::retention::is_limited`]); `?1` = apply to manual recordings.
+const LIMITED: &str = "FROM capture_segments s LEFT JOIN recordings r ON r.id = s.recording_id
+     WHERE s.kind = 'continuous' OR (s.kind = 'recording' AND (COALESCE(r.manual, 0) = 0 OR ?1))";
+
+/// Interval between orphan sweeps of a running recorder.
+pub const SWEEP_EVERY_MS: i64 = 3_600_000;
+
+fn row_meta(r: &rusqlite::Row<'_>) -> rusqlite::Result<SegmentMeta> {
+    Ok(SegmentMeta {
+        id: r.get(0)?,
+        source: r.get(1)?,
+        kind: r.get(2)?,
+        recording_id: r.get(3)?,
+        start_ms: r.get(4)?,
+        end_ms: r.get(5)?,
+        bytes: r.get::<_, i64>(6)? as u64,
+        manual: r.get::<_, i64>(7)? != 0,
+    })
+}
 
 impl From<aura_store::StoreError> for SegmentError {
     fn from(e: aura_store::StoreError) -> Self {
@@ -98,22 +123,11 @@ impl SegmentStore {
 
     pub fn list(&self, source: Option<&str>) -> Result<Vec<SegmentMeta>, SegmentError> {
         Ok(self.store.with_conn(|c| {
-            let sql = "SELECT s.id, s.source, s.kind, s.recording_id, s.start_ms, s.end_ms, s.bytes, COALESCE(r.manual, 0)
-                       FROM capture_segments s LEFT JOIN recordings r ON r.id = s.recording_id
-                       WHERE (?1 IS NULL OR s.source = ?1) ORDER BY s.start_ms";
-            let mut stmt = c.prepare(sql)?;
-            let rows = stmt.query_map([source], |r| {
-                Ok(SegmentMeta {
-                    id: r.get(0)?,
-                    source: r.get(1)?,
-                    kind: r.get(2)?,
-                    recording_id: r.get(3)?,
-                    start_ms: r.get(4)?,
-                    end_ms: r.get(5)?,
-                    bytes: r.get::<_, i64>(6)? as u64,
-                    manual: r.get::<_, i64>(7)? != 0,
-                })
-            })?;
+            let sql = format!(
+                "{SELECT_META} WHERE (?1 IS NULL OR s.source = ?1) ORDER BY s.start_ms, s.rowid"
+            );
+            let mut stmt = c.prepare(&sql)?;
+            let rows = stmt.query_map([source], row_meta)?;
             Ok(rows.filter_map(|r| r.ok()).collect())
         })?)
     }
@@ -124,11 +138,14 @@ impl SegmentStore {
         from_ms: i64,
         to_ms: i64,
     ) -> Result<Vec<SegmentMeta>, SegmentError> {
-        Ok(self
-            .list(Some(source))?
-            .into_iter()
-            .filter(|s| s.end_ms > from_ms && s.start_ms < to_ms)
-            .collect())
+        Ok(self.store.with_conn(|c| {
+            let sql = format!(
+                "{SELECT_META} WHERE s.source = ?1 AND s.end_ms > ?2 AND s.start_ms < ?3 ORDER BY s.start_ms, s.rowid"
+            );
+            let mut stmt = c.prepare(&sql)?;
+            let rows = stmt.query_map(params![source, from_ms, to_ms], row_meta)?;
+            Ok(rows.filter_map(|r| r.ok()).collect())
+        })?)
     }
 
     pub fn read(&self, id: &str) -> Result<Vec<u8>, SegmentError> {
@@ -142,38 +159,109 @@ impl SegmentStore {
         self.sealer.open(&std::fs::read(path)?)
     }
 
+    /// Deletes rows in one transaction, then their files. A crash between the
+    /// two leaves files without rows, which the orphan sweep removes.
     pub fn delete(&self, ids: &[String]) -> Result<(), SegmentError> {
-        for id in ids {
-            let path: Option<String> = self.store.with_conn(|c| {
-                Ok(rusqlite::OptionalExtension::optional(c.query_row(
-                    "SELECT path FROM capture_segments WHERE id = ?1",
-                    [id],
-                    |r| r.get(0),
-                ))?)
-            })?;
-            if let Some(p) = path {
-                let _ = std::fs::remove_file(p);
+        if ids.is_empty() {
+            return Ok(());
+        }
+        let paths: Vec<String> = self.store.with_conn(|c| {
+            let tx = c.transaction()?;
+            let mut paths = Vec::with_capacity(ids.len());
+            {
+                let mut select =
+                    tx.prepare_cached("SELECT path FROM capture_segments WHERE id = ?1")?;
+                let mut remove = tx.prepare_cached("DELETE FROM capture_segments WHERE id = ?1")?;
+                for id in ids {
+                    if let Some(p) = select
+                        .query_row([id], |r| r.get::<_, String>(0))
+                        .optional()?
+                    {
+                        paths.push(p);
+                    }
+                    remove.execute([id])?;
+                }
             }
-            self.store.with_conn(|c| {
-                c.execute("DELETE FROM capture_segments WHERE id = ?1", [id])?;
-                Ok(())
-            })?;
+            tx.commit()?;
+            Ok(paths)
+        })?;
+        for p in paths {
+            let _ = std::fs::remove_file(p);
         }
         Ok(())
     }
 
-    /// Applies retention and removes orphans (files without rows and rows
-    /// without files). Run on start and after each closed segment.
+    /// Applies the retention policy after a closed segment (041 TK-003).
+    /// Deletes exactly what [`crate::retention::plan`] would, but reads only
+    /// candidates: expired buffer rows, aggregates of the limited set and, when
+    /// something must go, the limited set oldest first until the budget fits.
+    /// Orphans are left to [`Self::sweep_orphans`].
     pub fn apply_retention(
         &self,
         policy: &RetentionPolicy,
         now_ms: i64,
     ) -> Result<usize, SegmentError> {
         let _publication = self.publication.lock().unwrap();
-        let all = self.list(None)?;
-        let doomed = plan(&all, policy, now_ms);
-        self.delete(&doomed)?;
-        let mut removed = doomed.len();
+        let manual_ok = policy.apply_to_manual as i64;
+        let age_cut = now_ms - policy.max_age_ms;
+        let mut doomed: Vec<(i64, i64, String)> = Vec::new();
+        self.store.with_conn(|c| {
+            {
+                let mut stmt = c.prepare_cached(
+                    "SELECT start_ms, rowid, id FROM capture_segments WHERE kind = 'buffer' AND end_ms < ?1",
+                )?;
+                let rows = stmt.query_map([now_ms - policy.buffer_ms], |r| {
+                    Ok((r.get(0)?, r.get(1)?, r.get(2)?))
+                })?;
+                for r in rows {
+                    doomed.push(r?);
+                }
+            }
+            let (total, too_old): (i64, i64) = c.query_row(
+                &format!("SELECT COALESCE(SUM(s.bytes), 0), COALESCE(SUM(s.end_ms <= ?2), 0) {LIMITED}"),
+                params![manual_ok, age_cut],
+                |r| Ok((r.get(0)?, r.get(1)?)),
+            )?;
+            let mut kept = total as u64;
+            let mut old_left = too_old;
+            if kept > policy.max_bytes || old_left > 0 {
+                let mut stmt = c.prepare(&format!(
+                    "SELECT s.start_ms, s.rowid, s.id, s.end_ms, s.bytes {LIMITED} ORDER BY s.start_ms, s.rowid"
+                ))?;
+                let mut rows = stmt.query(params![manual_ok])?;
+                while let Some(r) = rows.next()? {
+                    if kept <= policy.max_bytes && old_left == 0 {
+                        break;
+                    }
+                    let end: i64 = r.get(3)?;
+                    let bytes = r.get::<_, i64>(4)? as u64;
+                    let expired = end <= age_cut;
+                    if expired {
+                        old_left -= 1;
+                    }
+                    if expired || kept > policy.max_bytes {
+                        kept -= bytes;
+                        doomed.push((r.get(0)?, r.get(1)?, r.get(2)?));
+                    }
+                }
+            }
+            Ok(())
+        })?;
+        doomed.sort();
+        let ids: Vec<String> = doomed.into_iter().map(|d| d.2).collect();
+        self.delete(&ids)?;
+        Ok(ids.len())
+    }
+
+    /// Removes orphans: `.seg` files without a row, `.seg.tmp` leftovers and
+    /// rows without a file. Run when a recorder starts and at most hourly.
+    pub fn sweep_orphans(&self) -> Result<usize, SegmentError> {
+        let _publication = self.publication.lock().unwrap();
+        self.sweep_locked()
+    }
+
+    fn sweep_locked(&self) -> Result<usize, SegmentError> {
+        let mut removed = 0;
         let known: std::collections::HashSet<String> = self
             .list(None)?
             .into_iter()
@@ -242,6 +330,10 @@ impl SegmentRecorder {
         let task = tokio::spawn(async move {
             let mut ticker = tokio::time::interval(cfg.interval);
             let mut seg_start: Option<i64> = None;
+            if let Err(e) = segments.sweep_orphans() {
+                tracing::warn!("orphan sweep: {e}");
+            }
+            let mut last_sweep = clock();
             let store_seg = |bytes: Vec<u8>, start: i64, end: i64| -> Result<(), SegmentError> {
                 segments.write(
                     SegmentMeta {
@@ -266,6 +358,12 @@ impl SegmentRecorder {
                     _ = ticker.tick() => {}
                 }
                 let now = clock();
+                if now - last_sweep >= SWEEP_EVERY_MS {
+                    if let Err(e) = segments.sweep_orphans() {
+                        tracing::warn!("orphan sweep: {e}");
+                    }
+                    last_sweep = now;
+                }
                 let decision = {
                     let policy = cfg.policy.lock().unwrap().clone();
                     let area = match &cfg.target {

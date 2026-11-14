@@ -1,0 +1,34 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-008",
+    "AC-009"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-green3.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-009",
+  "input_fingerprints": {
+    "crates/aura-capture/src/segments.rs": "344989094abdb389e9a26cfae5ab4bdfbce21659bf8ab4912e26602b7107ab85",
+    "crates/aura-capture/tests/pipeline.rs": "9fa6302a4ccd3f512cd078830e3232373764e73859dbc34d9b4a19f694a4ccc1",
+    "crates/aura-capture/tests/retention_store.rs": "15510b53e19cd3ddfedbd09a499ca088c7688c49a32c049ccd5d9b28bc643c5e",
+    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/segments.rs",
+    "crates/aura-capture/tests/pipeline.rs",
+    "crates/aura-capture/tests/retention_store.rs",
+    "specs/041-higiene-da-captura/spec.md",
+    "specs/041-higiene-da-captura/plan.md"
+  ],
+  "limitations": "",
+  "observations": "Gravador varre órfãos ao iniciar, não varre antes de 1 h e varre depois de 1 h (relógio injetado); equivalência, órfãos e range verdes; clippy limpo.",
+  "procedure": "cargo test -p aura-capture (inclui recorder_sweeps_orphans_at_start_and_hourly); cargo clippy -p aura-capture --all-targets -- -D warnings",
+  "result": "passed",
+  "tested_revision": "local:003ea6ae2e29cb5a9b5afcd181472da78668014d4743aad5ca3a2673e44548e8",
+  "ticket": "TK-003",
+  "timestamp": "2026-11-14T00:05:44+00:00"
+}

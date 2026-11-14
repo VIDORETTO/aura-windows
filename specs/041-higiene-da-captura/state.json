@@ -1,5 +1,5 @@
 {
-  "active_ticket": "TK-002",
+  "active_ticket": "TK-003",
   "authorization_refs": [],
   "baseline": {
     "kind": "git",
@@ -33,11 +33,11 @@
     "timestamp": "2026-11-13T23:56:58+00:00"
   },
   "mode": "standard",
-  "next_action": "TK-002: AudioSegmentWriter com Arc<Mutex<RetentionPolicy>>; teste AC-004 vermelho",
+  "next_action": "TK-003: red AC-008 (órfãos), depois retenção por consulta",
   "pending_questions": [],
   "phase": "implementation",
-  "revision": 3,
+  "revision": 4,
   "schema_version": "1.0",
   "status": "active",
-  "updated_at": "2026-11-13T23:56:58+00:00"
+  "updated_at": "2026-11-14T00:01:35+00:00"
 }

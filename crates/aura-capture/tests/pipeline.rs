@@ -273,3 +273,51 @@ async fn pause_closes_the_segment_and_stops_recording() {
         "nothing recorded while paused"
     );
 }
+
+// 041 AC-008: the recorder sweeps orphans when it starts and then hourly.
+#[tokio::test(start_paused = true)]
+async fn recorder_sweeps_orphans_at_start_and_hourly() {
+    let dir = tempfile::tempdir().unwrap();
+    let store = Store::open_in_memory().unwrap();
+    let vault = Vault::open(&store, &StaticKeyProtector::default()).unwrap();
+    let segments = SegmentStore::new(
+        store,
+        dir.path().to_path_buf(),
+        Arc::new(VaultSealer(vault)),
+    );
+    let screen = dir.path().join("screen");
+    std::fs::create_dir_all(&screen).unwrap();
+    std::fs::write(screen.join("before.seg"), b"x").unwrap();
+    let mut p = Policy::default();
+    p.screen.mode = CaptureMode::RecentBuffer { minutes: 5 };
+    let t = Arc::new(AtomicI64::new(0));
+    let t2 = t.clone();
+    let rec = SegmentRecorder::start(
+        RecorderConfig {
+            policy: Arc::new(Mutex::new(p)),
+            retention: Arc::new(Mutex::new(RetentionPolicy::default())),
+            target: Target::Monitor {
+                id: "A".into(),
+                area: Rect::new(0, 0, 4, 4),
+            },
+            interval: Duration::from_secs(1),
+            kind: "buffer".into(),
+            recording_id: None,
+        },
+        Arc::new(SyntheticSource::new(4, 4)),
+        Arc::new(StaticInventory(vec![])),
+        Box::new(NullEncoder::new(100)),
+        segments.clone(),
+        Arc::new(move || t2.load(Ordering::SeqCst)),
+    );
+    tokio::time::sleep(Duration::from_secs(1)).await;
+    assert!(!screen.join("before.seg").exists(), "swept at start");
+    std::fs::write(screen.join("later.seg"), b"x").unwrap();
+    t.store(30 * 60_000, Ordering::SeqCst);
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    assert!(screen.join("later.seg").exists(), "no sweep before an hour");
+    t.store(60 * 60_000 + 1, Ordering::SeqCst);
+    tokio::time::sleep(Duration::from_secs(2)).await;
+    assert!(!screen.join("later.seg").exists(), "swept after an hour");
+    rec.stop().await.unwrap();
+}

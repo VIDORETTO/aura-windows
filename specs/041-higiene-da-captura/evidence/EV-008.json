@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-007"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; NVMe Kingston NV3",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-antes.log",
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-depois.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-008",
+  "input_fingerprints": {
+    "crates/aura-capture/src/segments.rs": "344989094abdb389e9a26cfae5ab4bdfbce21659bf8ab4912e26602b7107ab85",
+    "crates/aura-capture/tests/retention_cost.rs": "ad2066af8937a1cdb4844bf3cef1ce9d20ab612ae1557126ae8a5fa6af78872b",
+    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-capture/tests/retention_cost.rs",
+    "crates/aura-capture/src/segments.rs",
+    "specs/041-higiene-da-captura/spec.md",
+    "specs/041-higiene-da-captura/plan.md"
+  ],
+  "limitations": "",
+  "observations": "SC-002: 60.000 Segmentos continuous em disco (SQLite em arquivo). Retenção após um Segmento: antes p50 1.034,5 ms (1.026-1.268); depois p50 15,5 ms (14,2-16,2); 7 execuções cada.",
+  "procedure": "cargo test -p aura-capture --release --test retention_cost -- --ignored --nocapture, no código anterior (dd37ee5 + teste) e no novo",
+  "result": "passed",
+  "tested_revision": "local:042bce66c991881d741fa08e202bf801c383168b0b6f16076d9eb913630ce1c3",
+  "ticket": "TK-003",
+  "timestamp": "2026-11-14T00:04:49+00:00"
+}

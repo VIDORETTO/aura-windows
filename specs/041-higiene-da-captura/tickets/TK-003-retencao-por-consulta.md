@@ -1,19 +1,23 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-003
 effort: 041-higiene-da-captura
 type: delivery
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 6
 requires: ["TK-002"]
 requirement_refs: ["FR-004"]
 acceptance_refs: ["AC-007", "AC-008", "AC-009"]
 spec_revision: 1
 plan_revision: 1
-owned_areas: ["crates/aura-capture/src/segments.rs", "crates/aura-capture/tests/pipeline.rs", "crates/aura-capture/tests/retention_store.rs"]
-verification_status: not_run
+owned_areas: ["crates/aura-capture/src/segments.rs", "crates/aura-capture/tests/pipeline.rs", "crates/aura-capture/tests/retention_store.rs", "crates/aura-capture/tests/retention_cost.rs", "crates/aura-audio/src/recorder.rs"]
+verification_status: passed
 ---
+
+
+
+
 
 # TK-003 — Retenção por consulta e órfãos com cadência (A-04)
 
@@ -38,13 +42,14 @@ Não inclui: mover a captura e a codificação para outra thread; supervisão (T
   2. agrega total de bytes e quantidade de vencidos por idade no conjunto sujeito a limite;
   3. se algo precisa sair, percorre por `start_ms` com a regra de `plan` e para quando o total fica ≤ teto e não há vencidos restantes;
   4. apaga em lote.
-- `sweep_orphans()` público; o `SegmentRecorder` chama no início e quando passar 1 h do relógio injetado desde a última varredura.
+- `sweep_orphans()` público. O `SegmentRecorder` (tela) e o `AudioSegmentWriter` (áudio) chamam a varredura no início e quando passar 1 h desde a última, pelo relógio de cada um. Hoje os dois dependem da varredura embutida na retenção, e o áudio tem pasta própria.
 - Liberdade local: SQL exato, tamanho do lote, estrutura interna.
 
 ## Mapa de alterações
 
 - Existente: `segments.rs` → `list` (ordem com `rowid`), `range`, `delete`, `apply_retention`, laço do `SegmentRecorder`.
-- Novo: `SegmentStore::sweep_orphans`; teste `crates/aura-capture/tests/retention_store.rs` (equivalência, órfãos, `range`, medição `#[ignore]`).
+- Existente: `crates/aura-audio/src/recorder.rs` → `AudioSegmentWriter::{new, flush}` (varredura no início e de hora em hora).
+- Novo: `SegmentStore::sweep_orphans`; teste `crates/aura-capture/tests/retention_store.rs` (equivalência, órfãos, `range`); medição `#[ignore]` em `crates/aura-capture/tests/retention_cost.rs`, separada para compilar também no código anterior.
 
 ## Contrato técnico
 
@@ -70,7 +75,7 @@ Depende de: TK-002.
 
 ## Validação
 
-- Comandos: `cargo test -p aura-capture`; medição `cargo test -p aura-capture --release --test retention_store retention_cost -- --ignored --nocapture`, no commit anterior e no novo.
+- Comandos: `cargo test -p aura-capture`; medição `cargo test -p aura-capture --release --test retention_cost -- --ignored --nocapture`, no commit anterior e no novo.
 - Estado esperado: equivalência sem diferenças; tempo menor na medição.
 - Distinguir defeito de ambiente: arquivo bloqueado por antivírus não é red; repetir.
 
