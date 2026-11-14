@@ -88,12 +88,12 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-070 | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | CAND-002 | P3 | candidate | — |
 | CAND-071 | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | CAND-004 | P3 | candidate | — |
 | CAND-072 | Respostas instantâneas locais: contas, porcentagens, conversões | CAND-001 | P3 | candidate | — |
-| CAND-073 | Acervo: índice local cifrado (FTS5 + vetores) de Conversas, Reuniões, notas, anexos e páginas lidas, com `memory_search` híbrido, origem citada e conjunto dourado de avaliação | CAND-039 | P0 | candidate | — |
-| CAND-074 | Memória de Conversas: resumo por Conversa, busca entre Conversas e propostas de Memória com revisão | CAND-073 | P0 | candidate | — |
+| CAND-073 | Acervo: índice local cifrado (FTS5 + vetores) de Conversas, Reuniões, notas, anexos e páginas lidas, com `memory_search` híbrido, origem citada e conjunto dourado de avaliação | CAND-039 | P0 | promoted | 047-acervo (primeira fatia: Notas, Salvos e Reuniões) |
+| CAND-074 | Memória de Conversas: resumo por Conversa, busca entre Conversas e propostas de Memória com revisão | CAND-073 | P0 | promoted | 048-memoria-de-conversas |
 | CAND-075 | Momentos de tela: captura por evento, texto primeiro (UIA, OCR de reserva), descarte de repetidos, imagem com prazo e teto de disco (absorve CAND-015) | CAND-073, CAND-083 | P0 | candidate | — |
-| CAND-076 | Página "Memória": buscar, ver origem, linha do tempo, esquecer (período, app, site, pessoa) e uso de disco | CAND-073 | P0 | candidate | — |
+| CAND-076 | Página "Memória": buscar, ver origem, linha do tempo, esquecer (período, app, site, pessoa) e uso de disco | CAND-073 | P0 | promoted | 049-pagina-memoria |
 | CAND-077 | Consolidação em segundo plano: sessões, resumo do dia, Fichas de Pessoa/Projeto/Tópico com fatos datados e revisão semanal | CAND-075, CAND-017 | P1 | candidate | — |
-| CAND-078 | Cofre de notas (Obsidian): pasta pronta em um clique, publicação gerenciada do destilado, leitura das notas do usuário como fonte | CAND-073 | P1 | candidate | — |
+| CAND-078 | Cofre de notas (Obsidian): pasta pronta em um clique, publicação gerenciada do destilado, leitura das notas do usuário como fonte | CAND-073 | P1 | promoted | 050-cofre-de-notas-v0 (primeira fatia) |
 | CAND-079 | "O que eu li": páginas com endereço, tempo de leitura e texto; importação do histórico do navegador | CAND-075 | P1 | candidate | — |
 | CAND-080 | Recuperação de imagens: imagem do Momento entregue ao modelo e busca por aparência opcional | CAND-075 | P2 | candidate | — |
 | CAND-081 | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | CAND-077, CAND-041 | P2 | candidate | — |
@@ -107,3 +107,5 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 > Revisão 2026-11-12: CAND-073…083 vêm de `docs/project/plano-segundo-cerebro.md`, `docs/research/segundo-cerebro.md` e `docs/qa/auditoria-codigo-2026-11-12.md`. CAND-075 absorve CAND-015; CAND-073 e CAND-078 cobrem CAND-030; CAND-083 é pré-requisito dos demais. Nada aqui é esforço até passar pelo fluxo Hybrid.
 
 > Revisão 2026-11-13: Q-017 decidida (plano do Segundo Cérebro §10). A-12 corrigida no `docs/architecture/overview.md`; A-11 vira CAND-084, sem evidência retroativa. CAND-085 separa os spikes do Segundo Cérebro da higiene da captura (CAND-083).
+
+> Revisão 2026-11-13 (Fase 1 aberta): CAND-073 → 047, CAND-074 → 048, CAND-076 → 049, CAND-078 → 050 (primeira fatia). 047 com spec aceito; 048–050 em discovery.

@@ -1,0 +1,26 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "5753e5b7c5272db52fe1d3766b5c48d811b474f6"
+  },
+  "blockers": [],
+  "effort_id": "050-cofre-de-notas-v0",
+  "inputs": {
+    "contract": {
+      "fingerprint": "14b3ab1e785b8f8064a871e56cc823d2dd4d2ae6937b6bd2e7afa6a32507ea34",
+      "path": "specs/050-cofre-de-notas-v0/spec.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Spec em rascunho; especificar depois que o 047 entregar o Acervo.",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 1,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-11-14T01:17:15+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "5753e5b7c5272db52fe1d3766b5c48d811b474f6"
+  },
+  "blockers": [],
+  "effort_id": "048-memoria-de-conversas",
+  "inputs": {
+    "contract": {
+      "fingerprint": "c0375b18b556da486736e247c24ed6bbb29613b981bd0e9c401093dcfd197ca5",
+      "path": "specs/048-memoria-de-conversas/spec.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Spec em rascunho; especificar depois que o 047 entregar o Acervo.",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 1,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-11-14T01:17:14+00:00"
+}

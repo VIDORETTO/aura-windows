@@ -1,0 +1,26 @@
+{
+  "active_ticket": null,
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "5753e5b7c5272db52fe1d3766b5c48d811b474f6"
+  },
+  "blockers": [],
+  "effort_id": "049-pagina-memoria",
+  "inputs": {
+    "contract": {
+      "fingerprint": "a1423d960bd7d8b5232fdd9061b039e6866eabe563a6ebc7a180e5a4bbc5e3e4",
+      "path": "specs/049-pagina-memoria/spec.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "Spec em rascunho; especificar depois que o 047 entregar o Acervo.",
+  "pending_questions": [],
+  "phase": "discovery",
+  "revision": 1,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-11-14T01:17:15+00:00"
+}

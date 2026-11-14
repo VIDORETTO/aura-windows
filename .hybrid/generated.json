@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "f5800a2742e2d0e1cfb49ddc04d40e15ae3929ba6f57024ccddf99ee355835ef",
+  "docs/project/backlog.md": "f56763d228d3c6edb7b4eb5062f5cf255dae4422cca6a44860bb9879f9d77095",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -61,5 +61,9 @@
   "specs/045-higiene-da-captura/todo.md": "c67624162c2c7923f5b187e6156de74e1109d1ce833549759b0e701dbd31a920",
   "specs/045-higiene-da-captura/verification.md": "182e0be94532a62d4b637f7390f891e4312ec22a77e8a30010ffd25f940a8113",
   "specs/046-spikes-segundo-cerebro/todo.md": "606a6f2a687cde7aa0623b7ac8ceaf6f3120b8c75242cb5f656c29153da67cbb",
-  "specs/046-spikes-segundo-cerebro/verification.md": "22bc2d3c7132367cf39a22944f12c236da61188a79eb26324f3a2100f1e8ebd4"
+  "specs/046-spikes-segundo-cerebro/verification.md": "22bc2d3c7132367cf39a22944f12c236da61188a79eb26324f3a2100f1e8ebd4",
+  "specs/047-acervo/todo.md": "a6c8147395f670443894af6c9de4eb4e7d2c6a77ffac2fb239ffa2d8ce7f3289",
+  "specs/048-memoria-de-conversas/todo.md": "a6c8147395f670443894af6c9de4eb4e7d2c6a77ffac2fb239ffa2d8ce7f3289",
+  "specs/049-pagina-memoria/todo.md": "a6c8147395f670443894af6c9de4eb4e7d2c6a77ffac2fb239ffa2d8ce7f3289",
+  "specs/050-cofre-de-notas-v0/todo.md": "a6c8147395f670443894af6c9de4eb4e7d2c6a77ffac2fb239ffa2d8ce7f3289"
 }

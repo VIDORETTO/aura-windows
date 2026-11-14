@@ -37,12 +37,10 @@
 | `CAND-070` | Organizar pastas e achar arquivos por descrição (modo Tarefa, com prévia e aprovação) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-071` | "Como faço isso aqui?": tutor passo a passo do app em foco (une CAND-014) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-072` | Respostas instantâneas locais: contas, porcentagens, conversões | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-073` | Acervo: índice local cifrado (FTS5 + vetores) de Conversas, Reuniões, notas, anexos e páginas lidas, com `memory_search` híbrido, origem citada e conjunto dourado de avaliação | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-074` | Memória de Conversas: resumo por Conversa, busca entre Conversas e propostas de Memória com revisão | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-073` | Acervo: índice local cifrado (FTS5 + vetores) de Conversas, Reuniões, notas, anexos e páginas lidas, com `memory_search` híbrido, origem citada e conjunto dourado de avaliação | `roadmap` | `P0` | `roadmap` | `promoted` | — | Promover após prontidão |
 | `CAND-075` | Momentos de tela: captura por evento, texto primeiro (UIA, OCR de reserva), descarte de repetidos, imagem com prazo e teto de disco (absorve CAND-015) | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-076` | Página "Memória": buscar, ver origem, linha do tempo, esquecer (período, app, site, pessoa) e uso de disco | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-077` | Consolidação em segundo plano: sessões, resumo do dia, Fichas de Pessoa/Projeto/Tópico com fatos datados e revisão semanal | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-078` | Cofre de notas (Obsidian): pasta pronta em um clique, publicação gerenciada do destilado, leitura das notas do usuário como fonte | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-078` | Cofre de notas (Obsidian): pasta pronta em um clique, publicação gerenciada do destilado, leitura das notas do usuário como fonte | `roadmap` | `P1` | `roadmap` | `promoted` | — | Promover após prontidão |
 | `CAND-079` | "O que eu li": páginas com endereço, tempo de leitura e texto; importação do histórico do navegador | `roadmap` | `P1` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-080` | Recuperação de imagens: imagem do Momento entregue ao modelo e busca por aparência opcional | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-081` | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
@@ -95,3 +93,7 @@
 | `044-landing-page` | Change: Landing page | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `045-higiene-da-captura` | Higiene da captura | `effort` | `—` | `closed` | `complete` | `4/4` | Entregue (A-01..A-04). Pendências do CAND-083: A-06, A-07, captura de tela em thread própria. |
 | `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `3/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |
+| `047-acervo` | Acervo: índice local cifrado e busca do agente | `effort` | `—` | `specification` | `active` | `—` | Spec r1 aceito. Plano depois do S2 (046 TK-003) decidir o ADR 0012. |
+| `048-memoria-de-conversas` | Memória de Conversas | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
+| `049-pagina-memoria` | Página Memória | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
+| `050-cofre-de-notas-v0` | Cofre de notas v0 | `effort` | `—` | `discovery` | `active` | `—` | Spec em rascunho; especificar depois que o 047 entregar o Acervo. |
