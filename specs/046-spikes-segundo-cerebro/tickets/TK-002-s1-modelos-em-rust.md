@@ -1,19 +1,23 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-002
 effort: 046-spikes-segundo-cerebro
 type: spike
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 5
 requires: ["TK-001"]
 requirement_refs: ["FR-001", "FR-003"]
 acceptance_refs: ["AC-006", "AC-007", "AC-008"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["tools/spikes/s1-embeddings", "specs/046-spikes-segundo-cerebro/s1.md", "docs/adr/0014-embeddings-locais-no-worker.md"]
-verification_status: not_run
+verification_status: passed
 ---
+
+
+
+
 
 # TK-002 — S1 — finalistas em Rust e fusão
 

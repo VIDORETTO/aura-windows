@@ -94,4 +94,4 @@
 | `043-acento-vermelho` | Change: Acento vermelho da marca | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `044-landing-page` | Change: Landing page | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `045-higiene-da-captura` | Higiene da captura | `effort` | `—` | `closed` | `complete` | `4/4` | Entregue (A-01..A-04). Pendências do CAND-083: A-06, A-07, captura de tela em thread própria. |
-| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `1/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |
+| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `3/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |

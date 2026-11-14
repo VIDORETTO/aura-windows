@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-006",
+    "AC-007",
+    "AC-008"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; ort 2.0.0-rc.12; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/aura-spikes/s1"
+  ],
+  "execution_status": "executed",
+  "id": "EV-004",
+  "input_fingerprints": {
+    "docs/adr/0014-embeddings-locais-no-worker.md": "c6171c0e5cfdd94ff4fdc9294406600900867abc60b2f069af834614374fa3e7",
+    "specs/046-spikes-segundo-cerebro/plan.md": "96071799e3466c41bb2c7e0d972d6fa9a83d2b2d987192c4f1e42bc8580f50bb",
+    "specs/046-spikes-segundo-cerebro/s1.md": "9a1c0e4f4860dd1e16f6cc3994f0ff205b8b89565b3f3e4e2d04f8e13b2381fe",
+    "specs/046-spikes-segundo-cerebro/spec.md": "cac33575fda50df31aa1c565091efbfa33e94c260ae92841d8031849c6b21d11",
+    "tools/spikes/s1-embeddings/src/lib.rs": "6ff08ba6650c17bdae294dc5060beef8e4e7e9218897e62ebd60db32d4dd3a78",
+    "tools/spikes/s1-embeddings/src/main.rs": "cf23e188c035d936033ba440e73430702252359795ac4ce1b40cd1048042c2d3"
+  },
+  "input_paths": [
+    "tools/spikes/s1-embeddings/src/main.rs",
+    "tools/spikes/s1-embeddings/src/lib.rs",
+    "specs/046-spikes-segundo-cerebro/s1.md",
+    "docs/adr/0014-embeddings-locais-no-worker.md",
+    "specs/046-spikes-segundo-cerebro/spec.md",
+    "specs/046-spikes-segundo-cerebro/plan.md"
+  ],
+  "limitations": "",
+  "observations": "MRR com RRF 1:1: bekko-a25m 0,897, e5 0,894, bekko-a8m 0,892, granite 0,838; só FTS5 0,867; só vetor 0,751-0,832. Empate (<0,02) desempatado por latência: bekko-a8m (16,1-17,0 ms/doc) sobre e5-small (17,1-17,5). Paridade cos 0,98-1,00. ADR 0014 aceito; I-19 revertida.",
+  "procedure": "cargo test --release; s1-embeddings.exe <modelo> <dir_modelos> golden/corpus.json golden/queries.json <saida.json> para e5-small, granite-97m, bekko-a8m, bekko-a25m-q8 (3 rodadas nos empatados); paridade Rust x Python (onnxruntime 1.31.1)",
+  "result": "passed",
+  "tested_revision": "local:cd0b2d83f948fc32b8ee5b05d6cce530773b1faebc87c081e251becfcb82f879",
+  "ticket": "TK-002",
+  "timestamp": "2026-11-14T01:15:10+00:00"
+}

@@ -175,6 +175,12 @@ tem), e a fusão fica idêntica ao vetor sozinho.
 
 ### 2.3 O que isso diz
 
+> **Atualização (13/11/2026, spike S1 do esforço 046):** com um conjunto maior e menos enviesado
+> (240 documentos, 100 perguntas de outro autor, sobreposição de 32% nas por paráfrase), em Rust
+> com o `ort` do Aura, a fusão RRF de pesos iguais **melhorou** todos os modelos, e o granite-97m-r2
+> foi o pior. As conclusões 1 e 3 abaixo valem só para este conjunto pequeno; a decisão está em
+> `specs/046-spikes-segundo-cerebro/s1.md` e no ADR 0014.
+
 1. **A busca híbrida com RRF ingênuo não compensou o modelo menor; piorou todos.** Nas perguntas
    por termo exato o vetor já acertava tudo; nas por paráfrase, o BM25 com OR traz documentos
    errados que dividem palavras comuns, e com peso igual eles empurram o certo para baixo (o

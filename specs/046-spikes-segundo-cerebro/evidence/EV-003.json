@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974",
+  "evidence_refs": [],
+  "execution_status": "executed",
+  "id": "EV-003",
+  "input_fingerprints": {
+    "specs/046-spikes-segundo-cerebro/plan.md": "96071799e3466c41bb2c7e0d972d6fa9a83d2b2d987192c4f1e42bc8580f50bb",
+    "specs/046-spikes-segundo-cerebro/spec.md": "cac33575fda50df31aa1c565091efbfa33e94c260ae92841d8031849c6b21d11",
+    "tools/spikes/s1-embeddings/golden/README.md": "a5f57948007a90540ab94d6bba1ba5625062eeb57aff5c13d96ba8d4e5310875",
+    "tools/spikes/s1-embeddings/golden/corpus.json": "23a23cd7c0637290a2c1b152d5027749bca687710a752512a109c6efcd531d7c",
+    "tools/spikes/s1-embeddings/golden/queries.json": "6dc27140bb81526750b85211152c9c91591cc711cc607d2f2f4110249deb1083"
+  },
+  "input_paths": [
+    "tools/spikes/s1-embeddings/golden/corpus.json",
+    "tools/spikes/s1-embeddings/golden/queries.json",
+    "tools/spikes/s1-embeddings/golden/README.md",
+    "specs/046-spikes-segundo-cerebro/spec.md",
+    "specs/046-spikes-segundo-cerebro/plan.md"
+  ],
+  "limitations": "",
+  "observations": "240 documentos (reuniao 60, conversa 50, pagina 40, nota 35, tela 30, anexo 25), ~40 grupos parecidos; 100 perguntas (exato 30, parafrase 50, livre 20), 100 documentos distintos, todos válidos; sobreposição média com o documento certo: exato 0,63, parafrase 0,32, livre 0,56. Autores distintos (subagentes); viés declarado no README.",
+  "procedure": "Validação em Python de golden/corpus.json e golden/queries.json: contagens, ids, unicidade, sobreposição lexical por estilo (palavras de 4+ letras)",
+  "result": "passed",
+  "tested_revision": "local:fd59c8eacb9e3d8abd3aa4538eab5b59791b202de7687964ef5d855fb2ba848a",
+  "ticket": "TK-001",
+  "timestamp": "2026-11-14T01:09:38+00:00"
+}

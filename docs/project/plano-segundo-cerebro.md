@@ -303,11 +303,12 @@ Receita de recuperação:
    data, aplicativo, título, endereço, reunião, orador. É a versão barata da recuperação
    contextual; a medição da Anthropic dá ~35% menos falhas só com isso sobre embeddings simples.
    Contexto gerado por LLM fica só para documentos longos, e opcional.
-2. **Duas buscas, fusão calibrada.** FTS5 (BM25) pega nomes, códigos e termos exatos. Vetores
-   pegam paráfrase ("aquele artigo sobre preço de energia"). **Não usar RRF de pesos iguais**: no
-   conjunto sintético, ele derrubou o acerto na 1ª posição de todos os modelos em 7–23 pontos
-   (medido, [M §2]). O peso do lexical, ou a regra "lexical só quando a pergunta tem termo raro",
-   sai do conjunto dourado do S1.
+2. **Duas buscas, uma fusão.** FTS5 (BM25) pega nomes, códigos e termos exatos. Vetores pegam
+   paráfrase ("aquele artigo sobre preço de energia"). **Fusão por posição recíproca (k = 60) com
+   pesos iguais**, como decidido no S1 (ADR 0014). Ela melhorou o MRR de todos os modelos em
+   +0,06 a +0,09 num conjunto de 240 documentos e 100 perguntas; peso menor no lexical piorou.
+   A revisão 2 tinha proposto o contrário com base num conjunto pequeno e enviesado [M §2]; o S1
+   reverteu.
 3. **Filtros antes de ranquear.** "Semana passada", "com a Ana", "no Chrome" viram filtros. O
    agente já tem `clock_now`.
 4. **Recência e duração como desempate.** Não como critério principal.
@@ -545,7 +546,7 @@ Decisões difíceis de reverter. 0012 a 0014 já foram escritos com status "prop
 | --- | --- |
 | 0012 | Acervo em banco próprio (`memory.db`) cifrado por inteiro, com FTS5 e vetores em BLOB (binário + int8), busca no worker — **escrito como proposto**: `docs/adr/0012-acervo-cifrado-com-vetores-em-blob.md` |
 | 0013 | Memória de tela por Momentos (evento, texto fora dos navegadores, OCR na resolução nativa, WGC como gatilho); complementa os ADRs 0004 e 0008 — **escrito como proposto**: `docs/adr/0013-momentos-de-tela-por-evento.md` |
-| 0014 | Embeddings locais no worker, modelo baixado pelo catálogo, finalistas por medição, sem RRF de pesos iguais; nuvem só como opção — **escrito como proposto**: `docs/adr/0014-embeddings-locais-no-worker.md` |
+| 0014 | Embeddings locais no worker com bekko-a8m (e5-small de reserva) e busca híbrida por RRF de pesos iguais; nuvem só como opção — **aceito** em 13/11/2026 após o S1: `docs/adr/0014-embeddings-locais-no-worker.md` |
 | 0015 | Cofre de notas: Markdown em pasta própria, escrita direta, blocos gerenciados |
 | 0016 | Consolidação em segundo plano e saída de dados fora de um Turno (revisa a visão) |
 
@@ -594,3 +595,10 @@ medições §9). Mudanças nesta revisão:
 Continua igual: fases, vocabulário, Consolidação, Cofre de notas e decisões Q-011 a Q-017 (§10).
 As propostas I-4, I-6, I-7 e I-10 a I-17 do complemento não foram testadas nem incorporadas
 nesta revisão; continuam como propostas no complemento §10.
+
+### Revisão 3 — 2026-11-13
+
+Resultado do spike S1 (`specs/046-spikes-segundo-cerebro/s1.md`) e ADR 0014 aceito:
+
+- modelo padrão bekko-embedding-v1-a8m, com e5-small de reserva;
+- §5.3 (2) volta a usar RRF de pesos iguais. A proposta I-19 foi revertida: com 240 documentos e 100 perguntas, o RRF 1 : 1 foi a melhor fusão para todos os modelos.

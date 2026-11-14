@@ -1,40 +1,46 @@
 ---
-status: proposed
+status: accepted
 ---
 
-# Embeddings locais no worker, com modelo escolhido por medição em português
+# Embeddings locais no worker: bekko-a8m com e5-small de reserva, e busca híbrida por RRF
 
-Os embeddings do Acervo são calculados localmente no `aura-worker`, com ONNX Runtime (o `ort` que o workspace já usa), na CPU. O modelo é baixado pelo catálogo, do mesmo jeito que os modelos de voz. Embeddings em nuvem ficam só como opção futura, com consentimento próprio. O modelo padrão sai do spike S1, num conjunto dourado em português com perguntas escritas por uma pessoa, entre três finalistas de licença permissiva e 384 dimensões:
+Os embeddings do Acervo são calculados localmente no `aura-worker`, com ONNX Runtime (o `ort` que o workspace já usa), na CPU, e o modelo é baixado pelo catálogo, como os modelos de voz. Embeddings em nuvem ficam só como opção futura, com consentimento próprio.
 
-- `ibm-granite/granite-embedding-97m-multilingual-r2` (Apache-2.0);
-- `hotchpotch/bekko-embedding-v1-a25m`, com transformer em int8 (MIT);
-- `hotchpotch/bekko-embedding-v1-a8m`, com o ONNX padrão (MIT).
+- **Modelo padrão:** `hotchpotch/bekko-embedding-v1-a8m` (MIT), arquivo `onnx/model.onnx` padrão (tabela de embeddings em int8, transformer em fp32), 384 dimensões, sem prefixo, pooling por média, normalização L2.
+- **Reserva:** `intfloat/multilingual-e5-small` (MIT), com prefixos `query:`/`passage:`, para máquinas com pouca RAM ou se o Bekko der problema no ONNX Runtime.
+- Cada vetor guarda o identificador do modelo que o gerou.
 
-O `intfloat/multilingual-e5-small` fica só como linha de base. Cada vetor guarda o identificador do modelo que o gerou. A busca usa o vetor como sinal principal e o FTS5 para termos exatos (códigos, nomes, números) e para contagem e listagem. **A fusão não usa RRF de pesos iguais**: o peso do lexical, ou a regra de quando usá-lo, sai do mesmo conjunto dourado.
+A busca é **híbrida por RRF (k = 60) com pesos iguais** entre vetor e FTS5 (`unicode61 remove_diacritics 2`). O FTS5 também atende contagem e listagem. Cada trecho é indexado com um cabeçalho montado por regra (fonte, título, data), sem LLM.
 
-Evidência: `docs/research/segundo-cerebro-medicoes-2026-11.md` §2. São 50 documentos sintéticos (+1.000 distratores) e 30 perguntas; ONNX Runtime 1.31.1, 1 thread, Ryzen 7 7800X3D.
+Evidência: spike S1 do esforço 046 (`specs/046-spikes-segundo-cerebro/s1.md`):
+- runtime em Rust com o `ort` do Aura;
+- conjunto dourado sintético de 240 documentos em 6 fontes e 100 perguntas de outro autor;
+- paridade com o Python verificada.
 
-| Modelo | Acerto na 1ª posição | ms por documento |
-| --- | ---: | ---: |
-| e5-small (linha de base) | 0,73 | 6,9 |
-| bekko-a8m | 0,80 | 6,5 |
-| granite-97m-r2 | 0,87 | 17 |
-| bekko-a25m int8 | 0,93 | 16 |
-| granite-311m-r2 | 1,00 | 62 |
+| Modelo | MRR só vetor | MRR com RRF 1 : 1 | ms por documento | Pico de RAM |
+| --- | ---: | ---: | ---: | ---: |
+| bekko-a8m | 0,804 | 0,892 | 16,1–17,0 | 553 MB |
+| e5-small | 0,801 | 0,894 | 17,1–17,5 | 435 MB |
+| bekko-a25m int8 | 0,832 | 0,897 | 21,0–21,2 | 554 MB |
+| granite-97m-r2 | 0,751 | 0,838 | 22,7 | 414 MB |
 
-A fusão RRF de pesos iguais derrubou o acerto na 1ª posição de todos em 7–23 pontos. No MTEB-BR, o granite-97m-r2 também supera o e5-small (0,557 contra 0,507 de nDCG@10).
+O FTS5 sozinho deu 0,867. Pelo critério definido antes de medir, a diferença de MRR abaixo de 0,02 conta como empate e desempata pela menor latência por documento: vence o bekko-a8m.
 
 ## Considered options
 
-- **multilingual-e5-small**, o padrão histórico: o mais fraco em perguntas por paráfrase, entre os medidos.
-- **granite-embedding-311m-multilingual-r2**: a melhor qualidade, mas ~9× o custo por documento, 313 MB e 768 dimensões (dobra o tamanho do índice).
-- **EmbeddingGemma-300m**: o melhor modelo pequeno no MTEB-BR, mas os termos do Gemma não são licença permissiva.
-- **Embeddings em nuvem**: qualidade alta, mas tira dados do PC fora de um Turno e custa por chamada.
+- **multilingual-e5-small como padrão:** qualidade empatada e 118 MB a menos de RAM, mas ~5% mais lento por documento. Fica como reserva.
+- **bekko-a25m:** o melhor vetor puro (0,832), mas +30% de latência para +0,005 de MRR com RRF.
+- **granite-embedding-97m-multilingual-r2:** à frente no MTEB-BR e nas medições anteriores, mas o pior neste conjunto (vetor 0,751; RRF 0,838) e mais lento.
+- **granite-311m-r2:** melhor qualidade nas medições anteriores, mas ~9× o custo e 768 dimensões.
+- **EmbeddingGemma-300m:** os termos do Gemma não são licença permissiva.
+- **RRF com peso 0,5 no lexical** ou **lexical só com termo raro:** iguais ou piores que o RRF 1 : 1. A proposta I-19 das medições ("não usar RRF de pesos iguais") vinha de um conjunto pequeno e enviesado contra o lexical e fica revertida.
+- **Embeddings em nuvem:** tiram dados do PC fora de um Turno e custam por chamada.
 
 ## Consequences
 
-- CPU do worker: 6,5–17 ms por trecho num desktop rápido. A 2.000 trechos por dia útil, são ~13–34 s de CPU por dia (calculado, não medido), rodando com a máquina ociosa.
-- Download de 98–199 MB e pico de 450–660 MB no processo durante o cálculo (medido em Python; o worker em Rust deve medir o próprio).
-- Trocar de modelo exige recalcular todos os vetores; o identificador do modelo por vetor permite fazer isso aos poucos.
-- O cartão do Bekko recomenda OpenVINO em vez de ONNX Runtime para CPU [autodeclarado]; o S1 mede as duas formas antes de escolher.
-- O conjunto dourado do S1 vira teste permanente no `aura-bench`: toda troca de modelo, de corte de trecho ou de fusão roda contra ele.
+- CPU do worker: ~16–17 ms por trecho de ~100 tokens num desktop rápido; a 2.000 trechos por dia útil, ~35 s de CPU por dia (calculado), com a máquina ociosa.
+- Download de 130 MB (modelo) + 34 MB (tokenizador); pico de ~550 MB no processo durante o cálculo. O worker é sob demanda (ADR 0005).
+- O cartão do Bekko recomenda OpenVINO em CPU (5,5× mais rápido num Ryzen 9, [autodeclarado]). Medir na Fase 1 antes de mudar de runtime.
+- Trocar de modelo exige recalcular os vetores; o identificador por vetor permite fazer isso aos poucos.
+- O conjunto dourado do S1 vira teste permanente no `aura-bench`: toda troca de modelo, de corte de trecho ou de fusão roda contra ele. Quando houver perguntas reais do usuário, o conjunto passa a incluí-las.
+- Limites da evidência: conjunto sintético escrito por modelos, 100 perguntas (diferenças menores que ~0,02 não são distinguíveis), desktop rápido.

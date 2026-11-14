@@ -27,3 +27,37 @@ Escopo: `tools/spikes/s3-momentos/{Cargo.toml, src/lib.rs, src/main.rs, chrome_c
 - Limite: o desligamento depois de 10 min não foi observado, porque o teste parou no limite.
 
 Disposição: TK-004 liberado para `verified` e `done`. O TK-005 (dia real) segue bloqueado, aguardando o usuário.
+
+## TK-001 — Conjunto dourado
+
+Escopo: `tools/spikes/s1-embeddings/golden/{corpus.json, queries.json, README.md}`.
+
+### Standards
+
+Fixture sintética sem dado real, com README de origem, autoria e viés. Entra no git porque vai virar o conjunto permanente do `aura-bench` (ADR 0014); a regra "não commitar conjuntos de dados" das medições valia para dados baixados de terceiros. Nenhum achado bloqueante.
+
+### Spec
+
+**AC-005:** 240 documentos em 6 fontes e 100 perguntas com resposta única, de autores distintos; as perguntas não viram resultados. A sobreposição lexical por estilo foi medida (paráfrase 0,32) e o viés está declarado.
+
+Disposição: TK-001 liberado para `verified` e `done`.
+
+## TK-002 — S1 em Rust
+
+Escopo: `tools/spikes/s1-embeddings/src/{lib.rs, main.rs}`, `specs/046-spikes-segundo-cerebro/s1.md`, ADR 0014 e a revisão 3 do plano (§5.3).
+
+### Standards
+
+- Mesmo `ort` do lockfile do Aura; `tokenizers` e `rusqlite` com licença permissiva.
+- Funções puras testadas com literais calculados à parte: fusão, métricas, critério, termo raro.
+- A paridade com o Python foi verificada antes de concluir, porque o resultado do granite contrariava a evidência anterior.
+- Nenhum achado bloqueante.
+
+### Spec
+
+- **AC-006:** 4 modelos com qualidade, latência, RAM e carga.
+- **AC-007:** 3 fusões contra o vetor puro, por estilo.
+- **AC-008:** recomendação pelo critério definido antes de medir, com desempate e reserva registrados.
+- A reversão da I-19 está documentada no plano (revisão 3) e no documento de medições, sem apagar o registro anterior.
+
+Disposição: TK-002 liberado para `verified` e `done`. ADR 0014 aceito.

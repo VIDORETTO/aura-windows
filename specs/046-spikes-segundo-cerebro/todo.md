@@ -2,8 +2,8 @@
 
 <!-- GENERATED: hybrid tickets are the canonical source. Edit the ticket, then render again. -->
 
-## [ ] TK-001 — TK-001 — Conjunto dourado sintético do S1
-Status: `in_progress` | Bloqueado por: nenhum
+## [x] TK-001 — TK-001 — Conjunto dourado sintético do S1
+Status: `done` | Bloqueado por: nenhum
 
 - [ ] TK-001.1 Corpus pelo subagente A.
 - [ ] TK-001.2 Perguntas pelo subagente B (só vê o corpus).
@@ -24,8 +24,8 @@ Status: `blocked` | Bloqueado por: nenhum
 - [ ] TK-006.1 Perguntas registradas.
 - [ ] TK-006.2 Parecer recebido e decisão registrada.
 
-## [ ] TK-002 — TK-002 — S1 — finalistas em Rust e fusão
-Status: `ready` | Bloqueado por: TK-001
+## [x] TK-002 — TK-002 — S1 — finalistas em Rust e fusão
+Status: `done` | Bloqueado por: TK-001
 
 - [ ] TK-002.1 Testes de unidade das fusões e métricas (literais calculados à parte).
 - [ ] TK-002.2 Binário de avaliação; rodar os 4 modelos.

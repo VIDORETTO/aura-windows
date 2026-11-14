@@ -4,16 +4,19 @@ schema_version: 1.0
 id: TK-001
 effort: 046-spikes-segundo-cerebro
 type: spike
-status: in_progress
-ticket_revision: 2
+status: done
+ticket_revision: 5
 requires: []
 requirement_refs: ["FR-002"]
 acceptance_refs: ["AC-005"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["tools/spikes/s1-embeddings/golden"]
-verification_status: not_run
+verification_status: passed
 ---
+
+
+
 
 
 # TK-001 — Conjunto dourado sintético do S1
