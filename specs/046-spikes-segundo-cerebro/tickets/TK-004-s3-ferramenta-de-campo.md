@@ -1,19 +1,24 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-004
 effort: 046-spikes-segundo-cerebro
 type: spike
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 5
 requires: []
 requirement_refs: ["FR-001", "FR-002"]
 acceptance_refs: ["AC-009", "AC-010", "AC-011"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["tools/spikes/s3-momentos", "specs/046-spikes-segundo-cerebro/s3-s4.md"]
-verification_status: not_run
+verification_status: passed
+last_update: package verificado depois da implementação (desvio registrado na revisão)
 ---
+
+
+
+
 
 # TK-004 — S3/S4 — ferramenta de campo e verificações no Chrome
 

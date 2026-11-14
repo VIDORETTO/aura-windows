@@ -10,8 +10,8 @@ Status: `in_progress` | Bloqueado por: nenhum
 - [ ] TK-001.3 Validação mecânica e README.
 - [ ] TK-001.4 Evidência.
 
-## [ ] TK-004 — TK-004 — S3/S4 — ferramenta de campo e verificações no Chrome
-Status: `ready` | Bloqueado por: nenhum
+## [x] TK-004 — TK-004 — S3/S4 — ferramenta de campo e verificações no Chrome
+Status: `done` | Bloqueado por: nenhum
 
 - [ ] TK-004.1 Testes de unidade da agregação (p50/p95, sem texto).
 - [ ] TK-004.2 Binário; execução curta.

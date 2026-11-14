@@ -1,0 +1,17 @@
+# Protótipo do spike S2 (esforço 046). Fora do workspace do produto.
+# Exige Perl nativo do Windows no PATH para o OpenSSL embutido (ADR 0012).
+[package]
+name = "s2-vetores"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+rusqlite = { version = "=0.40.2", features = ["bundled-sqlcipher-vendored-openssl"] }
+anyhow = "1"
+serde_json = "1"
+
+[profile.release]
+opt-level = 3

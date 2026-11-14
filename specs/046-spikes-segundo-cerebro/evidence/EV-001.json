@@ -1,0 +1,31 @@
+{
+  "acceptance_refs": [
+    "AC-009",
+    "AC-010"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; Chrome 157.0.8103.51",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/aura-spikes/s3"
+  ],
+  "execution_status": "executed",
+  "id": "EV-001",
+  "input_fingerprints": {
+    "specs/046-spikes-segundo-cerebro/plan.md": "96071799e3466c41bb2c7e0d972d6fa9a83d2b2d987192c4f1e42bc8580f50bb",
+    "specs/046-spikes-segundo-cerebro/spec.md": "cac33575fda50df31aa1c565091efbfa33e94c260ae92841d8031849c6b21d11",
+    "tools/spikes/s3-momentos/src/lib.rs": "4a580a138c55832eed6b8ad6aef94c3129266cad16716776e6e7543677334dc2",
+    "tools/spikes/s3-momentos/src/main.rs": "cd3389a3ab2a10a2e3eea0d9ce3ef8b61503b94d160a28e18393825734dba1a4"
+  },
+  "input_paths": [
+    "tools/spikes/s3-momentos/src/main.rs",
+    "tools/spikes/s3-momentos/src/lib.rs",
+    "specs/046-spikes-segundo-cerebro/spec.md",
+    "specs/046-spikes-segundo-cerebro/plan.md"
+  ],
+  "limitations": "",
+  "observations": "3 testes de unidade (resumo sem valores de texto); 1 min de uso real: 0,22 s de CPU, 57 MB de pico, resumo só com números. Firefox passou pela UIA e a regra foi corrigida para OCR.",
+  "procedure": "cargo test --release e cargo build --release em tools/spikes/s3-momentos; s3-momentos.exe rodar 0.0167 (1 min de uso real)",
+  "result": "passed",
+  "tested_revision": "local:49a4b8fc911abc43d352bc66f3be6e6ebadbea84680edf2a7feac51112b481e7",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T01:00:08+00:00"
+}

@@ -47,9 +47,8 @@
 | `CAND-080` | Recuperação de imagens: imagem do Momento entregue ao modelo e busca por aparência opcional | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-081` | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `CAND-082` | Bases externas pré-configuradas por MCP (RAGFlow, Khoj, AnythingLLM, Notion) | `roadmap` | `P3` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-083` | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
+| `CAND-083` | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | `roadmap` | `P0` | `roadmap` | `promoted` | — | Promover após prontidão |
 | `CAND-084` | Regularizar a evidência dos esforços 012–035 entregues sem registro (auditoria 2026-11-12, A-11): rodar os aceites de cada um no Windows e registrar com `evidence add`, sem evidência retroativa | `roadmap` | `P2` | `roadmap` | `candidate` | — | Promover após prontidão |
-| `CAND-085` | Spikes do Segundo Cérebro (S1–S4 do plano): modelo de embeddings, armazenamento vetorial cifrado, custo da captura por evento, imagem e OCR | `roadmap` | `P0` | `roadmap` | `candidate` | — | Promover após prontidão |
 | `001-fundacao-overlay` | Specification: Fundação do app residente e Overlay | `effort` | `—` | `implementation` | `active` | `0/6` | No Windows: compilar o shell Tauri e validar TK-001..006 (docs/HANDOFF.md §2, §4.1, §6 Marco 1) |
 | `002-conversa-agente-codex` | Specification: Conversa agêntica via Codex app-server | `effort` | `—` | `implementation` | `active` | `0/9` | Spike com o app-server real (TK-001); UI de perguntas do agente (TK-007), uso de contexto (TK-008), pastas concedidas (TK-009) |
 | `003-byok-gateway` | Specification: BYOK com endpoint customizado | `effort` | `—` | `implementation` | `active` | `0/7` | Validar com provedores reais e gravar fixtures SSE reais (docs/HANDOFF.md §4.3) |
@@ -95,4 +94,4 @@
 | `043-acento-vermelho` | Change: Acento vermelho da marca | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `044-landing-page` | Change: Landing page | `effort` | `—` | `discovery` | `active` | `—` | Registrar o entendimento necessário para a próxima entrega |
 | `045-higiene-da-captura` | Higiene da captura | `effort` | `—` | `closed` | `complete` | `4/4` | Entregue (A-01..A-04). Pendências do CAND-083: A-06, A-07, captura de tela em thread própria. |
-| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `0/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |
+| `046-spikes-segundo-cerebro` | Spikes do Segundo Cérebro | `effort` | `—` | `implementation` | `active` | `1/6` | TK-001: corpus pelo subagente A, perguntas pelo subagente B |

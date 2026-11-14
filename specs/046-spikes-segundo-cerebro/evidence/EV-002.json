@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-011"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; Chrome 157.0.8103.51",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/aura-spikes/s3/chrome-check.json"
+  ],
+  "execution_status": "executed",
+  "id": "EV-002",
+  "input_fingerprints": {
+    "specs/046-spikes-segundo-cerebro/plan.md": "96071799e3466c41bb2c7e0d972d6fa9a83d2b2d987192c4f1e42bc8580f50bb",
+    "specs/046-spikes-segundo-cerebro/spec.md": "cac33575fda50df31aa1c565091efbfa33e94c260ae92841d8031849c6b21d11",
+    "tools/spikes/s3-momentos/chrome_check.py": "3a646668a7284b579b4b96ca543723053970b5de4ea0355a956064379eb603cc"
+  },
+  "input_paths": [
+    "tools/spikes/s3-momentos/chrome_check.py",
+    "specs/046-spikes-segundo-cerebro/spec.md",
+    "specs/046-spikes-segundo-cerebro/plan.md"
+  ],
+  "limitations": "",
+  "observations": "Ler só o nome UIA da raiz não ligou Web accessibility; uma leitura completa ligou Web accessibility, Text metrics e Extended properties, e o modo continuou ligado 10 min depois do cliente encerrar.",
+  "procedure": "python -I tools/spikes/s3-momentos/chrome_check.py <s3-momentos.exe> <saida.json> (perfil temporário, example.com)",
+  "result": "passed",
+  "tested_revision": "local:ffb7d36a282514f4109a5aeca6b8fc6b106694b195a3c2127d6b976899216ccd",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T01:00:09+00:00"
+}
