@@ -53,3 +53,16 @@
 - Observations: MRR com RRF 1:1: bekko-a25m 0,897, e5 0,894, bekko-a8m 0,892, granite 0,838; só FTS5 0,867; só vetor 0,751-0,832. Empate (<0,02) desempatado por latência: bekko-a8m (16,1-17,0 ms/doc) sobre e5-small (17,1-17,5). Paridade cos 0,98-1,00. ADR 0014 aceito; I-19 revertida.
 - Evidence refs: `C:/Users/gabri/AppData/Local/aura-spikes/s1`
 - Limitations: none recorded
+
+## EV-005 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-001`, `AC-002`, `AC-003`, `AC-004`
+- Procedure: `cargo test --release --manifest-path tools/spikes/s2-vetores/Cargo.toml (8 testes: 6 de unidade + 2 de SQLCipher/FTS5); s2-vetores bench <base-100k.f32> <perguntas-200.f32> N <db> 200 <resultados.jsonl> desktop para N = 100000, 500000, 1000000; aproximação: modesto.ps1 (afinidade 1 núcleo, PROCTHROTTLEMAX 50% AC/DC, N = 500000 e 1000000, 60 perguntas, rótulo modesto_aprox) com restauração para 100%`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200; Rust 1.98.1 MSVC; Ryzen 7 7800X3D; rusqlite 0.40.2 bundled-sqlcipher-vendored-openssl (SQLCipher 4.14.0, SQLite 3.51.3); Strawberry Perl 5.42.3 portátil; vetores bekko-a8m de 100 mil trechos da Wikipédia pt
+- Tested revision: `local:e2d3af418d3f85dea530d3093033bdd1b26ebfe16a7c894bd33430f0e0136faa`
+- Timestamp: `2026-11-14T01:54:38+00:00`
+- Observations: Cache dimensionado, 200 candidatos: 1 milhão sem filtro p95 69,9 ms (desktop) e 103,8 ms (aproximação); 30 dias < 17 ms. Cache padrão de 2 MB: 500 mil sem filtro p95 229 ms (desktop) e 344 ms (aproximação). Recall@10 nos vetores reais: 0,840 / 0,899 / 0,933 com 100 / 200 / 400 candidatos. Abrir: senha 126 ms, chave crua 0,3 ms; primeira consulta: 46 / 222 / 410 ms com 100 mil / 500 mil / 1 milhão. FTS5 com remove_diacritics 2 funciona com SQLCipher; arquivo cifrado sem cabeçalho SQLite. Plano de energia restaurado (0x64).
+- Evidence refs: `C:/Users/gabri/AppData/Local/aura-spikes/s2/resultados.jsonl`, `C:/Users/gabri/AppData/Local/aura-spikes/s2/modesto-log.txt`
+- Limitations: Máquina modesta aproximada (~1,6× mais lenta, piso otimista). Frio com cache de arquivos do SO quente. Recall só nos 100 mil reais; bases de 500 mil e 1 milhão derivadas com ruído, só para tempo. FTS5 e fusão fora desta medida de tempo.

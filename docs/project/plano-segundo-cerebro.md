@@ -277,13 +277,14 @@ modelo do Recall (teto proporcional, o mais antigo sai primeiro).
   FTS5 com `unicode61 remove_diacritics 2` (aposenta o `fold` manual de `notes.rs`), `vetores`
   (tabela comum em ordem de inserção: binário de 48 bytes + int8 de 384 bytes por trecho, sem
   float32), `imagens` (ponteiro para arquivo cifrado), `fatos` (§6). Sem sqlite-vec por padrão
-  (ADR 0012 proposto).
-- Busca vetorial no worker: filtro de período como faixa de `rowid` → varredura do binário em
-  Rust → reordenação dos 100 melhores pelo int8. A ~2.000 trechos por dia útil são ~500 mil por
-  ano. Medido com vetores reais de 384 dimensões ([M §3.4]): com cifra, os últimos 30 dias levam
-  31 ms a 500 mil e 47 ms a ~1 milhão; sem filtro, a ~1 milhão, 66 ms com cache de 120 MB
-  (recall@10 de 0,86–0,90). Sem cache dimensionado e sem filtro, a cifra deixa a busca 5–10×
-  mais lenta e o binário passa de 300 ms a ~1 milhão.
+  (ADR 0012, aceito com o S2).
+- Busca vetorial no worker: filtro de período como faixa de `rowid` (com a data conferida por
+  linha) → varredura do binário em Rust → reordenação dos 200 melhores pelo int8. O host é o único
+  escritor; o worker lê com cache dimensionado (~74 MB por milhão). A ~2.000 trechos por dia útil
+  são ~500 mil por ano. Medido no S2 (`specs/046-spikes-segundo-cerebro/s2.md`) com SQLCipher e
+  vetores reais do bekko-a8m em português: com 200 candidatos, 1 milhão sem filtro leva 70 ms de
+  p95 num desktop e 104 ms numa aproximação de máquina modesta; os últimos 30 dias, menos de
+  17 ms; recall@10 de 0,90. Com o cache padrão de 2 MB, passa de 300 ms a partir de 500 mil.
 
 ### 5.3 Como o agente lembra
 
@@ -502,7 +503,7 @@ Os orçamentos atuais (ocioso ≤ 150 MB, CPU ≤ 0,5%) valem com capturas desli
 | CPU do host com captura de Momentos | ≤ 1% de **um núcleo** em média num dia de trabalho (ganchos + UIA a cada evento, sem agrupar, mediram 1,75% de um núcleo em uso sintético, [M §4.2]; o agrupamento de 1,5 s e a exclusão dos navegadores devem trazer para baixo disso) | `aura-bench`, Fase 2 |
 | Memória a mais no host | ≤ 40 MB | idem |
 | Trabalho do worker (OCR, embeddings) | Só com a máquina ociosa e na tomada; nunca durante Reunião ou tela cheia | idem |
-| `memory_search` | ≤ 300 ms p95 com 500 mil trechos, busca vetorial no worker (medido no desenho do ADR 0012: 31–66 ms num desktop rápido, [M §3.4]) | S2 num notebook modesto, Fase 1 |
+| `memory_search` | ≤ 300 ms p95 com 500 mil trechos, busca vetorial no worker (S2, só a parte vetorial: 39 ms de p95 num desktop e 59 ms na aproximação de máquina modesta, sem filtro) | `aura-bench memory`, busca completa, Fase 1 (047 AC-011) |
 | Disco | Dentro do teto da predefinição; nunca cresce sem limite | teste de retenção |
 
 ---
@@ -527,7 +528,7 @@ S3 depende da validação de UIA e OCR que o HANDOFF lista como pendente desde s
 | ID | Pergunta | Recomendação |
 | --- | --- | --- |
 | Q-011 | Motor próprio embutido, com bases externas só como opcional? | **Sim.** É o que mantém "instalou, funciona". |
-| Q-012 | O Acervo vai num banco separado e cifrado por inteiro (SQLCipher)? | **Sim**, se o S2 confirmar. Texto de tudo o que a pessoa viu não pode ficar em claro. |
+| Q-012 | O Acervo vai num banco separado e cifrado por inteiro (SQLCipher)? | **Sim; confirmado pelo S2 em 13/11/2026** (ADR 0012 aceito). Texto de tudo o que a pessoa viu não pode ficar em claro. |
 | Q-013 | A Consolidação pode enviar Lembranças a um provedor em nuvem fora de um Turno? | **Sim, com consentimento próprio e desligada por padrão.** Exige revisar a restrição da visão. A linha do tempo sem LLM funciona de qualquer jeito. |
 | Q-014 | Qual predefinição vem marcada ao ligar? | **Equilibrado** (texto + imagem por 30 dias, teto de 10 GB). |
 | Q-015 | A Fase 1 (sem captura nova) sai antes dos Momentos de tela? | **Sim.** Entrega "lembra das reuniões e conversas" cedo e deixa a parte sensível para depois dos spikes. |
@@ -602,3 +603,13 @@ Resultado do spike S1 (`specs/046-spikes-segundo-cerebro/s1.md`) e ADR 0014 acei
 
 - modelo padrão bekko-embedding-v1-a8m, com e5-small de reserva;
 - §5.3 (2) volta a usar RRF de pesos iguais. A proposta I-19 foi revertida: com 240 documentos e 100 perguntas, o RRF 1 : 1 foi a melhor fusão para todos os modelos.
+
+### Revisão 4 — 2026-11-13
+
+Resultado do spike S2 (`specs/046-spikes-segundo-cerebro/s2.md`) e ADR 0012 aceito:
+
+- 200 candidatos no primeiro passo (recall@10 de 0,90 com o modelo escolhido, contra 0,84 com 100);
+- chave crua derivada pelo cofre, sem PBKDF2 (0,3 ms contra 126 ms para abrir);
+- host como único escritor; worker só lê e faz a varredura com cache dimensionado;
+- worker sob demanda na Fase 1; aquecer ou manter vivo na Fase 2 fica com o esforço dos Momentos;
+- as fontes da Fase 1 ficam em claro no `aura.db`: CAND-086.

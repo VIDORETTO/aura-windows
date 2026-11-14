@@ -1,19 +1,24 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-003
 effort: 046-spikes-segundo-cerebro
 type: spike
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 5
 requires: ["TK-002"]
 requirement_refs: ["FR-001", "FR-003"]
 acceptance_refs: ["AC-001", "AC-002", "AC-003", "AC-004"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["tools/spikes/s2-vetores", "specs/046-spikes-segundo-cerebro/s2.md", "docs/adr/0012-acervo-cifrado-com-vetores-em-blob.md"]
-verification_status: not_run
+verification_status: passed
+last_update: Revisão em review.md (Standards e Spec). ADR 0012 aceito; relatório em s2.md; EV-005.
 ---
+
+
+
+
 
 # TK-003 — S2 — armazenamento vetorial do ADR 0012
 

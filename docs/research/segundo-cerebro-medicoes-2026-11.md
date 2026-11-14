@@ -359,6 +359,12 @@ int8" ocupa 79 + 403 = **482 MB** — um quarto do disco, com recall@10 só 0,01
 
 ### 3.5 O que isso diz
 
+> **Atualização (13/11/2026, spike S2 do esforço 046):** com o desenho do ADR 0012, vetores reais do
+> bekko-a8m em português e o mesmo SQLCipher, o recall@10 com 100 candidatos foi 0,84 (200: 0,90).
+> Com cache dimensionado, 1 milhão sem filtro deu 70 ms de p95 no desktop e 104 ms numa
+> aproximação de máquina modesta. A decisão está em `specs/046-spikes-segundo-cerebro/s2.md` e no
+> ADR 0012, agora aceito.
+
 1. **Sem cifra, a meta de p95 ≤ 300 ms a 500 mil só cai com binário (ou int8 com filtro).**
    float32 exato no vec0 dá 486 ms de p95; int8, 220 ms; binário + reordenação, 44 ms.
 2. **No build MSVC, int8 é ~2,2× mais rápido que float32** no vec0 (200 contra 450 ms a 500

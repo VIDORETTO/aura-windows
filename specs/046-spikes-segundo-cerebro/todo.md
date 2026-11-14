@@ -40,7 +40,7 @@ Status: `blocked` | Bloqueado por: TK-004
 - [ ] TK-005.3 ADR 0013 e evidência.
 
 ## [ ] TK-003 — TK-003 — S2 — armazenamento vetorial do ADR 0012
-Status: `ready` | Bloqueado por: TK-002
+Status: `in_progress` | Bloqueado por: TK-002
 
 - [ ] TK-003.1 Testes de unidade (quantização, hamming, reordenação, recall).
 - [ ] TK-003.2 Gerar vetores reais (prioridade ociosa).
