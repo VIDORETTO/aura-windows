@@ -1,0 +1,30 @@
+{
+  "acceptance_refs": [
+    "AC-001",
+    "AC-002",
+    "AC-003"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-045/capture.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-013",
+  "input_fingerprints": {
+    "crates/aura-capture/src/retention.rs": "416c08104979428fe126ce0b95789e495e850c4b8d7a65ec74b121a7201ccf25",
+    "specs/045-higiene-da-captura/plan.md": "b3c338e5a8ce9295d19070d7ec9affb5c4f71157d395ced588fe88dc0663b859",
+    "specs/045-higiene-da-captura/spec.md": "efba46c05db2818f583960dbb7245f384de013314342b8f8e2530245eef7ee4f"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/retention.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.",
+  "observations": "21 testes do aura-capture passaram, inclusive os 3 de retenção do Contínuo.",
+  "procedure": "cargo test -p aura-capture",
+  "result": "passed",
+  "tested_revision": "local:4b720715ab00bd24cd8969d0d54b30bbafa4e5b4837f8dbca42715b68f617daf",
+  "ticket": "TK-001",
+  "timestamp": "2026-11-14T00:32:26+00:00"
+}

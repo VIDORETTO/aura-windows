@@ -1,19 +1,27 @@
 ---
 schema: hybrid/ticket
-schema_version: "1.0"
+schema_version: 1.0
 id: TK-004
-effort: 041-higiene-da-captura
+effort: 045-higiene-da-captura
 type: delivery
-status: ready
-ticket_revision: 1
+status: done
+ticket_revision: 8
 requires: ["TK-003"]
 requirement_refs: ["FR-003"]
 acceptance_refs: ["AC-005", "AC-006"]
 spec_revision: 1
 plan_revision: 1
 owned_areas: ["crates/aura-capture/src/segments.rs", "crates/aura-capture/tests/pipeline.rs", "crates/aura-app/src/recorder.rs", "crates/aura-app/src/host.rs"]
-verification_status: not_run
+verification_status: passed
+last_update: Evidence invalidated after an input changed.
 ---
+
+
+
+
+
+
+
 
 # TK-004 — Gravador de tela supervisionado (A-02)
 

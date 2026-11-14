@@ -45,11 +45,11 @@ pub struct AudioSegmentWriter {
     recording_id: Option<String>,
     encoder: Box<dyn AudioEncoder>,
     store: SegmentStore,
-    /// Live policy shared with the screen recorder (041 AC-004).
+    /// Live policy shared with the screen recorder (045 AC-004).
     retention: Arc<Mutex<RetentionPolicy>>,
     buf: Vec<f32>,
     start_ms: Option<i64>,
-    /// End of the segment that ran the last orphan sweep (041 TK-003).
+    /// End of the segment that ran the last orphan sweep (045 TK-003).
     last_sweep_ms: Option<i64>,
 }
 

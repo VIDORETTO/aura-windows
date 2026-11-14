@@ -1,0 +1,37 @@
+{
+  "acceptance_refs": [
+    "AC-005",
+    "AC-006"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-green-capture.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-012",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "de2462182cde8bad220cd31a8c6b9b5b1de48abe7db49da5dad2abcb480223ea",
+    "crates/aura-app/src/recorder.rs": "80c3c39710f99b11437df83adb9beccd4bf8ceebdd45a85de87f5c70e6d7bef0",
+    "crates/aura-app/tests/host.rs": "d17657872be74e6e6ba54bb58041d7186eb11b3cfb34928d7389627070e1d565",
+    "crates/aura-capture/src/segments.rs": "bc212b7a72fb9f269f81d4cbe2c2a45c4e7d29856ab94b4e749fab0ab10b1548",
+    "crates/aura-capture/tests/pipeline.rs": "a6ee47764fb6ba43cff358a1dc241a8d6c331ecaffb627dd517a13a57dd6dfef",
+    "specs/045-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/045-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/segments.rs",
+    "crates/aura-app/src/recorder.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-capture/tests/pipeline.rs",
+    "crates/aura-app/tests/host.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Evidence invalidated because an input changed.",
+  "observations": "1 falha tolerada e gravação segue; 5 falhas seguidas encerram; active() honesto; supervise reinicia já, respeita o recuo de 15 s e informa só mudanças; recuo 15..900 s; clippy e fmt limpos.",
+  "procedure": "cargo test -p aura-capture --test pipeline; cargo test -p aura-app --test host dead_screen screen_restart; cargo clippy -p aura-capture -p aura-audio -p aura-app --all-targets -- -D warnings; cargo fmt --all -- --check",
+  "result": "stale",
+  "tested_revision": "local:23e87c65b3ba1ecd59fa27956322b51de095d811fb2c752c2bac459f8f1de596",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T00:30:15+00:00"
+}

@@ -191,7 +191,7 @@ impl SegmentStore {
         Ok(())
     }
 
-    /// Applies the retention policy after a closed segment (041 TK-003).
+    /// Applies the retention policy after a closed segment (045 TK-003).
     /// Deletes exactly what [`crate::retention::plan`] would, but reads only
     /// candidates: expired buffer rows, aggregates of the limited set and, when
     /// something must go, the limited set oldest first until the budget fits.
@@ -299,6 +299,34 @@ impl SegmentStore {
     }
 }
 
+/// Consecutive failed segments after which a recorder gives up (045 AC-006).
+pub const MAX_SEGMENT_FAILURES: u32 = 5;
+
+/// Counts consecutive failures of closed segments: a stored segment resets the
+/// count; an error is logged and ends the recorder only after
+/// [`MAX_SEGMENT_FAILURES`] in a row (045 AC-005).
+fn track(closed: Result<bool, SegmentError>, failures: &mut u32) -> Result<(), SegmentError> {
+    match closed {
+        Ok(true) => {
+            *failures = 0;
+            Ok(())
+        }
+        Ok(false) => Ok(()),
+        Err(e) => {
+            *failures += 1;
+            tracing::warn!(
+                "screen segment failed ({}/{MAX_SEGMENT_FAILURES}): {e}",
+                *failures
+            );
+            if *failures >= MAX_SEGMENT_FAILURES {
+                Err(e)
+            } else {
+                Ok(())
+            }
+        }
+    }
+}
+
 /// Shared, live-updatable configuration of a background recorder.
 #[derive(Clone)]
 pub struct RecorderConfig {
@@ -314,6 +342,8 @@ pub struct RecorderConfig {
 /// Records frames until the returned handle is dropped or `stop()`ped.
 pub struct SegmentRecorder {
     stop: Option<tokio::sync::oneshot::Sender<()>>,
+    /// Segments stored by this recorder (045 TK-004: resets the backoff).
+    stored: Arc<std::sync::atomic::AtomicU64>,
     task: Option<tokio::task::JoinHandle<Result<(), SegmentError>>>,
 }
 
@@ -327,6 +357,8 @@ impl SegmentRecorder {
         clock: Arc<dyn Fn() -> i64 + Send + Sync>,
     ) -> Self {
         let (tx, mut rx) = tokio::sync::oneshot::channel::<()>();
+        let stored = Arc::new(std::sync::atomic::AtomicU64::new(0));
+        let stored_in_task = stored.clone();
         let task = tokio::spawn(async move {
             let mut ticker = tokio::time::interval(cfg.interval);
             let mut seg_start: Option<i64> = None;
@@ -334,6 +366,7 @@ impl SegmentRecorder {
                 tracing::warn!("orphan sweep: {e}");
             }
             let mut last_sweep = clock();
+            let mut failures = 0u32;
             let store_seg = |bytes: Vec<u8>, start: i64, end: i64| -> Result<(), SegmentError> {
                 segments.write(
                     SegmentMeta {
@@ -348,6 +381,7 @@ impl SegmentRecorder {
                     },
                     &bytes,
                 )?;
+                stored_in_task.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
                 let retention = cfg.retention.lock().unwrap().clone();
                 segments.apply_retention(&retention, end)?;
                 Ok(())
@@ -387,9 +421,21 @@ impl SegmentRecorder {
                 match decision {
                     Decision::Deny { .. } | Decision::Ask => {
                         // Pause / off / excluded full screen: close the open segment.
-                        if let (Some(bytes), Some(start)) = (encoder.flush()?, seg_start.take()) {
-                            store_seg(bytes, start, now)?;
-                        }
+                        let closed = match encoder.flush() {
+                            Ok(Some(bytes)) => match seg_start.take() {
+                                Some(start) => store_seg(bytes, start, now).map(|_| true),
+                                None => Ok(false),
+                            },
+                            Ok(None) => {
+                                seg_start = None;
+                                Ok(false)
+                            }
+                            Err(e) => {
+                                seg_start = None;
+                                Err(e)
+                            }
+                        };
+                        track(closed, &mut failures)?;
                         continue;
                     }
                     Decision::Allow | Decision::AllowRedacted { .. } => {}
@@ -405,20 +451,47 @@ impl SegmentRecorder {
                     redact(&mut frame, rects);
                 }
                 seg_start.get_or_insert(now);
-                if let Some(bytes) = encoder.push(&frame)? {
-                    let start = seg_start.take().unwrap_or(now);
-                    store_seg(bytes, start, now + cfg.interval.as_millis() as i64)?;
-                }
+                let closed = match encoder.push(&frame) {
+                    Ok(Some(bytes)) => {
+                        let start = seg_start.take().unwrap_or(now);
+                        store_seg(bytes, start, now + cfg.interval.as_millis() as i64).map(|_| true)
+                    }
+                    Ok(None) => Ok(false),
+                    Err(e) => {
+                        seg_start = None;
+                        Err(e)
+                    }
+                };
+                track(closed, &mut failures)?;
             }
-            if let (Some(bytes), Some(start)) = (encoder.flush()?, seg_start) {
-                store_seg(bytes, start, clock())?;
+            match encoder.flush() {
+                Ok(Some(bytes)) => {
+                    if let Some(start) = seg_start
+                        && let Err(e) = store_seg(bytes, start, clock())
+                    {
+                        tracing::warn!("screen segment on stop: {e}");
+                    }
+                }
+                Ok(None) => {}
+                Err(e) => tracing::warn!("screen segment on stop: {e}"),
             }
             Ok(())
         });
         Self {
             stop: Some(tx),
+            stored,
             task: Some(task),
         }
+    }
+
+    /// Segments stored so far.
+    pub fn stored(&self) -> u64 {
+        self.stored.load(std::sync::atomic::Ordering::SeqCst)
+    }
+
+    /// Whether the recording task has ended (stopped or failed).
+    pub fn is_finished(&self) -> bool {
+        self.task.as_ref().is_none_or(|t| t.is_finished())
     }
 
     pub async fn stop(mut self) -> Result<(), SegmentError> {

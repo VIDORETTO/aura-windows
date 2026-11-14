@@ -142,7 +142,7 @@ mod tests {
         }
     }
 
-    // 041 AC-001: the Continuous mode follows the age and size limits.
+    // 045 AC-001: the Continuous mode follows the age and size limits.
     #[test]
     fn continuous_segments_follow_age_and_size_limits() {
         let policy = RetentionPolicy::default();
@@ -171,7 +171,7 @@ mod tests {
         );
     }
 
-    // 041 AC-002: manual recordings (production rows have manual = 1) stay out
+    // 045 AC-002: manual recordings (production rows have manual = 1) stay out
     // of the limits unless the policy says so; they do not use the budget.
     #[test]
     fn manual_recordings_stay_outside_the_continuous_budget() {
@@ -195,7 +195,7 @@ mod tests {
         );
     }
 
-    // 041 AC-003: one global budget over every source, oldest start first.
+    // 045 AC-003: one global budget over every source, oldest start first.
     #[test]
     fn continuous_budget_is_shared_by_all_sources() {
         let policy = RetentionPolicy::default();

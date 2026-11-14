@@ -1,0 +1,35 @@
+{
+  "acceptance_refs": [
+    "AC-005",
+    "AC-006"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-045/app.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-016",
+  "input_fingerprints": {
+    "crates/aura-app/src/host.rs": "d55694de4d8df30308aa3063fbced7faad992315fb859241dcfcadee8fbc7110",
+    "crates/aura-app/src/recorder.rs": "dda082ff6b79334cd3fafede00ca8d31f1613c1dd9a63b9ee5027720106da51c",
+    "crates/aura-app/tests/host.rs": "5b06959489db627b7fd3e495906c82501c4df84662e05713232ba14ee29b7e9c",
+    "crates/aura-capture/src/segments.rs": "081f42b8d79eb8f15dd72cef9b478ad677241562c646981639ba7a40945f9961",
+    "specs/045-higiene-da-captura/plan.md": "b3c338e5a8ce9295d19070d7ec9affb5c4f71157d395ced588fe88dc0663b859",
+    "specs/045-higiene-da-captura/spec.md": "efba46c05db2818f583960dbb7245f384de013314342b8f8e2530245eef7ee4f"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/segments.rs",
+    "crates/aura-app/src/recorder.rs",
+    "crates/aura-app/src/host.rs",
+    "crates/aura-app/tests/host.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.",
+  "observations": "Falha tolerada, 5 seguidas encerram, active() honesto, supervise com recuo; clippy e fmt limpos.",
+  "procedure": "cargo test -p aura-capture; cargo test -p aura-app; cargo clippy -p aura-capture -p aura-audio -p aura-app --all-targets -- -D warnings; cargo fmt --all -- --check",
+  "result": "passed",
+  "tested_revision": "local:749dbea736ced5168bbf4a8d31c2ec28c920a59f2affab7c45eb2e5279cbc645",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T00:32:27+00:00"
+}

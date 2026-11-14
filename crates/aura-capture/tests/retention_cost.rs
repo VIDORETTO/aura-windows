@@ -1,4 +1,4 @@
-//! 041 TK-003 / SC-002: cost of the retention after one segment (A-04).
+//! 045 TK-003 / SC-002: cost of the retention after one segment (A-04).
 //! Run with `cargo test -p aura-capture --release --test retention_cost -- --ignored --nocapture`.
 
 use aura_capture::retention::{RetentionPolicy, SegmentMeta};
@@ -29,7 +29,7 @@ fn meta(id: &str, start: i64, end: i64) -> SegmentMeta {
     }
 }
 
-// 041 SC-002: cost of the retention after one segment with 60 000 Continuous
+// 045 SC-002: cost of the retention after one segment with 60 000 Continuous
 // segments on disk. Run with `--ignored --nocapture` before and after.
 #[test]
 #[ignore]

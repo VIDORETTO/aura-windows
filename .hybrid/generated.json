@@ -1,5 +1,5 @@
 {
-  "docs/project/backlog.md": "c2dc52af409a01c24cb7384b89f735e175056a2e26b8351b1d7c59e7db5592d5",
+  "docs/project/backlog.md": "e1f4820086f0308be5b2e32f4244b832fcc7233d8f5e88fb47fc88e883ad85c1",
   "specs/001-fundacao-overlay/todo.md": "28a72b8db42b5b03fae11ed21d68375b31a325c76680873726b86e437846bbb9",
   "specs/001-fundacao-overlay/verification.md": "b2e053cd286e274d71b8afc71159a06a48dd18ba537d92c67b8b6c98d09fc4ac",
   "specs/002-conversa-agente-codex/todo.md": "e699cf93739601f89b5b521980983aa2d1861d754b6da66bd06ad8687ee3e244",
@@ -54,9 +54,11 @@
   "specs/039-web-gratuita-do-agente/verification.md": "9c465bf137a703fcd355af18917dc53a5e2a43108e0437ae4a08627591afea58",
   "specs/040-overlay-estavel-no-monitor/todo.md": "222d00faf0daa32645f167b56572701373ea8e63e50ebc3d28dae44e25088ded",
   "specs/040-overlay-estavel-no-monitor/verification.md": "84c0c75b53ccdfb68f7dd2d70d620ea3756342a61f75472f955ead2a025d3b51",
-  "specs/041-higiene-da-captura/verification.md": "0e93a6e350df18ffc1740a2500b37301d8feef2f4377e7d9014bcc7dc1d534e2",
   "specs/041-publicacao-github-030/verification.md": "0e7c4dfc09e4a265cbe8f3ee6ddec365d61b8be066bd64db275f1644ca4a057e",
   "specs/042-continuidade-e-ruido/verification.md": "6d20a9c165769f8ffa50facb2f0c58bfd12b12b9eb94cfeaeb03aa23913c957a",
   "specs/043-acento-vermelho/verification.md": "d340e74597b3e170e0b659d02495218368df15dd0921bf7b85736797e283a594",
-  "specs/044-landing-page/verification.md": "bb056aaef50c0f84e5d29a9da2a2bfa3871805f8351ad81bfe313bf270d2011a"
+  "specs/044-landing-page/verification.md": "bb056aaef50c0f84e5d29a9da2a2bfa3871805f8351ad81bfe313bf270d2011a",
+  "specs/045-higiene-da-captura/todo.md": "c67624162c2c7923f5b187e6156de74e1109d1ce833549759b0e701dbd31a920",
+  "specs/045-higiene-da-captura/verification.md": "182e0be94532a62d4b637f7390f891e4312ec22a77e8a30010ffd25f940a8113",
+  "specs/046-spikes-segundo-cerebro/todo.md": "9024aba211eac74281e93005ffa5506de58d95d1814aa57d609550d793235d6e"
 }

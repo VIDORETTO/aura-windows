@@ -2,10 +2,10 @@
 schema: hybrid/ticket
 schema_version: 1.0
 id: TK-003
-effort: 041-higiene-da-captura
+effort: 045-higiene-da-captura
 type: delivery
 status: done
-ticket_revision: 6
+ticket_revision: 10
 requires: ["TK-002"]
 requirement_refs: ["FR-004"]
 acceptance_refs: ["AC-007", "AC-008", "AC-009"]
@@ -13,7 +13,12 @@ spec_revision: 1
 plan_revision: 1
 owned_areas: ["crates/aura-capture/src/segments.rs", "crates/aura-capture/tests/pipeline.rs", "crates/aura-capture/tests/retention_store.rs", "crates/aura-capture/tests/retention_cost.rs", "crates/aura-audio/src/recorder.rs"]
 verification_status: passed
+last_update: Evidence invalidated after an input changed.
 ---
+
+
+
+
 
 
 

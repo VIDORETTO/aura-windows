@@ -39,6 +39,12 @@ fn now_ms() -> i64 {
         .unwrap_or(0)
 }
 
+/// Wait before the next restart of a dead screen recorder: 15 s doubling up to
+/// 15 min (045 AC-006).
+pub fn next_backoff(attempt: u32) -> Duration {
+    Duration::from_secs((15u64 << attempt.min(6)).min(900))
+}
+
 fn background_kind(mode: CaptureMode) -> Option<&'static str> {
     match mode {
         CaptureMode::RecentBuffer { .. } => Some("buffer"),
@@ -91,6 +97,10 @@ pub struct CaptureService {
     screen: tokio::sync::Mutex<Option<ScreenRun>>,
     audio: tokio::sync::Mutex<HashMap<AudioSourceKind, AudioRun>>,
     manual: Mutex<Option<String>>,
+    /// Screen restart backoff: (attempt, not before ms) (045 TK-004).
+    restart: Mutex<(u32, i64)>,
+    /// Active sources last reported to the UI.
+    reported: Mutex<Option<Vec<String>>>,
     /// A Meeting is in progress (023): mic and system audio are recorded even
     /// when their mode is off, until it ends.
     meeting: AtomicBool,
@@ -126,6 +136,8 @@ impl CaptureService {
             screen: tokio::sync::Mutex::new(None),
             audio: tokio::sync::Mutex::new(HashMap::new()),
             manual: Mutex::new(None),
+            restart: Mutex::new((0, 0)),
+            reported: Mutex::new(None),
             meeting: AtomicBool::new(false),
             devices: Mutex::new((None, None)),
             interval,
@@ -143,10 +155,62 @@ impl CaptureService {
         self.retention.lock().unwrap().clone()
     }
 
+    /// Restarts a dead screen recorder with exponential backoff and returns
+    /// the active sources when they changed since the last report (045 TK-004).
+    pub async fn supervise(&self, now_ms: i64) -> Option<Vec<String>> {
+        // What the UI saw last; `apply` below would overwrite it.
+        let before = self.reported.lock().unwrap().clone();
+        let policy = self.policy.lock().unwrap().clone();
+        let wants_screen = !policy.paused
+            && (background_kind(policy.screen.mode).is_some()
+                || (policy.screen.mode == CaptureMode::Manual
+                    && self.manual.lock().unwrap().is_some()));
+        let (dead, healthy) = {
+            let screen = self.screen.lock().await;
+            match &*screen {
+                Some(run) if run.recorder.is_finished() => (true, false),
+                Some(run) => (false, run.recorder.stored() > 0),
+                None => (wants_screen, false),
+            }
+        };
+        if healthy {
+            *self.restart.lock().unwrap() = (0, 0);
+        }
+        if dead && wants_screen {
+            let due = {
+                let mut st = self.restart.lock().unwrap();
+                if now_ms >= st.1 {
+                    st.1 = now_ms + next_backoff(st.0).as_millis() as i64;
+                    st.0 += 1;
+                    true
+                } else {
+                    false
+                }
+            };
+            if due {
+                if let Some(run) = self.screen.lock().await.take()
+                    && let Err(e) = run.recorder.stop().await
+                {
+                    tracing::warn!("screen recorder ended: {e}");
+                }
+                self.apply(&policy).await;
+            }
+        }
+        let now = self.active().await;
+        *self.reported.lock().unwrap() = Some(now.clone());
+        (before.as_ref() != Some(&now)).then_some(now)
+    }
+
     /// Sources currently recording (`screen`, `mic`, `system`).
     pub async fn active(&self) -> Vec<String> {
         let mut v = Vec::new();
-        if self.screen.lock().await.is_some() {
+        if self
+            .screen
+            .lock()
+            .await
+            .as_ref()
+            .is_some_and(|run| !run.recorder.is_finished())
+        {
             v.push("screen".to_string());
         }
         for k in self.audio.lock().await.keys() {
@@ -255,7 +319,9 @@ impl CaptureService {
                 }
             }
         }
-        self.active().await
+        let active = self.active().await;
+        *self.reported.lock().unwrap() = Some(active.clone());
+        active
     }
 
     /// System audio during a Meeting with no device chosen: every output.

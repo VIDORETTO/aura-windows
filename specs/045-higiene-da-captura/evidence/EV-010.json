@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-005"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-red.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-010",
+  "input_fingerprints": {
+    "crates/aura-capture/tests/pipeline.rs": "a6ee47764fb6ba43cff358a1dc241a8d6c331ecaffb627dd517a13a57dd6dfef",
+    "specs/045-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/045-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-capture/tests/pipeline.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Evidence invalidated because an input changed.",
+  "observations": "Red comportamental: a tarefa do gravador encerrou no 1º erro de selagem (is_finished verdadeiro).",
+  "procedure": "Antes da correção (só is_finished adicionado): cargo test -p aura-capture --test pipeline one_failed",
+  "result": "stale",
+  "tested_revision": "local:c96c0a620cd9e61e13d8273aff6ce3003faa37f8c4d0804fb55984dba7bc0311",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T00:30:15+00:00"
+}

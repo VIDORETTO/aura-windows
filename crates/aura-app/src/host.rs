@@ -1248,6 +1248,7 @@ impl Host {
                 let Some(h) = weak_host.upgrade() else { break };
                 h.tick_reminders();
                 h.meeting_poll().await;
+                h.supervise_capture().await;
             }
         });
         Ok(host)
@@ -1657,6 +1658,17 @@ impl Host {
             paused: p.paused,
             exclusions: p.exclusions,
             retention: p.retention,
+        }
+    }
+
+    /// Restarts a dead screen recorder and tells the UI when the sources that
+    /// are really recording changed (045 TK-004).
+    pub async fn supervise_capture(&self) {
+        if let Some(recording) = self.capture.supervise(now_ms()).await {
+            let p = self.policy.read().unwrap().clone();
+            let mut state = Self::privacy_state(&p);
+            state.recording = recording;
+            let _ = self.events.send(HostEvent::Privacy(state));
         }
     }
 

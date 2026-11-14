@@ -1,4 +1,4 @@
-//! 041 TK-003: retention applied by the segment store (A-04).
+//! 045 TK-003: retention applied by the segment store (A-04).
 
 use aura_capture::retention::{RetentionPolicy, SegmentMeta, plan};
 use aura_capture::segments::{SegmentError, SegmentStore};
@@ -59,7 +59,7 @@ impl Lcg {
 const MIN: i64 = 60_000;
 const DAY: i64 = 24 * 60 * MIN;
 
-// 041 AC-007: the store deletes exactly what `plan` says, for any set.
+// 045 AC-007: the store deletes exactly what `plan` says, for any set.
 #[test]
 fn store_retention_matches_the_pure_plan() {
     for seed in [1u64, 7, 42] {
@@ -136,7 +136,7 @@ fn store_retention_matches_the_pure_plan() {
     }
 }
 
-// 041 AC-008: orphans are left to the sweep; the sweep removes all kinds.
+// 045 AC-008: orphans are left to the sweep; the sweep removes all kinds.
 #[test]
 fn orphans_wait_for_the_sweep() {
     let dir = tempfile::tempdir().unwrap();
@@ -166,7 +166,7 @@ fn orphans_wait_for_the_sweep() {
     assert_eq!(ids, vec!["kept"]);
 }
 
-// 041 AC-009: range keeps its result.
+// 045 AC-009: range keeps its result.
 #[test]
 fn range_returns_overlapping_segments() {
     let dir = tempfile::tempdir().unwrap();

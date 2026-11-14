@@ -1,4 +1,4 @@
-# Review — 041-higiene-da-captura
+# Review — 045-higiene-da-captura
 
 Baseline fixa: `c4b34f24a4bd4748eabbfb14a48160f834046717`. Revisão local feita pelo agente implementador, ticket a ticket; não se atribui aprovação a outro revisor. Escopo de cada rodada: `git rev-parse HEAD`, `git diff <baseline>...HEAD -- <áreas do ticket>`, `git diff --cached`, `git diff` e `git status --short`.
 
@@ -61,3 +61,26 @@ Diff revisado: `crates/aura-capture/src/segments.rs`, `crates/aura-audio/src/rec
 - A agregação ainda é O(n) sobre o conjunto sujeito a limite, mas sem E/S de arquivos: aceitável para o volume de 7 dias.
 
 Disposição: TK-003 liberado para `verified` e `done`.
+
+## TK-004 — Gravador de tela supervisionado (A-02)
+
+Diff revisado: `crates/aura-capture/src/segments.rs` (laço, `is_finished`, `stored`, `track`), `crates/aura-app/src/recorder.rs` (`active`, `supervise`, `next_backoff`, estado `restart`/`reported`), `crates/aura-app/src/host.rs` (laço de 15 s, `supervise_capture`) e testes em `pipeline.rs` e `host.rs`.
+
+### Standards
+
+- Sem IPC novo: o evento `HostEvent::Privacy` existente leva a lista nova. Sem esquema nem dependência novos; nada de API do Windows fora do lugar.
+- O `Mutex` do tokio é mantido durante o `stop().await` do gravador morto, como o `apply` já fazia; o `std::Mutex` do recuo nunca atravessa um `await`.
+- Erros de Segmento passam a `warn`, com o contador no texto; o erro final encerra a tarefa e aparece no `stop()`.
+- `clippy -D warnings` e `rustfmt` limpos. Nenhum achado bloqueante.
+
+### Spec
+
+- **FR-003 / AC-005:** red real (EV: tarefa encerrada no 1º erro); green (uma falha tolerada, Segmentos seguintes gravados).
+- **AC-006:**
+  - 5 falhas seguidas encerram o gravador, verificado no `aura-capture`;
+  - no `aura-app`, red real (`active()` mentia) e green: gravador morto não é informado; a supervisão reinicia na hora, respeita os 15 s de recuo e informa só mudanças reais;
+  - `next_backoff` bate os literais 15…900 s.
+- O reinício é coberto com o host real e um codec que sempre falha; nenhum módulo interno foi substituído.
+- Limite declarado: a suíte do workspace pulou 2 testes de Media Foundation do `aura-win` que travam neste PC. O `aura-win` não mudou.
+
+Disposição: TK-004 liberado para `verified` e `done`. Com isso, o esforço 045 entrega A-01 a A-04. Pendências do CAND-083: A-06 (Transcrição guardada), A-07 (gravador preso a um monitor) e mover a captura de tela para uma thread própria.

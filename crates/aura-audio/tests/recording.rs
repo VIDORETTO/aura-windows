@@ -52,7 +52,7 @@ fn tone_round_trips_through_sealed_segments_and_retention_applies() {
     assert!(tone_power(&audio, 16_000, 1000.0) > 20.0 * tone_power(&audio, 16_000, 2500.0));
 }
 
-// 041 AC-004: a live change of the recent buffer reaches the audio writer and
+// 045 AC-004: a live change of the recent buffer reaches the audio writer and
 // the old value no longer deletes screen segments.
 #[test]
 fn live_retention_change_reaches_audio() {

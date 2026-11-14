@@ -10,18 +10,18 @@
   "id": "EV-004",
   "input_fingerprints": {
     "crates/aura-audio/tests/recording.rs": "35f86ecd8dcf28f995982263c1842e83ab54ab9d9c7a764bb3db78835f8e8ec9",
-    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
-    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+    "specs/045-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/045-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
   },
   "input_paths": [
     "crates/aura-audio/tests/recording.rs",
-    "specs/041-higiene-da-captura/spec.md",
-    "specs/041-higiene-da-captura/plan.md"
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "Red comportamental: com a política viva em 30 min, a cópia de 5 min apagou 14 Segmentos de tela (left 6, right 20).",
   "procedure": "Assinatura nova com o comportamento antigo (política clonada no new): cargo test -p aura-audio --test recording",
-  "result": "failed",
+  "result": "stale",
   "tested_revision": "local:cd4d45829c03eaeb509c16883896daab0d0cb0ac34430e93263d416c47640f64",
   "ticket": "TK-002",
   "timestamp": "2026-11-13T23:59:00+00:00"

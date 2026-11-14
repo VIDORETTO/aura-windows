@@ -14,20 +14,20 @@
     "crates/aura-audio/src/recorder.rs": "eed1b0a299339786471d9240399caf16b4167a5033456a6b1658f4137200902e",
     "crates/aura-capture/src/segments.rs": "344989094abdb389e9a26cfae5ab4bdfbce21659bf8ab4912e26602b7107ab85",
     "crates/aura-capture/tests/retention_store.rs": "15510b53e19cd3ddfedbd09a499ca088c7688c49a32c049ccd5d9b28bc643c5e",
-    "specs/041-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
-    "specs/041-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+    "specs/045-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/045-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
   },
   "input_paths": [
     "crates/aura-capture/src/segments.rs",
     "crates/aura-capture/tests/retention_store.rs",
     "crates/aura-audio/src/recorder.rs",
-    "specs/041-higiene-da-captura/spec.md",
-    "specs/041-higiene-da-captura/plan.md"
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
   ],
-  "limitations": "",
+  "limitations": "Evidence invalidated because an input changed.",
   "observations": "Equivalência com plan em 3 sementes x 4 políticas x 2.000 Segmentos; órfãos só na varredura; range com literais 20/30/40/50 s; regressões de pipeline e áudio verdes; clippy limpo.",
   "procedure": "cargo test -p aura-capture; cargo test -p aura-audio; cargo clippy -p aura-capture -p aura-audio --all-targets -- -D warnings",
-  "result": "passed",
+  "result": "stale",
   "tested_revision": "local:3f3d042e604e258004499fd7811c6ac99f4ea22d8f97ae3c1a6fa4eba9130863",
   "ticket": "TK-003",
   "timestamp": "2026-11-14T00:04:49+00:00"

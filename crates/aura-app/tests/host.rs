@@ -3651,3 +3651,83 @@ async fn scheduled_instructions_open_a_chat_when_due() {
     }
     assert!(!saw_task, "the daily one is not due again yet");
 }
+
+/// Codec whose encoder always fails: the screen recorder dies (045 AC-006).
+struct BrokenCodec;
+impl aura_capture::encoder::VideoCodec for BrokenCodec {
+    fn encoder(&self) -> Result<Box<dyn aura_capture::encoder::VideoEncoder>, String> {
+        Ok(Box::new(BrokenEncoder))
+    }
+    fn keyframes(
+        &self,
+        _segment: &[u8],
+        _max: usize,
+    ) -> Result<Vec<(i64, aura_capture::frame::Frame)>, String> {
+        Ok(vec![])
+    }
+}
+struct BrokenEncoder;
+impl aura_capture::encoder::VideoEncoder for BrokenEncoder {
+    fn push(
+        &mut self,
+        _frame: &aura_capture::frame::Frame,
+    ) -> Result<Option<Vec<u8>>, aura_capture::encoder::SegmentError> {
+        Err(aura_capture::encoder::SegmentError::Encoder(
+            "injected".into(),
+        ))
+    }
+    fn flush(&mut self) -> Result<Option<Vec<u8>>, aura_capture::encoder::SegmentError> {
+        Ok(None)
+    }
+    fn format(&self) -> &'static str {
+        "json"
+    }
+}
+
+// 045 AC-006: a dead screen recorder is not reported as active and the
+// supervision restarts it with backoff, reporting only real changes.
+#[tokio::test]
+async fn dead_screen_recorder_is_reported_and_restarted_with_backoff() {
+    let dir = tempfile::tempdir().unwrap();
+    let (mut platform, _fg) = Platform::fake();
+    platform.codec = Arc::new(BrokenCodec);
+    let mut cfg = HostConfig::demo(AppPaths::new(dir.path().join("Aura")), platform);
+    cfg.in_memory_store = true;
+    cfg.capture_interval = Duration::from_millis(20);
+    let host = Host::start(cfg).await.unwrap();
+    host.set_source_policy(
+        Source::Screen,
+        CaptureMode::Continuous,
+        AgentPermission::Always,
+    )
+    .unwrap();
+    let capture = host.capture();
+    let screen = || "screen".to_string();
+    // Five failed segments (one per frame) end the recorder.
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    assert!(
+        !capture.active().await.contains(&screen()),
+        "dead recorder not reported"
+    );
+
+    let t0 = 1_000_000;
+    // First supervision restarts at once; the restarted one is alive.
+    capture.supervise(t0).await;
+    assert!(capture.active().await.contains(&screen()), "restarted");
+    tokio::time::sleep(Duration::from_millis(500)).await;
+    // Within the 15 s backoff: no restart, the change is reported.
+    assert_eq!(capture.supervise(t0 + 5_000).await, Some(vec![]));
+    assert!(!capture.active().await.contains(&screen()));
+    // After the backoff: restarted and reported again.
+    assert_eq!(capture.supervise(t0 + 20_000).await, Some(vec![screen()]));
+    host.shutdown().await;
+}
+
+// 045 AC-006: restart backoff literals from the spec.
+#[test]
+fn screen_restart_backoff_doubles_up_to_fifteen_minutes() {
+    let secs: Vec<u64> = (0..8)
+        .map(|n| aura_app::recorder::next_backoff(n).as_secs())
+        .collect();
+    assert_eq!(secs, vec![15, 30, 60, 120, 240, 480, 900, 900]);
+}

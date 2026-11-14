@@ -1,0 +1,28 @@
+{
+  "acceptance_refs": [
+    "AC-006"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-app-red.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-011",
+  "input_fingerprints": {
+    "crates/aura-app/tests/host.rs": "d17657872be74e6e6ba54bb58041d7186eb11b3cfb34928d7389627070e1d565",
+    "specs/045-higiene-da-captura/plan.md": "4a8069b13a71052c51f154ec2a12ee34cf6c9cef2f6921d16631445bc9c5c63c",
+    "specs/045-higiene-da-captura/spec.md": "32b01c48eb865aded651905996b65db7667c661c53624f1a8bde68f7934f2e60"
+  },
+  "input_paths": [
+    "crates/aura-app/tests/host.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Evidence invalidated because an input changed.",
+  "observations": "Red comportamental: active() continuou informando screen com o gravador morto.",
+  "procedure": "Antes da correção (supervise sem comportamento): cargo test -p aura-app --test host dead_screen",
+  "result": "stale",
+  "tested_revision": "local:4b2f4b6ea26df083d2ce9dc75f62929304906948c3701f94d421684b48598039",
+  "ticket": "TK-004",
+  "timestamp": "2026-11-14T00:30:15+00:00"
+}

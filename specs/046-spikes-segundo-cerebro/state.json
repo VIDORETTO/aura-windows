@@ -1,0 +1,31 @@
+{
+  "active_ticket": "TK-001",
+  "authorization_refs": [],
+  "baseline": {
+    "kind": "git",
+    "ref": "abce731df8816bb335b86edec9860fb273edb253"
+  },
+  "blockers": [],
+  "effort_id": "046-spikes-segundo-cerebro",
+  "inputs": {
+    "contract": {
+      "fingerprint": "cac33575fda50df31aa1c565091efbfa33e94c260ae92841d8031849c6b21d11",
+      "path": "specs/046-spikes-segundo-cerebro/spec.md",
+      "revision": 1
+    },
+    "plan": {
+      "fingerprint": "96071799e3466c41bb2c7e0d972d6fa9a83d2b2d987192c4f1e42bc8580f50bb",
+      "path": "specs/046-spikes-segundo-cerebro/plan.md",
+      "revision": 1
+    }
+  },
+  "last_evidence": null,
+  "mode": "standard",
+  "next_action": "TK-001: corpus pelo subagente A, perguntas pelo subagente B",
+  "pending_questions": [],
+  "phase": "implementation",
+  "revision": 2,
+  "schema_version": "1.0",
+  "status": "active",
+  "updated_at": "2026-11-14T00:31:32+00:00"
+}

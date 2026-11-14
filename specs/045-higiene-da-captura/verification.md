@@ -28,7 +28,7 @@
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk001-green.log`
 - Limitations: Evidence invalidated because an input changed.
 
-## EV-003 — passed
+## EV-003 — stale
 
 - Ticket: `TK-001`
 - Acceptance: `AC-001`, `AC-002`, `AC-003`
@@ -39,9 +39,9 @@
 - Timestamp: `2026-11-13T23:57:02+00:00`
 - Observations: 11 testes de unidade e 4 de integração passaram, incluindo os 3 novos de 041.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk001-green2.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-004 — failed
+## EV-004 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-004`
@@ -52,9 +52,9 @@
 - Timestamp: `2026-11-13T23:59:00+00:00`
 - Observations: Red comportamental: com a política viva em 30 min, a cópia de 5 min apagou 14 Segmentos de tela (left 6, right 20).
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk002-red.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-005 — passed
+## EV-005 — stale
 
 - Ticket: `TK-002`
 - Acceptance: `AC-004`
@@ -65,9 +65,9 @@
 - Timestamp: `2026-11-13T23:59:00+00:00`
 - Observations: aura-audio 11 + 2 (live_retention_change_reaches_audio verde: 20 telas mantidas com 30 min; com 5 min sobram as que terminam em 16 a 20 min). aura-app: todas as suítes passaram.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk002-green.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-006 — failed
+## EV-006 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-008`
@@ -78,9 +78,9 @@
 - Timestamp: `2026-11-14T00:04:49+00:00`
 - Observations: Red comportamental: apply_retention devolveu 3 (removeu .seg órfão, .seg.tmp e linha sem arquivo) em vez de 0.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-red.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-007 — passed
+## EV-007 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-007`, `AC-008`, `AC-009`
@@ -91,9 +91,9 @@
 - Timestamp: `2026-11-14T00:04:49+00:00`
 - Observations: Equivalência com plan em 3 sementes x 4 políticas x 2.000 Segmentos; órfãos só na varredura; range com literais 20/30/40/50 s; regressões de pipeline e áudio verdes; clippy limpo.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-green.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-008 — passed
+## EV-008 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-007`
@@ -104,9 +104,9 @@
 - Timestamp: `2026-11-14T00:04:49+00:00`
 - Observations: SC-002: 60.000 Segmentos continuous em disco (SQLite em arquivo). Retenção após um Segmento: antes p50 1.034,5 ms (1.026-1.268); depois p50 15,5 ms (14,2-16,2); 7 execuções cada.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-antes.log`, `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-cost-depois.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
 
-## EV-009 — passed
+## EV-009 — stale
 
 - Ticket: `TK-003`
 - Acceptance: `AC-007`, `AC-008`, `AC-009`
@@ -117,4 +117,95 @@
 - Timestamp: `2026-11-14T00:05:44+00:00`
 - Observations: Gravador varre órfãos ao iniciar, não varre antes de 1 h e varre depois de 1 h (relógio injetado); equivalência, órfãos e range verdes; clippy limpo.
 - Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk003-green3.log`
-- Limitations: none recorded
+- Limitations: Evidence invalidated because an input changed.
+
+## EV-010 — stale
+
+- Ticket: `TK-004`
+- Acceptance: `AC-005`
+- Procedure: `Antes da correção (só is_finished adicionado): cargo test -p aura-capture --test pipeline one_failed`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:c96c0a620cd9e61e13d8273aff6ce3003faa37f8c4d0804fb55984dba7bc0311`
+- Timestamp: `2026-11-14T00:30:15+00:00`
+- Observations: Red comportamental: a tarefa do gravador encerrou no 1º erro de selagem (is_finished verdadeiro).
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-red.log`
+- Limitations: Evidence invalidated because an input changed.
+
+## EV-011 — stale
+
+- Ticket: `TK-004`
+- Acceptance: `AC-006`
+- Procedure: `Antes da correção (supervise sem comportamento): cargo test -p aura-app --test host dead_screen`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:4b2f4b6ea26df083d2ce9dc75f62929304906948c3701f94d421684b48598039`
+- Timestamp: `2026-11-14T00:30:15+00:00`
+- Observations: Red comportamental: active() continuou informando screen com o gravador morto.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-app-red.log`
+- Limitations: Evidence invalidated because an input changed.
+
+## EV-012 — stale
+
+- Ticket: `TK-004`
+- Acceptance: `AC-005`, `AC-006`
+- Procedure: `cargo test -p aura-capture --test pipeline; cargo test -p aura-app --test host dead_screen screen_restart; cargo clippy -p aura-capture -p aura-audio -p aura-app --all-targets -- -D warnings; cargo fmt --all -- --check`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:23e87c65b3ba1ecd59fa27956322b51de095d811fb2c752c2bac459f8f1de596`
+- Timestamp: `2026-11-14T00:30:15+00:00`
+- Observations: 1 falha tolerada e gravação segue; 5 falhas seguidas encerram; active() honesto; supervise reinicia já, respeita o recuo de 15 s e informa só mudanças; recuo 15..900 s; clippy e fmt limpos.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-041/tk004-green-capture.log`
+- Limitations: Evidence invalidated because an input changed.
+
+## EV-013 — passed
+
+- Ticket: `TK-001`
+- Acceptance: `AC-001`, `AC-002`, `AC-003`
+- Procedure: `cargo test -p aura-capture`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:4b720715ab00bd24cd8969d0d54b30bbafa4e5b4837f8dbca42715b68f617daf`
+- Timestamp: `2026-11-14T00:32:26+00:00`
+- Observations: 21 testes do aura-capture passaram, inclusive os 3 de retenção do Contínuo.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-045/capture.log`
+- Limitations: Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.
+
+## EV-014 — passed
+
+- Ticket: `TK-002`
+- Acceptance: `AC-004`
+- Procedure: `cargo test -p aura-audio; cargo test -p aura-app`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:28a8ffbbcc8290ba7dc91ea1e299506eafe40085d76b1c1772f70d00f8f9766c`
+- Timestamp: `2026-11-14T00:32:27+00:00`
+- Observations: 13 testes do aura-audio (live_retention_change_reaches_audio) e 149 do aura-app passaram.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-045/audio.log`
+- Limitations: Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.
+
+## EV-015 — passed
+
+- Ticket: `TK-003`
+- Acceptance: `AC-007`, `AC-008`, `AC-009`
+- Procedure: `cargo test -p aura-capture; cargo test -p aura-audio`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:9365c8614660c1f69fe3e0274ecf49fe92e5e4dc7ff6500ded8c7e776b2d1e76`
+- Timestamp: `2026-11-14T00:32:27+00:00`
+- Observations: Equivalência com plan, órfãos só na varredura (cadência de 1 h), range e varredura do áudio verdes.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-045/capture.log`
+- Limitations: Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.
+
+## EV-016 — passed
+
+- Ticket: `TK-004`
+- Acceptance: `AC-005`, `AC-006`
+- Procedure: `cargo test -p aura-capture; cargo test -p aura-app; cargo clippy -p aura-capture -p aura-audio -p aura-app --all-targets -- -D warnings; cargo fmt --all -- --check`
+- Execution: `executed`
+- Environment: Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D
+- Tested revision: `local:749dbea736ced5168bbf4a8d31c2ec28c920a59f2affab7c45eb2e5279cbc645`
+- Timestamp: `2026-11-14T00:32:27+00:00`
+- Observations: Falha tolerada, 5 seguidas encerram, active() honesto, supervise com recuo; clippy e fmt limpos.
+- Evidence refs: `C:/Users/gabri/AppData/Local/Temp/aura-045/app.log`
+- Limitations: Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.

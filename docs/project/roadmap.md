@@ -98,9 +98,9 @@ Roadmap candidates are strategic outcomes, not executable tasks. Promote a candi
 | CAND-080 | Recuperação de imagens: imagem do Momento entregue ao modelo e busca por aparência opcional | CAND-075 | P2 | candidate | — |
 | CAND-081 | Memória proativa: resumo antes da reunião, "Onde eu parei?" sobre o Acervo, lembrar o relacionado à tela | CAND-077, CAND-041 | P2 | candidate | — |
 | CAND-082 | Bases externas pré-configuradas por MCP (RAGFlow, Khoj, AnythingLLM, Notion) | CAND-031 | P3 | candidate | — |
-| CAND-083 | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | CAND-004, CAND-005 | P0 | candidate | — |
+| CAND-083 | Higiene da captura: retenção do modo Contínuo, gravador supervisionado, retenção por consulta, Transcrição guardada (auditoria 2026-11-12, A-01…A-07) | CAND-004, CAND-005 | P0 | promoted | 045-higiene-da-captura (A-01…A-04; A-06, A-07 pendentes) |
 | CAND-084 | Regularizar a evidência dos esforços 012–035 entregues sem registro (auditoria 2026-11-12, A-11): rodar os aceites de cada um no Windows e registrar com `evidence add`, sem evidência retroativa | — | P2 | candidate | — |
-| CAND-085 | Spikes do Segundo Cérebro (S1–S4 do plano): modelo de embeddings, armazenamento vetorial cifrado, custo da captura por evento, imagem e OCR | CAND-083 | P0 | candidate | — |
+| CAND-085 | Spikes do Segundo Cérebro (S1–S4 do plano): modelo de embeddings, armazenamento vetorial cifrado, custo da captura por evento, imagem e OCR | CAND-083 | P0 | promoted | 046-spikes-segundo-cerebro |
 
 > Revisão 2026-10-05: CAND-033…049 vêm de `docs/project/plano-reuniao-e-configuracao-assistida.md` e `docs/research/competitors-ao-vivo.md`. CAND-016 passa a ser coberto por CAND-035/036/037; CAND-025, 028, 030 e 031 ganham prioridade como habilitadores (ditado inteligente, sugestões contextuais, base de conhecimento, conectores). Nada aqui é esforço até passar pelo fluxo Hybrid.
 

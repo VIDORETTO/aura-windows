@@ -1,0 +1,32 @@
+{
+  "acceptance_refs": [
+    "AC-004"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-045/audio.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-014",
+  "input_fingerprints": {
+    "crates/aura-app/src/recorder.rs": "dda082ff6b79334cd3fafede00ca8d31f1613c1dd9a63b9ee5027720106da51c",
+    "crates/aura-audio/src/recorder.rs": "520a60d46c63dccb6d4952510064dd4615401c8beee713df34f5812a782b3f27",
+    "crates/aura-audio/tests/recording.rs": "8e04c812c7b5796d8682af980ae211cbf74f8dc9aedaf0cef8de7046bba2ede3",
+    "specs/045-higiene-da-captura/plan.md": "b3c338e5a8ce9295d19070d7ec9affb5c4f71157d395ced588fe88dc0663b859",
+    "specs/045-higiene-da-captura/spec.md": "efba46c05db2818f583960dbb7245f384de013314342b8f8e2530245eef7ee4f"
+  },
+  "input_paths": [
+    "crates/aura-audio/src/recorder.rs",
+    "crates/aura-audio/tests/recording.rs",
+    "crates/aura-app/src/recorder.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.",
+  "observations": "13 testes do aura-audio (live_retention_change_reaches_audio) e 149 do aura-app passaram.",
+  "procedure": "cargo test -p aura-audio; cargo test -p aura-app",
+  "result": "passed",
+  "tested_revision": "local:28a8ffbbcc8290ba7dc91ea1e299506eafe40085d76b1c1772f70d00f8f9766c",
+  "ticket": "TK-002",
+  "timestamp": "2026-11-14T00:32:27+00:00"
+}

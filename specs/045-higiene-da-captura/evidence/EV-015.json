@@ -1,0 +1,36 @@
+{
+  "acceptance_refs": [
+    "AC-007",
+    "AC-008",
+    "AC-009"
+  ],
+  "environment": "Windows 11 Pro 25H2 build 26200.9974; Rust 1.98.1 MSVC; Ryzen 7 7800X3D",
+  "evidence_refs": [
+    "C:/Users/gabri/AppData/Local/Temp/aura-045/capture.log"
+  ],
+  "execution_status": "executed",
+  "id": "EV-015",
+  "input_fingerprints": {
+    "crates/aura-audio/src/recorder.rs": "520a60d46c63dccb6d4952510064dd4615401c8beee713df34f5812a782b3f27",
+    "crates/aura-capture/src/segments.rs": "081f42b8d79eb8f15dd72cef9b478ad677241562c646981639ba7a40945f9961",
+    "crates/aura-capture/tests/pipeline.rs": "743769aea2d4c2c9f431b71ab8bc3a8bcfe819402bfe69075bfd54f90bdcbe4d",
+    "crates/aura-capture/tests/retention_store.rs": "90c171fc5602d8bed761d50b8088cbf87996a6b6e678e37185687c7b4fab6145",
+    "specs/045-higiene-da-captura/plan.md": "b3c338e5a8ce9295d19070d7ec9affb5c4f71157d395ced588fe88dc0663b859",
+    "specs/045-higiene-da-captura/spec.md": "efba46c05db2818f583960dbb7245f384de013314342b8f8e2530245eef7ee4f"
+  },
+  "input_paths": [
+    "crates/aura-capture/src/segments.rs",
+    "crates/aura-capture/tests/retention_store.rs",
+    "crates/aura-capture/tests/pipeline.rs",
+    "crates/aura-audio/src/recorder.rs",
+    "specs/045-higiene-da-captura/spec.md",
+    "specs/045-higiene-da-captura/plan.md"
+  ],
+  "limitations": "Reexecução após renome do esforço 041→045 (IDs em comentários e artefatos; mudança editorial). A suíte completa do workspace (529 testes) rodou antes do renome; os 2 testes de Media Foundation do aura-win que travam neste PC continuam fora.",
+  "observations": "Equivalência com plan, órfãos só na varredura (cadência de 1 h), range e varredura do áudio verdes.",
+  "procedure": "cargo test -p aura-capture; cargo test -p aura-audio",
+  "result": "passed",
+  "tested_revision": "local:9365c8614660c1f69fe3e0274ecf49fe92e5e4dc7ff6500ded8c7e776b2d1e76",
+  "ticket": "TK-003",
+  "timestamp": "2026-11-14T00:32:27+00:00"
+}

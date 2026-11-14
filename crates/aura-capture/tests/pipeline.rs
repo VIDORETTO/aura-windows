@@ -274,7 +274,7 @@ async fn pause_closes_the_segment_and_stops_recording() {
     );
 }
 
-// 041 AC-008: the recorder sweeps orphans when it starts and then hourly.
+// 045 AC-008: the recorder sweeps orphans when it starts and then hourly.
 #[tokio::test(start_paused = true)]
 async fn recorder_sweeps_orphans_at_start_and_hourly() {
     let dir = tempfile::tempdir().unwrap();
@@ -320,4 +320,108 @@ async fn recorder_sweeps_orphans_at_start_and_hourly() {
     tokio::time::sleep(Duration::from_secs(2)).await;
     assert!(!screen.join("later.seg").exists(), "swept after an hour");
     rec.stop().await.unwrap();
+}
+
+/// Sealer that fails on demand (storage errors vary for real: disk, vault).
+struct FlakySealer {
+    fail_next: std::sync::atomic::AtomicUsize,
+    always: bool,
+}
+impl aura_capture::encoder::Sealer for FlakySealer {
+    fn seal(&self, p: &[u8]) -> Result<Vec<u8>, aura_capture::segments::SegmentError> {
+        let fail = self.always
+            || self
+                .fail_next
+                .fetch_update(Ordering::SeqCst, Ordering::SeqCst, |n| n.checked_sub(1))
+                .is_ok();
+        if fail {
+            Err(aura_capture::segments::SegmentError::Seal(
+                "injected".into(),
+            ))
+        } else {
+            Ok(p.to_vec())
+        }
+    }
+    fn open(&self, s: &[u8]) -> Result<Vec<u8>, aura_capture::segments::SegmentError> {
+        Ok(s.to_vec())
+    }
+}
+
+fn flaky_recorder(
+    dir: &std::path::Path,
+    sealer: FlakySealer,
+) -> (SegmentRecorder, SegmentStore, Arc<AtomicI64>) {
+    let segments = SegmentStore::new(
+        Store::open_in_memory().unwrap(),
+        dir.to_path_buf(),
+        Arc::new(sealer),
+    );
+    let mut p = Policy::default();
+    p.screen.mode = CaptureMode::RecentBuffer { minutes: 5 };
+    let t = Arc::new(AtomicI64::new(0));
+    let t2 = t.clone();
+    let rec = SegmentRecorder::start(
+        RecorderConfig {
+            policy: Arc::new(Mutex::new(p)),
+            retention: Arc::new(Mutex::new(RetentionPolicy::default())),
+            target: Target::Monitor {
+                id: "A".into(),
+                area: Rect::new(0, 0, 4, 4),
+            },
+            interval: Duration::from_secs(1),
+            kind: "buffer".into(),
+            recording_id: None,
+        },
+        Arc::new(SyntheticSource::new(4, 4)),
+        Arc::new(StaticInventory(vec![])),
+        Box::new(NullEncoder::new(2)),
+        segments.clone(),
+        Arc::new(move || t2.load(Ordering::SeqCst)),
+    );
+    (rec, segments, t)
+}
+
+// 045 AC-005: one failed segment is logged and recording goes on.
+#[tokio::test(start_paused = true)]
+async fn one_failed_segment_does_not_stop_the_recorder() {
+    let dir = tempfile::tempdir().unwrap();
+    let sealer = FlakySealer {
+        fail_next: std::sync::atomic::AtomicUsize::new(1),
+        always: false,
+    };
+    let (rec, segments, t) = flaky_recorder(dir.path(), sealer);
+    for _ in 0..10 {
+        t.fetch_add(1000, Ordering::SeqCst);
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    assert!(!rec.is_finished(), "recorder still running");
+    assert!(
+        !segments.list(None).unwrap().is_empty(),
+        "later segments stored"
+    );
+    rec.stop().await.unwrap();
+}
+
+// 045 AC-006: five failed segments in a row end the recorder.
+#[tokio::test(start_paused = true)]
+async fn five_failures_in_a_row_end_the_recorder() {
+    let dir = tempfile::tempdir().unwrap();
+    let sealer = FlakySealer {
+        fail_next: std::sync::atomic::AtomicUsize::new(0),
+        always: true,
+    };
+    let (rec, segments, t) = flaky_recorder(dir.path(), sealer);
+    // 2 frames per segment at 1 fps: the 4th failure happens near 8 s.
+    for _ in 0..8 {
+        t.fetch_add(1000, Ordering::SeqCst);
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    assert!(!rec.is_finished(), "four failures are tolerated");
+    for _ in 0..4 {
+        t.fetch_add(1000, Ordering::SeqCst);
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    assert!(rec.is_finished(), "the fifth failure in a row ends it");
+    assert!(segments.list(None).unwrap().is_empty());
+    assert!(rec.stop().await.is_err());
 }
